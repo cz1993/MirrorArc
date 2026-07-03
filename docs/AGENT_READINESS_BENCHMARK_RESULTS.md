@@ -68,3 +68,35 @@ vaultwright_markdown: results=6 score=12/12 avg=2.00 corrections=0 violations=0
   example tree without committing generated mirrors.
 - The next benchmark step is a messy larger corpus and a real external design-partner run using
   the same task/result schema.
+
+## Messy Synthetic 200-File Corpus
+
+The review plan requires a messier synthetic corpus before treating the benchmark protocol as
+pilot-ready. Generate that corpus outside this repository:
+
+```bash
+python3.11 scripts/generate_messy_benchmark_corpus.py \
+  --target /tmp/vaultwright-messy-benchmark \
+  --files 200
+```
+
+The generator creates:
+
+| Artifact | Count |
+| --- | ---: |
+| Synthetic corpus files | 200 |
+| Office-like `.docx` source files | 120 |
+| Curated markdown notes | 80 |
+| Plain conversion dump files | 120 |
+| Benchmark tasks | 5 |
+| Task/mode result slots | 15 |
+
+It also writes `_meta/agent-readiness-tasks.yml`,
+`_benchmark/plain_markitdown_dump/`, `_benchmark/agent-readiness-results-scaffold.yml`,
+`_benchmark/messy-corpus-summary.json`, and `_benchmark/MESSY_BENCHMARK_RUN.md` in the generated
+vault. `_benchmark/` is ignored by the Vaultwright template because it may contain private run
+worksheets and result scaffolds.
+
+This gate is currently **reproducibility evidence**, not scored agent-readiness evidence. The next
+step is to run the same agent through the generated task pack in all three modes, fill a private
+result pack, and publish only aggregate no-data-reviewed scores.

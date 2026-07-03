@@ -1,5 +1,6 @@
 # Scratch
 .vaultwright/
+_benchmark/
 _tmp/
 data/
 secrets/

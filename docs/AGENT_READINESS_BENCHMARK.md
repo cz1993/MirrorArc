@@ -202,6 +202,21 @@ python3.11 tools/vaultwright.py benchmark --results _meta/public-agent-readiness
 
 The aggregate write-up is in [`AGENT_READINESS_BENCHMARK_RESULTS.md`](AGENT_READINESS_BENCHMARK_RESULTS.md).
 
+## Messy Corpus Generator
+
+For the larger synthetic baseline required by the review plan, generate a 200-file corpus outside
+the source checkout:
+
+```bash
+python3.11 scripts/generate_messy_benchmark_corpus.py \
+  --target /tmp/vaultwright-messy-benchmark \
+  --files 200
+```
+
+The generated vault includes synthetic Office-like sources, curated notes, a plain conversion dump
+under `_benchmark/plain_markitdown_dump/`, a benchmark task pack, and a private result scaffold.
+Run the same agent against all three modes before publishing aggregate scores.
+
 ## Guardrails
 
 - Never benchmark with confidential client data inside this public repo.
