@@ -5,9 +5,10 @@
 Vaultwright is not validated until external operators use it on real client-shaped corpora. This
 protocol keeps validation concrete, comparable, and honest.
 
-Use `docs/PILOT_WORKSHEET.md` as the working artifact for each pilot. Attach aggregate output from
-`vaultwright --root "$VW" pilot --json` to the private pilot record, not to this public
-repository.
+Use `docs/DESIGN_PARTNER_RECRUITING.md` to recruit and pre-screen partners before scheduling a
+run. Use `docs/PILOT_WORKSHEET.md` as the working artifact for each accepted pilot. Attach
+aggregate output from `vaultwright --root "$VW" pilot --json` to the private pilot record, not to
+this public repository.
 
 Stage 3 is not complete until at least one permission-cleared external corpus runs through this
 protocol. Public examples, synthetic dogfood runs, and generated benchmark corpora are engineering
@@ -19,6 +20,8 @@ The stop and pivot rules for weak benchmark or self-service evidence are in
 
 Recruit small consulting, advisory, implementation, compliance, or operations teams that handle
 document-heavy onboarding or review work. Avoid broad consumer testing until this wedge is proven.
+Pre-screen for authority to copy the corpus, a bounded workflow, and willingness to attempt the
+second sync without hands-on help.
 
 ## Corpus Requirements
 

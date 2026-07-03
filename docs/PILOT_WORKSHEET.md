@@ -8,6 +8,9 @@ and the owner has approved publication.
 
 - Participant/team:
 - Operator:
+- Recruiting source:
+- Profile shape:
+- Pre-screen outcome:
 - Date range:
 - Corpus boundary:
 - Source copy location:

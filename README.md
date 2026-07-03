@@ -70,6 +70,8 @@ Product contract: [`docs/PRODUCT.md`](docs/PRODUCT.md). Sync contract:
 [`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md). Recovery guide:
 [`docs/RECOVERY.md`](docs/RECOVERY.md). Design-partner protocol:
 [`docs/DESIGN_PARTNER_PROTOCOL.md`](docs/DESIGN_PARTNER_PROTOCOL.md).
+Design-partner recruiting:
+[`docs/DESIGN_PARTNER_RECRUITING.md`](docs/DESIGN_PARTNER_RECRUITING.md).
 Validation gate:
 [`docs/VALIDATION_GATE.md`](docs/VALIDATION_GATE.md).
 Conversion review guide:
