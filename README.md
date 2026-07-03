@@ -72,6 +72,8 @@ Product contract: [`docs/PRODUCT.md`](docs/PRODUCT.md). Sync contract:
 [`docs/DESIGN_PARTNER_PROTOCOL.md`](docs/DESIGN_PARTNER_PROTOCOL.md).
 Design-partner recruiting:
 [`docs/DESIGN_PARTNER_RECRUITING.md`](docs/DESIGN_PARTNER_RECRUITING.md).
+First external pilot runbook:
+[`docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md`](docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md).
 Stage 3 validation status:
 [`docs/STAGE3_VALIDATION_STATUS.md`](docs/STAGE3_VALIDATION_STATUS.md).
 Validation gate:

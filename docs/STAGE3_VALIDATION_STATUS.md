@@ -67,5 +67,6 @@ source text, mirror text, answer text, reviewer notes, and transcripts in privat
 ## Private Evidence Location
 
 Private pilot folders should contain the completed `docs/PILOT_WORKSHEET.md` copy, command
-transcripts, result packs, and any participant feedback. This public repository should contain
-only aggregate summaries that have passed a no-data review.
+transcripts, result packs, and any participant feedback. Use
+`docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md` to prepare the first accepted run. This public repository
+should contain only aggregate summaries that have passed a no-data review.

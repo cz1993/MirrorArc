@@ -4,6 +4,9 @@ Use this worksheet for a permission-cleared design-partner pilot. Keep completed
 command transcripts outside this public repository unless every source is synthetic or public-domain
 and the owner has approved publication.
 
+For the first accepted external run, follow `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md` and use this
+worksheet as the private record.
+
 ## Pilot Setup
 
 - Participant/team:

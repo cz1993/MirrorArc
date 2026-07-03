@@ -193,3 +193,6 @@ Scheduled follow-up:
 
 After each pre-screen, update `docs/STAGE3_VALIDATION_STATUS.md` with only anonymized attempt
 state and broad corpus shape.
+
+When an attempt reaches `accepted`, use `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md` to prepare the
+first run.

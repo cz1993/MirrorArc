@@ -8,7 +8,8 @@ protocol keeps validation concrete, comparable, and honest.
 Use `docs/DESIGN_PARTNER_RECRUITING.md` to recruit and pre-screen partners before scheduling a
 run. Use `docs/PILOT_WORKSHEET.md` as the working artifact for each accepted pilot. Attach
 aggregate output from `vaultwright --root "$VW" pilot --json` to the private pilot record, not to
-this public repository. Track public-safe attempt state in `docs/STAGE3_VALIDATION_STATUS.md`.
+this public repository. Use `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md` for the first accepted run, and
+track public-safe attempt state in `docs/STAGE3_VALIDATION_STATUS.md`.
 
 Stage 3 is not complete until at least one permission-cleared external corpus runs through this
 protocol. Public examples, synthetic dogfood runs, and generated benchmark corpora are engineering
