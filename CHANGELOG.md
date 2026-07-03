@@ -6,6 +6,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 ## [Unreleased]
 
 ### Changed
+- Marked dated whitepaper, progress-audit, and mega-prompt files as historical so the current
+  Stage 3 validation gate remains the obvious execution authority.
 - Aligned the CodeX continuation prompt with the current Stage 3 external-validation gate so future
   autonomous loops do not resume stale Stage 1 or sample-corpus work.
 - Tightened the design-partner pilot protocol and worksheet around package-first commands, strict

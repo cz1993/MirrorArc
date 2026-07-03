@@ -5,9 +5,9 @@ This matrix is the execution control document for the canonical white paper,
 `docs/adr/0002-journaled-incremental-materialization.md`, and
 `docs/PROFILE_SCHEMA.md`.
 
-Current progress and next execution order are summarized in
-`docs/V1_PROGRESS_AUDIT_2026-06-23.md`.
-The external-validation stop and pivot rules are tracked in `docs/VALIDATION_GATE.md`.
+Historical Stage 1/2 progress is preserved in `docs/V1_PROGRESS_AUDIT_2026-06-23.md`.
+Current execution order is controlled by this matrix and the external-validation stop and pivot
+rules in `docs/VALIDATION_GATE.md`.
 
 Its job is to keep development converging. Work is v1-aligned only when it advances a listed
 requirement, replaces a weaker implementation, or preserves existing gates while preparing a

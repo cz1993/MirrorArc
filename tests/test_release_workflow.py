@@ -11,6 +11,13 @@ CI_WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 RELEASE_WORKFLOW = ROOT / ".github" / "workflows" / "release.yml"
 RELEASE_DOC = ROOT / "docs" / "RELEASE.md"
 KICKOFF_PROMPT = ROOT / "docs" / "CODEX_KICKOFF_PROMPT.md"
+FINISH_LINE = ROOT / "docs" / "V1_FINISH_LINE.md"
+HISTORICAL_PLANNING_DOCS = (
+    ROOT / "docs" / "VAULTWRIGHT_WHITEPAPER_2026-06-23.md",
+    ROOT / "docs" / "revisions" / "VAULTWRIGHT_WHITEPAPER_2026-06-24.md",
+    ROOT / "docs" / "VAULTWRIGHT_CODEX_MEGA_PROMPT_2026-06-24.md",
+    ROOT / "docs" / "V1_PROGRESS_AUDIT_2026-06-23.md",
+)
 PYPROJECT = ROOT / "pyproject.toml"
 
 
@@ -48,6 +55,21 @@ def test_kickoff_prompt_routes_future_work_to_stage3_validation() -> None:
     assert "Docling/email/connectors, visualization, or new report surfaces" in text
     assert "Work Stage 1 package/profile convergence before adding broad examples" not in text
     assert "The sample-data hunt (do this in goal-pursuing mode)" not in text
+
+
+def test_historical_planning_docs_are_marked_superseded() -> None:
+    finish_line = FINISH_LINE.read_text(encoding="utf-8")
+
+    assert "Current execution order is controlled by this matrix" in finish_line
+    assert "docs/VALIDATION_GATE.md" in finish_line
+    assert "Current progress and next execution order are summarized in" not in finish_line
+
+    for path in HISTORICAL_PLANNING_DOCS:
+        text = path.read_text(encoding="utf-8")
+        assert "Historical" in text
+        assert "not the current" in text
+        assert "Stage 3 external validation" in text
+        assert "docs/VALIDATION_GATE.md" in text
 
 
 def test_release_workflow_is_tag_only_and_draft_prerelease() -> None:

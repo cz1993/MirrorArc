@@ -1,5 +1,13 @@
 # Codex Mega Prompt — Converge Vaultwright to Profile-Driven V1 with Journaled Incremental Materialization
 
+> Historical prompt. This file is not the current execution authority; do not use it as the
+> current kickoff prompt. Use
+> `docs/CODEX_KICKOFF_PROMPT.md`, `docs/VAULTWRIGHT_WHITEPAPER.md`,
+> `docs/V1_FINISH_LINE.md`, `docs/VALIDATION_GATE.md`,
+> `docs/STAGE3_VALIDATION_STATUS.md`, `docs/DESIGN_PARTNER_RECRUITING.md`, and
+> `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md` instead. This prompt predates the closed Stage 1A,
+> Stage 1B, and Stage 2 gates; Stage 3 external validation is now the next execution gate.
+
 Paste this prompt into Codex while it is opened at the root of `cz1993/vaultwright`.
 
 ---

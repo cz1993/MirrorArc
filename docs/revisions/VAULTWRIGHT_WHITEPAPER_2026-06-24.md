@@ -1,7 +1,10 @@
 # Vaultwright Whitepaper
 
-> Historical revision copy. The canonical editable white paper for this architecture now lives at
-> `docs/VAULTWRIGHT_WHITEPAPER.md`; update that file first and keep this copy as dated provenance.
+> Historical revision copy. This file is not the current execution authority. The canonical
+> editable white paper now lives at `docs/VAULTWRIGHT_WHITEPAPER.md`; current stage order is
+> controlled by `docs/V1_FINISH_LINE.md` and `docs/VALIDATION_GATE.md`.
+> Stage 3 external validation is the current execution gate and precedes adapter, index, Explorer,
+> connector, visualization, and richer profile-view work.
 
 **Status:** strategic product revision, incremental-materialization architecture, and finite v1 execution brief
 **Date:** 2026-06-24

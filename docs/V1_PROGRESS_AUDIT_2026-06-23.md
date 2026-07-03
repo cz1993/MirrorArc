@@ -1,5 +1,12 @@
 # Vaultwright V1 Progress Audit — 2026-06-23 / 2026-06-24
 
+> Historical Stage 1/2 audit. This file preserves implementation provenance, but it is
+> not the current next-execution authority. Current work is controlled by `docs/V1_FINISH_LINE.md`,
+> `docs/VALIDATION_GATE.md`, `docs/STAGE3_VALIDATION_STATUS.md`,
+> `docs/DESIGN_PARTNER_RECRUITING.md`, and `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md`.
+> Stage 3 external validation now precedes adapter, index, Explorer, connector, visualization,
+> and richer profile-view work.
+
 This audit maps the current implementation to the canonical `docs/VAULTWRIGHT_WHITEPAPER.md`,
 `docs/adr/0001-profile-driven-v1-architecture.md`,
 `docs/adr/0002-journaled-incremental-materialization.md`, and

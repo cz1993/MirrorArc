@@ -1,5 +1,11 @@
 # Vaultwright Whitepaper
 
+> Historical snapshot. This file is not the current execution authority. Use
+> `docs/VAULTWRIGHT_WHITEPAPER.md`, `docs/V1_FINISH_LINE.md`, `docs/VALIDATION_GATE.md`,
+> `docs/STAGE3_VALIDATION_STATUS.md`, `docs/DESIGN_PARTNER_RECRUITING.md`, and
+> `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md` for current work. Stage 3 external validation now
+> precedes adapter, index, Explorer, connector, visualization, and richer profile-view work.
+
 **Status:** strategic product revision and finite v1 execution brief
 **Date:** 2026-06-23
 **Repository reviewed:** `cz1993/vaultwright` at commit `2b9e79823f1ebac4b123fc434e478f82bb8d6c87`
