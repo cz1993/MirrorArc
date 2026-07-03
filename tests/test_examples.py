@@ -37,6 +37,7 @@ GOVERNMENT_RAW_FOLDER_MIRRORS = [
     Path("20_market/2026-06_canadian_business_startup_navigation_brief.md"),
 ]
 GOVERNMENT_BENCHMARK = Path("_meta/agent-readiness-tasks.yml")
+GOVERNMENT_PUBLIC_RESULTS = Path("_meta/public-agent-readiness-results.yml")
 OFFICE_SOURCE_EXTS = {".docx", ".pptx", ".xlsx", ".pdf"}
 BENCHMARK_FAMILIES = {"answer", "reconcile", "update", "audit", "consolidate"}
 COPIED_TOOL_FILES = [
@@ -174,7 +175,7 @@ def test_government_services_agent_readiness_tasks_reference_committed_sources()
     assert data["corpus"] == "government-services-vault"
     assert set(data["comparison_modes"]) == {
         "raw_source_folder",
-        "document_chat_transcript",
+        "plain_markitdown_dump",
         "vaultwright_markdown",
     }
     tasks = data["tasks"]
@@ -210,6 +211,28 @@ def test_government_services_agent_readiness_tasks_reference_committed_sources()
     assert benchmark.returncode == 0, benchmark.stderr or benchmark.stdout
     assert "benchmark_tasks: 6 tasks" in benchmark.stdout
     assert "generated mirror not present yet" in benchmark.stdout
+
+    public_results = subprocess.run(
+        [
+            sys.executable,
+            str(vault / "tools" / "vaultwright.py"),
+            "benchmark",
+            "--results",
+            GOVERNMENT_PUBLIC_RESULTS.as_posix(),
+            "--require-results",
+            "--require-citations",
+            "--require-prompt-safety",
+        ],
+        cwd=vault,
+        text=True,
+        capture_output=True,
+    )
+    assert public_results.returncode == 0, public_results.stderr or public_results.stdout
+    assert "benchmark_results: 18 results in _meta/public-agent-readiness-results.yml" in public_results.stdout
+    assert "raw_source_folder: results=6 score=5/12 avg=0.83 corrections=7" in public_results.stdout
+    assert "plain_markitdown_dump: results=6 score=6/12 avg=1.00 corrections=6" in public_results.stdout
+    assert "vaultwright_markdown: results=6 score=12/12 avg=2.00 corrections=0" in public_results.stdout
+    assert "warning: benchmark results incomplete" not in public_results.stdout
 
 
 def assert_benchmark_generated_mirrors_exist(vault: Path) -> None:

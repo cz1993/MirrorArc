@@ -142,7 +142,7 @@ in `_meta/mirror-config.yml`; `sync_all.sh` will honor that setting.
   after sync, then `vaultwright --root ~/my-business-vault benchmark --worksheet` to run the
   comparison, then `vaultwright --root ~/my-business-vault benchmark --init-results` and
   `vaultwright --root ~/my-business-vault benchmark --results _meta/agent-readiness-results.yml`
-  to compare raw-source, document-chat, and Vaultwright-markdown performance on the same questions. Add
+  to compare raw-source, plain markitdown dump, and Vaultwright-markdown performance on the same questions. Add
   `--require-citations` and `--require-prompt-safety` when pilot results must prove source-backed
   answers and prompt-injection handling.
 - **Microsoft 365 handoff?** Use `docs/MICROSOFT_365_HANDOFF.md` and

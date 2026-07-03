@@ -64,6 +64,9 @@ PRIVATE_CONVERSION_RESULT_FILENAMES = {
 PUBLIC_TASK_PACKS = {
     "examples/government-services-vault/_meta/agent-readiness-tasks.yml",
 }
+PUBLIC_RESULT_PACKS = {
+    "examples/government-services-vault/_meta/public-agent-readiness-results.yml",
+}
 YAML_SUFFIXES = {".yaml", ".yml"}
 
 DISALLOWED_DATA_EXTS = {
@@ -336,6 +339,10 @@ def public_task_pack_allowed(rel: str) -> bool:
     return rel.replace(os.sep, "/") in PUBLIC_TASK_PACKS
 
 
+def public_result_pack_allowed(rel: str) -> bool:
+    return rel.replace(os.sep, "/") in PUBLIC_RESULT_PACKS
+
+
 def is_ooxml_content_part(name: str) -> bool:
     low = name.lower()
     return any(low == prefix.lower() or low.startswith(prefix.lower()) for prefix in OOXML_CONTENT_PART_PREFIXES)
@@ -436,7 +443,7 @@ def scan_bytes(
         findings.append(f"{rel}: generated/vendor directory must not be committed ({generated_parts[0]})")
 
     name = rel_path.name
-    if name in PRIVATE_RESULT_FILENAMES and "_meta" in rel_path.parts:
+    if name in PRIVATE_RESULT_FILENAMES and "_meta" in rel_path.parts and not public_result_pack_allowed(rel):
         findings.append(f"{rel}: benchmark result packs must stay out of the public repo")
     if name in PRIVATE_CONVERSION_RESULT_FILENAMES and "_meta" in rel_path.parts:
         findings.append(f"{rel}: conversion quality result packs must stay out of the public repo")
@@ -487,7 +494,7 @@ def scan_bytes(
         return findings
 
     text = raw.decode("utf-8", errors="ignore")
-    if looks_like_agent_readiness_results(rel_path, text):
+    if looks_like_agent_readiness_results(rel_path, text) and not public_result_pack_allowed(rel):
         findings.append(f"{rel}: benchmark result packs must stay out of the public repo")
     if looks_like_conversion_quality_results(rel_path, text):
         findings.append(f"{rel}: conversion quality result packs must stay out of the public repo")

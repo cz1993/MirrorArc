@@ -130,6 +130,6 @@ AI must not silently:
 ## Agent-Readiness Validation
 
 Vaultwright's long-term value depends on whether agents perform better against governed markdown
-than against raw folders or one-off document-chat transcripts. The benchmark protocol in
+than against raw folders or one-off plain markitdown dumps. The benchmark protocol in
 `docs/AGENT_READINESS_BENCHMARK.md` defines the evidence needed before this claim is treated as
 more than a thesis.

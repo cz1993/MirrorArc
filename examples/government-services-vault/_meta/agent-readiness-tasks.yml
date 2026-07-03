@@ -1,9 +1,9 @@
 schema_version: 1
 corpus: government-services-vault
-description: Synthetic Canadian business-startup benchmark tasks for comparing raw source folders, document-chat transcripts, and Vaultwright markdown.
+description: Synthetic Canadian business-startup benchmark tasks for comparing raw source folders, plain markitdown dumps, and Vaultwright markdown.
 comparison_modes:
   - raw_source_folder
-  - document_chat_transcript
+  - plain_markitdown_dump
   - vaultwright_markdown
 scoring:
   scale: "0-2"

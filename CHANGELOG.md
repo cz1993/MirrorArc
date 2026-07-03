@@ -6,6 +6,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 ## [Unreleased]
 
 ### Changed
+- Updated the primary benchmark baseline from `document_chat_transcript` to
+  `plain_markitdown_dump`, while preserving legacy task-pack compatibility.
 - Pulled external corpus validation ahead of Obsidian adapter, evidence-index, Explorer, and
   visualization work in the controlling v1 docs.
 - Marked experimental report/scaffold command surfaces in CLI help while preserving compatibility
@@ -15,6 +17,9 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added the first public synthetic agent-readiness benchmark result packet for the
+  government-services example, plus an aggregate results write-up and scanner/test coverage that
+  keeps private result packs blocked.
 - Added package-first `uvx`/`pipx` onboarding guidance and updated `vaultwright init` next-step
   output to point beginners at the installed console command plus JSON pilot evidence checks.
 - Added structured top-level `--json` output for `vaultwright sync`, `vaultwright status`, and

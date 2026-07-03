@@ -182,7 +182,7 @@ def write_profile_benchmark_task_pack(vault: Path) -> Path:
                 "corpus": "profile-research-fixture",
                 "comparison_modes": [
                     "raw_source_folder",
-                    "document_chat_transcript",
+                    "plain_markitdown_dump",
                     "vaultwright_markdown",
                 ],
                 "scoring": {"scale": "0-2"},
@@ -1336,7 +1336,7 @@ def test_package_cli_benchmark_uses_configured_office_mirror_root(tmp_path: Path
                 "corpus": "configured-root-fixture",
                 "comparison_modes": [
                     "raw_source_folder",
-                    "document_chat_transcript",
+                    "plain_markitdown_dump",
                     "vaultwright_markdown",
                 ],
                 "scoring": {"scale": "0-2"},

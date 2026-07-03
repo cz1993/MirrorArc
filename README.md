@@ -76,6 +76,8 @@ Release checklist:
 [`docs/RELEASE.md`](docs/RELEASE.md).
 Agent-readiness benchmark:
 [`docs/AGENT_READINESS_BENCHMARK.md`](docs/AGENT_READINESS_BENCHMARK.md).
+Public benchmark results:
+[`docs/AGENT_READINESS_BENCHMARK_RESULTS.md`](docs/AGENT_READINESS_BENCHMARK_RESULTS.md).
 Full write-up: [`docs/methodology.md`](docs/methodology.md).
 Professional review brief: [`docs/VAULTWRIGHT_WHITEPAPER.md`](docs/VAULTWRIGHT_WHITEPAPER.md).
 Current v1 architecture decision:

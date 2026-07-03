@@ -1468,7 +1468,7 @@ def write_agent_benchmark_fixture(vault: Path) -> None:
                 "corpus": "fixture",
                 "comparison_modes": [
                     "raw_source_folder",
-                    "document_chat_transcript",
+                    "plain_markitdown_dump",
                     "vaultwright_markdown",
                 ],
                 "scoring": {"scale": "0-2"},
@@ -1506,7 +1506,7 @@ def write_agent_benchmark_fixture(vault: Path) -> None:
                     },
                     {
                         "task_id": "audit-1",
-                        "mode": "document_chat_transcript",
+                        "mode": "plain_markitdown_dump",
                         "score": 0,
                         "reviewer_corrections": 2,
                         "privacy_or_provenance_violation": True,
@@ -1594,10 +1594,47 @@ def test_vaultwright_benchmark_reports_result_scores_without_answer_content(tmp_
         "citations=1+0 uncited_scored=0 prompt_safety=1/1 prompt_violations=0 missing_prompt_safety=0"
     ) in result.stdout
     assert (
-        "document_chat_transcript: results=1 score=0/2 avg=0.00 corrections=2 violations=1 "
+        "plain_markitdown_dump: results=1 score=0/2 avg=0.00 corrections=2 violations=1 "
         "citations=0+0 uncited_scored=0 prompt_safety=1/1 prompt_violations=1 missing_prompt_safety=0"
     ) in result.stdout
     assert "warning: benchmark results incomplete: missing 12 task/mode scores" in result.stdout
+
+
+def test_vaultwright_benchmark_accepts_legacy_document_chat_mode(tmp_path: Path) -> None:
+    vault = tmp_path / "vault"
+    shutil.copytree(ROOT / "template", vault)
+    write_agent_benchmark_fixture(vault)
+    task_path = vault / "_meta" / "agent-readiness-tasks.yml"
+    task_pack = yaml.safe_load(task_path.read_text(encoding="utf-8"))
+    task_pack["comparison_modes"] = [
+        "raw_source_folder",
+        "document_chat_transcript",
+        "vaultwright_markdown",
+    ]
+    task_path.write_text(yaml.safe_dump(task_pack, sort_keys=False), encoding="utf-8")
+    result_path = vault / "_meta" / "agent-readiness-results.yml"
+    result_pack = yaml.safe_load(result_path.read_text(encoding="utf-8"))
+    for item in result_pack["results"]:
+        if item["mode"] == "plain_markitdown_dump":
+            item["mode"] = "document_chat_transcript"
+    result_path.write_text(yaml.safe_dump(result_pack, sort_keys=False), encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(vault / "tools" / "vaultwright.py"),
+            "benchmark",
+            "--results",
+            "_meta/agent-readiness-results.yml",
+        ],
+        cwd=vault,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert "document_chat_transcript: results=1 score=0/2" in result.stdout
+    assert "warning: comparison_modes uses legacy document_chat_transcript; prefer plain_markitdown_dump" in result.stdout
 
 
 def test_vaultwright_benchmark_warns_on_uncited_scored_result(tmp_path: Path) -> None:
@@ -2004,7 +2041,7 @@ def test_vaultwright_benchmark_init_tasks_writes_private_scaffold_from_manifest(
     assert task_pack["corpus"] == "vault"
     assert set(task_pack["comparison_modes"]) == {
         "raw_source_folder",
-        "document_chat_transcript",
+        "plain_markitdown_dump",
         "vaultwright_markdown",
     }
     assert {task["family"] for task in task_pack["tasks"]} == {
@@ -2091,7 +2128,7 @@ def test_vaultwright_benchmark_init_results_writes_private_scaffold(tmp_path: Pa
     } == {
         (f"{family}-1", mode)
         for family in ("answer", "reconcile", "update", "audit", "consolidate")
-        for mode in ("raw_source_folder", "document_chat_transcript", "vaultwright_markdown")
+        for mode in ("raw_source_folder", "plain_markitdown_dump", "vaultwright_markdown")
     }
     assert all(entry["score"] is None for entry in scaffold["results"])
     assert all(entry["reviewer_corrections"] is None for entry in scaffold["results"])
@@ -2150,7 +2187,7 @@ def test_vaultwright_benchmark_worksheet_prints_private_run_sheet_without_paths(
     assert "### answer-1" in result.stdout
     assert "What should the answer task prove?" in result.stdout
     assert "#### raw_source_folder" in result.stdout
-    assert "#### document_chat_transcript" in result.stdout
+    assert "#### plain_markitdown_dump" in result.stdout
     assert "#### vaultwright_markdown" in result.stdout
     assert "Score (0-2)" in result.stdout
     assert "Prompt safety reviewed (true/false)" in result.stdout
@@ -2195,7 +2232,7 @@ def test_packaged_vaultwright_cli_runs_benchmark_result_args_without_local_runti
     assert payload["result_summary"]["modes"]["vaultwright_markdown"]["source_citations"] == 1
     assert payload["result_summary"]["modes"]["vaultwright_markdown"]["generated_mirror_citations"] == 1
     assert payload["result_summary"]["modes"]["vaultwright_markdown"]["prompt_safety_reviewed"] == 1
-    assert payload["result_summary"]["modes"]["document_chat_transcript"]["prompt_safety_violations"] == 1
+    assert payload["result_summary"]["modes"]["plain_markitdown_dump"]["prompt_safety_violations"] == 1
     assert "missing tools/vaultwright.py" not in result.stderr
     assert "benchmark_tasks.py" not in result.stderr
 
@@ -2719,7 +2756,7 @@ def test_vaultwright_pilot_report_summarizes_evidence_without_content(tmp_path: 
     (vault / "_meta" / "agent-readiness-tasks.yml").write_text(
         "schema_version: 1\n"
         "corpus: fixture\n"
-        "comparison_modes: [raw_source_folder, document_chat_transcript, vaultwright_markdown]\n"
+        "comparison_modes: [raw_source_folder, plain_markitdown_dump, vaultwright_markdown]\n"
         "scoring:\n"
         "  scale: 0-2\n"
         "tasks:\n"

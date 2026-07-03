@@ -25,8 +25,10 @@ PROFILE = Path("_meta/profile.yml")
 DEFAULT_TASKS = Path("_meta/agent-readiness-tasks.yml")
 DEFAULT_RESULTS = Path("_meta/agent-readiness-results.yml")
 SOURCE_MANIFEST = Path("_meta/source-manifest.json")
-MODE_ORDER = ("raw_source_folder", "document_chat_transcript", "vaultwright_markdown")
+LEGACY_DOCUMENT_CHAT_MODE = "document_chat_transcript"
+MODE_ORDER = ("raw_source_folder", "plain_markitdown_dump", "vaultwright_markdown")
 REQUIRED_MODES = set(MODE_ORDER)
+LEGACY_REQUIRED_MODES = {"raw_source_folder", LEGACY_DOCUMENT_CHAT_MODE, "vaultwright_markdown"}
 FAMILY_ORDER = ("answer", "reconcile", "update", "audit", "consolidate")
 FAMILIES = set(FAMILY_ORDER)
 RESERVED_CURATED_PARTS = {
@@ -214,8 +216,14 @@ def validate_task_pack(path: Path, *, require_generated: bool = False) -> tuple[
     if not str(data.get("corpus", "")).strip():
         errors.append("corpus is required")
     modes = data.get("comparison_modes")
-    if not isinstance(modes, list) or set(str(mode) for mode in modes) != REQUIRED_MODES:
-        errors.append("comparison_modes must include raw_source_folder, document_chat_transcript, and vaultwright_markdown")
+    mode_names = [str(mode).strip() for mode in modes] if isinstance(modes, list) else []
+    mode_set = set(mode_names)
+    if not isinstance(modes, list) or len(mode_names) != len(mode_set):
+        errors.append("comparison_modes must list each benchmark mode exactly once")
+    elif mode_set == LEGACY_REQUIRED_MODES:
+        warnings.append("comparison_modes uses legacy document_chat_transcript; prefer plain_markitdown_dump")
+    elif mode_set != REQUIRED_MODES:
+        errors.append("comparison_modes must include raw_source_folder, plain_markitdown_dump, and vaultwright_markdown")
     scoring = data.get("scoring")
     if not isinstance(scoring, dict) or str(scoring.get("scale", "")).strip() != "0-2":
         errors.append("scoring.scale must be 0-2")
@@ -531,7 +539,7 @@ def result_scaffold_text(task_data: dict) -> tuple[str, int]:
     entry_count = 0
     for task in tasks:
         task_id = str(task.get("id", "")).strip()
-        for mode in MODE_ORDER:
+        for mode in comparison_modes_from_task_pack(task_data):
             lines.extend(
                 [
                     f"  - task_id: {json.dumps(task_id)}",
@@ -565,8 +573,7 @@ def task_values(task: dict, field: str) -> list[str]:
 
 def benchmark_worksheet_text(task_data: dict, summary: dict) -> str:
     tasks = [task for task in task_data.get("tasks", []) if isinstance(task, dict)]
-    modes = task_data.get("comparison_modes")
-    mode_names = [str(mode) for mode in modes] if isinstance(modes, list) else list(MODE_ORDER)
+    mode_names = list(comparison_modes_from_task_pack(task_data))
     lines = [
         "# Agent-Readiness Benchmark Worksheet",
         "",
@@ -673,6 +680,17 @@ def path_list(value: object) -> list[str] | None:
     return [str(item) for item in value]
 
 
+def comparison_modes_from_task_pack(task_data: dict) -> tuple[str, ...]:
+    modes = task_data.get("comparison_modes")
+    if not isinstance(modes, list):
+        return MODE_ORDER
+    mode_names = tuple(str(mode).strip() for mode in modes if str(mode).strip())
+    mode_set = set(mode_names)
+    if len(mode_names) == len(mode_set) and mode_set in (REQUIRED_MODES, LEGACY_REQUIRED_MODES):
+        return mode_names
+    return MODE_ORDER
+
+
 def validate_result_paths(
     label: str,
     field: str,
@@ -725,6 +743,8 @@ def validate_result_pack(
         return {}, errors, warnings
     known_task_ids = task_ids_from_pack(task_data)
     task_refs = task_path_refs_from_pack(task_data)
+    expected_modes = comparison_modes_from_task_pack(task_data)
+    expected_mode_set = set(expected_modes)
     if not known_task_ids:
         errors.append(f"{display_path(task_path)}: no benchmark task ids found")
     extra_top_level = sorted(set(result_data) - RESULT_PACK_ALLOWED_FIELDS)
@@ -763,7 +783,7 @@ def validate_result_pack(
             "prompt_safety_violations": 0,
             "missing_prompt_safety_reviews": 0,
         }
-        for mode in MODE_ORDER
+        for mode in expected_modes
     }
 
     for index, result in enumerate(results):
@@ -783,8 +803,9 @@ def validate_result_pack(
             errors.append(f"{label}: task_id is required")
         elif task_id not in known_task_ids:
             errors.append(f"{label}: unknown task_id {task_id}")
-        if mode not in REQUIRED_MODES:
-            errors.append(f"{task_id or label}: invalid mode {mode}")
+        if mode not in expected_mode_set:
+            allowed = ", ".join(expected_modes)
+            errors.append(f"{task_id or label}: invalid mode {mode}; expected one of {allowed}")
         elif task_id:
             key = (task_id, mode)
             if key in seen:
@@ -912,7 +933,7 @@ def validate_result_pack(
         summary["average_score"] = round(float(summary["score"]) / count, 2) if count else 0.0
         summary["elapsed_seconds"] = round(float(summary["elapsed_seconds"]), 2)
 
-    expected = {(task_id, mode) for task_id in known_task_ids for mode in MODE_ORDER}
+    expected = {(task_id, mode) for task_id in known_task_ids for mode in expected_modes}
     missing = sorted(expected - seen)
     if missing:
         message = f"benchmark results incomplete: missing {len(missing)} task/mode scores"

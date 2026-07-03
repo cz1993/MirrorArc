@@ -366,7 +366,7 @@ To avoid hand-building the private aggregate result file, initialize a fillable 
 python3.11 tools/vaultwright.py benchmark --init-results
 ```
 
-Result packs score each task across `raw_source_folder`, `document_chat_transcript`, and
+Result packs score each task across `raw_source_folder`, `plain_markitdown_dump`, and
 `vaultwright_markdown`. The report prints per-mode scores, correction counts, privacy/provenance
 violation counts, citation counts, uncited scored-result counts, and prompt-safety review/violation
 counts, but it does not print answer text or reviewer notes. Use `--require-citations` when scored

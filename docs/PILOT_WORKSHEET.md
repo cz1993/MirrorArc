@@ -122,7 +122,7 @@ Use `docs/AGENT_READINESS_BENCHMARK.md` for scoring. Keep prompts, scores, and c
 anonymized, and keep any private result pack outside this public repository unless it has been
 reviewed for source text, personal data, protected names, answer text, and reviewer notes.
 
-| Task ID | Raw folder score | Document-chat score | Vaultwright markdown score | Prompt safety reviewed? | Notes |
+| Task ID | Raw folder score | Plain markitdown dump score | Vaultwright markdown score | Prompt safety reviewed? | Notes |
 | --- | ---: | ---: | ---: | --- | --- |
 | | | | | | |
 

@@ -102,6 +102,15 @@ def test_no_data_scan_flags_renamed_agent_readiness_result_pack_shape(tmp_path: 
     assert "benchmark result packs must stay out of the public repo" in result.stderr
 
 
+def test_no_data_scan_allows_public_agent_readiness_result_pack() -> None:
+    path = ROOT / "examples/government-services-vault/_meta/public-agent-readiness-results.yml"
+
+    result = run_scan(path)
+
+    assert result.returncode == 0, result.stderr
+    assert "OK" in result.stdout
+
+
 def test_no_data_scan_flags_conversion_quality_result_packs(tmp_path: Path) -> None:
     path = tmp_path / "vault" / "_meta" / "conversion-quality-results.yml"
     path.parent.mkdir(parents=True)
@@ -138,7 +147,7 @@ def test_no_data_scan_flags_private_agent_readiness_task_packs(tmp_path: Path) -
     path.write_text(
         "schema_version: 1\n"
         "corpus: private-client\n"
-        "comparison_modes: [raw_source_folder, document_chat_transcript, vaultwright_markdown]\n"
+        "comparison_modes: [raw_source_folder, plain_markitdown_dump, vaultwright_markdown]\n"
         "scoring:\n"
         "  scale: \"0-2\"\n"
         "tasks:\n"

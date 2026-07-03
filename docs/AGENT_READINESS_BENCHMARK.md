@@ -4,7 +4,7 @@ Vaultwright's future claim is not just that people can browse a cleaner knowledg
 to prove is stronger:
 
 > AI agents should answer, reconcile, update, and audit operational knowledge more reliably from
-> Vaultwright-generated markdown than from raw source folders or one-off document-chat transcripts.
+> Vaultwright-generated markdown than from raw source folders or plain document-conversion dumps.
 
 This document defines the benchmark shape for design partners. It is intentionally conservative:
 until these tasks are measured, "agent-ready markdown substrate" is a thesis, not a proven product
@@ -16,8 +16,8 @@ Run the same task set against three modes:
 
 1. **Raw source folder** - originals only, such as Office files, PDFs, spreadsheets, decks, repos,
    and loose notes.
-2. **Document-chat transcript** - a chat or RAG session over the same source collection, with no
-   durable markdown mirrors or manifest-backed refresh state.
+2. **Plain markitdown dump** - one-off Markdown produced from the same convertible source files,
+   with no manifest identity, lifecycle state, curated hubs, or refresh semantics.
 3. **Vaultwright markdown** - generated mirrors, manifests, source-linked hubs, entity pages, and
    linted conventions.
 
@@ -85,8 +85,9 @@ reviewer notes to this public repository.
 
 The public Vaultwright repository rejects committed private `_meta/agent-readiness-tasks.yml` and
 `_meta/agent-readiness-results.yml` files by default. The checked-in government-services task pack
-is an approved public example. Store private task and result packs in pilot workspaces, then copy
-only aggregate numbers into a review packet after no-data review.
+and its reviewed public synthetic result packet are approved public examples. Store private task
+and result packs in pilot workspaces, then copy only aggregate numbers into a review packet after
+no-data review.
 
 Default local path:
 
@@ -117,7 +118,7 @@ results:
 Rules enforced by the validator:
 
 - `task_id` must exist in the task pack;
-- `mode` must be one of `raw_source_folder`, `document_chat_transcript`, or
+- `mode` must be one of `raw_source_folder`, `plain_markitdown_dump`, or
   `vaultwright_markdown`;
 - `score` must be `0`, `1`, or `2`;
 - reviewer corrections must be a non-negative integer;
@@ -180,8 +181,8 @@ The task pack deliberately references both committed source files and generated 
 mirror paths should exist only after running sync in a temporary or local working copy, not in the
 committed example tree.
 
-Do not add private pilot task packs to this public repo. The no-data scanner allows only approved
-public examples and rejects task-pack-shaped YAML elsewhere.
+Do not add private pilot task or result packs to this public repo. The no-data scanner allows only
+approved public examples and rejects task/result-pack-shaped YAML elsewhere.
 
 Validate a configured task pack with:
 
@@ -190,8 +191,16 @@ python3.11 tools/vaultwright.py benchmark
 python3.11 tools/vaultwright.py benchmark --require-generated  # after sync
 ```
 
-No public result pack is committed for the example. Completing one requires running the comparison
-protocol and reviewing the answers.
+The public synthetic result packet lives at
+`examples/government-services-vault/_meta/public-agent-readiness-results.yml`. It records only
+scores, correction counts, prompt-safety flags, and source-path citations; it does not contain
+answer text, reviewer notes, source bodies, or mirror bodies. Validate it with:
+
+```bash
+python3.11 tools/vaultwright.py benchmark --results _meta/public-agent-readiness-results.yml --require-results --require-citations --require-prompt-safety
+```
+
+The aggregate write-up is in [`AGENT_READINESS_BENCHMARK_RESULTS.md`](AGENT_READINESS_BENCHMARK_RESULTS.md).
 
 ## Guardrails
 
@@ -205,6 +214,7 @@ protocol and reviewing the answers.
 
 ## Current Status
 
-No external benchmark has been completed yet. The government-services and Northwind examples are
-useful for smoke tests and demo tasks, but they are not proof that Vaultwright improves real agent
-performance on client-shaped corpora.
+No external benchmark has been completed yet. The government-services public result is a synthetic
+dogfood run for the review-plan baseline; it is useful evidence about the protocol and current
+example corpus, not proof that Vaultwright improves real agent performance on client-shaped
+corpora.
