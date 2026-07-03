@@ -11,18 +11,33 @@ Aimed at a technical founder/owner who knows git. ~15 minutes.
 
 ## 1. Create your vault
 
+Create the vault without cloning Vaultwright itself. The installable command requires Python 3.11+;
+`uvx` and `pipx run` create isolated environments when they can find a compatible Python.
+
 ```bash
-git clone <this-repo> vaultwright && cd vaultwright
-bash scripts/init.sh ~/my-business-vault
+uvx --from git+https://github.com/cz1993/vaultwright.git vaultwright init --profile business-operations ~/my-business-vault
+
+# or, with pipx:
+pipx run --spec git+https://github.com/cz1993/vaultwright.git vaultwright init --profile business-operations ~/my-business-vault
 ```
 
-`init.sh` copies `template/` into `~/my-business-vault` (the schema, templates, tools, Bases view,
-and the business-operations starter folders). It refuses to overwrite a non-empty target.
+Once Vaultwright is published to PyPI, the equivalent short forms are
+`uvx vaultwright init --profile business-operations ~/my-business-vault` and
+`pipx run vaultwright init --profile business-operations ~/my-business-vault`.
 
-Alternatively, from a source checkout, the package CLI can scaffold and validate any official
-profile:
+For repeated pilot commands, install the console command once:
 
 ```bash
+uv tool install git+https://github.com/cz1993/vaultwright.git
+
+# or, with pipx:
+pipx install git+https://github.com/cz1993/vaultwright.git
+```
+
+Source checkout fallback:
+
+```bash
+git clone https://github.com/cz1993/vaultwright.git vaultwright && cd vaultwright
 python3.11 -m pip install -e .
 vaultwright profile list
 vaultwright init --profile business-operations ~/my-business-vault
@@ -61,35 +76,35 @@ first — that's the operating manual. Try: *"Read CLAUDE.md, then ingest the fi
 ## 4. Mirror your binaries and repos
 
 ```bash
-cd ~/my-business-vault
-python3.11 -m pip install -r tools/requirements.txt  # markitdown + pyyaml
+# optional: copy tools/repos.example.yml to tools/repos.yml in the vault, then edit to list repos
+gh auth login                                        # read-only is enough (or export GH_TOKEN)
 
-cp tools/repos.example.yml tools/repos.yml      # then edit to list your repos
-gh auth login                                   # read-only is enough (or export GH_TOKEN)
+vaultwright --root ~/my-business-vault doctor        # check dependencies and vault structure
+vaultwright --root ~/my-business-vault sandbox --source-root /path/to/original-documents # copied-vault preflight
+vaultwright --root ~/my-business-vault plan          # inspect source inventory and proposed mirrors
+vaultwright --root ~/my-business-vault sync          # mirrors -> _mirrors/ and profile repo_notes_dir
+vaultwright --root ~/my-business-vault sync --json   # machine-readable sync evidence
+vaultwright --root ~/my-business-vault status        # review manifest-backed lifecycle state
+vaultwright --root ~/my-business-vault status --json # machine-readable lifecycle status
+vaultwright --root ~/my-business-vault doctor --json # machine-readable preflight report
+vaultwright --root ~/my-business-vault catalog       # write CATALOG.md inventory gateway
+vaultwright --root ~/my-business-vault catalog --html # write CATALOG.html visual inventory gateway
+vaultwright --root ~/my-business-vault m365          # Microsoft 365/Copilot handoff readiness
+vaultwright --root ~/my-business-vault review --json # summarize metadata-only review decisions
+vaultwright --root ~/my-business-vault overlap       # calibrate overlap thresholds without note bodies
+vaultwright --root ~/my-business-vault conversion --guide # read-only conversion spot-check and guide
+vaultwright --root ~/my-business-vault conversion --init-results # private quality result scaffold
+vaultwright --root ~/my-business-vault conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
+vaultwright --root ~/my-business-vault migration     # dry-run report for legacy/unknown folders
+vaultwright --root ~/my-business-vault migration --worksheet # Markdown cleanup checklist
+vaultwright --root ~/my-business-vault migration --runbook # legacy folder move protocol
+vaultwright --root ~/my-business-vault migration --normalize-frontmatter-domains --worksheet # domain cleanup checklist
+vaultwright --root ~/my-business-vault recovery --worksheet # manifest recovery checklist
+vaultwright --root ~/my-business-vault pilot         # aggregate pilot evidence, no source content
+vaultwright --root ~/my-business-vault pilot --worksheet # redacted Markdown private-pilot summary
+vaultwright --root ~/my-business-vault benchmark     # validate benchmark tasks, if configured
 
-python3.11 tools/vaultwright.py doctor          # check dependencies and vault structure
-python3.11 tools/vaultwright.py sandbox --source-root /path/to/original-documents # copied-vault preflight
-python3.11 tools/vaultwright.py plan            # inspect source inventory and proposed mirrors
-python3.11 tools/vaultwright.py sync            # mirrors -> _mirrors/ and profile repo_notes_dir
-python3.11 tools/vaultwright.py status          # review manifest-backed lifecycle state
-python3.11 tools/vaultwright.py catalog         # write CATALOG.md inventory gateway
-python3.11 tools/vaultwright.py catalog --html  # write CATALOG.html visual inventory gateway
-python3.11 tools/vaultwright.py m365            # Microsoft 365/Copilot handoff readiness
-python3.11 tools/vaultwright.py review --json   # summarize metadata-only review decisions
-python3.11 tools/vaultwright.py overlap         # calibrate overlap thresholds without note bodies
-python3.11 tools/vaultwright.py conversion --guide # read-only conversion spot-check and guide
-python3.11 tools/vaultwright.py conversion --init-results # private quality result scaffold
-python3.11 tools/vaultwright.py conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
-python3.11 tools/vaultwright.py migration       # dry-run report for legacy/unknown folders
-python3.11 tools/vaultwright.py migration --worksheet # Markdown cleanup checklist
-python3.11 tools/vaultwright.py migration --runbook # legacy folder move protocol
-python3.11 tools/vaultwright.py migration --normalize-frontmatter-domains --worksheet # domain cleanup checklist
-python3.11 tools/vaultwright.py recovery --worksheet # manifest recovery checklist
-python3.11 tools/vaultwright.py pilot           # aggregate pilot evidence, no source content
-python3.11 tools/vaultwright.py pilot --worksheet # redacted Markdown private-pilot summary
-python3.11 tools/vaultwright.py benchmark       # validate benchmark tasks, if configured
-
-python3.11 tools/vaultwright.py lint            # health check
+vaultwright --root ~/my-business-vault lint          # health check
 ```
 
 ## 5. Keep it fresh (unattended)
@@ -110,25 +125,26 @@ in `_meta/mirror-config.yml`; `sync_all.sh` will honor that setting.
   will mirror binaries under `_mirrors/`, create or **extend** a note, link it from the relevant
   hub/entity, and log it.
 - **A question?** Ask the agent; it reads `INDEX.md` / the MOCs first and answers with citations.
-- **Need a non-Obsidian gateway?** Regenerate `CATALOG.md` with `tools/vaultwright.py catalog`,
-  or `CATALOG.html` with `tools/vaultwright.py catalog --html`; both list source paths, mirrors,
+- **Need a non-Obsidian gateway?** Regenerate `CATALOG.md` with
+  `vaultwright --root ~/my-business-vault catalog`, or `CATALOG.html` with
+  `vaultwright --root ~/my-business-vault catalog --html`; both list source paths, mirrors,
   lifecycle states, and inventory stats without copying content. The HTML gateway adds static
   aggregate charts for quick review.
 - **Reviewed an artifact?** Record the decision with
-  `tools/vaultwright.py review --artifact CATALOG.html --status approved --reviewer <name>`.
+  `vaultwright --root ~/my-business-vault review --artifact CATALOG.html --status approved --reviewer <name>`.
   The ledger stores hashes and short metadata notes only, then reports approvals as stale if the
   reviewed artifact changes.
-- **Housekeeping?** Ask it to *lint* — or just run `tools/lint_vault.py`.
+- **Housekeeping?** Ask it to *lint* — or just run `vaultwright --root ~/my-business-vault lint`.
 - **Remember:** prefer consolidating into existing notes over creating new ones. See
   `docs/methodology.md` §4.
 - **Agent-readiness pilot?** Use `docs/AGENT_READINESS_BENCHMARK.md` and
-  `tools/vaultwright.py benchmark --init-tasks` to create a private task scaffold after sync, then
-  `tools/vaultwright.py benchmark --worksheet` to run the comparison, then
-  `tools/vaultwright.py benchmark --init-results` and
-  `tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml` to compare raw-source,
-  document-chat, and Vaultwright-markdown performance on the same questions. Add
+  `vaultwright --root ~/my-business-vault benchmark --init-tasks` to create a private task scaffold
+  after sync, then `vaultwright --root ~/my-business-vault benchmark --worksheet` to run the
+  comparison, then `vaultwright --root ~/my-business-vault benchmark --init-results` and
+  `vaultwright --root ~/my-business-vault benchmark --results _meta/agent-readiness-results.yml`
+  to compare raw-source, document-chat, and Vaultwright-markdown performance on the same questions. Add
   `--require-citations` and `--require-prompt-safety` when pilot results must prove source-backed
   answers and prompt-injection handling.
 - **Microsoft 365 handoff?** Use `docs/MICROSOFT_365_HANDOFF.md` and
-  `tools/vaultwright.py m365` to check whether the generated mirror/catalog layer is ready for a
-  governed SharePoint, OneDrive, Copilot Studio, or connector review.
+  `vaultwright --root ~/my-business-vault m365` to check whether the generated mirror/catalog layer
+  is ready for a governed SharePoint, OneDrive, Copilot Studio, or connector review.

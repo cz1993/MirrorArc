@@ -2385,6 +2385,9 @@ def test_packaged_vaultwright_cli_init_from_source_checkout(tmp_path: Path) -> N
     assert result.returncode == 0, result.stderr or result.stdout
     assert (target / "CLAUDE.md").exists()
     assert (target / "tools" / "vaultwright.py").exists()
+    assert f"vaultwright --root {target} doctor" in result.stdout
+    assert f"vaultwright --root {target} status --json" in result.stdout
+    assert "python3.11 tools/vaultwright.py" not in result.stdout
 
 
 def test_packaged_vaultwright_cli_init_from_packaged_template(tmp_path: Path) -> None:
@@ -2411,6 +2414,9 @@ def test_packaged_vaultwright_cli_init_from_packaged_template(tmp_path: Path) ->
     assert (target / "tools" / "review_ledger.py").exists()
     assert (target / "tools" / "sandbox_report.py").exists()
     assert (target / "tools" / "vaultwright.py").exists()
+    assert f"vaultwright --root {target} doctor" in result.stdout
+    assert f"vaultwright --root {target} sync --json" in result.stdout
+    assert "python3.11 tools/vaultwright.py" not in result.stdout
 
 
 def test_repos_example_has_no_active_placeholder_repo() -> None:

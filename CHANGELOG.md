@@ -15,6 +15,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added package-first `uvx`/`pipx` onboarding guidance and updated `vaultwright init` next-step
+  output to point beginners at the installed console command plus JSON pilot evidence checks.
 - Added structured top-level `--json` output for `vaultwright sync`, `vaultwright status`, and
   `vaultwright doctor`, with CI/release smoke coverage for pilot-ready machine-readable evidence.
 - Added journal schema metadata migration for older local state and non-failing diagnostic status

@@ -86,45 +86,64 @@ Finish-line matrix: [`docs/V1_FINISH_LINE.md`](docs/V1_FINISH_LINE.md).
 
 ## Quick start
 
+Create a vault without cloning Vaultwright itself. The installable command requires Python 3.11+;
+`uvx` and `pipx run` will build an isolated environment when they can find a compatible Python.
+Before the package is published to PyPI, use the Git URL:
+
 ```bash
-git clone <this-repo> vaultwright && cd vaultwright
-bash scripts/init.sh ~/my-business-vault     # scaffold the business-operations template
+uvx --from git+https://github.com/cz1993/vaultwright.git vaultwright init --profile business-operations ~/my-business-vault
+
+# or, with pipx:
+pipx run --spec git+https://github.com/cz1993/vaultwright.git vaultwright init --profile business-operations ~/my-business-vault
 ```
 
-Then open the vault in Obsidian, point your agent at it (it reads `CLAUDE.md` first), and:
+Once Vaultwright is published to PyPI, the equivalent short forms are
+`uvx vaultwright init --profile business-operations ~/my-business-vault` and
+`pipx run vaultwright init --profile business-operations ~/my-business-vault`.
+
+For repeated local use, install the console command once:
 
 ```bash
-cd ~/my-business-vault
-python3.11 -m pip install -r tools/requirements.txt  # markitdown + pyyaml
-python3.11 tools/vaultwright.py plan                 # inspect proposed mirror actions first
-python3.11 tools/vaultwright.py sync                 # mirror Office files and configured repos
-python3.11 tools/vaultwright.py status               # review manifest-backed lifecycle state
-python3.11 tools/vaultwright.py sync --json          # machine-readable sync evidence for agents/pilots
-python3.11 tools/vaultwright.py status --json        # machine-readable lifecycle status
-python3.11 tools/vaultwright.py doctor --json        # machine-readable preflight report
-python3.11 tools/vaultwright.py conversion --guide   # read-only conversion spot-check + guide
-python3.11 tools/vaultwright.py conversion --init-results # private quality review scaffold
-python3.11 tools/vaultwright.py conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
-python3.11 tools/vaultwright.py migration            # dry-run report for legacy/unknown folders
-python3.11 tools/vaultwright.py migration --runbook  # legacy folder move protocol
-python3.11 tools/vaultwright.py migration --normalize-frontmatter-domains --worksheet # review domain alias cleanup
-python3.11 tools/vaultwright.py recovery --worksheet # review manifest recovery actions
-python3.11 tools/vaultwright.py sandbox --source-root /path/to/original-documents
-python3.11 tools/vaultwright.py catalog              # generate CATALOG.md inventory gateway
-python3.11 tools/vaultwright.py catalog --html       # generate CATALOG.html visual inventory gateway
-python3.11 tools/vaultwright.py m365                 # Microsoft 365/Copilot handoff readiness
-python3.11 tools/vaultwright.py review --json        # summarize metadata-only human review decisions
-python3.11 tools/vaultwright.py overlap              # calibrate overlap thresholds without note bodies
-python3.11 tools/vaultwright.py pilot                # aggregate pilot evidence, no source content
-python3.11 tools/vaultwright.py pilot --worksheet    # redacted Markdown private-pilot summary
-python3.11 tools/vaultwright.py benchmark            # validate agent-readiness task pack, if present
-python3.11 tools/vaultwright.py benchmark --init-tasks    # create private task scaffold
-python3.11 tools/vaultwright.py benchmark --worksheet     # print private benchmark run sheet
-python3.11 tools/vaultwright.py benchmark --init-results  # create private result scaffold
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml --require-prompt-safety # after scoring
+uv tool install git+https://github.com/cz1993/vaultwright.git
+
+# or, with pipx:
+pipx install git+https://github.com/cz1993/vaultwright.git
+```
+
+Then open the vault in Obsidian if you want a human UI, point your agent at it (it reads
+`CLAUDE.md` first), and run the installed command from any folder:
+
+```bash
+vaultwright --root ~/my-business-vault doctor          # check dependencies and vault structure
+vaultwright --root ~/my-business-vault plan            # inspect proposed mirror actions first
+vaultwright --root ~/my-business-vault sync            # mirror Office files and configured repos
+vaultwright --root ~/my-business-vault status          # review manifest-backed lifecycle state
+vaultwright --root ~/my-business-vault sync --json     # machine-readable sync evidence for agents/pilots
+vaultwright --root ~/my-business-vault status --json   # machine-readable lifecycle status
+vaultwright --root ~/my-business-vault doctor --json   # machine-readable preflight report
+vaultwright --root ~/my-business-vault conversion --guide   # read-only conversion spot-check + guide
+vaultwright --root ~/my-business-vault conversion --init-results # private quality review scaffold
+vaultwright --root ~/my-business-vault conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
+vaultwright --root ~/my-business-vault migration       # dry-run report for legacy/unknown folders
+vaultwright --root ~/my-business-vault migration --runbook  # legacy folder move protocol
+vaultwright --root ~/my-business-vault migration --normalize-frontmatter-domains --worksheet # review domain alias cleanup
+vaultwright --root ~/my-business-vault recovery --worksheet # review manifest recovery actions
+vaultwright --root ~/my-business-vault sandbox --source-root /path/to/original-documents
+vaultwright --root ~/my-business-vault catalog         # generate CATALOG.md inventory gateway
+vaultwright --root ~/my-business-vault catalog --html  # generate CATALOG.html visual inventory gateway
+vaultwright --root ~/my-business-vault m365            # Microsoft 365/Copilot handoff readiness
+vaultwright --root ~/my-business-vault review --json   # summarize metadata-only human review decisions
+vaultwright --root ~/my-business-vault overlap         # calibrate overlap thresholds without note bodies
+vaultwright --root ~/my-business-vault pilot           # aggregate pilot evidence, no source content
+vaultwright --root ~/my-business-vault pilot --worksheet    # redacted Markdown private-pilot summary
+vaultwright --root ~/my-business-vault benchmark            # validate agent-readiness task pack, if present
+vaultwright --root ~/my-business-vault benchmark --init-tasks    # create private task scaffold
+vaultwright --root ~/my-business-vault benchmark --worksheet     # print private benchmark run sheet
+vaultwright --root ~/my-business-vault benchmark --init-results  # create private result scaffold
+vaultwright --root ~/my-business-vault benchmark --results _meta/agent-readiness-results.yml --require-prompt-safety # after scoring
 # edit tools/repos.yml, then:
-python3.11 tools/sync_github_repos.py                # mirror your GitHub repos
-python3.11 tools/vaultwright.py lint                 # health check
+vaultwright --root ~/my-business-vault sync           # mirror configured GitHub repos too
+vaultwright --root ~/my-business-vault lint           # health check
 ```
 
 Run `sandbox` from a duplicated pilot vault, not the original document folder. It is read-only and
@@ -135,9 +154,10 @@ Use `review` after spot-checking mirrors, catalogs, or handoff reports. It appen
 decisions to `_meta/review-ledger.jsonl` with artifact hashes, so later changes are reported as
 stale reviews instead of silently preserving old approvals.
 
-From a source checkout, the pre-release console entry point is also available:
+Source checkout fallback:
 
 ```bash
+git clone https://github.com/cz1993/vaultwright.git vaultwright && cd vaultwright
 python3.11 -m pip install -e .
 vaultwright profile list
 vaultwright init --profile business-operations ~/my-business-vault

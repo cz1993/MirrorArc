@@ -11,6 +11,7 @@ import contextlib
 import io
 import json
 import os
+import shlex
 import shutil
 import sys
 import time
@@ -358,7 +359,12 @@ def command_init(args: argparse.Namespace) -> int:
         scaffold_profile_vault(target, template, profile, _profile_path)
     print(f"Vaultwright vault created at: {target}")
     print(f"Profile: {profile.id} {profile.profile_version}")
-    print("Next: python3.11 tools/vaultwright.py doctor && python3.11 tools/vaultwright.py plan")
+    target_arg = shlex.quote(str(target))
+    print("Next (with an installed Vaultwright CLI):")
+    print(f"  vaultwright --root {target_arg} doctor")
+    print(f"  vaultwright --root {target_arg} plan")
+    print(f"  vaultwright --root {target_arg} sync --json")
+    print(f"  vaultwright --root {target_arg} status --json")
     return 0
 
 

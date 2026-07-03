@@ -737,6 +737,10 @@ def test_profile_cli_initializes_and_validates_current_profile(tmp_path: Path) -
     init = run_cli("init", "--profile", "business-operations", str(vault))
     assert init.returncode == 0, init.stderr
     assert "Profile: business-operations 0.1.0" in init.stdout
+    assert "Next (with an installed Vaultwright CLI):" in init.stdout
+    assert f"vaultwright --root {vault} doctor" in init.stdout
+    assert f"vaultwright --root {vault} sync --json" in init.stdout
+    assert "python3.11 tools/vaultwright.py" not in init.stdout
 
     validation = run_cli("--root", str(vault), "profile", "validate")
     assert validation.returncode == 0, validation.stderr

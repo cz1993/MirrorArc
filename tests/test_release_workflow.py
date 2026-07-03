@@ -13,6 +13,27 @@ RELEASE_DOC = ROOT / "docs" / "RELEASE.md"
 PYPROJECT = ROOT / "pyproject.toml"
 
 
+def test_docs_pin_package_first_onboarding_commands() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    quickstart = (ROOT / "docs" / "quickstart.md").read_text(encoding="utf-8")
+
+    for text in (readme, quickstart):
+        assert "Python 3.11+" in text
+        assert (
+            "uvx --from git+https://github.com/cz1993/vaultwright.git vaultwright init "
+            "--profile business-operations ~/my-business-vault"
+        ) in text
+        assert (
+            "pipx run --spec git+https://github.com/cz1993/vaultwright.git vaultwright init "
+            "--profile business-operations ~/my-business-vault"
+        ) in text
+        assert "uvx vaultwright init --profile business-operations ~/my-business-vault" in text
+        assert "pipx run vaultwright init --profile business-operations ~/my-business-vault" in text
+        assert "uv tool install git+https://github.com/cz1993/vaultwright.git" in text
+        assert "pipx install git+https://github.com/cz1993/vaultwright.git" in text
+        assert "git clone https://github.com/cz1993/vaultwright.git vaultwright" in text
+
+
 def test_release_workflow_is_tag_only_and_draft_prerelease() -> None:
     text = RELEASE_WORKFLOW.read_text(encoding="utf-8")
 
