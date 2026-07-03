@@ -2930,6 +2930,9 @@ def test_vaultwright_pilot_report_summarizes_evidence_without_content(tmp_path: 
     assert "Benchmark tasks: available=True tasks=5" in worksheet_result.stdout
     assert "Benchmark prompt safety: reviewed=1 violations=0 missing=0" in worksheet_result.stdout
     assert "Review ledger: available=True reviewed=1 stale_or_missing=0 non_approved=1" in worksheet_result.stdout
+    assert "## Design Partner Success Matrix" in worksheet_result.stdout
+    assert "participant reran sync without help" in worksheet_result.stdout.lower()
+    assert "Agent-readiness: all task/mode scores recorded with citations" in worksheet_result.stdout
     assert "Baseline time to answer fixed questions" in worksheet_result.stdout
     assert "confidential source bytes" not in worksheet_result.stdout
     assert "Generated mirror text" not in worksheet_result.stdout
@@ -3087,6 +3090,8 @@ def test_packaged_pilot_does_not_require_vault_wrapper_or_local_reports(tmp_path
     assert "client identifiers" not in worksheet.stdout
     assert "Benchmark tasks: available=True tasks=5" in worksheet.stdout
     assert "Review ledger: available=True reviewed=1 stale_or_missing=0 non_approved=1" in worksheet.stdout
+    assert "## Design Partner Success Matrix" in worksheet.stdout
+    assert "participant reran sync without help" in worksheet.stdout.lower()
     assert "40_delivery/client-plan.docx" not in worksheet.stdout
     assert "_mirrors/40_delivery/client-plan.md" not in worksheet.stdout
 

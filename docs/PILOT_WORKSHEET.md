@@ -11,6 +11,8 @@ and the owner has approved publication.
 - Date range:
 - Corpus boundary:
 - Source copy location:
+- Pilot vault path (`VW`):
+- Original source root used for sandbox preflight:
 - Cloud AI providers used, if any:
 - Data handling constraints:
 
@@ -65,32 +67,44 @@ source paths, source text, mirror text, answer text, reviewer notes, and protect
 
 ## Run Log
 
-Record command results and elapsed time:
+Record command results and elapsed time. Use the installed package command when possible:
 
 ```bash
-python3.11 tools/vaultwright.py doctor
-python3.11 tools/vaultwright.py plan
-python3.11 tools/vaultwright.py sync
-python3.11 tools/vaultwright.py status
-python3.11 tools/vaultwright.py catalog
-python3.11 tools/vaultwright.py catalog --html
-python3.11 tools/vaultwright.py conversion --guide
-python3.11 tools/vaultwright.py conversion --init-results
-python3.11 tools/vaultwright.py conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
-python3.11 tools/vaultwright.py recovery
-python3.11 tools/vaultwright.py overlap
-python3.11 tools/vaultwright.py overlap --worksheet
-python3.11 tools/vaultwright.py m365
-python3.11 tools/vaultwright.py review --json
-python3.11 tools/vaultwright.py pilot --json
-python3.11 tools/vaultwright.py pilot --worksheet
-python3.11 tools/vaultwright.py benchmark --init-tasks
-python3.11 tools/vaultwright.py benchmark --worksheet
-python3.11 tools/vaultwright.py benchmark --require-generated
-python3.11 tools/vaultwright.py benchmark --init-results
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml --require-results
-python3.11 tools/vaultwright.py lint
+export VW="/path/to/copied-pilot-vault"
+vaultwright --root "$VW" sandbox --source-root /path/to/original-documents
+vaultwright --root "$VW" doctor
+vaultwright --root "$VW" doctor --json
+vaultwright --root "$VW" plan
+vaultwright --root "$VW" sync
+vaultwright --root "$VW" sync --json
+vaultwright --root "$VW" status
+vaultwright --root "$VW" status --json
+vaultwright --root "$VW" catalog
+vaultwright --root "$VW" catalog --html
+vaultwright --root "$VW" conversion --guide
+vaultwright --root "$VW" conversion --init-results
+vaultwright --root "$VW" conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
+vaultwright --root "$VW" recovery
+vaultwright --root "$VW" overlap
+vaultwright --root "$VW" overlap --worksheet
+vaultwright --root "$VW" m365
+vaultwright --root "$VW" review --json
+vaultwright --root "$VW" benchmark --init-tasks
+vaultwright --root "$VW" benchmark --worksheet
+vaultwright --root "$VW" benchmark --require-generated
+vaultwright --root "$VW" benchmark --init-results
+vaultwright --root "$VW" benchmark \
+  --results _meta/agent-readiness-results.yml \
+  --require-results \
+  --require-citations \
+  --require-prompt-safety
+vaultwright --root "$VW" pilot --json
+vaultwright --root "$VW" pilot --worksheet
+vaultwright --root "$VW" lint
 ```
+
+If the installed command is not available, run the same commands from inside the copied vault with
+`python3.11 tools/vaultwright.py`.
 
 ## Review Results
 
@@ -126,12 +140,24 @@ reviewed for source text, personal data, protected names, answer text, and revie
 | --- | ---: | ---: | ---: | --- | --- |
 | | | | | | |
 
+## Success Matrix
+
+| Gate | Evidence captured | Pass? | Follow-up |
+| --- | --- | --- | --- |
+| Copy-boundary preflight completed before first sync | | | |
+| First sync, status, catalog, and HTML catalog completed | | | |
+| High-priority conversion/recovery blockers resolved or documented | | | |
+| Agent-readiness result pack passes strict result, citation, and prompt-safety validation | | | |
+| Participant reran sync without help and no unexpected lifecycle regressions appeared | | | |
+| Participant returned within one week or gave a clear stop reason | | | |
+
 ## Outcome
 
 - Time to answer fixed questions before Vaultwright:
 - Time to answer fixed questions after Vaultwright:
 - Operator confidence score:
 - Support time required:
+- Participant ran second sync without help:
 - Participant returned after one week:
 - Issues found:
 - Product changes requested:
