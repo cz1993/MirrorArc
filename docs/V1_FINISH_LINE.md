@@ -20,10 +20,10 @@ required migration. New ideas that do not map here move to the post-v1 backlog.
 | 1A. Kernel and profile convergence | Runtime logic moves into `src/vaultwright/`; vault-local scripts become compatibility shims; profile/core schemas exist; generated mirrors become machine-owned with annotation migration; remaining profile assumptions are enumerated and either profile-owned, legacy compatibility, tests, or universal invariants | Package owns behavior; tests prove source integrity, idempotency, lifecycle, recovery, migration, profile validation, mirror annotation, and safety | Complete |
 | 1B. Journaled changed-file materialization | Durable local journal, source-addressable materialization, event coalescing, metadata-first fingerprints, replay, reconciliation, lock/lease safety, and full-sync recovery path exist | One changed source avoids whole-vault steady-state hashing/conversion; missed/interrupted work recovers; benchmark records paths/files/bytes/conversions/events; focused, affected, full-suite, packaging, lint, no-data, template-copy, shell syntax, diff, and residue gates pass | Complete |
 | 2. Official profiles | `business-operations`, `research-learning`, `software-project`, and `blank` initialize from the same core package | Profile fixtures pass identical lifecycle and no-data gates; no core hard-coding of profile folders/types/statuses | Complete |
-| 3. Obsidian adapter and skills | Obsidian integration stays optional; governance skills and profile-aware Bases/Canvas outputs exist | Generated `.base` and `.canvas` artifacts pass syntax/integrity tests; core tests pass without Obsidian | Paused behind Stage 2 |
-| 4. Evidence index and exploration gate | Local SQLite/FTS graph index, `index build`, `index status`, `explore`, MCP exploration tool, and benchmark comparison exist; the index consumes applied journal events rather than its own watcher | Deletion/rebuild equivalence, provenance on every result, no cross-workspace retrieval, and material benchmark improvement | Not started |
-| 5. Explorer and context builder | Only if Stage 4 passes: local read-only Explorer and context pack export | Explorer reads shared profile/journal/index model; no UI-only business logic; accessibility and browser checks pass | Conditional |
-| 6. External validation and v1 release | Three structured pilots complete; release artifact installs and upgrades; limitations and support boundaries are published | Business-operations, research-learning, and software-project pilots all produce measured improvements and source-backed handoffs, including baseline, changed-file sync, downtime/reconciliation, recovery, and handoff evidence | Not started |
+| 3. External validation and pilot proof | At least one real external corpus goes through the package-owned pipeline before any adapter, index, Explorer, or visualization expansion | Baseline, changed-file sync, downtime/reconciliation, recovery, catalog/front-door, benchmark, and handoff evidence are recorded against a source-backed corpus outside the maintainer's fixtures | Not started |
+| 4. Obsidian adapter and skills | Only after Stage 3 evidence: Obsidian integration stays optional; governance skills and profile-aware Bases/Canvas outputs exist | Generated `.base` and `.canvas` artifacts pass syntax/integrity tests; core tests pass without Obsidian; adapter work addresses validated pilot pain | Deferred behind Stage 3 |
+| 5. Evidence index and exploration gate | Only after Stage 3 evidence: local SQLite/FTS graph index, `index build`, `index status`, `explore`, MCP exploration tool, and benchmark comparison exist; the index consumes applied journal events rather than its own watcher | Deletion/rebuild equivalence, provenance on every result, no cross-workspace retrieval, and material benchmark improvement over plain mirror/catalog workflows | Conditional |
+| 6. Explorer and context builder | Only if Stage 5 passes: local read-only Explorer and context pack export | Explorer reads shared profile/journal/index model; no UI-only business logic; accessibility and browser checks pass | Conditional |
 
 ## Mandatory V1 Core Finish Line
 
@@ -34,10 +34,10 @@ required migration. New ideas that do not map here move to the post-v1 backlog.
 | V1-C3 | Three official content profiles plus a blank starter | Existing template approximates `business-operations`; government-services example exercises that profile shape; package-owned `research-learning`, `software-project`, and `blank` profile contracts now validate and are exposed through `vaultwright profile list/show`; package-owned profile scaffolding initializes `research-learning`, `software-project`, and `blank` with profile-derived folders, generated scaffold docs, matching `_meta/domain-map.yml`, profile-specific note templates, and shared tool shims while preserving the `business-operations` compatibility template; focused tests run profile validation, lint, generated-view checks, no-real-data policy checks, and synthetic Office-source lifecycle/sync/status checks for all four official profiles | Closed for Stage 2; richer profile-specific generated views, skills, benchmark packs, and external pilots stay in their later gated stages | 2 |
 | V1-C4 | Safe migration path from current business template | Migration reports and frontmatter domain normalization now use profile-defined canonical domains while retaining domain-map aliases; package-owned `profile migrate --plan` and conservative `profile migrate --write` exist; write mode creates missing shared, target Office mirror-root, and `folder_plan` directories and copies missing packaged profile/template files without overwriting sources, mirrors, or drifted existing files | Closed for Stage 1A; broader workspace/profile migration coverage expands with later profile work | 1 |
 | V1-C5 | Machine-owned mirrors with preserved human annotations | Package-owned `migrate annotations --plan` and `--write` preserve legacy mirror notes/frontmatter into `_meta/mirror-annotations/` sidecars keyed by source/repo ID; fresh mirrors use machine-owned headers without a curated `## Notes` region; Office/repo sync blocks unmigrated above-sentinel annotations as force-blocking review work and rewrites migrated mirrors as machine-owned when a matching sidecar exists; lint blocks unmigrated mirror annotations | Closed for Stage 1; keep compatibility tests and recovery guidance current while broader migration UX evolves | 1 |
-| V1-C6 | Obsidian adapter and first-party governance skill pack | Template ships Obsidian-compatible Markdown, Bases, and CLAUDE guidance | Need `vaultwright obsidian doctor`, tested skill install guidance, and Vaultwright-specific governance skills | 3 |
-| V1-C7 | Profile-aware catalogs, Bases, and Canvas outputs | `vaultwright catalog` emits Markdown/HTML inventory from manifests; `vaultwright profile views --check/--write` generates the profile-owned `Documents.base` file from `_meta/profile.yml`, and CI smoke tests check it for source and wheel installs | Need richer profile-specific Base presets plus generated Canvas recipes | 3 |
-| V1-C8 | Three external profile pilots | Dogfood copy and government-services example provide internal evidence; benchmark and pilot reporting can now discover profile-declared benchmark task packs | Need one structured external pilot each for business-operations, research-learning, and software-project | 6 |
-| V1-C9 | Tagged v1 release with upgrade, recovery, security, and support docs | Recovery, security, release, and design-partner docs exist | Need profile-aware upgrade/recovery docs, release artifact validation, and published known limitations | 6 |
+| V1-C6 | Obsidian adapter and first-party governance skill pack | Template ships Obsidian-compatible Markdown, Bases, and CLAUDE guidance | Need Stage 3 pilot evidence before committing adapter scope, then `vaultwright obsidian doctor`, tested skill install guidance, and Vaultwright-specific governance skills | 4 |
+| V1-C7 | Profile-aware catalogs, Bases, and Canvas outputs | `vaultwright catalog` emits Markdown/HTML inventory from manifests; `vaultwright profile views --check/--write` generates the profile-owned `Documents.base` file from `_meta/profile.yml`, and CI smoke tests check it for source and wheel installs | Need Stage 3 pilot evidence before richer profile-specific Base presets plus generated Canvas recipes | 4 |
+| V1-C8 | Three external profile pilots | Dogfood copy and government-services example provide internal evidence; benchmark and pilot reporting can now discover profile-declared benchmark task packs | Need one structured external pilot each for business-operations, research-learning, and software-project; run the first external corpus before Stage 4-6 expansion | 3 |
+| V1-C9 | Tagged v1 release with upgrade, recovery, security, and support docs | Recovery, security, release, and design-partner docs exist | Need profile-aware upgrade/recovery docs, release artifact validation, published known limitations, and pilot evidence | 3 |
 | V1-C10 | Journaled changed-file materialization | ADR 0002 defines authority boundaries, local derived-state journal semantics, event states, metadata fingerprints, debounce/stability, replay, reconciliation, locking, security, model boundary, adoption, rollback, and benchmark evidence requirements; the canonical white paper and supporting docs now make full sync the baseline/recovery path and journaled materialization the Stage 1B steady-state target. Package-owned `vaultwright.changes` modules now initialize `.vaultwright/state.sqlite`, persist journal events and state transitions, expose `vaultwright journal status`, keep local derived state ignored while staged commits are blocked by the no-data scan, provide deterministic static-feed queueing behind a feed interface, filter generated/local/operational/temp paths before queueing, coalesce repeated events for the same path, compute cheap metadata fingerprints before optional full hashing, support workspace leases, stale-lease recovery, transactional event claims, claimed-event finish checkpoints, failed-event retry, recovery of interrupted `processing` events, expose a source-addressable Office materialization primitive that reuses the existing mirror engine for one vault-relative source, provide deterministic file-stability settling before conversion, process claimed current-path Office events through a lease-protected worker primitive, apply manifest-backed deleted events as `source_missing` while retaining generated mirrors, replay resolved `source_moved` records after old mirror cleanup, replay delete/recreate back to `clean`, replay recoverable journal work idempotently with `vaultwright journal replay`, queue missed source/manifest work through explicit `vaultwright reconcile`, expose `vaultwright sync --changed` plus explicit `vaultwright sync --full`, expose `vaultwright watch --once` for deterministic startup reconciliation, feed queueing, and replay, expose optional watchdog-backed `vaultwright watch --native` capture over configured content roots, record synthetic benchmark evidence in `docs/JOURNALED_MATERIALIZATION_BENCHMARK.md`, and pass the focused, affected, full-suite, packaging, lint, no-data, template-copy, shell syntax, diff, and residue gates. | Closed for Stage 1B; keep full sync as recovery and keep later profile/index/adapter work gated | 1B |
 
 Stage 1 V1-C2 note: `vaultwright lint` now matches the profile-contract-first posture used by
@@ -79,14 +79,15 @@ context, or status constants.
 
 ## Conditional V1 Explorer Finish Line
 
-Stage 4 decides whether these stay in v1 or move to post-v1. Do not build a visual Explorer before
-the index has benchmark evidence.
+Stage 5 decides whether these stay in v1 or move to post-v1. Do not build a local index,
+exploration interface, or visual Explorer before Stage 3 external evidence shows the core mirror,
+catalog, and benchmark workflow is worth extending.
 
 | ID | Requirement | Gate Evidence | Stage |
 | --- | --- | --- | --- |
-| V1-E10 | Disposable local evidence index | SQLite/FTS index rebuilds equivalently, stores graph edges with provenance, and never becomes authoritative | 4 |
-| V1-E11 | Exploration CLI/MCP interface | `vaultwright explore` and `vaultwright_explore` return bounded context with lifecycle, review, provenance, token estimate, and prompt-safety guidance | 4 |
-| V1-E12 | Read-only visual Explorer with context export | Localhost-only Explorer reads shared profile/index model and exports Markdown/JSON context packs | 5 |
+| V1-E10 | Disposable local evidence index | SQLite/FTS index rebuilds equivalently, stores graph edges with provenance, and never becomes authoritative | 5 |
+| V1-E11 | Exploration CLI/MCP interface | `vaultwright explore` and `vaultwright_explore` return bounded context with lifecycle, review, provenance, token estimate, and prompt-safety guidance | 5 |
+| V1-E12 | Read-only visual Explorer with context export | Localhost-only Explorer reads shared profile/index model and exports Markdown/JSON context packs | 6 |
 
 ## Open Work Mapping
 
@@ -97,12 +98,12 @@ the index has benchmark evidence.
 | Current business template and examples | V1-C3, V1-C4 | Treat as `business-operations`; migrate rather than fork |
 | Above-sentinel notes in generated mirrors | V1-C5 | Preserve first with `migrate annotations --write`; sync blocks unmigrated mirror annotations, fresh mirrors are machine-owned, and sidecar-aware sync makes migrated mirrors machine-owned on the next regeneration |
 | Repeated whole-corpus steady-state sync cost | V1-C10 | Closed for Stage 1B by the journaled changed-file path and benchmark evidence; keep full sync as the recovery path and refresh measurements before later release claims |
-| Obsidian Bases and future Canvas outputs | V1-C6, V1-C7 | Adapter only; `profile views --check` keeps generated Bases testable without Obsidian, and Canvas remains open |
-| Agent-readiness benchmark | V1-C8, V1-E10, V1-E11 | Keep benchmark task packs profile-declared, keep generated mirror evidence rooted in the active Office mirror root, and use measured results from later profile pilots before deciding the Stage 4 Explorer gate |
-| Catalog JSON/Markdown/HTML | V1-C1, V1-C7, V1-E12 | Package-owned `vaultwright catalog` is now the shared view-model path; continue preserving it, but do not broaden UI work before the later profile/index gates |
+| Obsidian Bases and future Canvas outputs | V1-C6, V1-C7 | Adapter only; `profile views --check` keeps generated Bases testable without Obsidian, and Canvas waits for Stage 3 pilot evidence |
+| Agent-readiness benchmark | V1-C8, V1-E10, V1-E11 | Keep benchmark task packs profile-declared, keep generated mirror evidence rooted in the active Office mirror root, and run measured external-corpus comparisons before deciding the Stage 5 index/Explorer gate |
+| Catalog JSON/Markdown/HTML | V1-C1, V1-C7, V1-E12 | Package-owned `vaultwright catalog` is now the shared front-door path for non-Obsidian users; continue preserving it, but do not broaden UI work before Stage 3 external validation |
 | Microsoft 365/Copilot handoff | V1-C9 | Keep as support/deployment documentation, not an enterprise taxonomy profile |
-| Local evidence index | V1-E10 | Build after profile/core schema groundwork; no vector DB by default |
-| Visual Explorer | V1-E12 | Build only if Stage 4 benchmark gate passes |
+| Local evidence index | V1-E10 | Build only after Stage 3 external validation shows mirror/catalog workflows need an index; no vector DB by default |
+| Visual Explorer | V1-E12 | Build only if the Stage 5 benchmark gate passes |
 
 ## Command Surface Rule
 
@@ -135,6 +136,10 @@ Existing report commands may remain while they are release-critical compatibilit
 standalone report commands are not allowed unless they replace existing behavior or map directly to
 a finish-line requirement above.
 
+Current command surface is frozen. Report, handoff, calibration, pilot, sandbox, and scaffold
+surfaces that are not part of the stable core must be marked experimental in help output and
+deprecated before removal rather than silently changed.
+
 Current Stage 2 command status: `init --profile business-operations`,
 `init --profile research-learning`, `init --profile software-project`, `init --profile blank`, `profile list`,
 `profile show`, `profile validate`, `profile diff`, read-only `profile migrate --plan`,
@@ -144,6 +149,8 @@ conservative `profile migrate --write`, `profile views --check`, `profile views 
 `recovery`, and `review` are implemented against package-owned runtime. Copied vault-local sync,
 lint, catalog, conversion, m365, migration, overlap, benchmark, pilot, sandbox, recovery,
 review-ledger, and operator-wrapper tools are compatibility shims.
+`conversion`, `m365`, `overlap`, `pilot`, `sandbox`, and benchmark scaffold/worksheet helpers are
+experimental review-plan surfaces.
 Sidecar-aware Office/repo sync rewrites migrated mirrors as machine-owned on regeneration; fresh
 mirrors are machine-owned; sync and lint block unmigrated mirror annotations.
 `journal status` exists for local derived-state introspection only. `journal replay` exists for
@@ -151,8 +158,8 @@ idempotent recovery of interrupted processing events and explicit failed-event r
 exists for explicit source/manifest repair queueing. `sync --changed` now composes reconcile and
 replay; `sync --full` names the existing full sync recovery path explicitly. `watch --once` exists
 for deterministic startup reconciliation/feed queueing/replay, and `watch --native` exists as an
-optional watchdog-backed capture loop. `index` and `explore` remain gated future work after the
-official-profile and Obsidian gates.
+optional watchdog-backed capture loop. `index` and `explore` remain gated future work after Stage 3
+external validation and the Stage 5 benchmark gate.
 
 ## Post-V1 Backlog
 

@@ -8,6 +8,10 @@ original records. The canonical v1 direction now adds journaled changed-file mat
 after an initial baseline, normal steady-state refresh should process event-identified candidate
 sources, while full sync remains the recovery and verification path.
 
+Current execution order is validation-first: run a real external corpus through the core mirror,
+catalog, benchmark, recovery, and handoff flow before expanding Obsidian adapters, local indexes,
+Explorer, or visualization surfaces.
+
 The first paid workflow remains consulting and implementation work, but the v1 architecture is no
 longer a single business-operations folder template. The accepted v1 direction is documented in
 [`docs/adr/0001-profile-driven-v1-architecture.md`](adr/0001-profile-driven-v1-architecture.md)
@@ -49,7 +53,8 @@ Initial target corpus:
 - 50 to 2,000 source files.
 - Office files, PDFs, markdown, plain text, spreadsheets, decks, and small repositories.
 - Single-client or single-engagement workspace.
-- Local filesystem source; cloud-synced folders are acceptable only when files are pinned locally.
+- Local filesystem source; cloud-synced or mounted/network folders are acceptable only when files
+  are pinned locally, backed up, and checked with `vaultwright doctor` before production sync.
 
 Out of scope for the first release:
 

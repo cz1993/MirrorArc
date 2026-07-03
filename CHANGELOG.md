@@ -6,11 +6,18 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 ## [Unreleased]
 
 ### Changed
+- Pulled external corpus validation ahead of Obsidian adapter, evidence-index, Explorer, and
+  visualization work in the controlling v1 docs.
+- Marked experimental report/scaffold command surfaces in CLI help while preserving compatibility
+  commands.
 - Clarified the whitepaper's mirror-layer wording: Vaultwright mirrors are manifest-backed,
   deterministic Markdown materializations with journaled incremental refresh, not simple Markdown
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added journal schema metadata migration for older local state and non-failing diagnostic status
+  output for future local journal schemas.
+- Added doctor warnings for vaults located under cloud-synced or mounted/network-style storage.
 - Closed the Stage 2 V1-C3 official-profile gate: `vaultwright init --profile` now scaffolds
   `business-operations`, `research-learning`, `software-project`, and `blank` from the package,
   with non-business profile folders, generated scaffold docs, matching domain maps, and

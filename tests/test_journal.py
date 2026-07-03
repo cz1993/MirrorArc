@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import sqlite3
 import subprocess
 import sys
 
@@ -111,6 +112,38 @@ def test_journal_cli_status_init_creates_state(tmp_path: Path) -> None:
     assert payload["initialized"] is True
     assert payload["schema_version"] == 1
     assert (tmp_path / ".vaultwright" / "state.sqlite").exists()
+
+
+def test_journal_status_migrates_older_schema_metadata(tmp_path: Path) -> None:
+    journal.initialize(tmp_path)
+    with sqlite3.connect(tmp_path / ".vaultwright" / "state.sqlite") as conn:
+        conn.execute("UPDATE journal_meta SET value = '0' WHERE key = 'schema_version'")
+
+    payload = journal.journal_status(tmp_path)
+
+    assert payload["schema_supported"] is True
+    assert payload["schema_version"] == 1
+    assert payload["warnings"] == []
+
+
+def test_journal_status_reports_future_schema_without_hard_error(tmp_path: Path) -> None:
+    journal.initialize(tmp_path)
+    with sqlite3.connect(tmp_path / ".vaultwright" / "state.sqlite") as conn:
+        conn.execute("UPDATE journal_meta SET value = '999' WHERE key = 'schema_version'")
+
+    payload = journal.journal_status(tmp_path)
+    result = run_cli(tmp_path, "journal", "status", "--json")
+
+    assert payload["initialized"] is True
+    assert payload["schema_supported"] is False
+    assert payload["schema_version"] == 999
+    assert "newer than this Vaultwright supports" in payload["warnings"][0]
+    assert result.returncode == 0, result.stderr
+    cli_payload = json.loads(result.stdout)
+    assert cli_payload["schema_supported"] is False
+    assert cli_payload["schema_version"] == 999
+    with pytest.raises(journal.JournalSchemaError):
+        journal.record_event(tmp_path, "modified", current_path="10_sources/source-001.docx")
 
 
 def test_worker_lease_allows_one_active_holder_and_release(tmp_path: Path) -> None:

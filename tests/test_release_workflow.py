@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-import tomllib
+import os
+import subprocess
+import sys
 from pathlib import Path
+import tomllib
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,6 +49,43 @@ def test_workflows_use_current_action_majors() -> None:
     assert "actions/setup-python@v5" not in combined
     assert "actions/upload-artifact@v4" not in combined
     assert "actions/download-artifact@v4" not in combined
+
+
+def test_cli_help_marks_review_plan_experimental_surfaces() -> None:
+    env = os.environ.copy()
+    src_path = str(ROOT / "src")
+    env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
+    result = subprocess.run(
+        [sys.executable, "-m", "vaultwright.cli", "--help"],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    benchmark = subprocess.run(
+        [sys.executable, "-m", "vaultwright.cli", "benchmark", "--help"],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert benchmark.returncode == 0, benchmark.stderr
+    help_text = " ".join(result.stdout.split())
+    benchmark_help = " ".join(benchmark.stdout.split())
+    for command in ("overlap", "conversion", "pilot", "m365", "sandbox"):
+        assert command in result.stdout
+    assert "[experimental] Print a read-only overlap threshold calibration report." in help_text
+    assert "[experimental] Print a read-only conversion spot-check report." in help_text
+    assert "[experimental] Print a read-only design-partner pilot evidence report." in help_text
+    assert "[experimental] Print a read-only Microsoft 365/Copilot handoff report." in help_text
+    assert "[experimental] Print a read-only copied-vault sandbox readiness report." in help_text
+    assert "experimental scaffold helpers remain unstable" in help_text
+    assert "[experimental] Create a private benchmark task scaffold." in benchmark_help
+    assert "[experimental] Print a private benchmark run worksheet." in benchmark_help
 
 
 def test_release_workflow_verifies_built_wheel_before_release() -> None:

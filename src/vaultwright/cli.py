@@ -48,6 +48,10 @@ from vaultwright.views import profile_views_plan, write_profile_views
 BUILTIN_PROFILE_DIR = Path(__file__).resolve().parent / "builtin_profiles"
 
 
+def experimental_help(text: str) -> str:
+    return f"[experimental] {text}"
+
+
 def template_source() -> Path | None:
     env_root = os.environ.get("VAULTWRIGHT_REPO")
     candidates = []
@@ -733,6 +737,13 @@ def command_journal_status(args: argparse.Namespace) -> int:
         return 0
     print(f"vaultwright journal status: {payload['state_path']}")
     print(f"state: {'initialized' if payload['initialized'] else 'not initialized'}")
+    schema = payload.get("schema_version")
+    schema_text = str(schema) if schema is not None else "unknown"
+    if not payload.get("schema_supported", True):
+        schema_text += " (unsupported by this Vaultwright)"
+    print(f"schema: {schema_text}")
+    for warning in payload.get("warnings", []):
+        print(f"warning: {warning}")
     print(f"last event sequence: {payload['last_event_sequence']}")
     print(f"last observed sequence: {payload['last_observed_sequence']}")
     print(f"last applied sequence: {payload['last_applied_sequence']}")
@@ -1012,21 +1023,46 @@ def build_parser() -> argparse.ArgumentParser:
     reconcile.set_defaults(func=command_reconcile)
     sub.add_parser("doctor", help="Check required files, Python version, and dependencies.").set_defaults(func=command_doctor)
     sub.add_parser("lint", help="Run vault health checks.").set_defaults(func=command_lint)
-    overlap = sub.add_parser("overlap", help="Print a read-only overlap threshold calibration report.")
+    overlap = sub.add_parser("overlap", help=experimental_help("Print a read-only overlap threshold calibration report."))
     overlap_output = overlap.add_mutually_exclusive_group()
     overlap_output.add_argument("--json", action="store_true", help="Print machine-readable overlap calibration JSON.")
     overlap_output.add_argument("--worksheet", action="store_true", help="Print a Markdown calibration worksheet.")
     overlap.add_argument("--max-pairs", type=int, default=40, help="Maximum current/near-miss pairs to print.")
     overlap.set_defaults(func=command_overlap)
-    benchmark = sub.add_parser("benchmark", help="Validate the agent-readiness benchmark task pack and optional result pack.")
+    benchmark = sub.add_parser(
+        "benchmark",
+        help="Validate the agent-readiness benchmark task pack; experimental scaffold helpers remain unstable.",
+    )
     benchmark.add_argument("--tasks", type=Path, help="Task pack path relative to the vault root.")
     benchmark.add_argument("--results", type=Path, help="Optional benchmark results path relative to the vault root.")
-    benchmark.add_argument("--init-tasks", action="store_true", help="Create a private benchmark task scaffold.")
-    benchmark.add_argument("--init-results", action="store_true", help="Create a private benchmark result scaffold.")
+    benchmark.add_argument(
+        "--init-tasks",
+        action="store_true",
+        help=experimental_help("Create a private benchmark task scaffold."),
+    )
+    benchmark.add_argument(
+        "--init-results",
+        action="store_true",
+        help=experimental_help("Create a private benchmark result scaffold."),
+    )
     benchmark.add_argument("--force", action="store_true", help="Overwrite an existing task or result scaffold.")
-    benchmark.add_argument("--scaffold-sources", type=int, default=5, help="Maximum source/mirror pairs for --init-tasks.")
-    benchmark.add_argument("--scaffold-curated", type=int, default=5, help="Maximum curated markdown notes for --init-tasks.")
-    benchmark.add_argument("--worksheet", action="store_true", help="Print a private benchmark run worksheet.")
+    benchmark.add_argument(
+        "--scaffold-sources",
+        type=int,
+        default=5,
+        help=experimental_help("Maximum source/mirror pairs for --init-tasks."),
+    )
+    benchmark.add_argument(
+        "--scaffold-curated",
+        type=int,
+        default=5,
+        help=experimental_help("Maximum curated markdown notes for --init-tasks."),
+    )
+    benchmark.add_argument(
+        "--worksheet",
+        action="store_true",
+        help=experimental_help("Print a private benchmark run worksheet."),
+    )
     benchmark.add_argument("--require-generated", action="store_true", help="Require generated mirror paths to exist.")
     benchmark.add_argument("--require-results", action="store_true", help="Require benchmark results for every task/mode pair.")
     benchmark.add_argument(
@@ -1041,7 +1077,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     benchmark.add_argument("--json", action="store_true", help="Print machine-readable benchmark JSON.")
     benchmark.set_defaults(func=command_benchmark)
-    conversion = sub.add_parser("conversion", help="Print a read-only conversion spot-check report.")
+    conversion = sub.add_parser(
+        "conversion",
+        help=experimental_help("Print a read-only conversion spot-check report."),
+    )
     conversion.add_argument("--json", action="store_true", help="Print machine-readable conversion JSON.")
     conversion.add_argument("--guide", action="store_true", help="Append an operator conversion-review checklist.")
     conversion.add_argument("--results", type=Path, help="Validate a metadata-only conversion quality result pack.")
@@ -1075,7 +1114,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="With --normalize-frontmatter-domains, rewrite known frontmatter domain aliases. Does not move files.",
     )
     migration.set_defaults(func=command_migration)
-    pilot = sub.add_parser("pilot", help="Print a read-only design-partner pilot evidence report.")
+    pilot = sub.add_parser("pilot", help=experimental_help("Print a read-only design-partner pilot evidence report."))
     pilot_output = pilot.add_mutually_exclusive_group()
     pilot_output.add_argument("--json", action="store_true", help="Print machine-readable pilot JSON.")
     pilot_output.add_argument(
@@ -1090,7 +1129,7 @@ def build_parser() -> argparse.ArgumentParser:
     recovery_output.add_argument("--worksheet", action="store_true", help="Print a Markdown recovery review worksheet.")
     recovery_output.add_argument("--runbook", action="store_true", help="Print a Markdown recovery resolution runbook.")
     recovery.set_defaults(func=command_recovery)
-    m365 = sub.add_parser("m365", help="Print a read-only Microsoft 365/Copilot handoff report.")
+    m365 = sub.add_parser("m365", help=experimental_help("Print a read-only Microsoft 365/Copilot handoff report."))
     m365.add_argument("--json", action="store_true", help="Print machine-readable handoff JSON.")
     m365.set_defaults(func=command_m365)
     review = sub.add_parser("review", help="Record or summarize metadata-only artifact review decisions.")
@@ -1120,7 +1159,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum source/repo records to list per catalog section; use 0 for no limit.",
     )
     catalog.set_defaults(func=command_catalog)
-    sandbox = sub.add_parser("sandbox", help="Print a read-only copied-vault sandbox readiness report.")
+    sandbox = sub.add_parser("sandbox", help=experimental_help("Print a read-only copied-vault sandbox readiness report."))
     sandbox.add_argument(
         "--source-root",
         type=Path,

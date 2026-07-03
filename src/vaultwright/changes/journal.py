@@ -37,6 +37,10 @@ class JournalError(ValueError):
     """Raised when local journal state cannot be read or updated safely."""
 
 
+class JournalSchemaError(JournalError):
+    """Raised when local journal schema metadata needs a newer Vaultwright."""
+
+
 def utc_now() -> str:
     return utc_text(datetime.now(timezone.utc))
 
@@ -126,9 +130,31 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
     for key, value in META_DEFAULTS.items():
         conn.execute("INSERT OR IGNORE INTO journal_meta(key, value) VALUES (?, ?)", (key, value))
     meta = _read_meta(conn)
-    if meta.get("schema_version") != str(SCHEMA_VERSION):
-        found = meta.get("schema_version", "missing")
-        raise JournalError(f"unsupported journal schema_version {found}; expected {SCHEMA_VERSION}")
+    _migrate_schema(conn, meta)
+
+
+def _parse_schema_version(value: str | None) -> int | None:
+    if value is None:
+        return None
+    try:
+        parsed = int(value)
+    except ValueError:
+        return None
+    return parsed if parsed >= 0 else None
+
+
+def _migrate_schema(conn: sqlite3.Connection, meta: dict[str, str]) -> None:
+    found_text = meta.get("schema_version")
+    found = _parse_schema_version(found_text)
+    if found == SCHEMA_VERSION:
+        return
+    if found is None or found < SCHEMA_VERSION:
+        _write_meta(conn, "schema_version", str(SCHEMA_VERSION))
+        return
+    raise JournalSchemaError(
+        f"journal schema_version {found} is newer than this Vaultwright supports; "
+        "run a newer Vaultwright before replaying local journal work"
+    )
 
 
 def _read_meta(conn: sqlite3.Connection) -> dict[str, str]:
@@ -651,6 +677,8 @@ def _empty_status(root: Path) -> dict[str, Any]:
         "state_path": STATE_DB.as_posix(),
         "initialized": False,
         "schema_version": None,
+        "schema_supported": True,
+        "warnings": [],
         "last_event_sequence": 0,
         "last_observed_sequence": 0,
         "last_applied_sequence": 0,
@@ -663,28 +691,57 @@ def _empty_status(root: Path) -> dict[str, Any]:
     return payload
 
 
+def _unsafe_schema_version(path: Path) -> int | None:
+    try:
+        with _connect(path) as conn:
+            row = conn.execute(
+                "SELECT value FROM journal_meta WHERE key = 'schema_version'"
+            ).fetchone()
+    except sqlite3.Error:
+        return None
+    if row is None:
+        return None
+    return _parse_schema_version(str(row["value"]))
+
+
+def _schema_error_status(root: Path, path: Path, error: JournalError) -> dict[str, Any]:
+    payload = _empty_status(root)
+    payload.update(
+        {
+            "initialized": path.exists(),
+            "schema_version": _unsafe_schema_version(path),
+            "schema_supported": False,
+            "warnings": [str(error)],
+        }
+    )
+    return payload
+
+
 def journal_status(root: Path, *, initialize_state: bool = False) -> dict[str, Any]:
     root = root.expanduser().resolve()
     path = state_db_path(root)
     if not path.exists() and not initialize_state:
         return _empty_status(root)
-    if initialize_state:
-        initialize(root)
-    with _connect_existing(root) as conn:
-        meta = _read_meta(conn)
-        counts = {status: 0 for status in EVENT_STATUSES}
-        for row in conn.execute("SELECT status, COUNT(*) AS count FROM journal_events GROUP BY status"):
-            counts[str(row["status"])] = int(row["count"])
-        row = conn.execute("SELECT COALESCE(MAX(sequence), 0) AS sequence FROM journal_events").fetchone()
-        last_event_sequence = int(row["sequence"]) if row else 0
-        lease = conn.execute(
-            """
-            SELECT holder, expires_at, last_sequence
-              FROM journal_worker_lease
-          ORDER BY expires_at DESC
-             LIMIT 1
-            """
-        ).fetchone()
+    try:
+        if initialize_state:
+            initialize(root)
+        with _connect_existing(root) as conn:
+            meta = _read_meta(conn)
+            counts = {status: 0 for status in EVENT_STATUSES}
+            for row in conn.execute("SELECT status, COUNT(*) AS count FROM journal_events GROUP BY status"):
+                counts[str(row["status"])] = int(row["count"])
+            row = conn.execute("SELECT COALESCE(MAX(sequence), 0) AS sequence FROM journal_events").fetchone()
+            last_event_sequence = int(row["sequence"]) if row else 0
+            lease = conn.execute(
+                """
+                SELECT holder, expires_at, last_sequence
+                  FROM journal_worker_lease
+              ORDER BY expires_at DESC
+                 LIMIT 1
+                """
+            ).fetchone()
+    except JournalSchemaError as exc:
+        return _schema_error_status(root, path, exc)
     last_reconciliation = meta.get("last_reconciliation_at") or None
     now_text = utc_now()
     lease_locked = lease is not None and str(lease["expires_at"]) > now_text
@@ -692,6 +749,8 @@ def journal_status(root: Path, *, initialize_state: bool = False) -> dict[str, A
         "state_path": STATE_DB.as_posix(),
         "initialized": True,
         "schema_version": int(meta["schema_version"]),
+        "schema_supported": True,
+        "warnings": [],
         "last_event_sequence": last_event_sequence,
         "last_observed_sequence": int(meta.get("last_observed_sequence", "0") or "0"),
         "last_applied_sequence": int(meta.get("last_applied_sequence", "0") or "0"),

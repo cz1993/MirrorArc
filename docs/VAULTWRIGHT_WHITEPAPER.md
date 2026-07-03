@@ -95,7 +95,8 @@ The main remaining risks are:
 - the CLI and reporting surface can expand without convergence discipline;
 - the local journal must stay derived delivery state, never a second lifecycle authority;
 - event-driven operation must keep reconciliation mandatory because watcher delivery is advisory;
-- Stage 2+ profiles, Obsidian adapter work, index, Explorer, and pilots still need separate gates.
+- External validation now precedes Obsidian adapter work, index work, Explorer work, and any
+  visualization expansion.
 
 ## 4. Refined Product Scope
 
@@ -520,7 +521,9 @@ A first-party Obsidian plugin remains outside v1.
 
 ## 10. Evidence Index and Exploration
 
-The local evidence index remains a conditional Stage 4 feature, but its incremental architecture is now simpler:
+The local evidence index remains conditional. It should be built only after at least one real
+external corpus proves the core mirror, catalog, and benchmark workflow is worth extending. When
+that gate opens, its incremental architecture is now simpler:
 
 - it consumes successfully applied journal events;
 - it deletes or updates only records linked to changed source/mirror/note identities;
@@ -546,7 +549,7 @@ and one MCP tool:
 vaultwright_explore
 ```
 
-The Stage 4 benchmark still decides whether index and Explorer features stay in v1.
+The evidence-index benchmark still decides whether index and Explorer features stay in v1.
 
 ## 11. Visual Explorer and Context Builder
 
@@ -748,8 +751,8 @@ preserves these constraints:
 - V1-C1, V1-C2, V1-C4, and V1-C5 meet their Stage 1 definitions;
 - the full existing suite and repository gates pass.
 
-The Stage 1B journaled materialization gate is closed. Stage 2+ profile, Obsidian, index, and
-Explorer work remains paused until opened by a new, explicitly bounded batch or goal.
+The Stage 1B journaled materialization gate is closed. Stage 2 profile work is complete. External
+validation is now the next gate before Obsidian, index, Explorer, or visualization expansion.
 
 ### Stage 1B — Journaled changed-file synchronization
 
@@ -793,23 +796,28 @@ Deliver exactly:
 
 All profiles use the same journal, mirror, lifecycle, and safety engine.
 
-### Stage 3 — Obsidian adapter and skills
+### Stage 3 — External validation and pilot proof
 
-Deliver optional Obsidian compatibility, governance skills, profile-aware Bases, and generated Canvas recipes. No plugin.
+Run at least one real external corpus through the package-owned pipeline before building adapters,
+indexes, Explorer, or visualization surfaces. The evidence must cover baseline setup,
+changed-file processing, downtime/reconciliation, recovery, catalog/front-door review, benchmark
+comparison, and handoff boundaries.
 
-### Stage 4 — Evidence-index gate
+### Stage 4 — Obsidian adapter and skills
+
+Only after Stage 3 evidence, deliver optional Obsidian compatibility, governance skills,
+profile-aware Bases, and generated Canvas recipes. No plugin.
+
+### Stage 5 — Evidence-index gate
 
 Build the disposable SQLite/full-text graph index on top of applied journal events. Benchmark with and without the index.
 
-If it materially improves context precision, citation quality, review effort, or tool-call count, continue to Stage 5. Otherwise remove it from the v1 critical path.
+If it materially improves context precision, citation quality, review effort, or tool-call count, continue to Stage 6. Otherwise remove it from the v1 critical path.
 
-### Stage 5 — Conditional Explorer
+### Stage 6 — Conditional Explorer
 
-Only after the Stage 4 gate passes, build the localhost read-only Explorer and context export.
-
-### Stage 6 — Three pilots and release
-
-Run one external pilot for each maintained content profile. Each pilot includes baseline, changed-file processing, downtime/reconciliation, recovery, and handoff.
+Only after the Stage 5 gate passes, build the localhost read-only Explorer and context export.
+Complete the remaining external profile pilots before tagging v1.
 
 ## 17. V1 Definition of Done
 
@@ -830,7 +838,7 @@ Vaultwright v1 Core is finished when all of the following exist and pass:
 
 ### Conditional V1 Explorer
 
-When the Stage 4 benchmark passes, v1 additionally includes:
+When the Stage 5 benchmark passes, v1 additionally includes:
 
 11. one disposable local evidence index;
 12. one exploration CLI/MCP interface;
@@ -897,7 +905,10 @@ source record.
 
 This architecture preserves the existing source-authority and lifecycle work while making the product practical for larger and more frequently changing collections.
 
-The scope remains finite: changed-file incrementality is mandatory; package-part extraction and lightweight-model enrichment are conditional later work. The project returns to profiles, Obsidian integration, the evidence-index gate, three pilots, and a tagged v1 release after the incremental kernel requirement is closed.
+The scope remains finite: changed-file incrementality is mandatory; package-part extraction and
+lightweight-model enrichment are conditional later work. The next work is external validation on a
+real corpus; Obsidian integration, the evidence-index gate, Explorer, and visualization expansion
+wait for that evidence.
 
 ## References Reviewed
 

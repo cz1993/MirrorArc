@@ -164,9 +164,9 @@ Step-by-step: [`docs/quickstart.md`](docs/quickstart.md).
 **v0 - technical alpha.** The template vault, schema, thin tool CLI, source-installable console
 entry point, sync/lint tools, examples, safety guards, Office/repo manifests, audit logs,
 journaled changed-file materialization, and all four official profile init fixtures work today.
-The v1 finish line is now fixed around profile/core gates before optional Obsidian adapter,
-indexing, Explorer, and release-pilot work resumes. Full sync remains the baseline and recovery
-path; journaled incremental operation is the steady-state changed-file path.
+The v1 finish line now pulls external corpus validation ahead of optional Obsidian adapter,
+indexing, Explorer, and visualization work. Full sync remains the baseline and recovery path;
+journaled incremental operation is the steady-state changed-file path.
 
 ## License
 

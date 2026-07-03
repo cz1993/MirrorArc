@@ -244,6 +244,21 @@ def test_vaultwright_cli_doctor_reports_obsidian_and_backup_posture(tmp_path: Pa
     assert "warning: Vault root is not inside a git work tree; back up curated notes before production sync." in result.stdout
 
 
+def test_vaultwright_cli_doctor_warns_on_cloud_synced_storage(tmp_path: Path) -> None:
+    vault = tmp_path / "OneDrive - Example" / "vault"
+    shutil.copytree(ROOT / "template", vault)
+
+    result = subprocess.run(
+        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        cwd=vault,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert "warning: storage location: vault appears inside a cloud-synced folder" in result.stdout
+
+
 def test_vaultwright_cli_doctor_reports_profile_neutral_nested_git_boundary(tmp_path: Path) -> None:
     parent = tmp_path / "parent"
     parent.mkdir()

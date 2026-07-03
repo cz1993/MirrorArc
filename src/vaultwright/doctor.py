@@ -58,6 +58,18 @@ REQUIRED_TOOL_FILES = (
     "review_ledger.py",
     "sandbox_report.py",
 )
+CLOUD_SYNC_MARKERS = (
+    "onedrive",
+    "dropbox",
+    "google drive",
+    "icloud drive",
+    "mobile documents",
+    "com~apple~clouddocs",
+    "box",
+    "nextcloud",
+    "synologydrive",
+)
+MOUNT_ROOT_MARKERS = {"Volumes", "mnt", "media", "net"}
 
 
 def run_capture(cmd: list[str], cwd: Path, timeout: int = 5) -> subprocess.CompletedProcess[str] | None:
@@ -208,6 +220,24 @@ def backup_preflight(root: Path) -> tuple[list[str], list[str]]:
         info.append(f"backup remotes: {len(remotes.stdout.split())} configured")
     else:
         warnings.append("backup remotes: none configured; confirm another backup exists before pilot work.")
+    return info, warnings
+
+
+def storage_location_preflight(root: Path) -> tuple[list[str], list[str]]:
+    info: list[str] = []
+    warnings: list[str] = []
+    parts = root.resolve().parts
+    lowered_parts = [part.lower() for part in parts]
+    if any(marker in part for part in lowered_parts for marker in CLOUD_SYNC_MARKERS):
+        warnings.append(
+            "storage location: vault appears inside a cloud-synced folder; pin source and vault "
+            "files locally before production sync or watch runs."
+        )
+    if len(parts) > 2 and parts[1] in MOUNT_ROOT_MARKERS:
+        warnings.append(
+            "storage location: vault appears on a mounted or network-style volume; confirm stable "
+            "local file semantics before production sync or watch runs."
+        )
     return info, warnings
 
 
@@ -543,6 +573,7 @@ def main(root: Path | None = None) -> int:
     recovery_info, recovery_warnings = recovery_preflight(root)
     review_info, review_warnings = review_preflight(root)
     obsidian_info, obsidian_warnings = obsidian_preflight(root)
+    storage_info, storage_warnings = storage_location_preflight(root)
     backup_info, backup_warnings = backup_preflight(root)
     git_info, git_warnings = git_preflight(root)
     gh_info, gh_warnings = github_auth_preflight(root)
@@ -555,6 +586,8 @@ def main(root: Path | None = None) -> int:
     warnings.extend(review_warnings)
     info.extend(obsidian_info)
     warnings.extend(obsidian_warnings)
+    info.extend(storage_info)
+    warnings.extend(storage_warnings)
     info.extend(backup_info)
     warnings.extend(backup_warnings)
     info.extend(git_info)
