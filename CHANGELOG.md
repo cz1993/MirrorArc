@@ -19,6 +19,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added reproducible reviewed-result generation for the messy synthetic benchmark corpus and
+  published its aggregate dogfood scores.
 - Added a reproducible messy synthetic benchmark corpus generator for the review-plan 200-file
   baseline, including task-pack, plain-dump, private-result-scaffold, and run-sheet artifacts.
 - Added the first public synthetic agent-readiness benchmark result packet for the

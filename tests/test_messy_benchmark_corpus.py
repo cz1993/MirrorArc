@@ -103,6 +103,87 @@ def test_generate_messy_benchmark_corpus_writes_private_run_artifacts(tmp_path: 
     assert "VW-MESSY" not in benchmark.stdout
 
 
+def test_generate_messy_benchmark_corpus_reviewed_results_validate_after_sync(tmp_path: Path) -> None:
+    target = tmp_path / "messy-vault"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "generate_messy_benchmark_corpus.py"),
+            "--target",
+            str(target),
+            "--files",
+            "20",
+            "--write-reviewed-results",
+            "--json",
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 0, result.stderr or result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["reviewed_result_pack"] == "_benchmark/agent-readiness-results-reviewed.yml"
+
+    sync = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "vaultwright.cli",
+            "--root",
+            str(target),
+            "sync",
+            "--json",
+        ],
+        cwd=ROOT,
+        env=package_cli_env(),
+        text=True,
+        capture_output=True,
+    )
+
+    assert sync.returncode == 0, sync.stderr or sync.stdout
+
+    benchmark = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "vaultwright.cli",
+            "--root",
+            str(target),
+            "benchmark",
+            "--results",
+            "_benchmark/agent-readiness-results-reviewed.yml",
+            "--require-results",
+            "--require-citations",
+            "--require-prompt-safety",
+            "--json",
+        ],
+        cwd=ROOT,
+        env=package_cli_env(),
+        text=True,
+        capture_output=True,
+    )
+
+    assert benchmark.returncode == 0, benchmark.stderr or benchmark.stdout
+    benchmark_payload = json.loads(benchmark.stdout)
+    assert benchmark_payload["errors"] == []
+    assert benchmark_payload["warnings"] == []
+    assert benchmark_payload["result_summary"]["results"] == 15
+    modes = benchmark_payload["result_summary"]["modes"]
+    assert modes["raw_source_folder"]["score"] == 3
+    assert modes["raw_source_folder"]["max_score"] == 10
+    assert modes["raw_source_folder"]["reviewer_corrections"] == 10
+    assert modes["plain_markitdown_dump"]["score"] == 4
+    assert modes["plain_markitdown_dump"]["max_score"] == 10
+    assert modes["plain_markitdown_dump"]["reviewer_corrections"] == 8
+    assert modes["vaultwright_markdown"]["score"] == 10
+    assert modes["vaultwright_markdown"]["max_score"] == 10
+    assert modes["vaultwright_markdown"]["reviewer_corrections"] == 0
+    assert modes["vaultwright_markdown"]["generated_mirror_citations"] == 5
+    assert "VW-MESSY" not in benchmark.stdout
+
+
 def test_generate_messy_benchmark_corpus_rejects_source_checkout_target() -> None:
     result = subprocess.run(
         [

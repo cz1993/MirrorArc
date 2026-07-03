@@ -217,6 +217,11 @@ The generated vault includes synthetic Office-like sources, curated notes, a pla
 under `_benchmark/plain_markitdown_dump/`, a benchmark task pack, and a private result scaffold.
 Run the same agent against all three modes before publishing aggregate scores.
 
+For the checked-in messy synthetic dogfood aggregate, add `--write-reviewed-results`, sync the
+generated vault, then validate `_benchmark/agent-readiness-results-reviewed.yml` with
+`--require-results`, `--require-citations`, and `--require-prompt-safety`. This reviewed packet is
+synthetic score evidence only; it must not be described as external design-partner validation.
+
 ## Guardrails
 
 - Never benchmark with confidential client data inside this public repo.
@@ -229,7 +234,7 @@ Run the same agent against all three modes before publishing aggregate scores.
 
 ## Current Status
 
-No external benchmark has been completed yet. The government-services public result is a synthetic
-dogfood run for the review-plan baseline; it is useful evidence about the protocol and current
-example corpus, not proof that Vaultwright improves real agent performance on client-shaped
-corpora.
+No external benchmark has been completed yet. The government-services public result and the messy
+200-file reviewed result packet are synthetic dogfood runs for the review-plan baseline; they are
+useful evidence about the protocol and current generated corpora, not proof that Vaultwright
+improves real agent performance on client-shaped corpora.

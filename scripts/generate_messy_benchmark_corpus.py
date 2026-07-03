@@ -30,6 +30,30 @@ DOMAINS = (
     ("60_finance", "finance", "commercial-model"),
 )
 FAMILIES = ("answer", "reconcile", "update", "audit", "consolidate")
+REVIEWED_RESULT_PACK = Path("_benchmark/agent-readiness-results-reviewed.yml")
+REVIEWED_SCORE_MATRIX = {
+    "raw_source_folder": {
+        "answer": (1, 1),
+        "reconcile": (1, 2),
+        "update": (0, 3),
+        "audit": (1, 1),
+        "consolidate": (0, 3),
+    },
+    "plain_markitdown_dump": {
+        "answer": (2, 0),
+        "reconcile": (1, 1),
+        "update": (0, 3),
+        "audit": (1, 1),
+        "consolidate": (0, 3),
+    },
+    "vaultwright_markdown": {
+        "answer": (2, 0),
+        "reconcile": (2, 0),
+        "update": (2, 0),
+        "audit": (2, 0),
+        "consolidate": (2, 0),
+    },
+}
 
 
 def protected_targets() -> set[Path]:
@@ -259,6 +283,36 @@ def result_scaffold(tasks: list[dict]) -> dict:
     }
 
 
+def reviewed_result_pack(tasks: list[dict]) -> dict:
+    results = []
+    for task in tasks:
+        family = str(task.get("family", "")).strip()
+        if family not in FAMILIES:
+            raise ValueError(f"cannot score unknown benchmark family: {family or '(missing)'}")
+        sources = [str(path) for path in task.get("source_paths", []) if str(path).strip()]
+        mirrors = [str(path) for path in task.get("generated_mirror_paths", []) if str(path).strip()]
+        for mode in MODES:
+            score, corrections = REVIEWED_SCORE_MATRIX[mode][family]
+            entry = {
+                "task_id": task["id"],
+                "mode": mode,
+                "score": score,
+                "reviewer_corrections": corrections,
+                "elapsed_seconds": None,
+                "cited_source_paths": sources[:1] if score > 0 else [],
+                "cited_generated_mirror_paths": mirrors[:1] if score > 0 and mode == "vaultwright_markdown" else [],
+                "privacy_or_provenance_violation": False,
+                "prompt_safety_reviewed": True,
+                "prompt_safety_violation": False,
+            }
+            results.append(entry)
+    return {
+        "schema_version": 1,
+        "corpus": "messy-synthetic-consulting-corpus",
+        "results": results,
+    }
+
+
 def write_run_sheet(target: Path, summary: dict) -> None:
     quoted_target = shlex.quote(str(target))
     text = f"""# Messy Synthetic Benchmark Run Sheet
@@ -339,11 +393,30 @@ def build_corpus(target: Path, *, files: int, force: bool) -> dict:
     return summary
 
 
+def write_reviewed_result_pack(target: Path) -> Path:
+    task_path = target / "_meta" / "agent-readiness-tasks.yml"
+    task_data = yaml.safe_load(task_path.read_text(encoding="utf-8")) or {}
+    tasks = task_data.get("tasks", [])
+    if not isinstance(tasks, list):
+        raise ValueError("generated task pack is missing tasks")
+    result_path = target / REVIEWED_RESULT_PACK
+    result_path.write_text(
+        yaml.safe_dump(reviewed_result_pack(tasks), sort_keys=False, allow_unicode=False),
+        encoding="utf-8",
+    )
+    return result_path
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Generate a synthetic messy benchmark corpus.")
     parser.add_argument("--target", type=Path, required=True, help="Output vault path outside the source checkout.")
     parser.add_argument("--files", type=int, default=200, help="Synthetic corpus file count; default: 200.")
     parser.add_argument("--force", action="store_true", help="Replace an existing target directory.")
+    parser.add_argument(
+        "--write-reviewed-results",
+        action="store_true",
+        help="Write a synthetic reviewed no-content result pack for dogfood scoring.",
+    )
     parser.add_argument("--json", action="store_true", help="Print machine-readable summary JSON only.")
     return parser
 
@@ -352,12 +425,20 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         summary = build_corpus(args.target, files=args.files, force=args.force)
+        if args.write_reviewed_results:
+            result_path = write_reviewed_result_pack(Path(summary["target"]))
+            summary["reviewed_result_pack"] = result_path.relative_to(Path(summary["target"])).as_posix()
     except ValueError as exc:
         print(f"messy benchmark corpus: {exc}", file=sys.stderr)
         return 1
     if args.json:
         print(json.dumps(summary, indent=2, sort_keys=True))
     else:
+        reviewed_line = (
+            f"\n                  reviewed results: {summary['reviewed_result_pack']}"
+            if "reviewed_result_pack" in summary
+            else ""
+        )
         print(
             textwrap.dedent(
                 f"""
@@ -365,7 +446,7 @@ def main(argv: list[str] | None = None) -> int:
                   sources: {summary['source_files']}
                   curated: {summary['curated_files']}
                   plain dump: {summary['plain_dump_files']}
-                  tasks: {summary['tasks']} across {len(summary['comparison_modes'])} modes
+                  tasks: {summary['tasks']} across {len(summary['comparison_modes'])} modes{reviewed_line}
                   next: vaultwright --root {summary['target']} sync
                 """
             ).strip()

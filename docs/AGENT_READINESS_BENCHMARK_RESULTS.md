@@ -97,6 +97,36 @@ It also writes `_meta/agent-readiness-tasks.yml`,
 vault. `_benchmark/` is ignored by the Vaultwright template because it may contain private run
 worksheets and result scaffolds.
 
-This gate is currently **reproducibility evidence**, not scored agent-readiness evidence. The next
-step is to run the same agent through the generated task pack in all three modes, fill a private
-result pack, and publish only aggregate no-data-reviewed scores.
+For a reproducible synthetic dogfood score packet, generate the corpus with the reviewed-results
+flag, then sync and validate the generated private result pack:
+
+```bash
+python3.11 scripts/generate_messy_benchmark_corpus.py \
+  --target /tmp/vaultwright-messy-benchmark \
+  --files 200 \
+  --write-reviewed-results
+vaultwright --root /tmp/vaultwright-messy-benchmark sync --json
+vaultwright --root /tmp/vaultwright-messy-benchmark benchmark \
+  --results _benchmark/agent-readiness-results-reviewed.yml \
+  --require-results \
+  --require-citations \
+  --require-prompt-safety
+```
+
+Expected aggregate summary:
+
+```text
+raw_source_folder: results=5 score=3/10 avg=0.60 corrections=10 violations=0
+plain_markitdown_dump: results=5 score=4/10 avg=0.80 corrections=8 violations=0
+vaultwright_markdown: results=5 score=10/10 avg=2.00 corrections=0 violations=0
+```
+
+### Limits
+
+- This is still synthetic dogfood evidence, not design-partner validation.
+- The reviewed result pack contains scores, correction counts, prompt-safety flags, and path
+  citations only; it does not contain answer text, reviewer notes, source bodies, or mirror bodies.
+- Scores are intentionally conservative for raw-folder and plain-dump modes because update,
+  audit, and consolidation tasks require manifest, lifecycle, generated-mirror, and curated-hub
+  context.
+- The next benchmark step is a real external design-partner run using the same task/result schema.
