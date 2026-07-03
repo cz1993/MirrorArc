@@ -5,6 +5,11 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 
 ## [Unreleased]
 
+### Changed
+- Clarified the whitepaper's mirror-layer wording: Vaultwright mirrors are manifest-backed,
+  deterministic Markdown materializations with journaled incremental refresh, not simple Markdown
+  conversion/export or literal WAL shipping.
+
 ### Added
 - Closed the Stage 2 V1-C3 official-profile gate: `vaultwright init --profile` now scaffolds
   `business-operations`, `research-learning`, `software-project`, and `blank` from the package,

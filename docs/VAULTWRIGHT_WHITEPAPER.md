@@ -155,6 +155,45 @@ Obsidian / catalog / Explorer / MCP / context packs
 
 The change journal and evidence index must not duplicate event capture. When the index exists, it consumes successfully materialized journal events.
 
+### 5.1 Mirror layer refinement
+
+The mirror layer should not be described as "conversion to Markdown." Conversion changes a file
+format; Vaultwright mirrors preserve an authority boundary.
+
+A Vaultwright mirror is a manifest-backed, deterministic, machine-owned materialized read model of
+an authoritative source. The original file, repository, or external record remains the thing being
+governed. The Markdown mirror is a disposable, inspectable projection that humans, Git, search
+tools, Obsidian, and agents can read without mutating the source.
+
+The implementation contract is:
+
+- source IDs and repo IDs are manifest-owned, not path-owned;
+- source paths may move, but identity should remain stable when the move is unambiguous;
+- source bytes, converter version, config version, mirror path, lifecycle state, warnings, and
+  errors are recorded in the manifest;
+- generated mirrors are machine-owned and protected by a sentinel;
+- durable human annotations live in sidecars, not inside regenerated mirror bodies;
+- mirror writes are atomic and preserve the previous mirror on conversion or write failure;
+- idempotent replay must not create duplicate mirrors, duplicate successful work, or content diffs
+  for unchanged sources;
+- full sync remains the recovery and verification path;
+- changed-file sync is the normal steady-state path.
+
+The closest database analogy is not a read replica with identical schema. It is closer to a
+materialized view or CQRS read model: optimized for reading, reproducible from authoritative inputs,
+and safe to delete/rebuild. The useful log-shipping properties are durable observation, ordered
+replay, checkpointing, idempotency, atomic replacement, and reconciliation. Vaultwright must not
+claim literal WAL shipping because filesystem and Office events are advisory rather than
+authoritative transactions.
+
+Therefore the product wording should consistently prefer:
+
+"manifest-backed, deterministic Markdown materialization with journaled incremental refresh"
+
+over:
+
+"Markdown conversion," "Markdown export," or "file mirroring."
+
 ## 6. Horizontal Core and Vertical Profiles
 
 ### 6.1 Domain-neutral kernel
@@ -843,6 +882,9 @@ Professional implementation remains the first commercial path. Profiles broaden 
 Vaultwright should retain its profile-driven v1 direction and replace repeated whole-corpus synchronization with a journaled changed-file materialization engine.
 
 The correct design is not AI-driven mirroring. It is:
+
+It is also not simple Markdown conversion; the Markdown is a governed read projection, not the
+source record.
 
 - deterministic event capture;
 - durable ordered work;
