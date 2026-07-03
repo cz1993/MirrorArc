@@ -11,7 +11,8 @@ This is the first review-plan baseline run. It uses the public synthetic
 `examples/government-services-vault/_meta/agent-readiness-tasks.yml`.
 
 It is **not external validation**. It is a dogfood run on a synthetic corpus so the project has a
-published three-condition benchmark packet before design-partner work begins.
+published three-condition benchmark packet before design-partner work begins. The decision rules
+for external benchmark evidence are tracked in [`docs/VALIDATION_GATE.md`](VALIDATION_GATE.md).
 
 ### Conditions
 
@@ -130,3 +131,4 @@ vaultwright_markdown: results=5 score=10/10 avg=2.00 corrections=0 violations=0
   audit, and consolidation tasks require manifest, lifecycle, generated-mirror, and curated-hub
   context.
 - The next benchmark step is a real external design-partner run using the same task/result schema.
+  That run is the evidence that can satisfy or fail the validation gate.

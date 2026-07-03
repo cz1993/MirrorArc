@@ -70,6 +70,8 @@ Product contract: [`docs/PRODUCT.md`](docs/PRODUCT.md). Sync contract:
 [`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md). Recovery guide:
 [`docs/RECOVERY.md`](docs/RECOVERY.md). Design-partner protocol:
 [`docs/DESIGN_PARTNER_PROTOCOL.md`](docs/DESIGN_PARTNER_PROTOCOL.md).
+Validation gate:
+[`docs/VALIDATION_GATE.md`](docs/VALIDATION_GATE.md).
 Conversion review guide:
 [`docs/CONVERSION_REVIEW_GUIDE.md`](docs/CONVERSION_REVIEW_GUIDE.md).
 Release checklist:
@@ -190,8 +192,9 @@ Step-by-step: [`docs/quickstart.md`](docs/quickstart.md).
 entry point, sync/lint tools, examples, safety guards, Office/repo manifests, audit logs,
 journaled changed-file materialization, and all four official profile init fixtures work today.
 The v1 finish line now pulls external corpus validation ahead of optional Obsidian adapter,
-indexing, Explorer, and visualization work. Full sync remains the baseline and recovery path;
-journaled incremental operation is the steady-state changed-file path.
+indexing, Explorer, and visualization work, with explicit stop/pivot rules in the validation gate.
+Full sync remains the baseline and recovery path; journaled incremental operation is the
+steady-state changed-file path.
 
 ## License
 

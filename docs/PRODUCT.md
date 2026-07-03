@@ -10,7 +10,8 @@ sources, while full sync remains the recovery and verification path.
 
 Current execution order is validation-first: run a real external corpus through the core mirror,
 catalog, benchmark, recovery, and handoff flow before expanding Obsidian adapters, local indexes,
-Explorer, or visualization surfaces.
+Explorer, or visualization surfaces. The hard stop and pivot criteria are tracked in
+[`docs/VALIDATION_GATE.md`](VALIDATION_GATE.md).
 
 The first paid workflow remains consulting and implementation work, but the v1 architecture is no
 longer a single business-operations folder template. The accepted v1 direction is documented in
@@ -132,4 +133,5 @@ AI must not silently:
 Vaultwright's long-term value depends on whether agents perform better against governed markdown
 than against raw folders or one-off plain markitdown dumps. The benchmark protocol in
 `docs/AGENT_READINESS_BENCHMARK.md` defines the evidence needed before this claim is treated as
-more than a thesis.
+more than a thesis. `docs/VALIDATION_GATE.md` defines the point where weak benchmark or
+self-service evidence must pivot the product away from broad workspace expansion.

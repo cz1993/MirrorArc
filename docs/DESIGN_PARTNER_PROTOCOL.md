@@ -12,6 +12,8 @@ repository.
 Stage 3 is not complete until at least one permission-cleared external corpus runs through this
 protocol. Public examples, synthetic dogfood runs, and generated benchmark corpora are engineering
 evidence; they are not design-partner proof.
+The stop and pivot rules for weak benchmark or self-service evidence are in
+[`docs/VALIDATION_GATE.md`](VALIDATION_GATE.md).
 
 ## Target Participants
 

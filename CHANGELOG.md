@@ -19,6 +19,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added an explicit validation gate documenting benchmark, self-service, expansion, and evidence
+  stop/pivot rules before adapter, index, Explorer, connector, or visualization expansion.
 - Added reproducible reviewed-result generation for the messy synthetic benchmark corpus and
   published its aggregate dogfood scores.
 - Added a reproducible messy synthetic benchmark corpus generator for the review-plan 200-file
