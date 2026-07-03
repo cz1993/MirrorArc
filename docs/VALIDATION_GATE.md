@@ -16,6 +16,10 @@ protocol, but they do not complete this gate.
 | Permission-cleared external corpus | Not started | Required before Stage 3 is complete. |
 | Independent design-partner return signal | Not started | Required before treating Vaultwright as self-serve software. |
 
+See `docs/STAGE3_VALIDATION_STATUS.md` for the public-safe attempt ledger. The status ledger does
+not complete Stage 3 by itself; only protocol evidence from a permission-cleared external corpus
+can do that.
+
 ## Benchmark Stop Rule
 
 Every pilot benchmark must compare the same questions across:

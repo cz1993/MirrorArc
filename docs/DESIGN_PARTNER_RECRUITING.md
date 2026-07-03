@@ -5,7 +5,8 @@ finding a small number of external operators who can test the core mirror/catalo
 permission-cleared, real client-shaped corpora.
 
 Use this packet before `docs/DESIGN_PARTNER_PROTOCOL.md`. It turns the review-plan requirement
-for 2-3 design partners into a repeatable recruiting, screening, and scheduling flow.
+for 2-3 design partners into a repeatable recruiting, screening, and scheduling flow. Record
+public-safe attempt state in `docs/STAGE3_VALIDATION_STATUS.md`.
 
 ## Recruiting Goal
 
@@ -189,3 +190,6 @@ Second-sync scenario:
 Scheduled first run:
 Scheduled follow-up:
 ```
+
+After each pre-screen, update `docs/STAGE3_VALIDATION_STATUS.md` with only anonymized attempt
+state and broad corpus shape.

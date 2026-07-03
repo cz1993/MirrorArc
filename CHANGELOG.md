@@ -19,6 +19,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added a public-safe Stage 3 validation status ledger for external design-partner attempts and
+  gate counts without participant names, private paths, source text, or mirror content.
 - Added a design-partner recruiting and pre-screen packet so Stage 3 external validation can move
   from protocol-only documentation to scheduled pilot attempts without starting gated Phase 2 work.
 - Added an explicit validation gate documenting benchmark, self-service, expansion, and evidence
