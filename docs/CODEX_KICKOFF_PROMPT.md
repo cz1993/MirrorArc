@@ -13,11 +13,13 @@ working v0 exists (template vault, schema, sync/lint tools, docs, licensing scaf
 to narrow, harden, and validate the first promise before broadening the roadmap.
 
 **Read first (in order):** `AGENTS.md`, `README.md`, `docs/PRODUCT.md`,
-`docs/VAULTWRIGHT_WHITEPAPER_2026-06-23.md`,
+`docs/VAULTWRIGHT_WHITEPAPER.md`,
 `docs/adr/0001-profile-driven-v1-architecture.md`, `docs/V1_FINISH_LINE.md`,
 `docs/PROFILE_SCHEMA.md`, `docs/SYNC_SPEC.md`, `docs/SECURITY_MODEL.md`,
-`docs/VAULTWRIGHT_WHITEPAPER.md`, `docs/methodology.md`, `docs/positioning.md`, `CHANGELOG.md`,
-`LICENSING.md`, then the scripts in `template/tools/` and `template/CLAUDE.md`.
+`docs/VALIDATION_GATE.md`, `docs/STAGE3_VALIDATION_STATUS.md`,
+`docs/DESIGN_PARTNER_RECRUITING.md`, `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md`,
+`docs/methodology.md`, `docs/positioning.md`, `CHANGELOG.md`, `LICENSING.md`,
+then the scripts in `template/tools/` and `template/CLAUDE.md`.
 Internalize the differentiators in `positioning.md` — lead with them, never drift into "another
 generic LLM-wiki," and do not add a vector database as a substitute for provenance, mirrors, and
 managed lifecycle state.
@@ -41,10 +43,10 @@ Work in continuous iterations, not one-and-done. Each loop:
 license, making the repo public, rewriting shared git history, deleting data, or any action
 touching real accounts/credentials. Otherwise, proceed autonomously.
 
-## Current v1 architecture checkpoint - 2026-06-23
+## Current v1 architecture checkpoint - 2026-07-03
 
-The active product direction is now the profile-driven v1 architecture in
-`docs/VAULTWRIGHT_WHITEPAPER_2026-06-23.md`. Treat
+The active product direction is the profile-driven v1 architecture in the canonical
+`docs/VAULTWRIGHT_WHITEPAPER.md`. Treat
 `docs/adr/0001-profile-driven-v1-architecture.md` and `docs/V1_FINISH_LINE.md` as the convergence
 gate before choosing work.
 
@@ -52,6 +54,10 @@ The execution rule is simple: do not add standalone feature tracks. Every change
 listed finish-line requirement, replace a weaker implementation, or preserve existing behavior
 while preparing a required migration. New ideas that do not map to the matrix go to the post-v1
 backlog.
+
+Stage 0, Stage 1A, Stage 1B, and Stage 2 are closed. Stage 3 external validation is the next gate:
+one permission-cleared external corpus must go through the package-owned pipeline before adapter,
+index, Explorer, connector, visualization, or richer profile-view work resumes.
 
 **Stage 0 requirements**
 - Product statement, six-layer architecture, v1 profiles, v1 non-goals, and command-surface stop
@@ -62,11 +68,16 @@ backlog.
 
 **Next execution order**
 1. Keep safety gates green: no-data scan, template-copy sync, pytest, example lint, CI.
-2. Keep Stage 1 runtime behavior package-owned and prevent compatibility-shim drift.
-3. Keep the versioned profile contract current before adding research/software profiles.
-4. Convert hard-coded business taxonomy assumptions into `business-operations` profile data.
-5. Preserve current lifecycle, catalog, review, recovery, safety, and benchmark behavior while
-   refactoring.
+2. Drive Stage 3 external validation with `docs/VALIDATION_GATE.md`,
+   `docs/STAGE3_VALIDATION_STATUS.md`, `docs/DESIGN_PARTNER_RECRUITING.md`, and
+   `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md`.
+3. Do not start Obsidian adapter, generated Canvas, evidence index, Explorer, MCP exploration,
+   Docling/email/connectors, visualization, or new report surfaces before Stage 3 evidence is
+   recorded.
+4. Preserve current package-owned behavior, compatibility shims, command-surface freeze,
+   lifecycle, catalog, review, recovery, safety, benchmark, and journaled materialization gates.
+5. If no external-corpus action is possible in the current environment, report that boundary with
+   evidence instead of inventing more infrastructure work.
 
 ## Historical review checkpoint - 2026-06-17
 
@@ -123,7 +134,7 @@ This repo is the **tool/framework**, never an actual knowledge base.
   you generate, or (b) **genuinely public, permissively-licensed** files (CC0 / public-domain /
   CC-BY / MIT) with documented provenance.
 
-### The sample-data hunt (do this in goal-pursuing mode)
+### Historical sample-data hunt (do not repeat unless it closes a current gate)
 
 Search the web for **suitable, complex, public** datasets and document files that exercise the
 converters and make a compelling, realistic showcase. Aim for variety and real-world messiness.
@@ -148,6 +159,10 @@ converters and make a compelling, realistic showcase. Aim for variety and real-w
 - Put test fixtures under `tests/fixtures/`; record every external file's **source URL + license**
   in `examples/DATA_PROVENANCE.md`. Prefer CC0/public-domain to keep redistribution clean; add
   attribution where a license requires it.
+
+Current rule: do not add another showcase corpus, adapter, index, Explorer, or visualization as a
+substitute for the Stage 3 external validation gate. Synthetic corpora can prepare or repair the
+benchmark protocol, but they do not complete the gate.
 
 ## Guidance #2 — ownership & review (personal project)
 
@@ -211,7 +226,7 @@ not broad industry expansion. Prove the narrow promise first:
   notices stay in `NOTICE`, source files keep `SPDX-License-Identifier: AGPL-3.0-or-later`, and
   CLA vs DCO/commercial terms remain owner-counsel decisions.
 
-**P1 — differentiators**
+**P1 — differentiators, only after Stage 3 evidence**
 - **Mirror robustness:** optional **docling** backend for high-fidelity PDF; richer manifest audit
   trails; conflict-safe curation; cleaner `.xlsx` rendering (drop the `NaN`/`Unnamed` noise).
 - **Anti-proliferation:** improve the warning-level near-duplicate / overlap detection and add
@@ -250,8 +265,8 @@ not broad industry expansion. Prove the narrow promise first:
 1. Read the files listed above; run the **no-data scan** and confirm the tree is clean.
 2. Confirm **tests + CI + the no-data guard** remain green.
 3. Map the next change to `docs/V1_FINISH_LINE.md` before editing code or docs.
-4. Work Stage 1 package/profile convergence before adding broad examples, index work, Explorer UI,
-   or more report commands.
+4. Work Stage 3 external validation before adding broad examples, adapter work, index work,
+   Explorer UI, connectors, visualizations, or more report commands.
 5. Check the remaining licensing decisions in `LICENSING.md`; do not accept outside contributions
    until the owner decides CLA vs DCO with counsel.
 6. Open PRs, request review (Claude/CodeX), iterate. Keep going.

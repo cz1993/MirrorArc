@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CI_WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 RELEASE_WORKFLOW = ROOT / ".github" / "workflows" / "release.yml"
 RELEASE_DOC = ROOT / "docs" / "RELEASE.md"
+KICKOFF_PROMPT = ROOT / "docs" / "CODEX_KICKOFF_PROMPT.md"
 PYPROJECT = ROOT / "pyproject.toml"
 
 
@@ -32,6 +33,21 @@ def test_docs_pin_package_first_onboarding_commands() -> None:
         assert "uv tool install git+https://github.com/cz1993/vaultwright.git" in text
         assert "pipx install git+https://github.com/cz1993/vaultwright.git" in text
         assert "git clone https://github.com/cz1993/vaultwright.git vaultwright" in text
+
+
+def test_kickoff_prompt_routes_future_work_to_stage3_validation() -> None:
+    text = KICKOFF_PROMPT.read_text(encoding="utf-8")
+
+    assert "Stage 0, Stage 1A, Stage 1B, and Stage 2 are closed." in text
+    assert "Stage 3 external validation is the next gate" in text
+    assert "docs/VALIDATION_GATE.md" in text
+    assert "docs/STAGE3_VALIDATION_STATUS.md" in text
+    assert "docs/DESIGN_PARTNER_RECRUITING.md" in text
+    assert "docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md" in text
+    assert "Do not start Obsidian adapter, generated Canvas, evidence index, Explorer" in text
+    assert "Docling/email/connectors, visualization, or new report surfaces" in text
+    assert "Work Stage 1 package/profile convergence before adding broad examples" not in text
+    assert "The sample-data hunt (do this in goal-pursuing mode)" not in text
 
 
 def test_release_workflow_is_tag_only_and_draft_prerelease() -> None:

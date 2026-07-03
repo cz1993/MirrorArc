@@ -6,6 +6,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 ## [Unreleased]
 
 ### Changed
+- Aligned the CodeX continuation prompt with the current Stage 3 external-validation gate so future
+  autonomous loops do not resume stale Stage 1 or sample-corpus work.
 - Tightened the design-partner pilot protocol and worksheet around package-first commands, strict
   benchmark validation, and the second-sync self-service success gate.
 - Updated the primary benchmark baseline from `document_chat_transcript` to
