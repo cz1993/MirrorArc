@@ -49,7 +49,9 @@ For the operator workflow, prefer:
 ```bash
 python3.11 tools/vaultwright.py plan
 python3.11 tools/vaultwright.py sync
+python3.11 tools/vaultwright.py sync --json
 python3.11 tools/vaultwright.py status
+python3.11 tools/vaultwright.py status --json
 python3.11 tools/vaultwright.py catalog
 python3.11 tools/vaultwright.py catalog --html
 python3.11 tools/vaultwright.py m365
@@ -73,6 +75,7 @@ python3.11 tools/vaultwright.py sandbox --source-root /path/to/original-document
 python3.11 tools/vaultwright.py lint
 python3.11 tools/vaultwright.py benchmark
 python3.11 tools/vaultwright.py doctor
+python3.11 tools/vaultwright.py doctor --json
 ```
 
 `doctor` is read-only. It checks required files and copied tools, Python dependencies, the active
@@ -83,6 +86,8 @@ legacy domain-map alias posture, optional mirror-config override posture, option
 config/plugin posture, and `.gitignore` backup guard coverage. A fresh vault may warn that
 manifests, audit logs, repo config, generated views, git history, or Obsidian UI config are not
 generated yet; those warnings are preflight context, not sync failures.
+Use `sync --json`, `status --json`, and `doctor --json` when attaching pilot evidence or giving an
+agent structured state instead of human-readable console text.
 
 `_meta/lifecycle-states.yml` is the release-facing lifecycle contract for generated Office/source
 mirrors and repo mirrors. Every state used by sync/recovery/reporting must have an entry condition,

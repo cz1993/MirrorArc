@@ -15,6 +15,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added structured top-level `--json` output for `vaultwright sync`, `vaultwright status`, and
+  `vaultwright doctor`, with CI/release smoke coverage for pilot-ready machine-readable evidence.
 - Added journal schema metadata migration for older local state and non-failing diagnostic status
   output for future local journal schemas.
 - Added doctor warnings for vaults located under cloud-synced or mounted/network-style storage.

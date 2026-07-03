@@ -42,7 +42,8 @@ The first workflow is:
 7. Record metadata-only human review decisions against generated mirrors, catalogs, and handoff
    reports so approvals are tied to artifact hashes.
 8. Create a small number of curated hubs and entity pages.
-9. Refresh the workspace over time with auditable sync/status output.
+9. Refresh the workspace over time with auditable sync/status output, including structured
+   `--json` evidence from `sync`, `status`, and `doctor` for agents and pilot records.
 10. After Stage 1B, use journaled changed-file materialization for normal steady-state refresh and
     full sync for recovery, reconciliation, and verification.
 

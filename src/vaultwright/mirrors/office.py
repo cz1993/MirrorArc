@@ -1703,6 +1703,7 @@ def print_plan_or_status(
     *,
     mode: str,
     quiet: bool,
+    json_output: bool = False,
 ) -> int:
     action_counts = {"create": 0, "update": 0, "unchanged": 0, "skip": 0, "review": 0, "error": 0}
     state_counts: dict[str, int] = {}
@@ -1710,6 +1711,7 @@ def print_plan_or_status(
     plans = [plan_one(src, root, mirror_config, routing, manifest, converter_name, converter_version) for src in files]
     lifecycle_contract = load_lifecycle_contract(root)
     annotate_duplicate_plans(plans)
+    items: list[dict[str, object]] = []
 
     for plan in plans:
         src = plan["source"]
@@ -1718,6 +1720,17 @@ def print_plan_or_status(
         action_counts[action] = action_counts.get(action, 0) + 1
         state_counts[state] = state_counts.get(state, 0) + 1
         seen_source_ids.add(plan["record"]["source_id"])
+        items.append(
+            {
+                "source": as_posix_rel(src.relative_to(root)),
+                "mirror_path": plan["record"].get("mirror_path", ""),
+                "action": action,
+                "status": status_for_plan(plan),
+                "lifecycle_state": state,
+                "warnings": list(plan["record"].get("warnings", [])),
+                "errors": list(plan["record"].get("errors", [])),
+            }
+        )
         if not quiet:
             source_rel = src.relative_to(root)
             mirror_rel = plan["record"]["mirror_path"]
@@ -1738,6 +1751,17 @@ def print_plan_or_status(
         missing += 1
         state_counts["source_missing"] = state_counts.get("source_missing", 0) + 1
         action_counts["review"] = action_counts.get("review", 0) + 1
+        items.append(
+            {
+                "source": current,
+                "mirror_path": record.get("mirror_path", ""),
+                "action": "review",
+                "status": "review:source_missing",
+                "lifecycle_state": "source_missing",
+                "warnings": list(record.get("warnings", [])) if isinstance(record.get("warnings"), list) else [],
+                "errors": list(record.get("errors", [])) if isinstance(record.get("errors"), list) else [],
+            }
+        )
         if not quiet:
             print(f"  [{'review:source_missing':<28}] {current} -> {record.get('mirror_path', '')}")
 
@@ -1748,10 +1772,24 @@ def print_plan_or_status(
     )
     state_summary = ", ".join(f"{state}={count}" for state, count in sorted(state_counts.items())) or "no states"
     warning_total = sum(len(plan["record"].get("warnings", [])) for plan in plans)
-    print(f"\nsync_office_md {mode}: {len(files)} current sources, {missing} missing manifest sources -> {action_summary}")
-    print(f"lifecycle: {state_summary}")
-    print(f"warnings: {warning_total}")
-    print_lifecycle_guidance(state_counts, lifecycle_contract)
+    payload = {
+        "tool": "sync_office_md",
+        "mode": mode,
+        "root": str(root),
+        "current_sources": len(files),
+        "missing_manifest_sources": missing,
+        "action_counts": action_counts,
+        "state_counts": state_counts,
+        "warnings_count": warning_total,
+        "items": items,
+    }
+    if json_output:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(f"\nsync_office_md {mode}: {len(files)} current sources, {missing} missing manifest sources -> {action_summary}")
+        print(f"lifecycle: {state_summary}")
+        print(f"warnings: {warning_total}")
+        print_lifecycle_guidance(state_counts, lifecycle_contract)
     return 1 if action_counts.get("error", 0) else 0
 
 
@@ -1772,6 +1810,7 @@ def main(argv: list[str] | None = None, default_root: Path | None = None):
     ap.add_argument("--mirror-root", default=None, help="Dedicated mirror root, relative to the vault root (default: _mirrors).")
     ap.add_argument("--no-log", action="store_true", help="Do not append a summary line to log.md.")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--json", action="store_true", help="Print machine-readable sync, plan, or status output.")
     args = ap.parse_args(argv)
 
     if args.plan and args.status:
@@ -1798,7 +1837,8 @@ def main(argv: list[str] | None = None, default_root: Path | None = None):
             converter_name,
             converter_version,
             mode="plan",
-            quiet=args.quiet,
+            quiet=args.quiet or args.json,
+            json_output=args.json,
         )
     if args.status:
         return print_plan_or_status(
@@ -1810,13 +1850,15 @@ def main(argv: list[str] | None = None, default_root: Path | None = None):
             converter_name,
             converter_version,
             mode="status",
-            quiet=args.quiet,
+            quiet=args.quiet or args.json,
+            json_output=args.json,
         )
 
     converter = MarkItDown()
 
     counts = {"created": 0, "updated": 0, "unchanged": 0, "skipped": 0, "review": 0, "error": 0}
     changed = []
+    items: list[dict[str, object]] = []
     seen_source_ids: set[str] = set()
     for src in files:
         plan = plan_one(src, root, mirror_config, routing, manifest, converter_name, converter_version)
@@ -1835,7 +1877,17 @@ def main(argv: list[str] | None = None, default_root: Path | None = None):
             plan=plan,
         )
         count_status(status, counts)
-        if not args.quiet:
+        items.append(
+            {
+                "source": as_posix_rel(src.relative_to(root)),
+                "mirror_path": plan["record"].get("mirror_path", ""),
+                "status": status,
+                "lifecycle_state": plan["record"].get("lifecycle_state", ""),
+                "warnings": list(plan["record"].get("warnings", [])),
+                "errors": list(plan["record"].get("errors", [])),
+            }
+        )
+        if not args.quiet and not args.json:
             rel = src.relative_to(root)
             print(f"  [{status:<10}] {rel}")
             for detail in plan_detail_lines(plan["record"]):
@@ -1854,9 +1906,24 @@ def main(argv: list[str] | None = None, default_root: Path | None = None):
     summary = (f"{counts['created']} created, {counts['updated']} updated, "
                f"{counts['unchanged']} unchanged, {counts['skipped']} skipped, "
                f"{counts['review']} review, {counts['error']} error, {missing} missing")
-    print(f"\nsync_office_md: {len(files)} sources → {summary}"
-          + (" [dry-run]" if args.dry_run else "")
-          + (" [manifest updated]" if manifest_changed else ""))
+    payload = {
+        "tool": "sync_office_md",
+        "mode": "sync",
+        "root": str(root),
+        "sources": len(files),
+        "counts": counts,
+        "missing_manifest_sources": missing,
+        "dry_run": bool(args.dry_run),
+        "manifest_changed": manifest_changed,
+        "changed": [as_posix_rel(path) for path in changed],
+        "items": items,
+    }
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(f"\nsync_office_md: {len(files)} sources → {summary}"
+              + (" [dry-run]" if args.dry_run else "")
+              + (" [manifest updated]" if manifest_changed else ""))
 
     if changed and not args.dry_run and not args.no_log:
         log = root / "log.md"

@@ -520,13 +520,12 @@ def profile_contract_preflight(root: Path) -> tuple[list[str], list[str], list[s
     return info, warnings, errors
 
 
-def main(root: Path | None = None) -> int:
+def build_report(root: Path | None = None) -> dict[str, object]:
     root = (root or Path.cwd()).expanduser().resolve()
     info: list[str] = []
     errors: list[str] = []
     warnings: list[str] = []
 
-    print(f"vaultwright doctor: {root}")
     if sys.version_info < (3, 11):
         errors.append("Python 3.11+ is required.")
     else:
@@ -595,13 +594,36 @@ def main(root: Path | None = None) -> int:
     info.extend(gh_info)
     warnings.extend(gh_warnings)
 
+    return {
+        "root": str(root),
+        "ok": not errors,
+        "info": info,
+        "warnings": warnings,
+        "errors": errors,
+    }
+
+
+def print_report(report: dict[str, object]) -> None:
+    print(f"vaultwright doctor: {report['root']}")
+    info = report.get("info", [])
+    warnings = report.get("warnings", [])
+    errors = report.get("errors", [])
     for item in info:
         print(f"  info: {item}")
     for warning in warnings:
         print(f"  warning: {warning}")
     for error in errors:
         print(f"  error: {error}", file=sys.stderr)
-    if errors:
+
+
+def main(root: Path | None = None, *, json_output: bool = False) -> int:
+    report = build_report(root)
+    if json_output:
+        print(json.dumps(report, indent=2, sort_keys=True))
+    else:
+        print_report(report)
+    if report["errors"]:
         return 1
-    print("vaultwright doctor: OK")
+    if not json_output:
+        print("vaultwright doctor: OK")
     return 0

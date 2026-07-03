@@ -7,6 +7,8 @@ operator scripts remain compatibility shims for users who run commands from insi
 from __future__ import annotations
 
 import argparse
+import contextlib
+import io
 import json
 import os
 import shutil
@@ -514,7 +516,23 @@ def command_sandbox(args: argparse.Namespace) -> int:
 
 def command_doctor(args: argparse.Namespace) -> int:
     root = args.root.expanduser().resolve()
-    return doctor_module.main(root=root)
+    return doctor_module.main(root=root, json_output=args.json)
+
+
+def run_module_json(func, argv: list[str], **kwargs) -> tuple[int, dict]:
+    stream = io.StringIO()
+    with contextlib.redirect_stdout(stream):
+        status = int(func(argv, **kwargs))
+    text = stream.getvalue().strip()
+    if not text:
+        return status, {}
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        return status or 1, {"raw_output": text, "error": "invalid-json-output"}
+    if isinstance(payload, dict):
+        return status, payload
+    return status, {"payload": payload}
 
 
 def repo_config(root: Path) -> Path:
@@ -581,14 +599,34 @@ def command_sync(args: argparse.Namespace) -> int:
 
     if any(
         (
-            getattr(args, "json", False),
             getattr(args, "retry_failed", False),
             getattr(args, "max_events", None) is not None,
             getattr(args, "holder", None),
         )
     ):
-        print("sync: --json, --retry-failed, --max-events, and --holder require --changed", file=sys.stderr)
+        print("sync: --retry-failed, --max-events, and --holder require --changed", file=sys.stderr)
         return 2
+    if args.json:
+        office_status, office_payload = run_module_json(
+            office_sync_module.main,
+            ["--json"],
+            default_root=root,
+        )
+        repo_status, repo_payload = run_module_json(
+            repo_sync_module.main,
+            ["--json"],
+            default_root=root,
+            default_config=repo_config(root),
+        )
+        payload = {
+            "mode": "sync",
+            "root": str(root),
+            "office": office_payload,
+            "repos": repo_payload,
+            "exit_codes": {"office": office_status, "repos": repo_status},
+        }
+        print(json.dumps(payload, indent=2, sort_keys=True))
+        return office_status or repo_status
     office = office_sync_module.main([], default_root=root)
     repos = repo_sync_module.main([], default_root=root, default_config=repo_config(root))
     return office or repos
@@ -716,6 +754,27 @@ def command_watch(args: argparse.Namespace) -> int:
 
 def command_status(args: argparse.Namespace) -> int:
     root = args.root.expanduser().resolve()
+    if args.json:
+        office_status, office_payload = run_module_json(
+            office_sync_module.main,
+            ["--status", "--json"],
+            default_root=root,
+        )
+        repo_status, repo_payload = run_module_json(
+            repo_sync_module.main,
+            ["--status", "--json"],
+            default_root=root,
+            default_config=repo_config(root),
+        )
+        payload = {
+            "mode": "status",
+            "root": str(root),
+            "office": office_payload,
+            "repos": repo_payload,
+            "exit_codes": {"office": office_status, "repos": repo_status},
+        }
+        print(json.dumps(payload, indent=2, sort_keys=True))
+        return office_status or repo_status
     status = office_sync_module.main(["--status"], default_root=root)
     config = repo_config(root)
     if config.exists():
@@ -955,7 +1014,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=300,
         help="Worker lease time-to-live in seconds for --changed.",
     )
-    sync.add_argument("--json", action="store_true", help="Print machine-readable --changed results.")
+    sync.add_argument("--json", action="store_true", help="Print machine-readable sync results.")
     sync.set_defaults(func=command_sync)
     watch = sub.add_parser("watch", help="Run journaled watch orchestration.")
     watch_mode = watch.add_mutually_exclusive_group()
@@ -992,7 +1051,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     watch.add_argument("--json", action="store_true", help="Print machine-readable watch results.")
     watch.set_defaults(func=command_watch)
-    sub.add_parser("status", help="Report manifest-backed lifecycle status.").set_defaults(func=command_status)
+    status = sub.add_parser("status", help="Report manifest-backed lifecycle status.")
+    status.add_argument("--json", action="store_true", help="Print machine-readable lifecycle status.")
+    status.set_defaults(func=command_status)
     journal = sub.add_parser("journal", help="Inspect local journaled materialization state.")
     journal_sub = journal.add_subparsers(dest="journal_command", required=True)
     journal_status = journal_sub.add_parser("status", help="Report local journal queue and worker state.")
@@ -1021,7 +1082,9 @@ def build_parser() -> argparse.ArgumentParser:
     reconcile = sub.add_parser("reconcile", help="Queue missed journal events from source/manifest state.")
     reconcile.add_argument("--json", action="store_true", help="Print machine-readable reconciliation results.")
     reconcile.set_defaults(func=command_reconcile)
-    sub.add_parser("doctor", help="Check required files, Python version, and dependencies.").set_defaults(func=command_doctor)
+    doctor = sub.add_parser("doctor", help="Check required files, Python version, and dependencies.")
+    doctor.add_argument("--json", action="store_true", help="Print machine-readable doctor results.")
+    doctor.set_defaults(func=command_doctor)
     sub.add_parser("lint", help="Run vault health checks.").set_defaults(func=command_lint)
     overlap = sub.add_parser("overlap", help=experimental_help("Print a read-only overlap threshold calibration report."))
     overlap_output = overlap.add_mutually_exclusive_group()

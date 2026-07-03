@@ -525,6 +525,60 @@ def test_packaged_plan_sync_status_do_not_require_vault_wrapper(tmp_path: Path) 
     assert "vaultwright status: no tools/repos.yml found; repo status skipped" in results["status"].stdout
 
 
+def test_packaged_sync_status_doctor_json_outputs_are_structured(tmp_path: Path) -> None:
+    vault = tmp_path / "vault"
+    shutil.copytree(ROOT / "template", vault)
+    (vault / "tools" / "vaultwright.py").unlink()
+    env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
+
+    doctor = subprocess.run(
+        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "doctor", "--json"],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+    )
+    status = subprocess.run(
+        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "status", "--json"],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+    )
+    sync = subprocess.run(
+        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "sync", "--json"],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+    )
+
+    assert doctor.returncode == 0, doctor.stderr or doctor.stdout
+    assert status.returncode == 0, status.stderr or status.stdout
+    assert sync.returncode == 0, sync.stderr or sync.stdout
+    doctor_payload = json.loads(doctor.stdout)
+    status_payload = json.loads(status.stdout)
+    sync_payload = json.loads(sync.stdout)
+
+    assert doctor_payload["ok"] is True
+    assert doctor_payload["root"] == str(vault.resolve())
+    assert any(item.startswith("Python: 3.11") for item in doctor_payload["info"])
+    assert "vaultwright doctor:" not in doctor.stdout
+
+    assert status_payload["mode"] == "status"
+    assert status_payload["office"]["tool"] == "sync_office_md"
+    assert status_payload["office"]["mode"] == "status"
+    assert status_payload["repos"]["skipped"] is True
+    assert status_payload["repos"]["reason"] == "no repos.yml found"
+    assert "sync_office_md status" not in status.stdout
+
+    assert sync_payload["mode"] == "sync"
+    assert sync_payload["office"]["tool"] == "sync_office_md"
+    assert sync_payload["office"]["counts"]["created"] == 0
+    assert sync_payload["repos"]["skipped"] is True
+    assert "sync_github_repos: no repos.yml found" not in sync.stdout
+
+
 def test_packaged_doctor_does_not_require_vault_wrapper(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)

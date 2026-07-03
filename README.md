@@ -99,6 +99,9 @@ python3.11 -m pip install -r tools/requirements.txt  # markitdown + pyyaml
 python3.11 tools/vaultwright.py plan                 # inspect proposed mirror actions first
 python3.11 tools/vaultwright.py sync                 # mirror Office files and configured repos
 python3.11 tools/vaultwright.py status               # review manifest-backed lifecycle state
+python3.11 tools/vaultwright.py sync --json          # machine-readable sync evidence for agents/pilots
+python3.11 tools/vaultwright.py status --json        # machine-readable lifecycle status
+python3.11 tools/vaultwright.py doctor --json        # machine-readable preflight report
 python3.11 tools/vaultwright.py conversion --guide   # read-only conversion spot-check + guide
 python3.11 tools/vaultwright.py conversion --init-results # private quality review scaffold
 python3.11 tools/vaultwright.py conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold

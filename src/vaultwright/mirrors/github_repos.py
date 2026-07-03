@@ -1224,11 +1224,12 @@ def update_manifest_after_sync(manifest: dict, plan: dict, status: str) -> None:
     upsert_repo_record(manifest, record)
 
 
-def print_plan_or_status(settings, repos, token, manifest, mode: str, quiet: bool) -> int:
+def print_plan_or_status(settings, repos, token, manifest, mode: str, quiet: bool, json_output: bool = False) -> int:
     action_counts = {"create": 0, "update": 0, "unchanged": 0, "skip": 0, "review": 0, "error": 0}
     state_counts: dict[str, int] = {}
     seen_repo_ids: set[str] = set()
     lifecycle_contract = load_lifecycle_contract(ROOT)
+    items: list[dict[str, object]] = []
     for entry in repos:
         plan = plan_one(entry, settings, token, manifest)
         action = plan["action"]
@@ -1236,6 +1237,17 @@ def print_plan_or_status(settings, repos, token, manifest, mode: str, quiet: boo
         action_counts[action] = action_counts.get(action, 0) + 1
         state_counts[state] = state_counts.get(state, 0) + 1
         seen_repo_ids.add(plan["record"]["repo_id"])
+        items.append(
+            {
+                "repo": entry.get("repo", ""),
+                "note_path": plan["record"].get("note_path", ""),
+                "action": action,
+                "status": status_for_plan(plan),
+                "lifecycle_state": state,
+                "warnings": list(plan["record"].get("warnings", [])),
+                "errors": list(plan["record"].get("errors", [])),
+            }
+        )
         if not quiet:
             print(f"  [{status_for_plan(plan):<28}] {entry.get('repo', '')} -> {plan['record']['note_path']}")
     unconfigured = 0
@@ -1246,9 +1258,20 @@ def print_plan_or_status(settings, repos, token, manifest, mode: str, quiet: boo
         unconfigured += 1
         state_counts["repo_unconfigured"] = state_counts.get("repo_unconfigured", 0) + 1
         action_counts["review"] = action_counts.get("review", 0) + 1
+        source = record.get("configured_repo") or record.get("resolved_repo") or ""
+        target = record.get("note_path") or ""
+        items.append(
+            {
+                "repo": source,
+                "note_path": target,
+                "action": "review",
+                "status": "review:repo_unconfigured",
+                "lifecycle_state": "repo_unconfigured",
+                "warnings": list(record.get("warnings", [])) if isinstance(record.get("warnings"), list) else [],
+                "errors": list(record.get("errors", [])) if isinstance(record.get("errors"), list) else [],
+            }
+        )
         if not quiet:
-            source = record.get("configured_repo") or record.get("resolved_repo") or ""
-            target = record.get("note_path") or ""
             print(f"  [{'review:repo_unconfigured':<28}] {source} -> {target}")
     summary = (
         f"{action_counts.get('create', 0)} create, {action_counts.get('update', 0)} update, "
@@ -1256,9 +1279,22 @@ def print_plan_or_status(settings, repos, token, manifest, mode: str, quiet: boo
         f"{action_counts.get('review', 0)} review, {action_counts.get('error', 0)} error"
     )
     state_summary = ", ".join(f"{state}={count}" for state, count in sorted(state_counts.items())) or "no states"
-    print(f"\nsync_github_repos {mode}: {len(repos)} configured repos, {unconfigured} unconfigured manifest repos -> {summary}")
-    print(f"lifecycle: {state_summary}")
-    print_lifecycle_guidance(state_counts, lifecycle_contract)
+    payload = {
+        "tool": "sync_github_repos",
+        "mode": mode,
+        "root": str(ROOT),
+        "configured_repos": len(repos),
+        "unconfigured_manifest_repos": unconfigured,
+        "action_counts": action_counts,
+        "state_counts": state_counts,
+        "items": items,
+    }
+    if json_output:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(f"\nsync_github_repos {mode}: {len(repos)} configured repos, {unconfigured} unconfigured manifest repos -> {summary}")
+        print(f"lifecycle: {state_summary}")
+        print_lifecycle_guidance(state_counts, lifecycle_contract)
     return 1 if action_counts.get("error", 0) else 0
 
 
@@ -1423,6 +1459,7 @@ def main(argv: list[str] | None = None, default_root: Path | None = None, defaul
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--no-log", action="store_true")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--json", action="store_true", help="Print machine-readable sync, plan, or status output.")
     args = ap.parse_args(argv)
 
     if args.plan and args.status:
@@ -1431,7 +1468,21 @@ def main(argv: list[str] | None = None, default_root: Path | None = None, defaul
 
     if not args.config.exists():
         if args.config == CONFIG:
-            print("sync_github_repos: no repos.yml found; skipped (copy tools/repos.example.yml to tools/repos.yml to enable)")
+            if args.json:
+                print(json.dumps(
+                    {
+                        "tool": "sync_github_repos",
+                        "mode": "status" if args.status else "plan" if args.plan else "sync",
+                        "root": str(ROOT),
+                        "skipped": True,
+                        "reason": "no repos.yml found",
+                        "counts": {"created": 0, "updated": 0, "unchanged": 0, "stub": 0, "skipped": 1, "error": 0},
+                    },
+                    indent=2,
+                    sort_keys=True,
+                ))
+            else:
+                print("sync_github_repos: no repos.yml found; skipped (copy tools/repos.example.yml to tools/repos.yml to enable)")
             return 0
         print(f"sync_github_repos: config not found: {args.config}", file=sys.stderr)
         return 1
@@ -1454,14 +1505,15 @@ def main(argv: list[str] | None = None, default_root: Path | None = None, defaul
         print(f"sync_github_repos: invalid manifest: {exc}", file=sys.stderr)
         return 1
     if args.plan:
-        return print_plan_or_status(settings, repos, token, manifest, "plan", args.quiet)
+        return print_plan_or_status(settings, repos, token, manifest, "plan", args.quiet or args.json, args.json)
     if args.status:
-        return print_plan_or_status(settings, repos, token, manifest, "status", args.quiet)
+        return print_plan_or_status(settings, repos, token, manifest, "status", args.quiet or args.json, args.json)
 
     counts = {"created": 0, "updated": 0, "unchanged": 0, "stub": 0, "skipped": 0, "error": 0}
     changed = []
+    items: list[dict[str, object]] = []
     seen_repo_ids: set[str] = set()
-    if not args.quiet:
+    if not args.quiet and not args.json:
         print(f"github sync: {len(repos)} repos · auth={'yes' if token else 'NONE (stubs only for private repos)'}")
     for entry in repos:
         plan = plan_one(entry, settings, token, manifest)
@@ -1482,7 +1534,17 @@ def main(argv: list[str] | None = None, default_root: Path | None = None, defaul
             )
         key = status.split(":")[0]
         counts[key] = counts.get(key, 0) + 1
-        if not args.quiet:
+        items.append(
+            {
+                "repo": entry.get("repo", ""),
+                "note_path": plan["record"].get("note_path", ""),
+                "status": status,
+                "lifecycle_state": plan["record"].get("lifecycle_state", ""),
+                "warnings": list(plan["record"].get("warnings", [])),
+                "errors": list(plan["record"].get("errors", [])),
+            }
+        )
+        if not args.quiet and not args.json:
             print(f"  [{status:<18}] {entry.get('repo', '')} -> {settings.get('notes_dir', default_repo_notes_dir())}/{entry.get('note', '')}")
         if status in ("created", "updated"):
             changed.append(entry.get("note", ""))
@@ -1499,9 +1561,24 @@ def main(argv: list[str] | None = None, default_root: Path | None = None, defaul
     summary = (f"{counts['created']} created, {counts['updated']} updated, {counts['unchanged']} unchanged, "
                f"{counts['stub']} stub, {counts['skipped']} skipped, {counts['error']} error, "
                f"{unconfigured} unconfigured")
-    print(f"\nsync_github_repos: {summary}"
-          + (" [dry-run]" if args.dry_run else "")
-          + (" [manifest updated]" if manifest_changed else ""))
+    payload = {
+        "tool": "sync_github_repos",
+        "mode": "sync",
+        "root": str(ROOT),
+        "configured_repos": len(repos),
+        "counts": counts,
+        "unconfigured_manifest_repos": unconfigured,
+        "dry_run": bool(args.dry_run),
+        "manifest_changed": manifest_changed,
+        "changed": list(changed),
+        "items": items,
+    }
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(f"\nsync_github_repos: {summary}"
+              + (" [dry-run]" if args.dry_run else "")
+              + (" [manifest updated]" if manifest_changed else ""))
 
     if (changed or counts["stub"]) and not args.dry_run and not args.no_log:
         with (ROOT / "log.md").open("a", encoding="utf-8") as f:

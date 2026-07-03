@@ -38,10 +38,13 @@ jobs:
           vaultwright --root "$tmp_vault" profile views --check
           vaultwright --root "$tmp_vault" migrate annotations --plan
           vaultwright --root "$tmp_vault" doctor
+          vaultwright --root "$tmp_vault" doctor --json
           vaultwright --root "$tmp_vault" lint
           vaultwright --root "$tmp_vault" plan
           vaultwright --root "$tmp_vault" sync
+          vaultwright --root "$tmp_vault" sync --json
           vaultwright --root "$tmp_vault" status
+          vaultwright --root "$tmp_vault" status --json
           vaultwright --root "$tmp_vault" conversion --json
           vaultwright --root "$tmp_vault" migration --json
           vaultwright --root "$tmp_vault" overlap --json
@@ -75,9 +78,12 @@ jobs:
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" profile views --check
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" migrate annotations --plan
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" doctor
+          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" doctor --json
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" plan
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" sync
+          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" sync --json
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" status
+          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" status --json
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" sandbox --source-root "$tmp_build/original-documents" --json
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" benchmark
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" catalog

@@ -253,7 +253,12 @@ def test_sync_changed_cli_json_processes_review_required_legacy_doc(tmp_path: Pa
 
 
 def test_sync_changed_only_options_require_changed_mode(tmp_path: Path) -> None:
-    result = run_cli(tmp_path, "sync", "--json")
+    json_result = run_cli(tmp_path, "sync", "--json")
+    holder_result = run_cli(tmp_path, "sync", "--holder", "cli-test")
 
-    assert result.returncode == 2
-    assert "require --changed" in result.stderr
+    assert json_result.returncode == 0, json_result.stderr
+    payload = json.loads(json_result.stdout)
+    assert payload["mode"] == "sync"
+    assert payload["office"]["tool"] == "sync_office_md"
+    assert holder_result.returncode == 2
+    assert "require --changed" in holder_result.stderr
