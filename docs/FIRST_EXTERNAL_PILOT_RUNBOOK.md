@@ -44,6 +44,21 @@ Copy the public worksheet into the private evidence folder:
 cp docs/PILOT_WORKSHEET.md "$PRIVATE_EVIDENCE/PILOT_WORKSHEET.md"
 ```
 
+## Operator Environment Smoke Test
+
+Before the participant is on the call, confirm the installed command is the one the runbook will
+use:
+
+```bash
+command -v vaultwright
+vaultwright --version
+vaultwright profile list
+```
+
+If the installed command is unavailable, either install Vaultwright with the package-first
+`uvx`/`pipx` path from `docs/quickstart.md` or plan to use the copied vault's compatibility wrapper
+explicitly. Do not spend participant time debugging Python packaging.
+
 ## First-Run Sequence
 
 Run commands with the installed package when possible. If the installed command is unavailable,

@@ -115,9 +115,11 @@ For repeated local use, install the console command once:
 
 ```bash
 uv tool install git+https://github.com/cz1993/vaultwright.git
+vaultwright --version
 
 # or, with pipx:
 pipx install git+https://github.com/cz1993/vaultwright.git
+vaultwright --version
 ```
 
 Then open the vault in Obsidian if you want a human UI, point your agent at it (it reads
@@ -169,6 +171,7 @@ Source checkout fallback:
 ```bash
 git clone https://github.com/cz1993/vaultwright.git vaultwright && cd vaultwright
 python3.11 -m pip install -e .
+vaultwright --version
 vaultwright profile list
 vaultwright init --profile business-operations ~/my-business-vault
 vaultwright init --profile research-learning ~/my-research-vault

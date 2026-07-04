@@ -39,6 +39,7 @@ def test_docs_pin_package_first_onboarding_commands() -> None:
         assert "pipx run vaultwright init --profile business-operations ~/my-business-vault" in text
         assert "uv tool install git+https://github.com/cz1993/vaultwright.git" in text
         assert "pipx install git+https://github.com/cz1993/vaultwright.git" in text
+        assert "vaultwright --version" in text
         assert "git clone https://github.com/cz1993/vaultwright.git vaultwright" in text
 
 
@@ -93,6 +94,39 @@ def test_release_checklist_tag_matches_package_version() -> None:
     assert f'__version__ = "{version}"' in init_text
     assert f"git tag -a v{version} -m \"v{version}\"" in text
     assert f"git push origin v{version}" in text
+
+
+def test_cli_global_version_outputs_package_version() -> None:
+    pyproject = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
+    version = pyproject["project"]["version"]
+    env = os.environ.copy()
+    src_path = str(ROOT / "src")
+    env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
+
+    result = subprocess.run(
+        [sys.executable, "-m", "vaultwright.cli", "--version"],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == f"vaultwright {version}"
+
+
+def test_external_pilot_docs_start_with_installed_command_smoke_check() -> None:
+    runbook = (ROOT / "docs" / "FIRST_EXTERNAL_PILOT_RUNBOOK.md").read_text(encoding="utf-8")
+    worksheet = (ROOT / "docs" / "PILOT_WORKSHEET.md").read_text(encoding="utf-8")
+
+    assert "## Operator Environment Smoke Test" in runbook
+    assert "command -v vaultwright" in runbook
+    assert "vaultwright --version" in runbook
+    assert "vaultwright profile list" in runbook
+    assert "Do not spend participant time debugging Python packaging." in runbook
+    assert "vaultwright --version" in worksheet
+    assert "vaultwright profile list" in worksheet
 
 
 def test_workflows_use_current_action_majors() -> None:

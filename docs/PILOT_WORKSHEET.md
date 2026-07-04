@@ -77,6 +77,8 @@ Record command results and elapsed time. Use the installed package command when 
 
 ```bash
 export VW="/path/to/copied-pilot-vault"
+vaultwright --version
+vaultwright profile list
 vaultwright --root "$VW" sandbox --source-root /path/to/original-documents
 vaultwright --root "$VW" doctor
 vaultwright --root "$VW" doctor --json

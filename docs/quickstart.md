@@ -29,9 +29,11 @@ For repeated pilot commands, install the console command once:
 
 ```bash
 uv tool install git+https://github.com/cz1993/vaultwright.git
+vaultwright --version
 
 # or, with pipx:
 pipx install git+https://github.com/cz1993/vaultwright.git
+vaultwright --version
 ```
 
 Source checkout fallback:
@@ -39,6 +41,7 @@ Source checkout fallback:
 ```bash
 git clone https://github.com/cz1993/vaultwright.git vaultwright && cd vaultwright
 python3.11 -m pip install -e .
+vaultwright --version
 vaultwright profile list
 vaultwright init --profile business-operations ~/my-business-vault
 vaultwright init --profile research-learning ~/my-research-vault

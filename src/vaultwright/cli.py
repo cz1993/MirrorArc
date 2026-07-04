@@ -17,6 +17,7 @@ import sys
 import time
 from pathlib import Path
 
+from vaultwright import __version__
 from vaultwright import benchmark as benchmark_module
 from vaultwright import catalog as catalog_module
 from vaultwright import conversion as conversion_module
@@ -944,6 +945,7 @@ def command_migrate_annotations(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Vaultwright command-line interface.")
     parser.add_argument("--root", type=Path, default=Path.cwd(), help="Vault root for plan/sync/status/lint/doctor.")
+    parser.add_argument("--version", action="version", version=f"vaultwright {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
 
     init = sub.add_parser("init", help="Scaffold a new Vaultwright vault from the template.")

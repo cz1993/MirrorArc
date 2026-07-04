@@ -23,6 +23,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added a package-version CLI smoke check (`vaultwright --version`) and wired it into
+  package-first onboarding plus the external-pilot runbook.
 - Added the 2026-07-03 independent project review to `docs/revisions/` so the active Stage 3
   execution rationale is preserved with the repository history.
 - Added a first external pilot runbook that turns an accepted design-partner attempt into a
