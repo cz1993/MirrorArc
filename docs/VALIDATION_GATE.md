@@ -96,6 +96,7 @@ vaultwright --root "$VW" catalog
 vaultwright --root "$VW" catalog --html
 vaultwright --root "$VW" conversion --guide
 vaultwright --root "$VW" recovery --worksheet
+python3.11 /path/to/vaultwright/scripts/create_plain_markitdown_dump.py --root "$VW" --force
 vaultwright --root "$VW" benchmark --results _meta/agent-readiness-results.yml --require-results --require-citations --require-prompt-safety
 vaultwright --root "$VW" pilot --json
 vaultwright --root "$VW" pilot --worksheet

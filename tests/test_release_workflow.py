@@ -336,3 +336,12 @@ def test_release_checklist_documents_owner_review_and_limitations() -> None:
     assert "conversion quality" in text
     assert "conversion-quality result packs" in text
     assert "external pilot evidence" in text
+
+
+def test_external_pilot_runbook_creates_plain_markitdown_baseline() -> None:
+    text = (ROOT / "docs" / "FIRST_EXTERNAL_PILOT_RUNBOOK.md").read_text(encoding="utf-8")
+
+    assert "scripts/create_plain_markitdown_dump.py" in text
+    assert "--root \"$VW\"" in text
+    assert "_benchmark/plain_markitdown_dump/" in text
+    assert "`plain_markitdown_dump` comparison mode" in text

@@ -97,6 +97,7 @@ vaultwright --root "$VW" overlap
 vaultwright --root "$VW" overlap --worksheet
 vaultwright --root "$VW" m365
 vaultwright --root "$VW" review --json
+python3.11 /path/to/vaultwright/scripts/create_plain_markitdown_dump.py --root "$VW" --force
 vaultwright --root "$VW" benchmark --init-tasks
 vaultwright --root "$VW" benchmark --worksheet
 vaultwright --root "$VW" benchmark --require-generated

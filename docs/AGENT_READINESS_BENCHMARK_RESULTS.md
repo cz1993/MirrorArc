@@ -98,6 +98,9 @@ It also writes `_meta/agent-readiness-tasks.yml`,
 vault. `_benchmark/` is ignored by the Vaultwright template because it may contain private run
 worksheets and result scaffolds.
 
+For a real external pilot, create the equivalent plain dump from the copied pilot vault with
+`scripts/create_plain_markitdown_dump.py`; keep the resulting `_benchmark/` artifacts private.
+
 For a reproducible synthetic dogfood score packet, generate the corpus with the reviewed-results
 flag, then sync and validate the generated private result pack:
 

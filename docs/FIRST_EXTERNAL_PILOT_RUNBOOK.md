@@ -112,10 +112,23 @@ using generated mirrors for source-backed decisions.
 
 ### 4. Benchmark Setup
 
+Create the plain conversion baseline in the copied pilot vault before scoring. This is the
+`plain_markitdown_dump` comparison mode required by `docs/VALIDATION_GATE.md`:
+
+```bash
+python3.11 /path/to/vaultwright/scripts/create_plain_markitdown_dump.py \
+  --root "$VW" \
+  --force \
+  > "$PRIVATE_EVIDENCE/12_plain_markitdown_dump.txt"
+```
+
+The dump lives under `$VW/_benchmark/plain_markitdown_dump/`. Treat it as private pilot evidence:
+it may contain source-derived text and private relative paths.
+
 ```bash
 vaultwright --root "$VW" benchmark --init-tasks
 vaultwright --root "$VW" benchmark --worksheet \
-  > "$PRIVATE_EVIDENCE/12_benchmark_worksheet.md"
+  > "$PRIVATE_EVIDENCE/13_benchmark_worksheet.md"
 vaultwright --root "$VW" benchmark --init-results
 ```
 
@@ -133,7 +146,7 @@ vaultwright --root "$VW" benchmark \
   --require-results \
   --require-citations \
   --require-prompt-safety \
-  > "$PRIVATE_EVIDENCE/13_benchmark_validation.txt"
+  > "$PRIVATE_EVIDENCE/14_benchmark_validation.txt"
 ```
 
 Stop the benchmark claim if scored answers lack citations or prompt-safety review.
@@ -142,11 +155,11 @@ Stop the benchmark claim if scored answers lack citations or prompt-safety revie
 
 ```bash
 vaultwright --root "$VW" pilot --json \
-  > "$PRIVATE_EVIDENCE/14_pilot.json"
+  > "$PRIVATE_EVIDENCE/15_pilot.json"
 vaultwright --root "$VW" pilot --worksheet \
-  > "$PRIVATE_EVIDENCE/15_pilot_worksheet.md"
+  > "$PRIVATE_EVIDENCE/16_pilot_worksheet.md"
 vaultwright --root "$VW" lint \
-  > "$PRIVATE_EVIDENCE/16_lint.txt"
+  > "$PRIVATE_EVIDENCE/17_lint.txt"
 ```
 
 Use the aggregate output to complete the private worksheet. Do not copy private result packs,
@@ -164,16 +177,16 @@ Then ask the participant to run the refresh without hands-on help:
 
 ```bash
 vaultwright --root "$VW" sync --changed --json \
-  > "$PRIVATE_EVIDENCE/17_second_sync_changed.json"
+  > "$PRIVATE_EVIDENCE/18_second_sync_changed.json"
 vaultwright --root "$VW" status --json \
-  > "$PRIVATE_EVIDENCE/18_status_after_second_sync.json"
+  > "$PRIVATE_EVIDENCE/19_status_after_second_sync.json"
 ```
 
 If changed-file sync is not appropriate for the pilot vault, use the full recovery path instead:
 
 ```bash
 vaultwright --root "$VW" sync --full --json \
-  > "$PRIVATE_EVIDENCE/17_second_sync_full.json"
+  > "$PRIVATE_EVIDENCE/18_second_sync_full.json"
 ```
 
 Record `second_sync_pass` only when the participant completes routine refresh without hands-on

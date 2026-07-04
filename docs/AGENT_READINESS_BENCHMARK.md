@@ -23,6 +23,19 @@ Run the same task set against three modes:
 
 Do not mix evidence between modes during scoring.
 
+For private external pilots, create the plain dump inside the copied pilot vault before scoring:
+
+```bash
+python3.11 /path/to/vaultwright/scripts/create_plain_markitdown_dump.py \
+  --root "$VW" \
+  --force
+```
+
+The helper writes `_benchmark/plain_markitdown_dump/` and
+`_benchmark/plain_markitdown_dump-summary.json` in the copied vault. Those artifacts may contain
+source-derived text and private relative paths, so keep them with private pilot evidence and never
+commit them to this public repository.
+
 ## Task Families
 
 Use fixed tasks that reflect real operator and agent work:
