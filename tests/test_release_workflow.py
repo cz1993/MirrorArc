@@ -127,6 +127,10 @@ def test_external_pilot_docs_start_with_installed_command_smoke_check() -> None:
     assert "Do not spend participant time debugging Python packaging." in runbook
     assert "vaultwright --version" in worksheet
     assert "vaultwright profile list" in worksheet
+    assert 'Record from `vaultwright --root "$VW" pilot --json` after first sync:' in worksheet
+    assert 'vaultwright --root "$VW" pilot --worksheet' in worksheet
+    assert "python3.11 tools/vaultwright.py pilot --json" not in worksheet
+    assert "python3.11 tools/vaultwright.py pilot --worksheet" not in worksheet
 
 
 def test_workflows_use_current_action_majors() -> None:

@@ -32,7 +32,7 @@ worksheet as the private record.
 
 ## Corpus Shape
 
-Record from `python3.11 tools/vaultwright.py pilot --json` after first sync:
+Record from `vaultwright --root "$VW" pilot --json` after first sync:
 
 - content file count:
 - total content bytes:
@@ -65,7 +65,7 @@ into this worksheet.
 For a paste-ready aggregate summary, use:
 
 ```bash
-python3.11 tools/vaultwright.py pilot --worksheet
+vaultwright --root "$VW" pilot --worksheet
 ```
 
 This prints a Markdown summary with counts, review queues, and private worksheet prompts. It omits

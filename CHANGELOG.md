@@ -12,6 +12,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   autonomous loops do not resume stale Stage 1 or sample-corpus work.
 - Tightened the design-partner pilot protocol and worksheet around package-first commands, strict
   benchmark validation, and the second-sync self-service success gate.
+- Aligned the pilot worksheet's aggregate evidence examples with the installed package command,
+  keeping the vault-local wrapper documented only as a fallback.
 - Updated the primary benchmark baseline from `document_chat_transcript` to
   `plain_markitdown_dump`, while preserving legacy task-pack compatibility.
 - Pulled external corpus validation ahead of Obsidian adapter, evidence-index, Explorer, and
