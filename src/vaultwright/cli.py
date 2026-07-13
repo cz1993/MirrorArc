@@ -25,6 +25,7 @@ from vaultwright import doctor as doctor_module
 from vaultwright import lint as lint_module
 from vaultwright import m365 as m365_module
 from vaultwright import migration as migration_module
+from vaultwright import navigator as navigator_module
 from vaultwright import overlap as overlap_module
 from vaultwright import pilot as pilot_module
 from vaultwright import recovery as recovery_module
@@ -383,6 +384,33 @@ def catalog_args(args: argparse.Namespace) -> list[str]:
 def command_catalog(args: argparse.Namespace) -> int:
     root = args.root.expanduser().resolve()
     return catalog_module.main(catalog_args(args), root=root)
+
+
+def command_navigate(args: argparse.Namespace) -> int:
+    root = args.root.expanduser().resolve()
+    if args.json:
+        payload = navigator_module.public_payload(root)
+        print(json.dumps(payload, indent=2, sort_keys=True))
+        return 1 if payload["errors"] else 0
+    if args.check:
+        payload = navigator_module.public_payload(root)
+        summary = payload["summary"]
+        print(
+            "navigator: "
+            f"documents={summary['documents']} "
+            f"edges={summary['edges']} "
+            f"trails={summary['trails']}"
+        )
+        for warning in payload["warnings"]:
+            print(f"warning: {warning}")
+        for error in payload["errors"]:
+            print(f"error: {error}", file=sys.stderr)
+        return 1 if payload["errors"] else 0
+    try:
+        return navigator_module.serve(root, port=args.port, open_browser=args.open)
+    except (OSError, ValueError) as exc:
+        print(f"vaultwright navigate: {exc}", file=sys.stderr)
+        return 1
 
 
 def conversion_args(args: argparse.Namespace) -> list[str]:
@@ -1230,6 +1258,33 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum source/repo records to list per catalog section; use 0 for no limit.",
     )
     catalog.set_defaults(func=command_catalog)
+    navigate = sub.add_parser(
+        "navigate",
+        help=experimental_help("Open the local, read-only guided Markdown Navigator."),
+    )
+    navigate_output = navigate.add_mutually_exclusive_group()
+    navigate_output.add_argument(
+        "--check",
+        action="store_true",
+        help="Validate the navigation model and authored trails without starting a server.",
+    )
+    navigate_output.add_argument(
+        "--json",
+        action="store_true",
+        help="Print the metadata-only navigation model and exit.",
+    )
+    navigate.add_argument(
+        "--port",
+        type=int,
+        default=navigator_module.DEFAULT_PORT,
+        help="Explicit loopback port for the local reader. Defaults to a fresh auto-selected port.",
+    )
+    navigate.add_argument(
+        "--open",
+        action="store_true",
+        help="Open the Navigator URL in the default browser after the server starts.",
+    )
+    navigate.set_defaults(func=command_navigate)
     sandbox = sub.add_parser("sandbox", help=experimental_help("Print a read-only copied-vault sandbox readiness report."))
     sandbox.add_argument(
         "--source-root",

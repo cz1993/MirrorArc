@@ -15,10 +15,11 @@ related: ["[[CLAUDE]]", "[[RETENTION]]"]
 The map of the vault. **Start here.** Conventions live in [[CLAUDE]]; the one-screen cheat sheet is
 [[_meta/conventions|conventions]].
 
-> [!tip] Two ways to navigate
+> [!tip] Three ways to navigate
+> - **Vaultwright Navigator** — run `vaultwright --root <vault> navigate` for guided local reading.
 > - **This page** — the curated map of function hubs and key entities.
-> - **[[Documents.base|Documents]]** — live tables generated from note frontmatter (Obsidian Bases),
->   so they never drift.
+> - **[[Documents.base|Documents]]** — optional live tables generated from note frontmatter for
+>   Obsidian Bases.
 
 ## Starter Domains
 

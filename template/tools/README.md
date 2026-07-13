@@ -54,6 +54,8 @@ python3.11 tools/vaultwright.py status
 python3.11 tools/vaultwright.py status --json
 python3.11 tools/vaultwright.py catalog
 python3.11 tools/vaultwright.py catalog --html
+python3.11 tools/vaultwright.py navigate --check
+python3.11 tools/vaultwright.py navigate
 python3.11 tools/vaultwright.py m365
 python3.11 tools/vaultwright.py review --json
 python3.11 tools/vaultwright.py overlap
@@ -105,6 +107,13 @@ removed appear as `repo_unconfigured` even before repo sync rewrites the manifes
 manifest records include lifecycle contract provenance, the catalog also reports which contract
 path and schema version govern those states. Use `--stdout` to preview, `--json` for automation,
 and `--check` in CI or review scripts to fail when the selected catalog is stale.
+
+`navigate` is the package-owned, localhost-only Markdown reader. It scans the active profile's
+curated and generated Markdown, shows one-hop inbound/outbound links, and uses optional authored
+trails from `_meta/navigation.yml` for previous/next reading plus a human-written reason for each
+step. `navigate --check` validates the metadata-only model without starting a server. The reader
+loads one document at a time, does not write a combined content artifact, and is independent of
+Obsidian and the later evidence-index/Explorer gate.
 
 `conversion` is read-only unless `--init-results` is supplied. It reads
 `_meta/source-manifest.json` and turns lifecycle states, format risks, warnings, errors, and

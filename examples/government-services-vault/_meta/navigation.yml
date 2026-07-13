@@ -1,0 +1,19 @@
+schema_version: 1
+trails:
+  - id: canadian-small-business-start
+    title: Start a Canadian small business
+    goal: Understand the source boundaries, common owner questions, registration sequence, tax readiness, and support options.
+    audience: A first-time small-business owner reviewing this synthetic public-information showcase.
+    steps:
+      - path: INDEX.md
+        why: Orient to the collection, its governance rules, and the available domains before following specific guidance.
+      - path: 10_governance/Canadian Business Source Notes.md
+        why: Establish which public sources inform the showcase and where official advice remains authoritative.
+      - path: 30_customers/Small Business Owner Questions.md
+        why: Frame the practical questions the remaining documents are meant to answer.
+      - path: 40_delivery/CRA Business Registration Hub.md
+        why: Review business-number and program-account preparation before considering tax registration.
+      - path: 60_finance/GST HST Readiness Hub.md
+        why: Continue from business registration into GST/HST readiness and decision points.
+      - path: 60_finance/Business Funding and Support Hub.md
+        why: Finish with funding and support discovery after the registration and tax foundations are understood.

@@ -47,13 +47,15 @@ def test_kickoff_prompt_routes_future_work_to_stage3_validation() -> None:
     text = KICKOFF_PROMPT.read_text(encoding="utf-8")
 
     assert "Stage 0, Stage 1A, Stage 1B, and Stage 2 are closed." in text
-    assert "Stage 3 external validation is the next gate" in text
+    assert "Stage 3 external validation remains the next" in text
     assert "docs/VALIDATION_GATE.md" in text
     assert "docs/STAGE3_VALIDATION_STATUS.md" in text
     assert "docs/DESIGN_PARTNER_RECRUITING.md" in text
     assert "docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md" in text
-    assert "Do not start Obsidian adapter, generated Canvas, evidence index, Explorer" in text
-    assert "Docling/email/connectors, visualization, or new report surfaces" in text
+    assert "A bounded Navigator proof slice is allowed inside Stage 3" in text
+    assert "Keep the Stage 3 Navigator scan-on-open, localhost-only, read-only, and deterministic." in text
+    assert "start richer Obsidian adapter, generated Canvas, evidence index, advanced Explorer, MCP" in text
+    assert "whole-vault graph, Docling/email/connectors, or unrelated report surfaces before" in text
     assert "Work Stage 1 package/profile convergence before adding broad examples" not in text
     assert "The sample-data hunt (do this in goal-pursuing mode)" not in text
 
@@ -173,12 +175,13 @@ def test_cli_help_marks_review_plan_experimental_surfaces() -> None:
     assert benchmark.returncode == 0, benchmark.stderr
     help_text = " ".join(result.stdout.split())
     benchmark_help = " ".join(benchmark.stdout.split())
-    for command in ("overlap", "conversion", "pilot", "m365", "sandbox"):
+    for command in ("overlap", "conversion", "pilot", "m365", "navigate", "sandbox"):
         assert command in result.stdout
     assert "[experimental] Print a read-only overlap threshold calibration report." in help_text
     assert "[experimental] Print a read-only conversion spot-check report." in help_text
     assert "[experimental] Print a read-only design-partner pilot evidence report." in help_text
     assert "[experimental] Print a read-only Microsoft 365/Copilot handoff report." in help_text
+    assert "[experimental] Open the local, read-only guided Markdown Navigator." in help_text
     assert "[experimental] Print a read-only copied-vault sandbox readiness report." in help_text
     assert "experimental scaffold helpers remain unstable" in help_text
     assert "[experimental] Create a private benchmark task scaffold." in benchmark_help
@@ -196,8 +199,10 @@ def test_release_workflow_verifies_built_wheel_before_release() -> None:
     assert "test -f \"$tmp_vault/tools/m365_report.py\"" in text
     assert "test -f \"$tmp_vault/tools/overlap_report.py\"" in text
     assert "test -f \"$tmp_vault/tools/review_ledger.py\"" in text
+    assert "test -f \"$tmp_vault/_meta/navigation.yml\"" in text
     assert "catalog --check" in text
     assert "catalog --html --check" in text
+    assert "navigate --check" in text
     assert "profile diff 0.1.0" in text
     assert "profile migrate --plan" in text
     assert "profile migrate --write --json" in text
@@ -240,6 +245,8 @@ def test_ci_workflow_smokes_sandbox_command() -> None:
     assert "src/vaultwright/doctor.py" in text
     assert "src/vaultwright/m365.py" in text
     assert "src/vaultwright/migration.py" in text
+    assert "src/vaultwright/navigation.py" in text
+    assert "src/vaultwright/navigator.py" in text
     assert "src/vaultwright/overlap.py" in text
     assert "src/vaultwright/pilot.py" in text
     assert "src/vaultwright/recovery.py" in text
@@ -257,8 +264,10 @@ def test_ci_workflow_smokes_sandbox_command() -> None:
     assert "test -f \"$tmp_vault/tools/m365_report.py\"" in text
     assert "test -f \"$tmp_vault/tools/overlap_report.py\"" in text
     assert "test -f \"$tmp_vault/tools/review_ledger.py\"" in text
+    assert "test -f \"$tmp_vault/_meta/navigation.yml\"" in text
     assert "catalog --check" in text
     assert "catalog --html --check" in text
+    assert "navigate --check" in text
     assert "profile diff 0.1.0" in text
     assert "profile migrate --plan" in text
     assert "profile migrate --write --json" in text

@@ -10,7 +10,10 @@ sources, while full sync remains the recovery and verification path.
 
 Current execution order is validation-first: run a real external corpus through the core mirror,
 catalog, benchmark, recovery, and handoff flow before expanding Obsidian adapters, local indexes,
-Explorer, or visualization surfaces. The hard stop and pivot criteria are tracked in
+or indexed Explorer. One bounded Stage 3 exception exists: a scan-on-open, index-free,
+localhost-only, read-only Guided Knowledge Map/Navigator is implemented as the non-Obsidian
+front-door instrument for orientation and comprehension testing. Its implementation does not
+complete or bypass external validation. The hard stop, proof boundary, and pivot criteria are tracked in
 [`docs/VALIDATION_GATE.md`](VALIDATION_GATE.md).
 
 The first paid workflow remains consulting and implementation work, but the v1 architecture is no
@@ -38,14 +41,17 @@ The first workflow is:
 4. Run a read-only conversion spot-check report for unsupported, stale, conflicted, risky, or
    potentially low-quality conversions.
 5. Generate Markdown/HTML catalog gateways for operator, reviewer, and agent orientation.
-6. If the customer uses Microsoft 365, run a read-only Microsoft 365/Copilot handoff readiness
+6. During the Stage 3 proof, optionally compare that catalog with the read-only Navigator's curated
+   entry points and reading trails; do not require Obsidian, an evidence index, or a global graph.
+7. If the customer uses Microsoft 365, run a read-only Microsoft 365/Copilot handoff readiness
    report before moving derived content into approved tenant boundaries.
-7. Record metadata-only human review decisions against generated mirrors, catalogs, and handoff
+8. Record metadata-only human review decisions against generated mirrors, catalogs, and handoff
    reports so approvals are tied to artifact hashes.
-8. Create a small number of curated hubs and entity pages.
-9. Refresh the workspace over time with auditable sync/status output, including structured
+9. Create a small number of curated hubs, entity pages, and explicit navigation trails where a
+   stable reading order helps a defined audience complete a task.
+10. Refresh the workspace over time with auditable sync/status output, including structured
    `--json` evidence from `sync`, `status`, and `doctor` for agents and pilot records.
-10. After Stage 1B, use journaled changed-file materialization for normal steady-state refresh and
+11. After Stage 1B, use journaled changed-file materialization for normal steady-state refresh and
     full sync for recovery, reconciliation, and verification.
 
 ## Supported Corpus Range
@@ -83,6 +89,8 @@ A successful first workflow produces:
 - a review ledger that records reviewer/status decisions without copying source or mirror bodies;
 - aggregate pilot evidence reports that avoid source or mirror content;
 - curated hubs for the highest-value document clusters;
+- a first-party, Obsidian-independent navigation path that can orient a reader, render governed
+  Markdown safely, and explain a bounded logical sequence without persisting an index;
 - an agent-readable markdown substrate with source links, frontmatter, headings, manifests, and
   refresh boundaries;
 - explicit warnings for unsupported or risky inputs;
@@ -96,6 +104,9 @@ A successful first workflow produces:
 - Not a filesystem watcher that treats events as authoritative truth.
 - Not a public profile marketplace for v1.
 - Not an Obsidian plugin for v1.
+- Not an unfiltered whole-vault graph or an attempt to make link density stand in for meaning.
+- Not permission to build semantic search, an evidence index, or corpus-wide Explorer under the
+  name “Navigator.”
 - Not a desktop application shell for v1.
 - Not a guarantee that conversion output fully represents every table, image, formula, scan, or
   comment.
@@ -105,9 +116,30 @@ A successful first workflow produces:
 
 ## Role of Obsidian
 
-Obsidian is the reference human interface because it provides local markdown browsing, links,
-properties, graph views, and Bases. Vaultwright correctness must not depend on Obsidian sync,
-community plugins, or a specific team-deployment model.
+Obsidian is an optional reference adapter because it provides local Markdown browsing, links,
+properties, graph views, Bases, and Canvas. Vaultwright correctness, basic reader navigation, and
+logical-sequence guidance must not depend on Obsidian, Obsidian Sync, community plugins, or a
+specific team-deployment model.
+
+## Role of Navigator
+
+Navigator is the first-party comprehension front door. It reads allowed workspace Markdown and
+metadata on open into an ephemeral model, then exposes curated starts, bounded maps, safe document
+rendering, and explained previous/next trails. `_meta/navigation.yml` is a durable, reviewable path
+contract containing references and short navigation guidance, never copied source bodies.
+
+The implemented map is an interactive browser Canvas centered on the selected document and capped
+to its one-hop inbound/outbound neighborhood. Complete inbound and outbound link lists provide the
+non-visual equivalent and expose neighbors beyond the visual cap. This Canvas is not an Obsidian
+`.canvas` file and stores neither layout nor graph state. A new token protects every launch, and
+the server enforces the exact loopback Host plus same-origin/cross-site request checks.
+
+The Stage 3 proof is localhost-only, read-only, index-free, and limited to curated trails plus
+bounded explicit-link neighborhoods. Corpus-wide query, a disposable SQLite/FTS graph, MCP
+exploration, broad graph analysis, and context-pack export belong to the later conditional Explorer
+gate. Navigator's value must be measured against ordinary Markdown/catalog use on orientation,
+comprehension, provenance/lifecycle recognition, wrong turns, and reviewer correction effort.
+The software slice is ready for that comparison; its external evidence is still `Not started`.
 
 ## Role of AI
 

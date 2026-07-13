@@ -20,7 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e . pytest
       - name: Compile Python tools
-        run: python -m py_compile template/tools/lint_vault.py template/tools/sync_office_md.py template/tools/sync_github_repos.py template/tools/benchmark_tasks.py template/tools/catalog_report.py template/tools/conversion_report.py template/tools/m365_report.py template/tools/migration_report.py template/tools/overlap_report.py template/tools/pilot_report.py template/tools/recovery_report.py template/tools/review_ledger.py template/tools/sandbox_report.py template/tools/vaultwright.py src/vaultwright/annotation_migration.py src/vaultwright/benchmark.py src/vaultwright/catalog.py src/vaultwright/cli.py src/vaultwright/conversion.py src/vaultwright/doctor.py src/vaultwright/lint.py src/vaultwright/m365.py src/vaultwright/migration.py src/vaultwright/overlap.py src/vaultwright/pilot.py src/vaultwright/recovery.py src/vaultwright/review_ledger.py src/vaultwright/runtime_profile.py src/vaultwright/sandbox.py src/vaultwright/views.py src/vaultwright/mirrors/__init__.py src/vaultwright/mirrors/github_repos.py src/vaultwright/mirrors/office.py src/vaultwright/profile_migration.py src/vaultwright/__init__.py scripts/no_data_scan.py scripts/sync_template_copies.py
+        run: python -m py_compile template/tools/lint_vault.py template/tools/sync_office_md.py template/tools/sync_github_repos.py template/tools/benchmark_tasks.py template/tools/catalog_report.py template/tools/conversion_report.py template/tools/m365_report.py template/tools/migration_report.py template/tools/overlap_report.py template/tools/pilot_report.py template/tools/recovery_report.py template/tools/review_ledger.py template/tools/sandbox_report.py template/tools/vaultwright.py src/vaultwright/annotation_migration.py src/vaultwright/benchmark.py src/vaultwright/catalog.py src/vaultwright/cli.py src/vaultwright/conversion.py src/vaultwright/doctor.py src/vaultwright/lint.py src/vaultwright/m365.py src/vaultwright/migration.py src/vaultwright/navigation.py src/vaultwright/navigator.py src/vaultwright/overlap.py src/vaultwright/pilot.py src/vaultwright/recovery.py src/vaultwright/review_ledger.py src/vaultwright/runtime_profile.py src/vaultwright/sandbox.py src/vaultwright/views.py src/vaultwright/mirrors/__init__.py src/vaultwright/mirrors/github_repos.py src/vaultwright/mirrors/office.py src/vaultwright/profile_migration.py src/vaultwright/__init__.py scripts/no_data_scan.py scripts/sync_template_copies.py
       - name: Shell syntax
         run: bash -n scripts/init.sh template/tools/sync_all.sh .githooks/pre-commit
       - name: Template copy drift check
@@ -52,6 +52,7 @@ jobs:
           vaultwright --root "$tmp_vault" recovery --worksheet
           vaultwright --root "$tmp_vault" m365 --json
           vaultwright --root "$tmp_vault" catalog
+          vaultwright --root "$tmp_vault" navigate --check
           vaultwright --root "$tmp_vault" review --artifact CATALOG.md --status approved --reviewer CI --json
           vaultwright --root "$tmp_vault" review --check
       - name: Wheel CLI smoke test
@@ -72,6 +73,7 @@ jobs:
           test -f "$tmp_vault/tools/recovery_report.py"
           test -f "$tmp_vault/tools/review_ledger.py"
           test -f "$tmp_vault/tools/sandbox_report.py"
+          test -f "$tmp_vault/_meta/navigation.yml"
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" profile diff 0.1.0
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" profile migrate --plan
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" profile migrate --write --json
@@ -90,6 +92,7 @@ jobs:
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" catalog --check
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" catalog --html
           "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" catalog --html --check
+          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" navigate --check
           python -c 'import json, pathlib, sys; root = pathlib.Path(sys.argv[1]); (root / "40_delivery").mkdir(exist_ok=True); (root / "_mirrors" / "40_delivery").mkdir(parents=True, exist_ok=True); (root / "40_delivery" / "release-smoke.docx").write_bytes(b"synthetic release smoke source"); (root / "_mirrors" / "40_delivery" / "release-smoke.md").write_text("---\ntitle: Release Smoke\n---\n# Release Smoke\n", encoding="utf-8"); (root / "_meta" / "source-manifest.json").write_text(json.dumps({"version": 1, "records": [{"source_id": "release-smoke-source", "current_source_path": "40_delivery/release-smoke.docx", "mirror_path": "_mirrors/40_delivery/release-smoke.md", "source_format": "docx", "source_size": 30, "lifecycle_state": "clean", "warnings": [], "errors": []}]}), encoding="utf-8")' "$tmp_vault"
           python - "$tmp_vault" <<'PY'
           import pathlib

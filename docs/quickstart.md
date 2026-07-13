@@ -62,7 +62,21 @@ selected profile contract.
 
 Profile schema reference: [`PROFILE_SCHEMA.md`](PROFILE_SCHEMA.md).
 
-## 2. Open it in Obsidian
+## 2. Navigate and read it locally
+
+Validate the collection map and any authored trails, then start the read-only local Navigator:
+
+```bash
+vaultwright --root ~/my-business-vault navigate --check
+vaultwright --root ~/my-business-vault navigate
+```
+
+Open the printed loopback URL. The Navigator searches Markdown titles and paths, renders the
+selected document, shows inbound and outbound links, and provides previous/next controls plus a
+human-written “why this step” explanation for trails in `_meta/navigation.yml`. It writes no source
+or mirror content and does not require an index, vector database, or Obsidian.
+
+### Optional: open it in Obsidian
 
 "Open folder as vault" → `~/my-business-vault`. Enable the core plugins **Properties**, **Bases**,
 and **Graph** (Settings → Core plugins). Open `Documents.base` to see the auto-generated index.
@@ -92,6 +106,8 @@ vaultwright --root ~/my-business-vault status --json # machine-readable lifecycl
 vaultwright --root ~/my-business-vault doctor --json # machine-readable preflight report
 vaultwright --root ~/my-business-vault catalog       # write CATALOG.md inventory gateway
 vaultwright --root ~/my-business-vault catalog --html # write CATALOG.html visual inventory gateway
+vaultwright --root ~/my-business-vault navigate --check # validate links and authored trails
+vaultwright --root ~/my-business-vault navigate      # localhost-only guided Markdown reader
 vaultwright --root ~/my-business-vault m365          # Microsoft 365/Copilot handoff readiness
 vaultwright --root ~/my-business-vault review --json # summarize metadata-only review decisions
 vaultwright --root ~/my-business-vault overlap       # calibrate overlap thresholds without note bodies
@@ -132,7 +148,9 @@ in `_meta/mirror-config.yml`; `sync_all.sh` will honor that setting.
   `vaultwright --root ~/my-business-vault catalog`, or `CATALOG.html` with
   `vaultwright --root ~/my-business-vault catalog --html`; both list source paths, mirrors,
   lifecycle states, and inventory stats without copying content. The HTML gateway adds static
-  aggregate charts for quick review.
+  aggregate charts for quick review. For actual local reading, run
+  `vaultwright --root ~/my-business-vault navigate`; edit `_meta/navigation.yml` to add an authored
+  sequence with a goal, audience, ordered document paths, and a short reason for every step.
 - **Reviewed an artifact?** Record the decision with
   `vaultwright --root ~/my-business-vault review --artifact CATALOG.html --status approved --reviewer <name>`.
   The ledger stores hashes and short metadata notes only, then reports approvals as stale if the

@@ -35,10 +35,11 @@ parts nobody else ships:
    original stays the source of truth; the mirror is searchable, linkable, diffable, and easier for
    agents to inspect than opaque binaries. Generated mirrors are machine-owned; durable human notes
    belong in curated notes or migrated `_meta/mirror-annotations/` sidecars.
-2. **Linking-first retrieval.** Maps of Content, entity pages, backlinks, and a frontmatter-driven
-   index (Obsidian **Bases**) are the initial retrieval engine. `vaultwright catalog` also
-   generates a path-and-metadata-only `CATALOG.md` gateway for reviewers and agents that do not use
-   Obsidian. Vector or semantic indexes may help later, but they are not the source of truth.
+2. **Linking-first retrieval and guided reading.** Maps of Content, entity pages, backlinks, and
+   authored reading trails are the initial retrieval engine. `vaultwright navigate` opens the
+   first-party, localhost-only Navigator for finding and reading Markdown in an explained sequence;
+   `vaultwright catalog` keeps the path-and-metadata-only portable gateway. Obsidian Bases remain an
+   optional adapter. Vector or semantic indexes may help later, but they are not the source of truth.
 3. **Anti-proliferation discipline.** The agent is told to **consolidate and update before
    creating**, and the linter flags structural drift plus likely note overlap with review-only
    consolidation suggestions. Restraint is a feature.
@@ -63,13 +64,14 @@ already understand provenance, engagement boundaries, and source preservation.
 | **Curated knowledge** | human-reviewed notes, syntheses, entities, and decisions | human-governed |
 | **Profile** | domain vocabulary, schemas, templates, views, skills, and benchmarks | versioned contract |
 | **Evidence index** | future full-text/graph cache for retrieval and context assembly | disposable derived cache |
-| **Presentation** | Obsidian, catalogs, Canvas, Explorer, MCP, and context packs | derived interfaces |
+| **Presentation** | Navigator, catalogs, optional Obsidian/Canvas, later Explorer/MCP, and context packs | derived interfaces |
 
 Product contract: [`docs/PRODUCT.md`](docs/PRODUCT.md). Sync contract:
 [`docs/SYNC_SPEC.md`](docs/SYNC_SPEC.md). Security model:
 [`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md). Recovery guide:
 [`docs/RECOVERY.md`](docs/RECOVERY.md). Design-partner protocol:
 [`docs/DESIGN_PARTNER_PROTOCOL.md`](docs/DESIGN_PARTNER_PROTOCOL.md).
+Navigator guide: [`docs/NAVIGATION.md`](docs/NAVIGATION.md).
 Design-partner recruiting:
 [`docs/DESIGN_PARTNER_RECRUITING.md`](docs/DESIGN_PARTNER_RECRUITING.md).
 First external pilot runbook:
@@ -122,8 +124,8 @@ pipx install git+https://github.com/cz1993/vaultwright.git
 vaultwright --version
 ```
 
-Then open the vault in Obsidian if you want a human UI, point your agent at it (it reads
-`CLAUDE.md` first), and run the installed command from any folder:
+Then point your agent at the vault (it reads `CLAUDE.md` first) and use the local Navigator or the
+installed command from any folder. Obsidian remains optional:
 
 ```bash
 vaultwright --root ~/my-business-vault doctor          # check dependencies and vault structure
@@ -143,6 +145,8 @@ vaultwright --root ~/my-business-vault recovery --worksheet # review manifest re
 vaultwright --root ~/my-business-vault sandbox --source-root /path/to/original-documents
 vaultwright --root ~/my-business-vault catalog         # generate CATALOG.md inventory gateway
 vaultwright --root ~/my-business-vault catalog --html  # generate CATALOG.html visual inventory gateway
+vaultwright --root ~/my-business-vault navigate --check # validate links and authored reading trails
+vaultwright --root ~/my-business-vault navigate         # open the localhost-only guided Markdown reader
 vaultwright --root ~/my-business-vault m365            # Microsoft 365/Copilot handoff readiness
 vaultwright --root ~/my-business-vault review --json   # summarize metadata-only human review decisions
 vaultwright --root ~/my-business-vault overlap         # calibrate overlap thresholds without note bodies
@@ -199,11 +203,11 @@ Step-by-step: [`docs/quickstart.md`](docs/quickstart.md).
 
 **v0 - technical alpha.** The template vault, schema, thin tool CLI, source-installable console
 entry point, sync/lint tools, examples, safety guards, Office/repo manifests, audit logs,
-journaled changed-file materialization, and all four official profile init fixtures work today.
-The v1 finish line now pulls external corpus validation ahead of optional Obsidian adapter,
-indexing, Explorer, and visualization work, with explicit stop/pivot rules in the validation gate.
-Full sync remains the baseline and recovery path; journaled incremental operation is the
-steady-state changed-file path.
+journaled changed-file materialization, first-party Navigator proof slice, and all four official
+profile init fixtures work today. Stage 3 external corpus validation remains required before richer
+Obsidian adapters, evidence indexing, whole-vault graph work, or the advanced Explorer. Full sync
+remains the baseline and recovery path; journaled incremental operation is the steady-state
+changed-file path.
 
 ## License
 

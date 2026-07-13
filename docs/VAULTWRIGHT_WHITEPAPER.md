@@ -1,8 +1,8 @@
 # Vaultwright Whitepaper
 
-**Status:** canonical strategic product revision, incremental-materialization architecture, and finite v1 execution brief
-**Date:** 2026-06-24
-**Repository reviewed:** `cz1993/vaultwright` at commit `004a3617f15e8234a056b8b1711b139ebe9b8e2f`
+**Status:** canonical strategic product revision, incremental-materialization architecture, guided-navigation direction, and finite v1 execution brief
+**Date:** 2026-07-13
+**Repository reviewed:** `cz1993/vaultwright` through commit `6d177a176832c7730abd7798857bafe161e89e68` plus the current bounded Navigator worktree implementation
 **Audience:** maintainers, design partners, consulting operators, knowledge-management teams, and technical reviewers
 **Review posture:** ambitious, practical, evidence-based, source-preserving, and deliberately scope-bounded
 
@@ -95,8 +95,8 @@ The main remaining risks are:
 - the CLI and reporting surface can expand without convergence discipline;
 - the local journal must stay derived delivery state, never a second lifecycle authority;
 - event-driven operation must keep reconciliation mandatory because watcher delivery is advisory;
-- External validation now precedes Obsidian adapter work, index work, Explorer work, and any
-  visualization expansion.
+- External validation now precedes Obsidian adapter work, index work, indexed Explorer work, and
+  visualization expansion beyond the bounded Stage 3 Navigator proof.
 
 ## 4. Refined Product Scope
 
@@ -132,7 +132,7 @@ The revised architecture has seven layers.
 | Curated knowledge | Human-reviewed notes, syntheses, entities, and decisions | Human-governed |
 | Profile | Domain vocabulary, schemas, templates, views, skills, and benchmarks | Versioned contract |
 | Evidence index | Full-text and graph index for retrieval and context assembly | Disposable derived cache |
-| Presentation | Obsidian, catalogs, Canvas, Explorer, MCP, and context packs | Derived interface |
+| Presentation | Navigator, Obsidian, catalogs, Canvas, Explorer, MCP, and context packs | Derived interface |
 
 The core flow is:
 
@@ -151,7 +151,7 @@ curated knowledge + human review
         ↓
 optional evidence index
         ↓
-Obsidian / catalog / Explorer / MCP / context packs
+Navigator / Obsidian / catalog / Explorer / MCP / context packs
 ```
 
 The change journal and evidence index must not duplicate event capture. When the index exists, it consumes successfully materialized journal events.
@@ -504,7 +504,8 @@ Tier 1 enters the default product only if a measured pilot shows lower reviewer 
 
 ## 9. Obsidian Integration
 
-Obsidian remains an optional presentation and authoring adapter.
+Obsidian remains an optional presentation and authoring adapter, not Vaultwright's default
+navigation contract.
 
 The product should:
 
@@ -519,11 +520,344 @@ The journal should not depend on Obsidian being open. Obsidian-specific file cha
 
 A first-party Obsidian plugin remains outside v1.
 
-## 10. Evidence Index and Exploration
+## 10. Navigation as Comprehension Infrastructure
+
+### 10.1 Product thesis
+
+Finding a plausible file is not the same as understanding a body of knowledge. A user also needs
+to know:
+
+- where they are;
+- why a document matters;
+- whether it is source material, a generated mirror, or curated knowledge;
+- what should be read before and after it;
+- which branch is optional;
+- which evidence supports a claim;
+- whether the material is stale, superseded, conflicted, or awaiting review.
+
+Vaultwright should therefore treat navigation as **comprehension infrastructure**. The first-party
+navigation layer should turn the existing profile, frontmatter, Markdown headings, explicit links,
+manifests, lifecycle state, and curated hubs into small, explainable reading routes. It should help
+a new reader form a mental model and progress through a task without requiring Obsidian, a search
+index, a model, or a full-vault force-directed graph.
+
+The proposed product is the **Guided Knowledge Map**, presented to users as **Navigator**. Its core
+promise is:
+
+> **Start from an intent, see a bounded map of the relevant territory, follow an explained reading
+> trail, and keep provenance and lifecycle state visible while you read.**
+
+This is a different job from retrieval. Retrieval answers “what documents might match this query?”
+Navigator answers “where should I start, how do these selected documents fit together, and what is
+the next responsible step?”
+
+### 10.2 Market need and pain evidence
+
+The evidence supports a real information-orientation problem, but it does not yet prove demand for
+Vaultwright's exact solution.
+
+- Atlassian's 2024 vendor research surveyed 5,000 knowledge workers across five countries and 100
+  Fortune 500 executives. It reported that 55% of knowledge workers found information hard to
+  track down and 50% had discovered another team was duplicating work. The study links self-serve
+  information with team effectiveness, but it was produced by a knowledge-tool vendor and should
+  be treated as a directional pain and correlation signal, not causal proof for Vaultwright.
+- KMWorld's January 2026 survey covered 202 respondents, predominantly in North America, across KM,
+  technology, leadership, and operations roles. Only 25% rated their KM processes “mostly
+  effective” or better and 7% rated enterprise search “very effective.” Document-management
+  systems (70%) and email/shared folders (61%) remained common while knowledge graphs were reported
+  by 12%. The sample is small, predominantly North American, and not presented as representative;
+  its results are consistent with, but do not prove, an interoperability-first layer over ordinary
+  documents rather than a graph-native migration requirement.
+- A Microsoft-commissioned Spiceworks Ziff Davis survey from June 2020 covered 750 U.S.
+  participants at organizations with at least 500 employees. It estimated that employees could
+  potentially save, on average, four to six hours per week by avoiding information search or
+  recreation; respondents also named disorganization, difficult tools, outdated information,
+  security, and onboarding as barriers. This is vendor-sponsored, dated, U.S.-only, and
+  enterprise-skewed evidence, so it is a pain signal rather than a current total-addressable-market
+  estimate.
+- Atlassian's current Confluence documentation exposes search, recent and starred items,
+  breadcrumbs, a content tree, flat views, hover context, and customizable shortcuts. It also
+  acknowledges that an overgrown content tree can make an unfamiliar space harder to navigate.
+  This is product documentation, not independent research, but it shows that mature knowledge
+  products combine several orientation mechanisms rather than relying on search alone.
+- Obsidian's documentation positions links, backlinks, local graphs, and Canvas as ways to inspect
+  relationships. Its own link guide notes that understanding connections becomes harder as a vault
+  grows. Obsidian community threads add qualitative reports that global graphs become visually
+  overwhelming or impractical in larger vaults, while filtered local graphs and parent/index links
+  remain more useful. Forum posts are non-representative anecdotes; they identify hypotheses to
+  test, not prevalence.
+- A December 2024 Obsidian community poll adds a more direct but still non-representative signal:
+  among 302 self-selected respondents, 77% said they hardly ever or never used the global graph for
+  navigation, while 9% used it frequently or very frequently. Separate community requests from
+  2024 and 2025 ask for next/previous note stepping, manual sequence, and folder-order traversal.
+  These posts support testing a sequence problem; they do not estimate market prevalence.
+- Diátaxis separates learning, goal completion, information lookup, and understanding into
+  different documentation needs. Microsoft writing guidance likewise recommends landmarks,
+  linked tables of contents, consistent structure, and scannable sections. These sources support
+  intent-aware routes and visible structure; they do not establish that every collection needs a
+  visual map.
+- Docusaurus and GitBook both combine ordered documentation trees with breadcrumbs or
+  previous/next controls; GitBook explicitly recommends avoiding more than three nesting levels.
+  Microsoft Learn and Google Developer Pathways present guided or sequential learning experiences.
+  Notion exposes recently viewed/popular search context and lets owners verify pages until an
+  expiry. These are vendor feature choices, not independent efficacy studies, but together they
+  show recurring product patterns and vendor investment in sequence, resumption, and trust cues
+  alongside search.
+
+The product opportunity is therefore narrower than “build a better graph view.” It is to reduce
+three recurring costs in source-backed workspaces:
+
+1. **orientation cost:** choosing a trustworthy entry point in an unfamiliar collection;
+2. **sequence cost:** reconstructing prerequisites and a sensible reading order from folders,
+   titles, or undifferentiated links;
+3. **trust cost:** repeatedly checking provenance, freshness, lifecycle, and authority while moving
+   between documents.
+
+### 10.3 Common solutions and their limits
+
+| Common pattern | What it does well | Limit in a governed source-backed workspace |
+| --- | --- | --- |
+| Folder tree or sidebar | Stable placement and familiar hierarchy | A document can have only one primary location; folder order rarely explains conceptual or evidentiary order |
+| Keyword or full-text search | Fast known-item lookup when the user can name the target | A ranked hit list does not establish prerequisites, authority, or a reading sequence |
+| Tags, properties, and tables | Filterable inventory and operational queues | Classification supports finding but usually leaves the user to infer relationships and next steps |
+| Breadcrumbs | Re-orientation within a hierarchy | Shows containment, not why two documents should be read together |
+| Links and backlinks | Preserves explicit relationships and reverse references | Untyped or unexplained links can create a branching maze |
+| Global graph | Reveals clusters and outliers; visually compelling overview | Dense graphs can become a “hairball,” overemphasize link count, and provide no necessary reading order |
+| Manually arranged canvas or mind map | Communicates a deliberately composed story | Can drift from the files, hide lifecycle problems, and depend on one application or author |
+| Chat or semantic retrieval | Useful for a well-formed question over an indexed corpus | Can conceal route selection, miss authority boundaries, and answer before a user understands the evidence landscape |
+| Tutorial or learning path | Gives a reliable sequence and completion state | Often maintained separately from the underlying documentation and can become stale |
+
+Direct visual-knowledge competitors widen the design space. Heptabase combines cards with nested
+whiteboards for topic understanding; Scrintal places full documents and media on an infinite
+connected canvas; Tana combines a table of contents, contextual backlinks, location controls, and
+peek panels; GitBook Adaptive Content varies documentation by role, plan, or other claims. These
+vendor descriptions establish feature patterns, not comparative efficacy. Navigator should borrow
+the useful patterns while preserving ordinary Markdown, deterministic routes, governance, and a
+bounded default view.
+
+Navigator should compose the strongest parts of these patterns: stable landmarks, local
+neighborhoods, explicit trails, previews, breadcrumbs, and visible health. It should avoid treating
+node-link animation, AI ranking, or a new database as the product.
+
+### 10.4 The Guided Knowledge Map
+
+Navigator has four coordinated surfaces:
+
+1. **Start:** profile-owned and curator-authored trails grouped by reader intent, such as
+   “understand the system,” “prepare a review,” “trace this decision,” or “operate the refresh.”
+2. **Map:** an interactive browser Canvas centered on the selected document with a capped one-hop
+   inbound/outbound neighborhood. Complete link lists remain available as its non-visual
+   equivalent. This is not the whole vault or an Obsidian `.canvas` artifact.
+3. **Reader:** sanitized Markdown with headings, source authority, lifecycle status, provenance,
+   review freshness, and generated-versus-curated ownership visible before the body.
+4. **Trail:** an ordered sequence with progress, previous/next controls, and a short
+   curator-authored “why this next” explanation. Ordinary local links remain available as optional
+   branches without complicating the v1 trail schema.
+
+The first interaction should not require a query. On open, Navigator scans the workspace's allowed
+Markdown and metadata surfaces into an ephemeral in-memory model, validates declared trails, and
+shows useful starts. A user can then:
+
+- choose an intent or curated hub;
+- inspect a compact map before opening a document;
+- follow one primary route rather than choose among every outgoing link;
+- branch deliberately through a supporting link and return to the trail;
+- see broken links, stale reviews, missing sources, and conflicting lifecycle state as warnings;
+- copy a path or open the underlying file in the user's chosen editor;
+- rescan explicitly after files change.
+
+The map should encode semantics with text and shape, never color alone. It should cap visible nodes
+and edges, collapse secondary evidence by default, retain a list/outline equivalent, and prefer a
+stable deterministic layout. The goal is comprehension and repeatable orientation, not visual
+novelty.
+
+### 10.5 Navigation and trail contract
+
+Explicit trails belong in a profile-aware, reviewable Markdown-adjacent contract. The bounded proof
+uses `_meta/navigation.yml`; it contains paths and guidance only, never copied source bodies or
+private annotations.
+
+```yaml
+schema_version: 1
+trails:
+  - id: understand-vaultwright
+    title: Understand this workspace
+    goal: Build a source-to-presentation mental model before operating sync.
+    audience: new operator
+    steps:
+      - path: INDEX.md
+        why: Establish the workspace scope and its curated landmarks.
+      - path: 10_governance/SOURCE_POLICY.md
+        why: Learn the authority and data-handling boundary before reading mirrors.
+      - path: 80_sources/README.md
+        why: Connect source records to their generated read models.
+      - path: 50_operations/REFRESH.md
+        why: Apply the model through the normal refresh and recovery workflow.
+```
+
+Required contract rules:
+
+- `schema_version: 1` and a `trails` list are required;
+- every trail requires a stable `id`, `title`, `goal`, `audience`, and non-empty `steps` list;
+- `audience` accepts one string or a list of strings;
+- every step requires `path` and a short curator-authored `why`;
+- `path` accepts an exact workspace-relative `.md` path or a unique Markdown basename shorthand;
+  exact paths remain preferable for durable, reviewable routes;
+- every resolved step passes workspace containment, symlink, extension, excluded-root, uniqueness,
+  and existence checks;
+- `why` is short curator-authored navigation guidance, not an AI-generated factual summary;
+- trail IDs are stable so aggregate test evidence can refer to a route without publishing
+  document titles or bodies;
+- an absent navigation file is valid; Navigator still exposes the allowed collection and local
+  explicit-link neighborhoods but shows no authored trail and never invents a reading order;
+- a missing, ambiguous, duplicate-ID, excluded, non-Markdown, or unsafe step invalidates that trail
+  and is reported; the viewer never silently repairs it.
+
+Schema version 1 is deliberately linear. The order of `steps` is the curator-declared reading-order
+contract. A step's `why` may explain prerequisite intent, but schema version 1 does not encode
+independently queryable prerequisite relationships. Roles, explicit prerequisites, optional steps,
+branching expressions, expected duration, and completion prompts are possible later extensions only
+after real route-authoring evidence shows that separate linear trails plus ordinary supporting links
+are insufficient.
+
+Navigator may derive a bounded **local neighborhood** from explicit Markdown links and backlinks
+found during the open scan. It must not infer causal or evidentiary meaning from an untyped link.
+Typed relationships may later add `supports`, `contradicts`, `supersedes`, `depends-on`, and
+`implements`, but the UI must distinguish declared relationships from containment, sequence, and
+ordinary links.
+
+### 10.6 Navigator is not the indexed Explorer
+
+The naming and dependency boundary is mandatory:
+
+| Navigator proof | Later Explorer |
+| --- | --- |
+| Stage 3 front-door experiment | Stage 5/6 conditional expansion |
+| Scans allowed files when opened or explicitly refreshed | Reads the disposable evidence index and applied journal checkpoints |
+| Ephemeral in-memory metadata/link model | Rebuildable SQLite/FTS and provenance graph |
+| Curated entry points, declared trails, local neighborhoods | Corpus-wide query, evidence retrieval, graph analysis, and context-pack building |
+| No semantic ranking, embeddings, or full-text index | Benchmark-gated full-text/graph retrieval; embeddings still optional, not authoritative |
+| Bounded map; no unfiltered global graph | May expose broader filtered exploration if evidence justifies it |
+| Read-only localhost UI; no workspace writes | Read-only UI plus explicit Markdown/JSON context export |
+
+Calling the proof slice “Explorer,” adding a hidden index, persisting document bodies, or widening
+it into corpus-wide retrieval violates the Stage 3 exception. The proof may later become the
+Explorer's navigation mode, but the later product must reuse shared contracts rather than replace
+them with UI-only logic.
+
+### 10.7 Security, privacy, and accessibility
+
+The proof slice handles sensitive workspaces even though it is local and read-only.
+
+- Bind only to `127.0.0.1` by default, select a fresh ephemeral port unless the operator explicitly
+  needs a fixed port, and never expose a network interface without a separate authenticated design.
+  Warn that fixed origin reuse can inherit prior browser state such as a service worker.
+- Generate a per-launch unguessable session token and require it in the initial launch URL or API
+  header. Immediately scrub the launch query from the browser URL, use an HTTP-only same-site
+  session cookie for page reloads, require the exact loopback `Host`, reject mismatched `Origin`,
+  `Sec-Fetch-Site: cross-site`, and state-changing methods, set a restrictive Content Security
+  Policy, and load no remote scripts, fonts, analytics, or CDN assets.
+- Canonicalize every requested path; enforce workspace containment after symlink resolution; deny
+  `.git/`, `.vaultwright/`, other control/runtime roots, directories named `private` or `secrets`,
+  profile-excluded roots, raw binary bodies, and any path outside the allowed Markdown/navigation
+  surfaces.
+- Treat Markdown and source-derived text as untrusted. Escape output, sanitize links, disable raw
+  HTML and active embeds by default, and never execute document instructions or scripts.
+- Keep the scan and route state in memory. Do not persist file bodies, excerpts, document paths,
+  trail position, recent-document history, or a shadow index in browser URLs or local storage.
+  Logs contain aggregate counts and error codes, not titles, paths, headings, or content.
+- Do not broaden filesystem permissions. Navigator inherits the launching user's read access and
+  cannot claim document-level authorization that the filesystem does not provide.
+- Expose provenance and lifecycle warnings before content. A polished trail must never make stale,
+  missing, conflicted, or unreviewed evidence appear authoritative.
+- Provide semantic landmarks, keyboard operation, visible focus, a skip link, an ordered-list trail,
+  `aria-current` on the active step, text equivalents for the map, non-color status cues, reduced
+  motion, and zoom/reflow support. W3C's breadcrumb pattern is the minimum orientation baseline,
+  not the whole accessibility definition.
+
+### 10.8 Validation and success metrics
+
+Synthetic fixtures can verify correctness and safety, but only permission-cleared external evidence
+can provide initial product-value evidence. For the same fixed tasks, compare
+`CATALOG.html`/ordinary Markdown navigation with Navigator. Record only aggregate-safe results:
+
+- median time to first useful document;
+- successful start selection without operator coaching;
+- trail completion rate and supporting-link return rate;
+- wrong-turn and backtrack count;
+- fixed comprehension questions answered correctly after the route;
+- provenance/source-authority identification accuracy;
+- stale, missing, generated, conflicted, and review-required warning recognition;
+- number of documents opened and navigation actions taken;
+- task completion time and reviewer correction count;
+- keyboard-only task completion and automated accessibility violations;
+- scan time, peak memory, document/link count, and rejected-path count;
+- second-sync return success with Navigator available but not required.
+
+Before each pilot, pre-register the concrete directional threshold that counts as practically
+meaningful for every primary measure; do not choose the winning measures or threshold after seeing
+the result. The proof earns another iteration when a permission-cleared external participant
+completes the fixed orientation/comprehension tasks with no safety regression and crosses those
+thresholds on at least two primary measures: time to first useful document, wrong turns,
+comprehension accuracy, provenance/lifecycle recognition, or reviewer correction count. One
+participant can justify another iteration; one participant cannot validate market demand or
+general usability. If Navigator only looks attractive, duplicates the catalog, requires extensive
+coaching, or obscures trust signals, remove it from the v1 critical path.
+
+Navigator evidence does **not** complete Stage 3 by itself. The external corpus must still pass the
+full baseline, changed-file, reconciliation, recovery, benchmark, second-sync, and evidence-handling
+protocol in `docs/VALIDATION_GATE.md`.
+
+### 10.9 Implementation status and remaining plan
+
+**Delivered bounded software slice**
+
+1. `_meta/navigation.yml` has a deterministic validator and synthetic authored trails where the
+   official sample content supports them.
+2. The package-owned reader uses the active profile to constrain roots, then rescans allowed
+   Markdown, an allowlist of frontmatter trust fields, headings, and explicit links on initial page
+   loads and explicit navigation refreshes, and keeps the model ephemeral. Document reads reuse
+   that bounded model but recheck the current path, symlink, containment, size, and scanned-content
+   revision before showing the body beside trust metadata. A mismatch triggers an in-session rescan.
+   Manifest-backed trust enrichment remains future work unless pilot evidence shows the safe
+   frontmatter view is insufficient.
+3. The token-protected loopback UI provides collection starts, trails, sanitized reading, trust
+   metadata, and a clickable one-hop HTML Canvas map capped at four inbound and four outbound nodes;
+   complete link lists expose every resolved neighbor and provide the non-visual equivalent.
+4. Each launch has a new unguessable token that is scrubbed from browser history after bootstrap;
+   the HTTP boundary enforces the exact loopback `Host`, same-origin `Origin`, cross-site rejection,
+   no caching, and a restrictive Content Security Policy. Per-note, navigation-config,
+   document-count, total-scan, per-note link, total-link, and diagnostic-count limits bound resource
+   use before expensive intermediate collections can grow without limit. Contract and server-safety
+   tests cover the bounded proof.
+
+**Remaining Stage 3 proof work**
+
+5. Close any accessibility or browser defects found in release verification and external use;
+   preserve keyboard-operable list equivalents for the Canvas rather than making pointer use
+   mandatory.
+6. Use the implemented slice in, but never as a substitute for, the first permission-cleared Stage 3 external
+   run; compare it with the existing catalog and record only public-safe aggregates.
+
+**After Stage 3 external evidence**
+
+7. Keep or revise Navigator based on observed entry-point, trail, trust, and comprehension failures;
+   add profile-owned trail templates only when repeated external patterns justify them.
+8. Treat Obsidian Bases/Canvas as optional adapters over the same navigation contract rather than a
+   prerequisite user experience.
+9. Decide the Stage 5 evidence-index gate separately. Do not turn Navigator into search or global
+   exploration to compensate for weak core validation.
+
+**Only after the Stage 5 index benchmark passes**
+
+10. Compose Navigator's trail mode into the indexed Explorer, add bounded query-to-evidence and
+    context export, and retain declared-versus-inferred relationship labels.
+
+## 11. Evidence Index and Exploration
 
 The local evidence index remains conditional. It should be built only after at least one real
-external corpus proves the core mirror, catalog, and benchmark workflow is worth extending. When
-that gate opens, its incremental architecture is now simpler:
+external corpus proves the core mirror, catalog, Navigator, and benchmark workflow is worth
+extending. When that gate opens, its incremental architecture is now simpler:
 
 - it consumes successfully applied journal events;
 - it deletes or updates only records linked to changed source/mirror/note identities;
@@ -551,7 +885,7 @@ vaultwright_explore
 
 The evidence-index benchmark still decides whether index and Explorer features stay in v1.
 
-## 11. Visual Explorer and Context Builder
+## 12. Visual Explorer and Context Builder
 
 The visual Explorer remains conditional on the evidence-index gate.
 
@@ -567,11 +901,11 @@ Required jobs:
 
 The existing static catalog remains the portable snapshot. The Explorer must read shared profile, journal, lifecycle, and index models; it must not implement separate business logic.
 
-## 12. Security and Governance
+## 13. Security and Governance
 
 Incremental operation introduces new controls.
 
-### 12.1 Local state sensitivity
+### 13.1 Local state sensitivity
 
 The journal database may expose filenames, relative paths, hashes, timing, and operational history. It must:
 
@@ -582,19 +916,19 @@ The journal database may expose filenames, relative paths, hashes, timing, and o
 - avoid source and mirror bodies unless a later cache is explicitly enabled;
 - be securely disposable and rebuildable.
 
-### 12.2 Untrusted events and paths
+### 13.2 Untrusted events and paths
 
 Every event path is untrusted input. Existing path, symlink, reserved-directory, source-boundary, and output-boundary checks must run again during replay. A watcher event cannot bypass normal safety checks.
 
-### 12.3 Concurrency
+### 13.3 Concurrency
 
 Only one materialization worker may apply events to a workspace at a time. Use a workspace lock with stale-lock recovery. SQLite transactions protect journal state; existing atomic file replacement protects mirror writes.
 
-### 12.4 Prompt safety
+### 13.4 Prompt safety
 
 Source and mirror content remain untrusted evidence. A semantic-delta assistant must receive explicit system instructions that document content cannot override governance policy or request tool execution.
 
-### 12.5 Recovery
+### 13.5 Recovery
 
 A complete recovery path is:
 
@@ -606,7 +940,7 @@ A complete recovery path is:
 6. regenerate the index when present;
 7. verify lint, review freshness, and source integrity.
 
-## 13. CLI Convergence
+## 14. CLI Convergence
 
 Do not create a separate command for every report.
 
@@ -632,9 +966,23 @@ Recommended meanings:
 
 `plan`, `sync`, and `status` may retain compatibility behavior during migration. New commands should replace or group existing behavior rather than expand the conceptual surface indefinitely.
 
-## 14. Validation and Performance Evidence
+The bounded Stage 3 navigation surface is one grouped command:
 
-### 14.1 Functional acceptance tests
+```text
+vaultwright navigate --check
+vaultwright navigate --json
+vaultwright navigate [--open] [--port PORT]
+```
+
+`navigate --check` validates the metadata-only model and authored trails without starting a
+server; `--json` exposes that body-free model for deterministic inspection. `navigate` scans on
+the initial page request and explicit guarded API refreshes, revision-checks each selected body,
+and serves the loopback read-only reader. It must not gain index-building, semantic-query, or
+context-export behavior; those remain later gated commands.
+
+## 15. Validation and Performance Evidence
+
+### 15.1 Functional acceptance tests
 
 The incremental engine is not complete until tests cover:
 
@@ -660,7 +1008,7 @@ The incremental engine is not complete until tests cover:
 - source-byte preservation;
 - no-data and path-safety gates.
 
-### 14.2 Structural performance gates
+### 15.2 Structural performance gates
 
 For steady-state event processing:
 
@@ -670,7 +1018,7 @@ For steady-state event processing:
 - successfully applied events update only the relevant manifest, audit, catalog/index invalidation, and review dependencies;
 - clean replay is idempotent.
 
-### 14.3 Benchmark fixture
+### 15.3 Benchmark fixture
 
 Create a synthetic benchmark workspace containing at least:
 
@@ -693,7 +1041,7 @@ Record:
 
 The important pass condition is behavioral, not a fragile wall-clock number: unchanged source bodies must not be read during normal event replay.
 
-### 14.4 External validation
+### 15.4 External validation
 
 The three profile pilots must include:
 
@@ -704,7 +1052,7 @@ The three profile pilots must include:
 - review invalidation;
 - operator assessment of latency, resource use, clarity, and trust.
 
-## 15. Current Risks
+## 16. Current Risks
 
 | Risk | Severity | Mitigation |
 | --- | --- | --- |
@@ -721,7 +1069,7 @@ The three profile pilots must include:
 | Package-part extraction consumes the roadmap | High | Benchmark-gated post-v1 optimization |
 | Scope never closes | Critical | Fixed v1 definition and explicit stop rules |
 
-## 16. Finite V1 Execution Plan
+## 17. Finite V1 Execution Plan
 
 Later stages do not begin until prior gates are met.
 
@@ -752,7 +1100,8 @@ preserves these constraints:
 - the full existing suite and repository gates pass.
 
 The Stage 1B journaled materialization gate is closed. Stage 2 profile work is complete. External
-validation is now the next gate before Obsidian, index, Explorer, or visualization expansion.
+validation is now the next gate before Obsidian, index, indexed Explorer, or visualization expansion
+beyond the bounded Stage 3 Navigator proof.
 
 ### Stage 1B — Journaled changed-file synchronization
 
@@ -796,12 +1145,18 @@ Deliver exactly:
 
 All profiles use the same journal, mirror, lifecycle, and safety engine.
 
-### Stage 3 — External validation and pilot proof
+### Stage 3 — External validation, pilot proof, and bounded Navigator proof
 
 Run at least one real external corpus through the package-owned pipeline before building adapters,
-indexes, Explorer, or visualization surfaces. The evidence must cover baseline setup,
-changed-file processing, downtime/reconciliation, recovery, catalog/front-door review, benchmark
-comparison, and handoff boundaries.
+indexes, or Explorer. The implemented bounded scan-on-open Navigator slice may be used in this stage
+because it is a front-door instrument to test orientation and comprehension against the catalog.
+It must remain localhost-only, read-only, index-free, body-persistence-free, and limited to curated
+trails plus bounded explicit-link neighborhoods. Its implementation and synthetic results do not
+complete Stage 3.
+
+The external evidence must still cover baseline setup, changed-file processing,
+downtime/reconciliation, recovery, catalog/front-door review, Navigator comparison, benchmark
+comparison, second-sync handoff, and evidence boundaries.
 
 ### Stage 4 — Obsidian adapter and skills
 
@@ -816,10 +1171,11 @@ If it materially improves context precision, citation quality, review effort, or
 
 ### Stage 6 — Conditional Explorer
 
-Only after the Stage 5 gate passes, build the localhost read-only Explorer and context export.
+Only after the Stage 5 gate passes, build the localhost read-only indexed Explorer and context
+export, reusing Navigator's navigation/trail contract.
 Complete the remaining external profile pilots before tagging v1.
 
-## 17. V1 Definition of Done
+## 18. V1 Definition of Done
 
 ### Mandatory V1 Core
 
@@ -831,24 +1187,26 @@ Vaultwright v1 Core is finished when all of the following exist and pass:
 4. safe migration from the current business template;
 5. machine-owned mirrors with preserved annotation sidecars;
 6. journaled changed-file synchronization with replay and reconciliation;
-7. profile-aware catalogs, Bases, and Canvas outputs;
-8. optional Obsidian governance skills;
-9. three external profile pilots;
-10. one tagged v1 release with upgrade, recovery, security, benchmark, and support documentation.
+7. a secure, accessible, scan-on-open Guided Knowledge Map/Navigator that works without Obsidian or
+   an evidence index;
+8. profile-aware catalogs, Bases, and Canvas outputs;
+9. optional Obsidian governance skills;
+10. three external profile pilots;
+11. one tagged v1 release with upgrade, recovery, security, benchmark, and support documentation.
 
 ### Conditional V1 Explorer
 
 When the Stage 5 benchmark passes, v1 additionally includes:
 
-11. one disposable local evidence index;
-12. one exploration CLI/MCP interface;
-13. one read-only visual Explorer with context export.
+12. one disposable local evidence index;
+13. one exploration CLI/MCP interface;
+14. one read-only visual Explorer with context export.
 
-When the index benchmark fails, items 11–13 move to post-v1 and v1 Core closes without them.
+When the index benchmark fails, items 12–14 move to post-v1 and v1 Core closes without them.
 
 After the selected finish line is met, feature work stops. The maintainer resolves release defects, publishes v1, and gathers usage evidence.
 
-## 18. Explicit Post-V1 Backlog
+## 19. Explicit Post-V1 Backlog
 
 The following are outside v1 unless they replace a mandatory requirement:
 
@@ -871,7 +1229,7 @@ The following are outside v1 unless they replace a mandatory requirement:
 
 New proposals enter this backlog unless they replace or close a v1 requirement.
 
-## 19. Commercial and Product Implications
+## 20. Commercial and Product Implications
 
 Journaled incremental operation strengthens the product in three ways:
 
@@ -885,7 +1243,7 @@ The market-facing message should not emphasize “filesystem watchers” or “l
 
 Professional implementation remains the first commercial path. Profiles broaden adoption; the incremental engine reduces operating burden across all profiles.
 
-## 20. Bottom Line
+## 21. Bottom Line
 
 Vaultwright should retain its profile-driven v1 direction and replace repeated whole-corpus synchronization with a journaled changed-file materialization engine.
 
@@ -905,10 +1263,12 @@ source record.
 
 This architecture preserves the existing source-authority and lifecycle work while making the product practical for larger and more frequently changing collections.
 
-The scope remains finite: changed-file incrementality is mandatory; package-part extraction and
-lightweight-model enrichment are conditional later work. The next work is external validation on a
-real corpus; Obsidian integration, the evidence-index gate, Explorer, and visualization expansion
-wait for that evidence.
+The scope remains finite: changed-file incrementality and an Obsidian-independent navigation path
+are mandatory; package-part extraction and lightweight-model enrichment are conditional later
+work. The next work remains external validation on a real corpus. Only use and correction of the
+bounded, read-only, scan-on-open Navigator slice may proceed alongside that gate; Obsidian
+expansion, the evidence index, corpus-wide Explorer, and other visualization work still wait for
+the required evidence.
 
 ## References Reviewed
 
@@ -922,3 +1282,66 @@ wait for that evidence.
 - Obsidian Agent Skills: https://github.com/kepano/obsidian-skills
 - CodeGraph: https://github.com/colbymchenry/codegraph
 - RepoPrompt Community Edition: https://github.com/repoprompt/repoprompt-ce
+- Microsoft/Spiceworks Ziff Davis, *Knowledge Sharing in a Changing World* (Microsoft-commissioned
+  June 2020 survey of 750 U.S. participants at organizations with 500+ employees; vendor-sponsored,
+  dated, and enterprise-skewed):
+  https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/final/en-us/microsoft-brand/documents/Knowledge-Sharing-in-a-Changing-World.pdf
+- Atlassian Confluence, *Find content in a space* (vendor documentation describing tree limits and
+  alternative views):
+  https://support.atlassian.com/confluence-cloud/docs/decide-how-you-see-pages-in-a-space/
+- Atlassian Confluence, *Search for content* (vendor documentation for result context,
+  breadcrumbs, recents, and filters):
+  https://support.atlassian.com/confluence-cloud/docs/search-for-pages-and-posts/
+- Atlassian Confluence, *Confluence navigation* (vendor documentation for sidebar, home, recent,
+  starred, spaces, and shortcuts):
+  https://support.atlassian.com/confluence-cloud/docs/improved-confluence-navigation/
+- Obsidian Help, *Link notes* (vendor documentation for links, backlinks, and local graph):
+  https://obsidian.md/help/link-notes
+- Obsidian Help, *Canvas* (vendor documentation for manually arranged two-dimensional maps and the
+  open JSON Canvas format): https://obsidian.md/help/plugins/canvas
+- Obsidian Forum, *How do you use the graph view?* (qualitative, non-representative community
+  reports about filtered local graphs, parent links, and global-graph limits):
+  https://forum.obsidian.md/t/how-do-you-use-the-graph-view/2785
+- Obsidian Forum, *Graph view doesn't work for a large vault* (single public large-vault case;
+  qualitative performance signal, not a general benchmark):
+  https://forum.obsidian.md/t/obsidian-graph-view-doesnt-work-for-a-large-vault/106287
+- Obsidian Reddit community poll, *Does the Obsidian community use global graph view to navigate?*
+  (302 self-selected respondents; directional community evidence only):
+  https://www.reddit.com/r/ObsidianMD/comments/1hil43y/survey_results_does_the_obsidian_community_use/
+- Obsidian Reddit community requests for step-through, manual-order, and sequential-folder
+  navigation (qualitative problem signals, not prevalence estimates):
+  https://www.reddit.com/r/ObsidianMD/comments/1eq7i6f/how_to_step_through_notes/,
+  https://www.reddit.com/r/ObsidianMD/comments/1e7e0wj/plugin_that_orders_notes_manually/,
+  https://www.reddit.com/r/ObsidianMD/comments/1olsvij/plugin_to_swapping_navigation_on_notes/
+- Diátaxis documentation framework (user needs for tutorials, how-to guides, reference, and
+  explanation): https://diataxis.fr/
+- Microsoft Writing Style Guide, *Scannable content* (landmarks, linked contents, and predictable
+  structure): https://learn.microsoft.com/en-us/style-guide/scannable-content/
+- W3C WAI-ARIA Authoring Practices, *Breadcrumb Pattern* (accessible orientation semantics):
+  https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/
+- Atlassian, *State of Teams 2024* (vendor study of 5,000 knowledge workers across five countries
+  and 100 Fortune 500 executives): https://www.atlassian.com/blog/state-of-teams-2024
+- KMWorld, *2026 State of KM & AI Report* (survey of 202 predominantly North American KM,
+  technology, leadership, and operations respondents):
+  https://kwfoundation.org/wp-content/uploads/2026/04/2026-State-of-KM-AI-Report.pdf
+- Notion Help, *Search in your workspace* (vendor documentation for recent, popular, filtered, and
+  AI-assisted retrieval): https://www.notion.com/help/search
+- Notion Help, *Wikis & verified pages* (vendor documentation for ownership, verification, expiry,
+  and search-visible trust cues): https://www.notion.com/help/wikis-and-verified-pages
+- Docusaurus, *Sidebar* (ordered documentation trees and sidebar breadcrumbs):
+  https://docusaurus.io/docs/sidebar
+- GitBook, *Pages* (table-of-contents hierarchy, depth guidance, outlines, metadata, and
+  previous/next links): https://gitbook.com/docs/creating-content/content-structure/page
+- Microsoft Learn, *Training* (guided learning paths and individual task modules):
+  https://learn.microsoft.com/en-us/training/
+- Google for Developers, *Pathways* (sequential learning experiences):
+  https://developers.google.com/learn/pathways
+- Heptabase, *Fundamental Elements* (vendor description of cards, whiteboards, and nested
+  whiteboards): https://wiki.heptabase.com/fundamental-elements
+- Scrintal (vendor description of connected documents and media on an infinite canvas):
+  https://scrintal.com/
+- Tana, *Docs* (vendor documentation using contents, contextual backlinks, location controls, and
+  peek panels): https://tana.inc/learn/features/docs
+- GitBook, *Adaptive Content* (vendor documentation for claims-based page, section, and example
+  variation):
+  https://gitbook.com/docs/guides/docs-personalization-and-authentication/setting-up-adaptive-content
