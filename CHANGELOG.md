@@ -28,6 +28,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added negative Navigator HTTP regression coverage for forged and malformed session cookies,
+  cookie parser failures, and cross-origin document reads.
 - Added the experimental `vaultwright navigate` localhost reader, a deterministic metadata-only
   navigation model, authored `_meta/navigation.yml` trails with “why this step” explanations,
   a token-protected ephemeral port, an interactive one-hop local map with accessible list

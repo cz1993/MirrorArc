@@ -9,6 +9,7 @@ from urllib.request import Request, urlopen
 
 import pytest
 
+import vaultwright.navigator as navigator_module
 from vaultwright.navigator import (
     DEFAULT_PORT,
     SESSION_COOKIE,
@@ -97,6 +98,22 @@ def test_local_server_requires_session_token_and_rejects_cross_origin(tmp_path) 
             assert response.status == HTTPStatus.OK
             assert "Vaultwright Navigator" in response.read().decode("utf-8")
 
+        forged_cookie = Request(
+            base + "/",
+            headers={"Cookie": f"{SESSION_COOKIE}=not-the-session-token"},
+        )
+        with pytest.raises(HTTPError) as forged_cookie_rejected:
+            urlopen(forged_cookie, timeout=3)
+        assert forged_cookie_rejected.value.code == HTTPStatus.FORBIDDEN
+
+        malformed_cookie = Request(
+            base + "/",
+            headers={"Cookie": SESSION_COOKIE},
+        )
+        with pytest.raises(HTTPError) as malformed_cookie_rejected:
+            urlopen(malformed_cookie, timeout=3)
+        assert malformed_cookie_rejected.value.code == HTTPStatus.FORBIDDEN
+
         request = Request(
             base + "/api/document?path=INDEX.md",
             headers={"X-Vaultwright-Token": token},
@@ -117,6 +134,17 @@ def test_local_server_requires_session_token_and_rejects_cross_origin(tmp_path) 
         with pytest.raises(HTTPError) as rejected:
             urlopen(cross_origin, timeout=3)
         assert rejected.value.code == HTTPStatus.FORBIDDEN
+
+        cross_origin_document = Request(
+            base + "/api/document?path=INDEX.md",
+            headers={
+                "Origin": "https://example.invalid",
+                "X-Vaultwright-Token": token,
+            },
+        )
+        with pytest.raises(HTTPError) as document_rejected:
+            urlopen(cross_origin_document, timeout=3)
+        assert document_rejected.value.code == HTTPStatus.FORBIDDEN
 
         cross_site = Request(
             base + "/api/navigation",
@@ -147,6 +175,33 @@ def test_local_server_requires_session_token_and_rejects_cross_origin(tmp_path) 
         with pytest.raises(HTTPError) as outside:
             urlopen(traversal, timeout=3)
         assert outside.value.code == HTTPStatus.NOT_FOUND
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
+
+
+def test_local_server_rejects_cookie_parse_errors(tmp_path, monkeypatch) -> None:
+    (tmp_path / "INDEX.md").write_text("# Local index\n", encoding="utf-8")
+
+    class RejectingCookie(navigator_module.SimpleCookie):
+        def load(self, rawdata) -> None:  # type: ignore[no-untyped-def]
+            raise navigator_module.CookieError("malformed cookie")
+
+    monkeypatch.setattr(navigator_module, "SimpleCookie", RejectingCookie)
+    server = NavigatorServer(tmp_path, 0)
+    thread = Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    host, port = server.server_address
+    request = Request(
+        f"http://{host}:{port}/",
+        headers={"Cookie": f"{SESSION_COOKIE}=malformed"},
+    )
+
+    try:
+        with pytest.raises(HTTPError) as rejected:
+            urlopen(request, timeout=3)
+        assert rejected.value.code == HTTPStatus.FORBIDDEN
     finally:
         server.shutdown()
         server.server_close()
