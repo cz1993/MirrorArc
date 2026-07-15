@@ -59,7 +59,47 @@ initial retrieval layer; semantic indexes may help later, but they must not repl
 The test: ≤3 clicks from `INDEX.md` to curated knowledge, and no orphan curated notes. Generated
 source/repo mirrors may be leaf artifacts when manifests and source paths preserve provenance.
 
-## 4. Anti-proliferation — the discipline that makes it usable
+## 4. Guided navigation — links become reading routes
+
+A connected vault is not automatically a comprehensible vault. Search can locate a candidate and a
+graph can show proximity, but a new reader still needs a trustworthy start, a bounded view of the
+territory, and a reasoned next step.
+
+Vaultwright therefore uses three navigation scales:
+
+1. **Landmarks:** `INDEX.md`, profile entry points, MOCs, and curated hubs answer “where can I start?”
+2. **Trails:** `_meta/navigation.yml` declares a stable ID, title, goal, audience, and ordered
+   Markdown steps with short “why next” guidance. The order itself is the version-1 prerequisite
+   contract. The file contains no copied document bodies and remains reviewable without a UI.
+3. **Neighborhoods:** explicit links and backlinks provide bounded local context around the current
+   document. They do not imply a reading order or evidentiary meaning unless the relation is
+   declared.
+
+The first-party Navigator scans allowed Markdown and metadata when opened, keeps its model in
+memory, and presents Start/Map/Reader/Trail views on localhost. Its Map is an interactive browser
+Canvas centered on the selected document and capped to one hop; complete inbound/outbound lists
+remain the keyboard and non-visual equivalent. The per-launch token and exact loopback
+Host/Origin/cross-site checks protect reads from unrelated browser origins. It remains read-only,
+does not require Obsidian, does not build an index, does not generate an Obsidian `.canvas`, and
+does not render an unfiltered whole-vault graph. The later indexed Explorer is a separate,
+externally validated retrieval and context-building product.
+
+Trail design rules:
+
+- one route serves one audience and intent;
+- start with orientation or governance before detailed evidence when authority boundaries matter;
+- keep the primary path short enough to finish; move depth into labelled optional branches;
+- explain why each required step follows;
+- show provenance, generated/curated ownership, lifecycle, and review state while reading;
+- surface broken, stale, missing, conflicted, or unsafe references instead of silently repairing
+  them;
+- treat inferred order as inferred and curator order as declared;
+- test comprehension and wrong turns, not visual attractiveness alone.
+
+Obsidian Bases, Obsidian Canvas, other Markdown editors, and a later Explorer may render the same
+contract. None of them becomes the source of truth for sequence, provenance, or lifecycle.
+
+## 5. Anti-proliferation — the discipline that makes it usable
 
 > **When everything is documented, nothing is.** A knowledge base dies from *too many* notes faster
 > than from too few.
@@ -83,19 +123,22 @@ So Vaultwright optimizes for *fewer, better-connected, current* notes:
 
 Most agent-wiki projects happily spawn notes. Disciplined restraint is a deliberate edge.
 
-## 5. The agent's operating loop
+## 6. The agent's operating loop
 
 - **Ingest** — file the original; mirror it if binary/repo; create or *extend* a knowledge note;
   wikilink the mirror or source-ref from its MOC and entity pages; log one line.
 - **Query** — read `INDEX.md` / the relevant MOC first, follow links, answer with citations to note
   paths; file reusable answers back as notes so work compounds.
+- **Navigate** — select a declared entry point and follow its trail before exploring local branches;
+  when no trail exists, use labelled inferred landmarks and ask for human review before making a
+  durable sequence authoritative.
 - **Lint** — periodically check frontmatter, links, orphans, overlap candidates, mirror gaps, and
   stale generated mirrors; fix mechanically where safe, flag judgment calls. Run
   `vaultwright overlap` before tuning overlap sensitivity in copied pilot vaults through
   `_meta/lint-config.yml`.
 - **Log** — append one greppable line per change to `log.md`.
 
-## 6. Governance (because this is business data)
+## 7. Governance (because this is business data)
 
 - **PII** stays in designated private areas, never in shared/marketing trees.
 - **Secrets never live in the vault** — OS keychain / environment only.

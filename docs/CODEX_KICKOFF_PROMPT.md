@@ -55,9 +55,10 @@ listed finish-line requirement, replace a weaker implementation, or preserve exi
 while preparing a required migration. New ideas that do not map to the matrix go to the post-v1
 backlog.
 
-Stage 0, Stage 1A, Stage 1B, and Stage 2 are closed. Stage 3 external validation is the next gate:
-one permission-cleared external corpus must go through the package-owned pipeline before adapter,
-index, Explorer, connector, visualization, or richer profile-view work resumes.
+Stage 0, Stage 1A, Stage 1B, and Stage 2 are closed. Stage 3 external validation remains the next
+evidence gate. A bounded Navigator proof slice is allowed inside Stage 3 so pilots can test
+Obsidian-free findability and reading sequence; richer adapters, evidence indexing, whole-vault
+graph work, connectors, and the advanced Explorer still wait for permission-cleared external proof.
 
 **Stage 0 requirements**
 - Product statement, six-layer architecture, v1 profiles, v1 non-goals, and command-surface stop
@@ -71,9 +72,10 @@ index, Explorer, connector, visualization, or richer profile-view work resumes.
 2. Drive Stage 3 external validation with `docs/VALIDATION_GATE.md`,
    `docs/STAGE3_VALIDATION_STATUS.md`, `docs/DESIGN_PARTNER_RECRUITING.md`, and
    `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md`.
-3. Do not start Obsidian adapter, generated Canvas, evidence index, Explorer, MCP exploration,
-   Docling/email/connectors, visualization, or new report surfaces before Stage 3 evidence is
-   recorded.
+3. Keep the Stage 3 Navigator scan-on-open, localhost-only, read-only, and deterministic. Do not
+   start richer Obsidian adapter, generated Canvas, evidence index, advanced Explorer, MCP
+   exploration, whole-vault graph, Docling/email/connectors, or unrelated report surfaces before
+   Stage 3 evidence is recorded.
 4. Preserve current package-owned behavior, compatibility shims, command-surface freeze,
    lifecycle, catalog, review, recovery, safety, benchmark, and journaled materialization gates.
 5. If no external-corpus action is possible in the current environment, report that boundary with

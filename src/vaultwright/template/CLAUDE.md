@@ -7,7 +7,8 @@ session that touches these documents. It is for both humans and the agent. (Agen
 
 > Pattern: Karpathy's "LLM wiki" — the LLM incrementally **builds and maintains** a persistent,
 > interlinked markdown wiki that sits between you and the raw sources, instead of re-deriving
-> knowledge on every query. *Obsidian is the IDE; the LLM is the programmer; the wiki is the codebase.*
+> knowledge on every query. *The governed Markdown workspace is the codebase; human interfaces and
+> agents are replaceable readers and maintainers.*
 
 ---
 
@@ -40,7 +41,7 @@ the graph — without converting or replacing the original.
 80_sources/     repo mirrors, public datasets, source inventories
 _mirrors/     generated Office markdown mirrors and optional PDF text mirrors, preserving canonical source paths
 _templates/   Obsidian note templates (§7)
-_meta/        conventions reference, mirror config, manifests, and sync audit log
+_meta/        conventions, authored navigation trails, mirror config, manifests, and sync audit log
 tools/        the mirror & lint scripts
 _archive/     retired-but-retained (see RETENTION.md)
 _tmp/         scratch; anything >30 days is prunable
@@ -55,8 +56,8 @@ cross-functional views. Adapt subfolders and `domain-map.yml` to the industry be
 ## 3. Frontmatter — the metadata contract
 
 Every markdown note carries YAML frontmatter. This is the highest-leverage convention: it powers
-Obsidian **Properties** and **Bases** so the index (`Documents.base`) is generated dynamically and
-never drifts.
+Vaultwright Navigator context, agents, generated catalogs, and optional Obsidian **Properties** and
+**Bases** without making any one interface authoritative.
 
 **Required on every note:**
 
@@ -98,6 +99,11 @@ binary, e.g. a PDF) · `repo-mirror` (auto mirror of a GitHub repo — never han
 
 Test: ≤3 clicks from `INDEX.md` to curated knowledge; no orphan curated notes. Generated mirrors
 may be leaf artifacts when manifests and source paths preserve provenance.
+
+When a subject has a useful reading order, author it in `_meta/navigation.yml`. Each trail names a
+goal, audience, ordered Markdown paths, and one sentence explaining why every step belongs there.
+Run `vaultwright navigate --check` to validate it. Do not present filename order or an unreviewed
+model suggestion as an authoritative learning sequence.
 
 ---
 

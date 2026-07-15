@@ -21,10 +21,10 @@ required migration. New ideas that do not map here move to the post-v1 backlog.
 | 1A. Kernel and profile convergence | Runtime logic moves into `src/vaultwright/`; vault-local scripts become compatibility shims; profile/core schemas exist; generated mirrors become machine-owned with annotation migration; remaining profile assumptions are enumerated and either profile-owned, legacy compatibility, tests, or universal invariants | Package owns behavior; tests prove source integrity, idempotency, lifecycle, recovery, migration, profile validation, mirror annotation, and safety | Complete |
 | 1B. Journaled changed-file materialization | Durable local journal, source-addressable materialization, event coalescing, metadata-first fingerprints, replay, reconciliation, lock/lease safety, and full-sync recovery path exist | One changed source avoids whole-vault steady-state hashing/conversion; missed/interrupted work recovers; benchmark records paths/files/bytes/conversions/events; focused, affected, full-suite, packaging, lint, no-data, template-copy, shell syntax, diff, and residue gates pass | Complete |
 | 2. Official profiles | `business-operations`, `research-learning`, `software-project`, and `blank` initialize from the same core package | Profile fixtures pass identical lifecycle and no-data gates; no core hard-coding of profile folders/types/statuses | Complete |
-| 3. External validation and pilot proof | At least one real external corpus goes through the package-owned pipeline before any adapter, index, Explorer, or visualization expansion | Baseline, changed-file sync, downtime/reconciliation, recovery, catalog/front-door, benchmark, handoff evidence, and the `docs/VALIDATION_GATE.md` stop/pivot criteria are recorded against a source-backed corpus outside the maintainer's fixtures; `docs/STAGE3_VALIDATION_STATUS.md` tracks public-safe attempts | Not started |
+| 3. External validation, pilot proof, and bounded Navigator proof | At least one real external corpus goes through the package-owned pipeline before adapter, index, or Explorer expansion. The implemented scan-on-open Navigator slice may be used and corrected as a Stage 3 front-door test instrument, but it must remain localhost-only, read-only, index-free, body-persistence-free, and limited to curated trails plus bounded explicit-link neighborhoods | Baseline, changed-file sync, downtime/reconciliation, recovery, catalog/front-door, Navigator comparison, benchmark, handoff evidence, and the `docs/VALIDATION_GATE.md` stop/pivot criteria are recorded against a source-backed corpus outside the maintainer's fixtures; `docs/STAGE3_VALIDATION_STATUS.md` tracks public-safe attempts. Navigator implementation and synthetic evidence do not complete Stage 3 | Not started |
 | 4. Obsidian adapter and skills | Only after Stage 3 evidence: Obsidian integration stays optional; governance skills and profile-aware Bases/Canvas outputs exist | Generated `.base` and `.canvas` artifacts pass syntax/integrity tests; core tests pass without Obsidian; adapter work addresses validated pilot pain | Deferred behind Stage 3 |
 | 5. Evidence index and exploration gate | Only after Stage 3 evidence: local SQLite/FTS graph index, `index build`, `index status`, `explore`, MCP exploration tool, and benchmark comparison exist; the index consumes applied journal events rather than its own watcher | Deletion/rebuild equivalence, provenance on every result, no cross-workspace retrieval, and material benchmark improvement over plain mirror/catalog workflows | Conditional |
-| 6. Explorer and context builder | Only if Stage 5 passes: local read-only Explorer and context pack export | Explorer reads shared profile/journal/index model; no UI-only business logic; accessibility and browser checks pass | Conditional |
+| 6. Indexed Explorer and context builder | Only if Stage 5 passes: local read-only indexed Explorer and context pack export | Explorer reads the shared profile/journal/index model and reuses the Stage 3 navigation/trail contract; no UI-only business logic; accessibility and browser checks pass | Conditional |
 
 ## Mandatory V1 Core Finish Line
 
@@ -40,6 +40,7 @@ required migration. New ideas that do not map here move to the post-v1 backlog.
 | V1-C8 | Three external profile pilots | Dogfood copy and government-services example provide internal evidence; benchmark and pilot reporting can now discover profile-declared benchmark task packs; `docs/DESIGN_PARTNER_RECRUITING.md` defines the recruiting and pre-screen flow; `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md` defines the accepted-run sequence; `docs/STAGE3_VALIDATION_STATUS.md` tracks public-safe attempt state | Need one structured external pilot each for business-operations, research-learning, and software-project; run the first external corpus before Stage 4-6 expansion | 3 |
 | V1-C9 | Tagged v1 release with upgrade, recovery, security, and support docs | Recovery, security, release, and design-partner docs exist | Need profile-aware upgrade/recovery docs, release artifact validation, published known limitations, and pilot evidence | 3 |
 | V1-C10 | Journaled changed-file materialization | ADR 0002 defines authority boundaries, local derived-state journal semantics, event states, metadata fingerprints, debounce/stability, replay, reconciliation, locking, security, model boundary, adoption, rollback, and benchmark evidence requirements; the canonical white paper and supporting docs now make full sync the baseline/recovery path and journaled materialization the Stage 1B steady-state target. Package-owned `vaultwright.changes` modules now initialize `.vaultwright/state.sqlite`, persist journal events and state transitions, expose `vaultwright journal status`, keep local derived state ignored while staged commits are blocked by the no-data scan, provide deterministic static-feed queueing behind a feed interface, filter generated/local/operational/temp paths before queueing, coalesce repeated events for the same path, compute cheap metadata fingerprints before optional full hashing, support workspace leases, stale-lease recovery, transactional event claims, claimed-event finish checkpoints, failed-event retry, recovery of interrupted `processing` events, expose a source-addressable Office materialization primitive that reuses the existing mirror engine for one vault-relative source, provide deterministic file-stability settling before conversion, process claimed current-path Office events through a lease-protected worker primitive, apply manifest-backed deleted events as `source_missing` while retaining generated mirrors, replay resolved `source_moved` records after old mirror cleanup, replay delete/recreate back to `clean`, replay recoverable journal work idempotently with `vaultwright journal replay`, queue missed source/manifest work through explicit `vaultwright reconcile`, expose `vaultwright sync --changed` plus explicit `vaultwright sync --full`, expose `vaultwright watch --once` for deterministic startup reconciliation, feed queueing, and replay, expose optional watchdog-backed `vaultwright watch --native` capture over configured content roots, record synthetic benchmark evidence in `docs/JOURNALED_MATERIALIZATION_BENCHMARK.md`, and pass the focused, affected, full-suite, packaging, lint, no-data, template-copy, shell syntax, diff, and residue gates. | Closed for Stage 1B; keep full sync as recovery and keep later profile/index/adapter work gated | 1B |
+| V1-C11 | Obsidian-independent Guided Knowledge Map/Navigator | The bounded implementation slice exists: `vaultwright navigate --check/--json` validates the ephemeral model and `_meta/navigation.yml`; `vaultwright navigate` scans on page load and explicit guarded refresh, revision-checks selected bodies against their metadata, and serves a loopback-only read-only reader with trails, trust metadata, and an interactive one-hop browser Canvas map backed by complete inbound/outbound list equivalents. Every launch uses a new history-scrubbed token; requests enforce the exact loopback Host, same-origin rules, and cross-site rejection. It persists no bodies, route paths, or index, writes nothing, and exposes no unfiltered global graph | Run the catalog-versus-Navigator orientation/comprehension comparison on a permission-cleared external corpus, record aggregate-safe results, and close any safety or accessibility defects the run exposes. Synthetic implementation evidence does not complete Stage 3 | 3 |
 
 Stage 1 V1-C2 note: `vaultwright lint` now matches the profile-contract-first posture used by
 doctor, migration, and Office sync. A valid `_meta/profile.yml` provides canonical domains, so a
@@ -81,14 +82,15 @@ context, or status constants.
 ## Conditional V1 Explorer Finish Line
 
 Stage 5 decides whether these stay in v1 or move to post-v1. Do not build a local index,
-exploration interface, or visual Explorer before Stage 3 external evidence shows the core mirror,
-catalog, and benchmark workflow is worth extending.
+exploration interface, or indexed Explorer before Stage 3 external evidence shows the core mirror,
+catalog, Navigator, and benchmark workflow is worth extending. The bounded V1-C11 Navigator is not
+evidence-index or Explorer authorization.
 
 | ID | Requirement | Gate Evidence | Stage |
 | --- | --- | --- | --- |
 | V1-E10 | Disposable local evidence index | SQLite/FTS index rebuilds equivalently, stores graph edges with provenance, and never becomes authoritative | 5 |
 | V1-E11 | Exploration CLI/MCP interface | `vaultwright explore` and `vaultwright_explore` return bounded context with lifecycle, review, provenance, token estimate, and prompt-safety guidance | 5 |
-| V1-E12 | Read-only visual Explorer with context export | Localhost-only Explorer reads shared profile/index model and exports Markdown/JSON context packs | 6 |
+| V1-E12 | Read-only indexed Explorer with context export | Localhost-only Explorer reads the shared profile/index model, reuses the navigation/trail contract, and exports Markdown/JSON context packs | 6 |
 
 ## Open Work Mapping
 
@@ -101,10 +103,11 @@ catalog, and benchmark workflow is worth extending.
 | Repeated whole-corpus steady-state sync cost | V1-C10 | Closed for Stage 1B by the journaled changed-file path and benchmark evidence; keep full sync as the recovery path and refresh measurements before later release claims |
 | Obsidian Bases and future Canvas outputs | V1-C6, V1-C7 | Adapter only; `profile views --check` keeps generated Bases testable without Obsidian, and Canvas waits for Stage 3 pilot evidence |
 | Agent-readiness benchmark | V1-C8, V1-E10, V1-E11 | Keep benchmark task packs profile-declared, keep generated mirror evidence rooted in the active Office mirror root, and run measured external-corpus comparisons against the validation-gate stop rules before deciding the Stage 5 index/Explorer gate |
-| Catalog JSON/Markdown/HTML | V1-C1, V1-C7, V1-E12 | Package-owned `vaultwright catalog` is now the shared front-door path for non-Obsidian users; continue preserving it, but do not broaden UI work before Stage 3 external validation |
+| Catalog JSON/Markdown/HTML | V1-C1, V1-C7, V1-C11 | Package-owned `vaultwright catalog` remains the portable non-Obsidian inventory gateway and the comparison baseline for the bounded Navigator proof |
+| Guided Knowledge Map/Navigator | V1-C11 | The bounded implementation exists inside the documented scan-on-open, in-memory, token-protected loopback read-only, no-index, no-global-graph boundary. Its HTML Canvas shows only the selected document's one-hop neighborhood and retains inbound/outbound list equivalents; it is not a generated Obsidian `.canvas`. Use it to test orientation and reading sequence, not corpus-wide retrieval |
 | Microsoft 365/Copilot handoff | V1-C9 | Keep as support/deployment documentation, not an enterprise taxonomy profile |
 | Local evidence index | V1-E10 | Build only after Stage 3 external validation shows mirror/catalog workflows need an index; no vector DB by default |
-| Visual Explorer | V1-E12 | Build only if the Stage 5 benchmark gate passes |
+| Indexed visual Explorer | V1-E12 | Build only if the Stage 5 benchmark gate passes; reuse rather than replace Navigator's trail contract |
 
 ## Command Surface Rule
 
@@ -128,6 +131,8 @@ vaultwright sync --full
 vaultwright journal status
 vaultwright journal replay
 vaultwright reconcile
+vaultwright navigate --check
+vaultwright navigate
 vaultwright index build
 vaultwright index status
 vaultwright explore "question"
@@ -159,8 +164,12 @@ idempotent recovery of interrupted processing events and explicit failed-event r
 exists for explicit source/manifest repair queueing. `sync --changed` now composes reconcile and
 replay; `sync --full` names the existing full sync recovery path explicitly. `watch --once` exists
 for deterministic startup reconciliation/feed queueing/replay, and `watch --native` exists as an
-optional watchdog-backed capture loop. `index` and `explore` remain gated future work after Stage 3
-external validation and the Stage 5 benchmark gate.
+optional watchdog-backed capture loop. `navigate --check` and `navigate` are the bounded
+experimental Stage 3 model-validation and token-protected localhost reader surfaces tracked by
+V1-C11. The reader now includes the capped one-hop browser Canvas plus inbound/outbound list
+equivalents, but this implemented surface does not itself count as external evidence or authorize
+index or Explorer work. `index` and `explore` remain gated future work after Stage 3 external
+validation and the Stage 5 benchmark gate.
 
 ## Post-V1 Backlog
 

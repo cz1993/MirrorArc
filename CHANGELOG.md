@@ -6,6 +6,9 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 ## [Unreleased]
 
 ### Changed
+- Revised the Stage 3 gate to allow a bounded, scan-on-open Navigator proof slice for measuring
+  Obsidian-free findability and logical reading sequence while keeping the evidence index,
+  whole-vault graph, and advanced Explorer gated on external evidence.
 - Marked dated whitepaper, progress-audit, and mega-prompt files as historical so the current
   Stage 3 validation gate remains the obvious execution authority.
 - Aligned the CodeX continuation prompt with the current Stage 3 external-validation gate so future
@@ -25,6 +28,14 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added negative Navigator HTTP regression coverage for forged and malformed session cookies,
+  cookie parser failures, and cross-origin document reads.
+- Added the experimental `vaultwright navigate` localhost reader, a deterministic metadata-only
+  navigation model, authored `_meta/navigation.yml` trails with “why this step” explanations,
+  a token-protected ephemeral port, an interactive one-hop local map with accessible list
+  equivalents, and a synthetic government-services reading path. The reader scrubs launch tokens
+  and note paths from browser history, rejects stale body/metadata pairs until an in-session rescan,
+  excludes private/secret/runtime directories, and bounds candidate, link, and diagnostic work.
 - Added `scripts/create_plain_markitdown_dump.py`, a private external-pilot helper that creates
   the required `plain_markitdown_dump` benchmark baseline outside the public source checkout.
 - Added a package-version CLI smoke check (`vaultwright --version`) and wired it into

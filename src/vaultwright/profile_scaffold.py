@@ -28,6 +28,7 @@ CORE_TEMPLATE_FILES = (
     "_meta/lifecycle-states.yml",
     "_meta/lint-config.yml",
     "_meta/mirror-config.yml",
+    "_meta/navigation.yml",
 )
 CORE_TEMPLATE_DIRS = ("tools",)
 BUSINESS_TEMPLATE_PROFILE_FILES = (
