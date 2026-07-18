@@ -2,7 +2,7 @@
 
 ## Product Direction
 
-Vaultwright turns heterogeneous source collections into governed, profile-driven knowledge
+NoeticWeave turns heterogeneous source collections into governed, profile-driven knowledge
 workspaces that humans and AI agents can inspect, navigate, cite, and refresh without replacing the
 original records. The canonical v1 direction now adds journaled changed-file materialization:
 after an initial baseline, normal steady-state refresh should process event-identified candidate
@@ -20,7 +20,7 @@ and the release gates are tracked in [`docs/V1_FINISH_LINE.md`](V1_FINISH_LINE.m
 
 ## First Buyer
 
-Vaultwright's first buyer is a small consulting, advisory, or implementation team that handles
+NoeticWeave's first buyer is a small consulting, advisory, or implementation team that handles
 document-heavy client onboarding, operational audits, funding-readiness work, compliance reviews,
 or recurring operating-system cleanup.
 
@@ -32,7 +32,7 @@ source preservation, repeatable delivery, and client trust.
 
 The first workflow is:
 
-1. Point Vaultwright at an existing client document collection.
+1. Point NoeticWeave at an existing client document collection.
 2. Produce a non-destructive inventory and sync plan.
 3. Generate mirrors for supported files without modifying originals.
 4. Run a read-only conversion spot-check report for unsupported, stale, conflicted, risky, or
@@ -56,7 +56,7 @@ Initial target corpus:
 - Office files, PDFs, markdown, plain text, spreadsheets, decks, and small repositories.
 - Single-client or single-engagement workspace.
 - Local filesystem source; cloud-synced or mounted/network folders are acceptable only when files
-  are pinned locally, backed up, and checked with `vaultwright doctor` before production sync.
+  are pinned locally, backed up, and checked with `noeticweave doctor` before production sync.
 
 Out of scope for the first release:
 
@@ -106,7 +106,7 @@ A successful first workflow produces:
 ## Role of Obsidian
 
 Obsidian is the reference human interface because it provides local markdown browsing, links,
-properties, graph views, and Bases. Vaultwright correctness must not depend on Obsidian sync,
+properties, graph views, and Bases. NoeticWeave correctness must not depend on Obsidian sync,
 community plugins, or a specific team-deployment model.
 
 ## Role of AI
@@ -130,7 +130,7 @@ AI must not silently:
 
 ## Agent-Readiness Validation
 
-Vaultwright's long-term value depends on whether agents perform better against governed markdown
+NoeticWeave's long-term value depends on whether agents perform better against governed markdown
 than against raw folders or one-off plain markitdown dumps. The benchmark protocol in
 `docs/AGENT_READINESS_BENCHMARK.md` defines the evidence needed before this claim is treated as
 more than a thesis. `docs/VALIDATION_GATE.md` defines the point where weak benchmark or

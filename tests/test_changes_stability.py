@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from vaultwright.changes.fingerprint import MetadataFingerprint
-from vaultwright.changes.stability import StabilityError, wait_for_file_stability
+from noeticweave.changes.fingerprint import MetadataFingerprint
+from noeticweave.changes.stability import StabilityError, wait_for_file_stability
 
 
 class FakeClock:

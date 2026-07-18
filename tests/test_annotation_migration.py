@@ -16,7 +16,7 @@ def run_cli(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[
     env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     return subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", *args],
+        [sys.executable, "-m", "noeticweave.cli", *args],
         cwd=cwd or ROOT,
         env=env,
         text=True,

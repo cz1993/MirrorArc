@@ -2,24 +2,24 @@
 
 **Status:** Accepted
 **Date:** 2026-06-24
-**Decision source:** `docs/VAULTWRIGHT_WHITEPAPER.md`
+**Decision source:** `docs/NOETICWEAVE_WHITEPAPER.md`
 **Owner:** cz1993
 
 ## Context
 
-Vaultwright already has package-owned full sync, source/repo manifests, machine-owned mirrors,
+NoeticWeave already has package-owned full sync, source/repo manifests, machine-owned mirrors,
 annotation sidecars, lifecycle contracts, safety gates, and profile-driven routing work. Normal
 Office sync still has a structural steady-state cost: it discovers eligible sources and computes
 content hashes for the corpus during planning before deciding most files are unchanged.
 
 That is acceptable as a baseline and recovery path, but it is too expensive for larger or
 frequently changing workspaces. A one-file edit should not repeatedly open and hash every other
-source file before Vaultwright can update the one affected mirror.
+source file before NoeticWeave can update the one affected mirror.
 
 Office files, PDFs, repositories, and ordinary filesystems do not provide a database write-ahead
 log with semantic transactions. Filesystem events can be dropped, coalesced, duplicated, delayed,
 or reported before a save is stable. Office applications and cloud sync tools can write through
-temporary lock files or atomic replacement patterns. Vaultwright therefore cannot claim literal WAL
+temporary lock files or atomic replacement patterns. NoeticWeave therefore cannot claim literal WAL
 shipping.
 
 It can adopt the useful operational properties of log shipping: durable ordered observations,
@@ -28,7 +28,7 @@ models, and reconciliation against authoritative sources.
 
 ## Decision
 
-Vaultwright v1 adds a mandatory Stage 1B requirement: **journaled changed-file materialization**.
+NoeticWeave v1 adds a mandatory Stage 1B requirement: **journaled changed-file materialization**.
 
 After an initial baseline, normal steady-state operation should process event-identified candidate
 sources instead of repeatedly scanning, opening, and hashing unchanged sources. Full sync remains
@@ -43,7 +43,7 @@ The architecture has these authority boundaries:
 - The change journal is derived operational delivery state, not source authority.
 - Any future evidence index consumes applied journal events and remains disposable.
 
-The local journal uses a private derived-state database such as `.vaultwright/state.sqlite`. It may
+The local journal uses a private derived-state database such as `.noeticweave/state.sqlite`. It may
 use SQLite WAL mode for local transaction durability, but it must not contain source or mirror
 bodies. It may contain relative paths, event metadata, retry state, timestamps, fingerprints,
 hashes, checkpoints, and lock/lease records. The state directory must be excluded from Git and
@@ -82,7 +82,7 @@ checking current source, manifest, mirror, and journal evidence before writing.
 
 ## Fingerprints and Hashing
 
-Before computing a full source hash, Vaultwright compares cheap metadata:
+Before computing a full source hash, NoeticWeave compares cheap metadata:
 
 - normalized relative path;
 - filesystem identity hint where available;
@@ -90,7 +90,7 @@ Before computing a full source hash, Vaultwright compares cheap metadata:
 - nanosecond modification time.
 
 If the fingerprint is unchanged, normal event-driven processing does not open or fully hash the
-source body. If the fingerprint changed, Vaultwright computes SHA-256. If the SHA-256 is unchanged,
+source body. If the fingerprint changed, NoeticWeave computes SHA-256. If the SHA-256 is unchanged,
 it handles metadata or move evidence without conversion. If the SHA-256 changed, it runs the
 existing deterministic materialization logic for that candidate.
 
@@ -130,7 +130,7 @@ implementation. Full sync and changed-file sync converge on the same logic for:
 
 ## Reconciliation and Replay
 
-Watcher delivery is advisory. Vaultwright must reconcile at startup, on explicit command, and on a
+Watcher delivery is advisory. NoeticWeave must reconcile at startup, on explicit command, and on a
 schedule where configured. Reconciliation compares configured source roots, manifests, journal
 source state, expected mirrors, and managed metadata.
 
@@ -198,7 +198,7 @@ Adoption is staged:
 6. Add reconciliation and benchmark evidence.
 
 Rollback is safe because the journal is derived state. Operators can stop the watcher, remove or
-ignore `.vaultwright/`, run full sync, and rebuild derived state from sources and manifests.
+ignore `.noeticweave/`, run full sync, and rebuild derived state from sources and manifests.
 
 ## Consequences
 

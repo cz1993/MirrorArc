@@ -1,20 +1,21 @@
-# Vaultwright — CodeX continuation mega-prompt
+# NoeticWeave — CodeX continuation mega-prompt
 
 > **How to use:** open this repo with CodeX and paste this whole file as your first instruction
 > (it pairs with the auto-loaded `AGENTS.md`). It puts you in an autonomous, goal-pursuing loop to
-> keep building Vaultwright.
+> keep building NoeticWeave.
 
 ---
 
-You are **CodeX**, continuing development of **Vaultwright** — a technical-alpha document
+You are **CodeX**, continuing development of **NoeticWeave** — a technical-alpha document
 governance tool for turning existing business document collections into governed, inspectable
 knowledge workspaces without modifying original records. You are not starting from scratch: a
 working v0 exists (template vault, schema, sync/lint tools, docs, licensing scaffold). Your job is
 to narrow, harden, and validate the first promise before broadening the roadmap.
 
 **Read first (in order):** `AGENTS.md`, `README.md`, `docs/PRODUCT.md`,
-`docs/VAULTWRIGHT_WHITEPAPER.md`,
-`docs/adr/0001-profile-driven-v1-architecture.md`, `docs/V1_FINISH_LINE.md`,
+`docs/NOETICWEAVE_WHITEPAPER.md`,
+`docs/adr/0001-profile-driven-v1-architecture.md`,
+`docs/adr/0003-noeticweave-project-identity.md`, `docs/V1_FINISH_LINE.md`,
 `docs/PROFILE_SCHEMA.md`, `docs/SYNC_SPEC.md`, `docs/SECURITY_MODEL.md`,
 `docs/VALIDATION_GATE.md`, `docs/STAGE3_VALIDATION_STATUS.md`,
 `docs/DESIGN_PARTNER_RECRUITING.md`, `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md`,
@@ -32,7 +33,7 @@ Work in continuous iterations, not one-and-done. Each loop:
 2. Write a 3–6 line plan.
 3. Implement on a feature branch (`feat/…`, `fix/…`, `chore/…`).
 4. Add/extend tests; run the test suite, `PYTHONPATH=src python3.11 template/tools/lint_vault.py`
-   or installed `vaultwright lint`, and example-vault regeneration/lint in a temporary copy.
+   or installed `noeticweave lint`, and example-vault regeneration/lint in a temporary copy.
 5. Commit with Conventional Commits, **authored by cz1993** (see Ownership).
 6. Open a PR: clear description, what/why, test evidence, and an explicit `Reviewer: Claude` or
    `Reviewer: CodeX` line. Self-review against the Definition of Done.
@@ -46,7 +47,7 @@ touching real accounts/credentials. Otherwise, proceed autonomously.
 ## Current v1 architecture checkpoint - 2026-07-03
 
 The active product direction is the profile-driven v1 architecture in the canonical
-`docs/VAULTWRIGHT_WHITEPAPER.md`. Treat
+`docs/NOETICWEAVE_WHITEPAPER.md`. Treat
 `docs/adr/0001-profile-driven-v1-architecture.md` and `docs/V1_FINISH_LINE.md` as the convergence
 gate before choosing work.
 
@@ -114,7 +115,7 @@ section as historical context; do not let it override the 2026-06-23 v1 finish-l
 5. Update README/template docs and `CHANGELOG.md` so release claims match shipped behavior.
 6. Run: no-data scan, `python3.11 scripts/sync_template_copies.py --check`,
    `python3.11 -m py_compile`, shell syntax checks, `python3.11 -m pytest`, and
-   `PYTHONPATH=src python3.11 template/tools/lint_vault.py` or installed `vaultwright lint`.
+   `PYTHONPATH=src python3.11 template/tools/lint_vault.py` or installed `noeticweave lint`.
 7. Commit with Conventional Commits as `cz1993`, open a PR with `Reviewer: CodeX`, and continue to
    the next P0 item.
 
@@ -176,7 +177,7 @@ benchmark protocol, but they do not complete the gate.
 
 ## Guidance #3 — narrow before broadening
 
-Vaultwright should eventually serve owners beyond consulting, but the next development sequence is
+NoeticWeave should eventually serve owners beyond consulting, but the next development sequence is
 not broad industry expansion. Prove the narrow promise first:
 
 - Define product, sync, and security contracts before adding more capabilities.
@@ -197,10 +198,10 @@ not broad industry expansion. Prove the narrow promise first:
 - **Mirror lifecycle correctness:** extend the initial Office/repo manifests and stable IDs into
   complete lifecycle states, rename / move / delete / stale / conflict handling, recovery tests,
   and source-byte integrity tests.
-- **Thin operator CLI:** `tools/vaultwright.py plan`, `sync`, `status`, `catalog`, `conversion`,
+- **Thin operator CLI:** `tools/noeticweave.py plan`, `sync`, `status`, `catalog`, `conversion`,
   `m365`, `review`, `overlap`, `migration`, `pilot`, `recovery`, `sandbox`, `lint`,
   `benchmark`, and `doctor` exist; keep them thin. The source-installable
-  `vaultwright` console entry point now owns `plan`, `sync`, `status`, `doctor`, `catalog`, `lint`,
+  `noeticweave` console entry point now owns `plan`, `sync`, `status`, `doctor`, `catalog`, `lint`,
   `conversion`, `m365`, `migration`, `overlap`, `benchmark`, `pilot`, `sandbox`, `recovery`, and
   `review` through the package while vault-local operator commands remain compatibility surfaces
   during migration. `plan` must remain
@@ -234,7 +235,7 @@ not broad industry expansion. Prove the narrow promise first:
 - **Repo mirror:** large-repo handling, rate-limit/backoff, and groundwork for **typed links**.
 
 **P2 — DX & adoption**
-- Keep the vault-local **`vaultwright` CLI** wrappers thin compatibility surfaces, prevent drift
+- Keep the vault-local **`noeticweave` CLI** wrappers thin compatibility surfaces, prevent drift
   from the package-owned runtime, and keep doctor checks for Obsidian config, `gh` auth, backup
   posture, and recovery readiness package-owned.
 - **Industry starter profiles** only after design-partner evidence shows reusable patterns.
@@ -254,7 +255,7 @@ not broad industry expansion. Prove the narrow promise first:
 
 ## Anti-patterns (don't)
 
-- Don't reframe Vaultwright as a generic personal-PKM / LLM-wiki — lead with the differentiators.
+- Don't reframe NoeticWeave as a generic personal-PKM / LLM-wiki — lead with the differentiators.
 - Don't add a vector database as a substitute for lifecycle correctness, and don't add a hosted
   SaaS into this repo.
 - Don't bloat dependencies, assume a single industry, commit data/secrets, or rewrite shared

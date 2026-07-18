@@ -1,6 +1,6 @@
 # CLAUDE.md — Knowledge Base Schema
 
-This is the **schema layer** of a Vaultwright knowledge base: the operating manual that turns an
+This is the **schema layer** of a NoeticWeave knowledge base: the operating manual that turns an
 LLM agent into a disciplined wiki maintainer rather than a generic chatbot. Read this first in any
 session that touches these documents. It is for both humans and the agent. (Agents that look for
 `AGENTS.md` are pointed here.)
@@ -142,7 +142,7 @@ when the original changes.
   `office_mirrors.include_pdf: true` in `_meta/mirror-config.yml` for unattended PDF mirror refresh.
 - **Rules:** edit the original, never a generated mirror body. Keep durable human notes in regular
   curated notes. If a legacy mirror already contains above-sentinel annotations, run
-  `vaultwright migrate annotations --write` before sync refreshes it. Mirror generation is
+  `noeticweave migrate annotations --write` before sync refreshes it. Mirror generation is
   idempotent (hash/HEAD-based). The Office and repo manifests record stable IDs, hashes, mirror
   paths, lifecycle state, and warnings. Sync events append to `_meta/sync-audit.jsonl`. Sync auth
   is **read-only and never stored in the vault** (§9).

@@ -2,11 +2,11 @@
 from pathlib import Path
 import sqlite3
 
-from vaultwright.changes import feed, fingerprint, journal
+from noeticweave.changes import feed, fingerprint, journal
 
 
 def journal_rows(root: Path) -> list[sqlite3.Row]:
-    conn = sqlite3.connect(root / ".vaultwright" / "state.sqlite")
+    conn = sqlite3.connect(root / ".noeticweave" / "state.sqlite")
     conn.row_factory = sqlite3.Row
     try:
         return conn.execute(
@@ -74,6 +74,7 @@ def test_feed_filters_generated_state_operational_and_temporary_paths(tmp_path: 
     changes = [
         feed.ObservedChange("modified", "generated/source.md"),
         feed.ObservedChange("modified", "80_sources/repos/example.md"),
+        feed.ObservedChange("modified", ".noeticweave/state.sqlite"),
         feed.ObservedChange("modified", ".vaultwright/state.sqlite"),
         feed.ObservedChange("modified", "tools"),
         feed.ObservedChange("modified", "tools/sync.py"),
@@ -96,6 +97,7 @@ def test_feed_queues_coalesced_events_with_metadata_fingerprint(tmp_path: Path) 
         [
             feed.ObservedChange("modified", "10_sources/brief.docx", observed_at="2026-06-25T10:00:00Z"),
             feed.ObservedChange("modified", "10_sources/brief.docx", observed_at="2026-06-25T10:00:01Z"),
+            feed.ObservedChange("modified", ".noeticweave/state.sqlite"),
             feed.ObservedChange("modified", ".vaultwright/state.sqlite"),
         ]
     )
@@ -117,7 +119,7 @@ def test_feed_queues_coalesced_events_with_metadata_fingerprint(tmp_path: Path) 
 def test_feed_does_not_initialize_journal_for_ignored_only_events(tmp_path: Path) -> None:
     static = feed.StaticChangeFeed(
         [
-            feed.ObservedChange("modified", ".vaultwright/state.sqlite"),
+            feed.ObservedChange("modified", ".noeticweave/state.sqlite"),
             feed.ObservedChange("modified", "tools/sync.py"),
         ]
     )
@@ -125,7 +127,7 @@ def test_feed_does_not_initialize_journal_for_ignored_only_events(tmp_path: Path
     sequences = feed.queue_feed_events(tmp_path, static)
 
     assert sequences == []
-    assert not (tmp_path / ".vaultwright").exists()
+    assert not (tmp_path / ".noeticweave").exists()
 
 
 def test_move_event_preserves_previous_path(tmp_path: Path) -> None:

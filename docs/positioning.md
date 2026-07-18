@@ -1,7 +1,7 @@
 # Positioning (the honest version)
 
-Vaultwright's underlying pattern is **not novel**, and pretending otherwise would waste your time.
-This page is the candid map of the landscape and where Vaultwright actually earns its place.
+NoeticWeave's underlying pattern is **not novel**, and pretending otherwise would waste your time.
+This page is the candid map of the landscape and where NoeticWeave actually earns its place.
 
 ## The pattern is commoditized
 
@@ -17,12 +17,12 @@ weeks. Notable neighbors (stars approximate, mid-2026):
   markets "business/team intelligence") — personal/research "second brains" built on the same
   primitives.
 - **Copilot for Obsidian** (~7k★) — the closest *product*; its v4 (summer 2026) brings Claude
-  Code/Codex into the vault. A general harness, not an opinionated methodology — Vaultwright could
+  Code/Codex into the vault. A general harness, not an opinionated methodology — NoeticWeave could
   run *on top of* it.
 - **Khoj / AnythingLLM / NotebookLM / Onyx** — chat/RAG over your files; the artifact is a vector
   index, not a curated markdown wiki. The approach this methodology deliberately avoids.
 
-## Where Vaultwright is differentiated
+## Where NoeticWeave is differentiated
 
 Not found in any surveyed competitor:
 
@@ -39,7 +39,7 @@ Not found in any surveyed competitor:
 ## Interoperate, don't compete
 
 - **Uses** markitdown (conversion) and Obsidian (UI) as dependencies, not rivals.
-- **Sits alongside** basic-memory or Copilot — they can chat/recall; Vaultwright keeps the curated,
+- **Sits alongside** basic-memory or Copilot — they can chat/recall; NoeticWeave keeps the curated,
   governed, mirror-backed record.
 - Works with any agent that reads a `CLAUDE.md`/`AGENTS.md` (Claude Code, Codex, …).
 
@@ -56,7 +56,7 @@ Not found in any surveyed competitor:
 
 - **Fast-moving field.** The pattern iterates weekly; a general harness could absorb the
   methodology as config. Defensibility rests on the **tooling + vertical**, not the schema doc.
-- **Cheap to clone.** Instruction/skill files copy trivially — which is exactly why Vaultwright
+- **Cheap to clone.** Instruction/skill files copy trivially — which is exactly why NoeticWeave
   leads with the mirror system and governance.
 - **Hard consumer market.** Personal-KB products have struggled (Quivr pivoted, Reor archived) —
   an argument *for* the narrower B2B-ops focus, not against the project.

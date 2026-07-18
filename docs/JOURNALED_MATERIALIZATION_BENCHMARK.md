@@ -6,7 +6,7 @@ temporary synthetic vault only; no private or real-world source files are read.
 Command:
 
 ```bash
-PYTHONDONTWRITEBYTECODE=1 /tmp/vaultwright-codex-venv/bin/python scripts/benchmark_journaled_materialization.py --sources 1000 --json
+PYTHONDONTWRITEBYTECODE=1 /tmp/noeticweave-codex-venv/bin/python scripts/benchmark_journaled_materialization.py --sources 1000 --json
 ```
 
 Result:

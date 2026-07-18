@@ -1,6 +1,6 @@
-# Vaultwright Profile Schema
+# NoeticWeave Profile Schema
 
-Vaultwright profiles are versioned contracts that describe a workspace's domain vocabulary, allowed
+NoeticWeave profiles are versioned contracts that describe a workspace's domain vocabulary, allowed
 metadata, starter folders, views, skills, and benchmark hooks. Core runtime code should read this
 contract instead of hard-coding business-specific folders, note types, statuses, or required
 properties.
@@ -8,7 +8,7 @@ properties.
 The current schema is `schema_version: 1`. Packaged v1 profile contracts currently include
 `business-operations`, `research-learning`, `software-project`, and `blank`, each at
 `profile_version: 0.1.0`. All four official profiles can be initialized through the package-owned
-`vaultwright init --profile <id>` flow.
+`noeticweave init --profile <id>` flow.
 
 ## Contract File
 
@@ -27,10 +27,10 @@ template/_meta/profile.yml
 The other packaged profile contracts live under:
 
 ```text
-src/vaultwright/builtin_profiles/
+src/noeticweave/builtin_profiles/
 ```
 
-For `research-learning`, `software-project`, and `blank`, `vaultwright init` derives starter
+For `research-learning`, `software-project`, and `blank`, `noeticweave init` derives starter
 folders, `_meta/domain-map.yml`, `CLAUDE.md`, `INDEX.md`, `RETENTION.md`, and
 `_meta/conventions.md` from the selected profile contract instead of copying the business
 template vocabulary. Only profile-declared note templates and views are included.
@@ -42,18 +42,18 @@ or private corpus to the repository.
 Use these commands to inspect and validate the contract:
 
 ```bash
-vaultwright profile list
-vaultwright profile show business-operations
-vaultwright profile show research-learning
-vaultwright init --profile research-learning <vault>
-vaultwright init --profile software-project <vault>
-vaultwright init --profile blank <vault>
-vaultwright --root <vault> profile validate
-vaultwright --root <vault> profile diff 0.1.0
-vaultwright --root <vault> profile migrate --plan
-vaultwright --root <vault> profile migrate --write
-vaultwright --root <vault> profile views --check
-vaultwright --root <vault> profile views --write
+noeticweave profile list
+noeticweave profile show business-operations
+noeticweave profile show research-learning
+noeticweave init --profile research-learning <vault>
+noeticweave init --profile software-project <vault>
+noeticweave init --profile blank <vault>
+noeticweave --root <vault> profile validate
+noeticweave --root <vault> profile diff 0.1.0
+noeticweave --root <vault> profile migrate --plan
+noeticweave --root <vault> profile migrate --write
+noeticweave --root <vault> profile views --check
+noeticweave --root <vault> profile views --write
 ```
 
 ## Required Fields
@@ -143,7 +143,7 @@ vaultwright --root <vault> profile views --write
   migration. The current profile
   also declares
   `original_sources_authoritative: true` and `real_data_in_repo: false`, which preserve the
-  Vaultwright policy that source systems remain authoritative and real/private data stays outside
+  NoeticWeave policy that source systems remain authoritative and real/private data stays outside
   the repository. `repo_notes_dir`, when present, must be a safe vault-relative folder inside a
   declared profile domain and must not overlap the profile's Office mirror root. `context_aliases`,
   when present, must be a mapping whose keys and targets are distinct optional frontmatter
@@ -151,7 +151,7 @@ vaultwright --root <vault> profile views --write
 
 ## Validation Rules
 
-`vaultwright profile validate` currently enforces:
+`noeticweave profile validate` currently enforces:
 
 - no unknown top-level fields;
 - all required top-level fields are present;
@@ -193,7 +193,7 @@ vaultwright --root <vault> profile views --write
 - optional `policy_defaults.original_sources_authoritative`, when present, must be `true`.
 - optional `policy_defaults.real_data_in_repo`, when present, must be `false`.
 
-`vaultwright lint`, `vaultwright catalog`, `vaultwright migration`, and `vaultwright overlap` read
+`noeticweave lint`, `noeticweave catalog`, `noeticweave migration`, and `noeticweave overlap` read
 `_meta/profile.yml` for domain folders. Catalog, Microsoft 365 handoff, and sandbox inventory also
 read profile-defined machine-owned note types so generated Markdown artifacts are reported
 separately from curated Markdown/domain note counts. Overlap calibration also reads `related` plus
@@ -211,7 +211,7 @@ block invalid profile contracts.
 The review ledger accepts profile-defined machine-owned Markdown note types as generated artifacts
 eligible for metadata-only review decisions; it records hashes and frontmatter metadata, not
 artifact bodies.
-`vaultwright benchmark` and the aggregate `vaultwright pilot` evidence report load
+`noeticweave benchmark` and the aggregate `noeticweave pilot` evidence report load
 profile-declared `benchmark_tasks` through the same profile contract validator, while an explicit
 `--tasks` argument still takes precedence and the legacy `_meta/agent-readiness-tasks.yml` path
 remains a compatibility fallback. Benchmark task-pack validation, result citation validation, and
@@ -238,11 +238,11 @@ Generic doctor, sandbox, pilot, benchmark, and conversion report copy stays prof
 workspace boundaries, protected identifiers, private evidence, and source-backed conclusions are
 the core terms. Business/client/account wording belongs to the `business-operations` profile data,
 its compatibility aliases, or product-positioning examples rather than the shared runtime.
-`vaultwright doctor` validates `_meta/profile.yml` first; when that profile contract is present and
+`noeticweave doctor` validates `_meta/profile.yml` first; when that profile contract is present and
 valid, missing `_meta/domain-map.yml` and `_meta/mirror-config.yml` are reported as legacy
-alias/override posture instead of required-file failures. `vaultwright sandbox` uses the same
+alias/override posture instead of required-file failures. `noeticweave sandbox` uses the same
 profile-first required-file posture: a valid profile makes those legacy alias/config files
-optional, while profile-less legacy vaults keep the older required-file check. `vaultwright lint`
+optional, while profile-less legacy vaults keep the older required-file check. `noeticweave lint`
 uses the same profile-first domain posture: missing `_meta/domain-map.yml` is a non-blocking
 warning when the active profile provides canonical domain folders, while malformed or
 contradictory domain-map content remains blocking and profile-less legacy vaults keep the older
@@ -261,7 +261,7 @@ mirrors and GitHub repo mirrors use the active profile's context fields when ord
 frontmatter before managed source/repo metadata. Microsoft 365 handoff, sandbox preflight,
 recovery, and review-ledger
 reporting also resolve repo mirror folders from the active profile, while honoring an explicit
-`tools/repos.yml` `settings.notes_dir` override. The `vaultwright migration` command uses
+`tools/repos.yml` `settings.notes_dir` override. The `noeticweave migration` command uses
 validated `_meta/profile.yml` domains for canonical domain folders and `_meta/domain-map.yml` for
 legacy aliases.
 Migration worksheets, runbooks, and frontmatter-normalization worksheets print the active profile
@@ -272,15 +272,15 @@ domain folders.
 
 ## Profile-Generated Views
 
-`vaultwright profile views --check` is read-only. It loads the current vault profile and fails when
+`noeticweave profile views --check` is read-only. It loads the current vault profile and fails when
 a supported generated view is missing or stale, or when the profile requests a view path this
-installed Vaultwright version cannot safely generate.
+installed NoeticWeave version cannot safely generate.
 
-`vaultwright doctor` uses the same generated-view plan for preflight reporting. It reports
+`noeticweave doctor` uses the same generated-view plan for preflight reporting. It reports
 profile-declared view files as current, missing, or stale; older vaults without `_meta/profile.yml`
 fall back to the legacy `Documents.base` presence check.
 
-`vaultwright profile views --write` regenerates supported profile-owned view files. In the current
+`noeticweave profile views --write` regenerates supported profile-owned view files. In the current
 release, the supported generated view is `Documents.base`. Its tables are derived from the active
 profile's required properties, optional properties, note types, and statuses:
 
@@ -294,7 +294,7 @@ notes.
 
 ## Migration Semantics
 
-`vaultwright profile migrate --plan` is read-only. It reports:
+`noeticweave profile migrate --plan` is read-only. It reports:
 
 - missing profile contract files;
 - missing shared directories, the target profile's Office mirror root, and `folder_plan`
@@ -304,7 +304,7 @@ notes.
 - existing template/view files that differ from the packaged target;
 - blockers such as target profile ID mismatch.
 
-`vaultwright profile migrate --write` is intentionally conservative. It may:
+`noeticweave profile migrate --write` is intentionally conservative. It may:
 
 - create missing shared directories, the target profile's Office mirror root, and `folder_plan`
   directories;
@@ -320,11 +320,11 @@ It will not:
 - normalize frontmatter domains;
 - resolve template drift automatically.
 
-Use `vaultwright profile views --write` after reviewing view drift when you want to regenerate the
+Use `noeticweave profile views --write` after reviewing view drift when you want to regenerate the
 profile-owned `Documents.base` file from the active profile contract.
 
-Use `vaultwright migration --normalize-frontmatter-domains --worksheet` for frontmatter cleanup
-review, and `vaultwright migrate annotations --write` for mirror annotation sidecars. Profile
+Use `noeticweave migration --normalize-frontmatter-domains --worksheet` for frontmatter cleanup
+review, and `noeticweave migrate annotations --write` for mirror annotation sidecars. Profile
 migration and annotation migration are separate safety boundaries.
 
 ## Current `business-operations` Shape

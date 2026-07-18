@@ -7,4 +7,4 @@ three routing decisions:
 - `review` when confidence is low.
 - `reject` when a defect is detected.
 
-These notes exist only to exercise Vaultwright's repo mirror readability.
+These notes exist only to exercise NoeticWeave's repo mirror readability.

@@ -50,12 +50,12 @@ Before the participant is on the call, confirm the installed command is the one 
 use:
 
 ```bash
-command -v vaultwright
-vaultwright --version
-vaultwright profile list
+command -v noeticweave
+noeticweave --version
+noeticweave profile list
 ```
 
-If the installed command is unavailable, either install Vaultwright with the package-first
+If the installed command is unavailable, either install NoeticWeave with the package-first
 `uvx`/`pipx` path from `docs/quickstart.md` or plan to use the copied vault's compatibility wrapper
 explicitly. Do not spend participant time debugging Python packaging.
 
@@ -67,13 +67,13 @@ use the copied vault's compatibility wrapper as described in `docs/PILOT_WORKSHE
 ### 1. Boundary And Readiness
 
 ```bash
-vaultwright --root "$VW" sandbox --source-root "$ORIGINAL_ROOT" \
+noeticweave --root "$VW" sandbox --source-root "$ORIGINAL_ROOT" \
   > "$PRIVATE_EVIDENCE/01_sandbox.txt"
-vaultwright --root "$VW" doctor --json \
+noeticweave --root "$VW" doctor --json \
   > "$PRIVATE_EVIDENCE/02_doctor.json"
-vaultwright --root "$VW" plan \
+noeticweave --root "$VW" plan \
   > "$PRIVATE_EVIDENCE/03_plan.txt"
-vaultwright --root "$VW" status --json \
+noeticweave --root "$VW" status --json \
   > "$PRIVATE_EVIDENCE/04_status_before_sync.json"
 ```
 
@@ -83,13 +83,13 @@ lifecycle, tool, or dependency errors.
 ### 2. First Sync And Front Door
 
 ```bash
-vaultwright --root "$VW" sync --json \
+noeticweave --root "$VW" sync --json \
   > "$PRIVATE_EVIDENCE/05_sync.json"
-vaultwright --root "$VW" status --json \
+noeticweave --root "$VW" status --json \
   > "$PRIVATE_EVIDENCE/06_status_after_sync.json"
-vaultwright --root "$VW" catalog \
+noeticweave --root "$VW" catalog \
   > "$PRIVATE_EVIDENCE/07_catalog.txt"
-vaultwright --root "$VW" catalog --html --stdout \
+noeticweave --root "$VW" catalog --html --stdout \
   > "$PRIVATE_EVIDENCE/08_catalog.html"
 ```
 
@@ -99,11 +99,11 @@ block the participant's first workflow.
 ### 3. Conversion, Recovery, And Review
 
 ```bash
-vaultwright --root "$VW" conversion --guide \
+noeticweave --root "$VW" conversion --guide \
   > "$PRIVATE_EVIDENCE/09_conversion_guide.txt"
-vaultwright --root "$VW" recovery --worksheet \
+noeticweave --root "$VW" recovery --worksheet \
   > "$PRIVATE_EVIDENCE/10_recovery_worksheet.md"
-vaultwright --root "$VW" review --json \
+noeticweave --root "$VW" review --json \
   > "$PRIVATE_EVIDENCE/11_review.json"
 ```
 
@@ -116,7 +116,7 @@ Create the plain conversion baseline in the copied pilot vault before scoring. T
 `plain_markitdown_dump` comparison mode required by `docs/VALIDATION_GATE.md`:
 
 ```bash
-python3.11 /path/to/vaultwright/scripts/create_plain_markitdown_dump.py \
+python3.11 /path/to/noeticweave/scripts/create_plain_markitdown_dump.py \
   --root "$VW" \
   --force \
   > "$PRIVATE_EVIDENCE/12_plain_markitdown_dump.txt"
@@ -126,22 +126,22 @@ The dump lives under `$VW/_benchmark/plain_markitdown_dump/`. Treat it as privat
 it may contain source-derived text and private relative paths.
 
 ```bash
-vaultwright --root "$VW" benchmark --init-tasks
-vaultwright --root "$VW" benchmark --worksheet \
+noeticweave --root "$VW" benchmark --init-tasks
+noeticweave --root "$VW" benchmark --worksheet \
   > "$PRIVATE_EVIDENCE/13_benchmark_worksheet.md"
-vaultwright --root "$VW" benchmark --init-results
+noeticweave --root "$VW" benchmark --init-results
 ```
 
 Edit the task and result packs privately. The three comparison modes must remain:
 
 - `raw_source_folder`;
 - `plain_markitdown_dump`;
-- `vaultwright_markdown`.
+- `noeticweave_markdown`.
 
 Validate the private result pack after scoring:
 
 ```bash
-vaultwright --root "$VW" benchmark \
+noeticweave --root "$VW" benchmark \
   --results _meta/agent-readiness-results.yml \
   --require-results \
   --require-citations \
@@ -154,11 +154,11 @@ Stop the benchmark claim if scored answers lack citations or prompt-safety revie
 ### 5. Aggregate Private Evidence
 
 ```bash
-vaultwright --root "$VW" pilot --json \
+noeticweave --root "$VW" pilot --json \
   > "$PRIVATE_EVIDENCE/15_pilot.json"
-vaultwright --root "$VW" pilot --worksheet \
+noeticweave --root "$VW" pilot --worksheet \
   > "$PRIVATE_EVIDENCE/16_pilot_worksheet.md"
-vaultwright --root "$VW" lint \
+noeticweave --root "$VW" lint \
   > "$PRIVATE_EVIDENCE/17_lint.txt"
 ```
 
@@ -176,16 +176,16 @@ Before the call ends, choose a small copied-source change that the participant u
 Then ask the participant to run the refresh without hands-on help:
 
 ```bash
-vaultwright --root "$VW" sync --changed --json \
+noeticweave --root "$VW" sync --changed --json \
   > "$PRIVATE_EVIDENCE/18_second_sync_changed.json"
-vaultwright --root "$VW" status --json \
+noeticweave --root "$VW" status --json \
   > "$PRIVATE_EVIDENCE/19_status_after_second_sync.json"
 ```
 
 If changed-file sync is not appropriate for the pilot vault, use the full recovery path instead:
 
 ```bash
-vaultwright --root "$VW" sync --full --json \
+noeticweave --root "$VW" sync --full --json \
   > "$PRIVATE_EVIDENCE/18_second_sync_full.json"
 ```
 

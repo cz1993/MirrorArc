@@ -19,8 +19,8 @@ for external benchmark evidence are tracked in [`docs/VALIDATION_GATE.md`](VALID
 | Mode | Description |
 | --- | --- |
 | `raw_source_folder` | Original files and committed notes only. |
-| `plain_markitdown_dump` | One-off Markdown conversion baseline without Vaultwright manifests, lifecycle state, or curated mirror workflow. |
-| `vaultwright_markdown` | Vaultwright task context: source-linked curated notes plus generated mirror workflow and manifest/lifecycle semantics. |
+| `plain_markitdown_dump` | One-off Markdown conversion baseline without NoeticWeave manifests, lifecycle state, or curated mirror workflow. |
+| `noeticweave_markdown` | NoeticWeave task context: source-linked curated notes plus generated mirror workflow and manifest/lifecycle semantics. |
 
 ### Aggregate Scores
 
@@ -28,7 +28,7 @@ for external benchmark evidence are tracked in [`docs/VALIDATION_GATE.md`](VALID
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `raw_source_folder` | 6 | 5 / 12 | 0.83 | 7 | 0 | 6 / 6 |
 | `plain_markitdown_dump` | 6 | 6 / 12 | 1.00 | 6 | 0 | 6 / 6 |
-| `vaultwright_markdown` | 6 | 12 / 12 | 2.00 | 0 | 0 | 6 / 6 |
+| `noeticweave_markdown` | 6 | 12 / 12 | 2.00 | 0 | 0 | 6 / 6 |
 
 ### What The Scores Mean
 
@@ -46,7 +46,7 @@ The result packet is intentionally aggregate-only:
 Validate it from the example vault:
 
 ```bash
-python3.11 tools/vaultwright.py benchmark \
+python3.11 tools/noeticweave.py benchmark \
   --results _meta/public-agent-readiness-results.yml \
   --require-results \
   --require-citations \
@@ -58,7 +58,7 @@ Expected summary:
 ```text
 raw_source_folder: results=6 score=5/12 avg=0.83 corrections=7 violations=0
 plain_markitdown_dump: results=6 score=6/12 avg=1.00 corrections=6 violations=0
-vaultwright_markdown: results=6 score=12/12 avg=2.00 corrections=0 violations=0
+noeticweave_markdown: results=6 score=12/12 avg=2.00 corrections=0 violations=0
 ```
 
 ### Limits
@@ -77,7 +77,7 @@ pilot-ready. Generate that corpus outside this repository:
 
 ```bash
 python3.11 scripts/generate_messy_benchmark_corpus.py \
-  --target /tmp/vaultwright-messy-benchmark \
+  --target /tmp/noeticweave-messy-benchmark \
   --files 200
 ```
 
@@ -95,7 +95,7 @@ The generator creates:
 It also writes `_meta/agent-readiness-tasks.yml`,
 `_benchmark/plain_markitdown_dump/`, `_benchmark/agent-readiness-results-scaffold.yml`,
 `_benchmark/messy-corpus-summary.json`, and `_benchmark/MESSY_BENCHMARK_RUN.md` in the generated
-vault. `_benchmark/` is ignored by the Vaultwright template because it may contain private run
+vault. `_benchmark/` is ignored by the NoeticWeave template because it may contain private run
 worksheets and result scaffolds.
 
 For a real external pilot, create the equivalent plain dump from the copied pilot vault with
@@ -106,11 +106,11 @@ flag, then sync and validate the generated private result pack:
 
 ```bash
 python3.11 scripts/generate_messy_benchmark_corpus.py \
-  --target /tmp/vaultwright-messy-benchmark \
+  --target /tmp/noeticweave-messy-benchmark \
   --files 200 \
   --write-reviewed-results
-vaultwright --root /tmp/vaultwright-messy-benchmark sync --json
-vaultwright --root /tmp/vaultwright-messy-benchmark benchmark \
+noeticweave --root /tmp/noeticweave-messy-benchmark sync --json
+noeticweave --root /tmp/noeticweave-messy-benchmark benchmark \
   --results _benchmark/agent-readiness-results-reviewed.yml \
   --require-results \
   --require-citations \
@@ -122,7 +122,7 @@ Expected aggregate summary:
 ```text
 raw_source_folder: results=5 score=3/10 avg=0.60 corrections=10 violations=0
 plain_markitdown_dump: results=5 score=4/10 avg=0.80 corrections=8 violations=0
-vaultwright_markdown: results=5 score=10/10 avg=2.00 corrections=0 violations=0
+noeticweave_markdown: results=5 score=10/10 avg=2.00 corrections=0 violations=0
 ```
 
 ### Limits

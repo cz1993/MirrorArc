@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Synthetic control-loop helpers for the Vaultwright example repo."""
+"""Synthetic control-loop helpers for the NoeticWeave example repo."""
 
 
 def route_inspection(confidence: float, defect_detected: bool) -> str:

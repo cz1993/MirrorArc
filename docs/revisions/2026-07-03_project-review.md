@@ -1,8 +1,8 @@
-# Vaultwright Project Review — 2026-07-03
+# NoeticWeave Project Review — 2026-07-03
 
 Independent review across value, architecture, code, and recommendation, requested via
 `/engineering:architecture`. Evidence: full docs read (positioning, PRODUCT, ADRs 0001/0002,
-V1_FINISH_LINE, benchmark, sync spec), code assessment of `src/vaultwright` (12.8k LOC) and
+V1_FINISH_LINE, benchmark, sync spec), code assessment of `src/noeticweave` (12.8k LOC) and
 tests (17.6k LOC), plus mid-2026 competitive research.
 
 ---
@@ -21,7 +21,7 @@ this. Two structural threats stand above the clones:
 - **Commercial consulting KM** (NotebookLM, M365 Copilot, Guru) owns the buyer's default
   mental model for "AI over my client documents."
 
-### Where Vaultwright genuinely differentiates
+### Where NoeticWeave genuinely differentiates
 
 1. **The governed mirror layer.** No neighbor ships manifest-backed, content-hashed,
    journaled markdown materialization of Office files + repos where the original stays
@@ -30,11 +30,11 @@ this. Two structural threats stand above the clones:
 2. **Governance as a feature** (PII isolation, retention, review ledger, audit JSONL,
    read-only safety reports). Nobody in the open-source cohort takes business-records
    governance seriously. This maps directly to the consulting wedge.
-3. **Anti-proliferation discipline + lint.** Others generate; Vaultwright also restrains.
+3. **Anti-proliferation discipline + lint.** Others generate; NoeticWeave also restrains.
 
 ### The honest problem: the core value claim is unproven
 
-The thesis — *agents answer/update/audit more reliably from Vaultwright markdown than from
+The thesis — *agents answer/update/audit more reliably from NoeticWeave markdown than from
 raw folders or RAG chat* — has **zero external evidence**. `AGENT_READINESS_BENCHMARK.md`
 says so explicitly. There are no pilots, no design partners, no users. 178 commits in ~16
 days have gone into infrastructure for a hypothesis that has never touched a customer.
@@ -90,7 +90,7 @@ Risks:
 - **Type hints throughout**, domain exception hierarchies, atomic writes (temp + `os.replace`
   + dir fsync), idempotent hash-compared syncs.
 - **Security posture is genuinely good:** systematic vault-relative path validation
-  (rejects `..`, absolute, `.vaultwright`), no `shell=True`, subprocess timeouts,
+  (rejects `..`, absolute, `.noeticweave`), no `shell=True`, subprocess timeouts,
   `yaml.safe_load` only, parameterized SQL, secrets-out-of-vault model, read-only
   reports that avoid printing source content.
 - **Tests: 17.6k LOC across 23 files, ~1.4:1 test:code ratio**, covering journal edge cases,
@@ -111,7 +111,7 @@ never seen.**
 
 ### Honest feedback summary
 
-Vaultwright is a **well-engineered solution standing on an unvalidated premise**. The
+NoeticWeave is a **well-engineered solution standing on an unvalidated premise**. The
 engineering quality is in the top decile of pre-release solo projects; the docs are more
 honest about the competitive landscape than most funded startups. But the project is
 optimizing the wrong variable: it keeps hardening infrastructure (journaling, leases,
@@ -142,13 +142,13 @@ The codebase does not need remastering. The *roadmap* does:
 
 #### Phase 1 — Finalize current features to "pilot-able" (2–3 weeks)
 
-1. **One-command onboarding.** `uvx vaultwright init` / pipx path; bundle or auto-detect
+1. **One-command onboarding.** `uvx noeticweave init` / pipx path; bundle or auto-detect
    Python ≥3.11. The current quickstart (clone repo, run bash script, pip install into
    3.11) will lose a consulting operator on day one.
 2. **Run the agent-readiness benchmark yourself, now, on a synthetic-but-realistic corpus**
    (the government-services example + a messy 200-file dump): same agent, same tasks,
-   three conditions — raw folder vs. Vaultwright vault vs. plain markitdown dump. Publish
-   the numbers in the repo whatever they say. If Vaultwright doesn't beat a plain
+   three conditions — raw folder vs. NoeticWeave vault vs. plain markitdown dump. Publish
+   the numbers in the repo whatever they say. If NoeticWeave doesn't beat a plain
    markitdown dump, that finding redirects everything and is worth more than Stage 3–5
    combined.
 3. **Recruit 2–3 design partners** (the docs already define the protocol) — small
@@ -162,7 +162,7 @@ The codebase does not need remastering. The *roadmap* does:
 Candidates ordered by observed market pull, to be re-ranked by pilot feedback:
 
 1. **MCP server exposing the vault** (read/query/status). basic-memory's entire traction
-   is MCP distribution; Vaultwright's mirror+manifest layer behind MCP is immediately
+   is MCP distribution; NoeticWeave's mirror+manifest layer behind MCP is immediately
    useful to every Claude/Codex user and is the cheapest distribution channel available.
    This likely matters more than the Obsidian adapter.
 2. **Docling as an optional conversion backend.** markitdown is fast but weak on tables and

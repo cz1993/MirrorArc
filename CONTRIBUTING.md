@@ -1,12 +1,12 @@
-# Contributing to Vaultwright
+# Contributing to NoeticWeave
 
-Thanks for your interest. Vaultwright is young; issues, discussion, and small focused PRs are all
+Thanks for your interest. NoeticWeave is young; issues, discussion, and small focused PRs are all
 welcome.
 
 ## Ground rules
 
 - Keep the **mirror layer** and **governance** features (the project's differentiators) robust and
-  well-tested — they are why Vaultwright exists. See `docs/positioning.md`.
+  well-tested — they are why NoeticWeave exists. See `docs/positioning.md`.
 - Follow the project's own philosophy: prefer **improving/consolidating** existing docs over adding
   new ones (yes, that applies to this repo too).
 - Tooling is Python 3.11+ (stdlib + PyYAML + markitdown) and POSIX shell. No heavy frameworks.

@@ -13,9 +13,9 @@ RELEASE_DOC = ROOT / "docs" / "RELEASE.md"
 KICKOFF_PROMPT = ROOT / "docs" / "CODEX_KICKOFF_PROMPT.md"
 FINISH_LINE = ROOT / "docs" / "V1_FINISH_LINE.md"
 HISTORICAL_PLANNING_DOCS = (
-    ROOT / "docs" / "VAULTWRIGHT_WHITEPAPER_2026-06-23.md",
-    ROOT / "docs" / "revisions" / "VAULTWRIGHT_WHITEPAPER_2026-06-24.md",
-    ROOT / "docs" / "VAULTWRIGHT_CODEX_MEGA_PROMPT_2026-06-24.md",
+    ROOT / "docs" / "NOETICWEAVE_WHITEPAPER_2026-06-23.md",
+    ROOT / "docs" / "revisions" / "NOETICWEAVE_WHITEPAPER_2026-06-24.md",
+    ROOT / "docs" / "NOETICWEAVE_CODEX_MEGA_PROMPT_2026-06-24.md",
     ROOT / "docs" / "V1_PROGRESS_AUDIT_2026-06-23.md",
 )
 PYPROJECT = ROOT / "pyproject.toml"
@@ -28,19 +28,19 @@ def test_docs_pin_package_first_onboarding_commands() -> None:
     for text in (readme, quickstart):
         assert "Python 3.11+" in text
         assert (
-            "uvx --from git+https://github.com/cz1993/vaultwright.git vaultwright init "
+            "uvx --from git+https://github.com/cz1993/noeticweave.git noeticweave init "
             "--profile business-operations ~/my-business-vault"
         ) in text
         assert (
-            "pipx run --spec git+https://github.com/cz1993/vaultwright.git vaultwright init "
+            "pipx run --spec git+https://github.com/cz1993/noeticweave.git noeticweave init "
             "--profile business-operations ~/my-business-vault"
         ) in text
-        assert "uvx vaultwright init --profile business-operations ~/my-business-vault" in text
-        assert "pipx run vaultwright init --profile business-operations ~/my-business-vault" in text
-        assert "uv tool install git+https://github.com/cz1993/vaultwright.git" in text
-        assert "pipx install git+https://github.com/cz1993/vaultwright.git" in text
-        assert "vaultwright --version" in text
-        assert "git clone https://github.com/cz1993/vaultwright.git vaultwright" in text
+        assert "uvx noeticweave init --profile business-operations ~/my-business-vault" in text
+        assert "pipx run noeticweave init --profile business-operations ~/my-business-vault" in text
+        assert "uv tool install git+https://github.com/cz1993/noeticweave.git" in text
+        assert "pipx install git+https://github.com/cz1993/noeticweave.git" in text
+        assert "noeticweave --version" in text
+        assert "git clone https://github.com/cz1993/noeticweave.git noeticweave" in text
 
 
 def test_kickoff_prompt_routes_future_work_to_stage3_validation() -> None:
@@ -87,7 +87,7 @@ def test_release_workflow_is_tag_only_and_draft_prerelease() -> None:
 def test_release_checklist_tag_matches_package_version() -> None:
     pyproject = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
     version = pyproject["project"]["version"]
-    init_text = (ROOT / "src" / "vaultwright" / "__init__.py").read_text(encoding="utf-8")
+    init_text = (ROOT / "src" / "noeticweave" / "__init__.py").read_text(encoding="utf-8")
     text = RELEASE_DOC.read_text(encoding="utf-8")
 
     assert version == "0.1.0a1"
@@ -104,7 +104,7 @@ def test_cli_global_version_outputs_package_version() -> None:
     env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--version"],
+        [sys.executable, "-m", "noeticweave.cli", "--version"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -113,7 +113,35 @@ def test_cli_global_version_outputs_package_version() -> None:
     )
 
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == f"vaultwright {version}"
+    assert result.stdout.strip() == f"noeticweave {version}"
+
+
+def test_legacy_package_and_console_aliases_resolve_to_noeticweave() -> None:
+    pyproject = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
+    scripts = pyproject["project"]["scripts"]
+    env = os.environ.copy()
+    src_path = str(ROOT / "src")
+    env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "from vaultwright import __version__; from vaultwright.cli import main; print(__version__, main.__module__)",
+        ],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert scripts == {
+        "noeticweave": "noeticweave.cli:main",
+        "vaultwright": "noeticweave.cli:main",
+    }
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == f"{pyproject['project']['version']} vaultwright.cli"
 
 
 def test_external_pilot_docs_start_with_installed_command_smoke_check() -> None:
@@ -121,16 +149,16 @@ def test_external_pilot_docs_start_with_installed_command_smoke_check() -> None:
     worksheet = (ROOT / "docs" / "PILOT_WORKSHEET.md").read_text(encoding="utf-8")
 
     assert "## Operator Environment Smoke Test" in runbook
-    assert "command -v vaultwright" in runbook
-    assert "vaultwright --version" in runbook
-    assert "vaultwright profile list" in runbook
+    assert "command -v noeticweave" in runbook
+    assert "noeticweave --version" in runbook
+    assert "noeticweave profile list" in runbook
     assert "Do not spend participant time debugging Python packaging." in runbook
-    assert "vaultwright --version" in worksheet
-    assert "vaultwright profile list" in worksheet
-    assert 'Record from `vaultwright --root "$VW" pilot --json` after first sync:' in worksheet
-    assert 'vaultwright --root "$VW" pilot --worksheet' in worksheet
-    assert "python3.11 tools/vaultwright.py pilot --json" not in worksheet
-    assert "python3.11 tools/vaultwright.py pilot --worksheet" not in worksheet
+    assert "noeticweave --version" in worksheet
+    assert "noeticweave profile list" in worksheet
+    assert 'Record from `noeticweave --root "$VW" pilot --json` after first sync:' in worksheet
+    assert 'noeticweave --root "$VW" pilot --worksheet' in worksheet
+    assert "python3.11 tools/noeticweave.py pilot --json" not in worksheet
+    assert "python3.11 tools/noeticweave.py pilot --worksheet" not in worksheet
 
 
 def test_workflows_use_current_action_majors() -> None:
@@ -153,7 +181,7 @@ def test_cli_help_marks_review_plan_experimental_surfaces() -> None:
     src_path = str(ROOT / "src")
     env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--help"],
+        [sys.executable, "-m", "noeticweave.cli", "--help"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -161,7 +189,7 @@ def test_cli_help_marks_review_plan_experimental_surfaces() -> None:
         check=False,
     )
     benchmark = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "benchmark", "--help"],
+        [sys.executable, "-m", "noeticweave.cli", "benchmark", "--help"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -189,9 +217,9 @@ def test_release_workflow_verifies_built_wheel_before_release() -> None:
     text = RELEASE_WORKFLOW.read_text(encoding="utf-8")
 
     assert "python -m build" in text
-    assert "dist/vaultwright-*.whl" in text
-    assert "vaultwright-release-venv" in text
-    assert "vaultwright\" init" in text
+    assert "dist/noeticweave-*.whl" in text
+    assert "noeticweave-release-venv" in text
+    assert "noeticweave\" init" in text
     assert "test -f \"$tmp_vault/tools/catalog_report.py\"" in text
     assert "test -f \"$tmp_vault/tools/m365_report.py\"" in text
     assert "test -f \"$tmp_vault/tools/overlap_report.py\"" in text
@@ -234,21 +262,21 @@ def test_release_workflow_verifies_built_wheel_before_release() -> None:
 def test_ci_workflow_smokes_sandbox_command() -> None:
     text = CI_WORKFLOW.read_text(encoding="utf-8")
 
-    assert "src/vaultwright/catalog.py" in text
-    assert "src/vaultwright/benchmark.py" in text
-    assert "src/vaultwright/conversion.py" in text
-    assert "src/vaultwright/doctor.py" in text
-    assert "src/vaultwright/m365.py" in text
-    assert "src/vaultwright/migration.py" in text
-    assert "src/vaultwright/overlap.py" in text
-    assert "src/vaultwright/pilot.py" in text
-    assert "src/vaultwright/recovery.py" in text
-    assert "src/vaultwright/review_ledger.py" in text
-    assert "src/vaultwright/runtime_profile.py" in text
-    assert "src/vaultwright/sandbox.py" in text
-    assert "src/vaultwright/views.py" in text
-    assert "src/vaultwright/annotation_migration.py" in text
-    assert "src/vaultwright/profile_migration.py" in text
+    assert "src/noeticweave/catalog.py" in text
+    assert "src/noeticweave/benchmark.py" in text
+    assert "src/noeticweave/conversion.py" in text
+    assert "src/noeticweave/doctor.py" in text
+    assert "src/noeticweave/m365.py" in text
+    assert "src/noeticweave/migration.py" in text
+    assert "src/noeticweave/overlap.py" in text
+    assert "src/noeticweave/pilot.py" in text
+    assert "src/noeticweave/recovery.py" in text
+    assert "src/noeticweave/review_ledger.py" in text
+    assert "src/noeticweave/runtime_profile.py" in text
+    assert "src/noeticweave/sandbox.py" in text
+    assert "src/noeticweave/views.py" in text
+    assert "src/noeticweave/annotation_migration.py" in text
+    assert "src/noeticweave/profile_migration.py" in text
     assert "template/tools/catalog_report.py" in text
     assert "template/tools/m365_report.py" in text
     assert "template/tools/overlap_report.py" in text

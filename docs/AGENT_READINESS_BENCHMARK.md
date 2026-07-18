@@ -1,10 +1,10 @@
 # Agent-Readiness Benchmark
 
-Vaultwright's future claim is not just that people can browse a cleaner knowledge base. The claim
+NoeticWeave's future claim is not just that people can browse a cleaner knowledge base. The claim
 to prove is stronger:
 
 > AI agents should answer, reconcile, update, and audit operational knowledge more reliably from
-> Vaultwright-generated markdown than from raw source folders or plain document-conversion dumps.
+> NoeticWeave-generated markdown than from raw source folders or plain document-conversion dumps.
 
 This document defines the benchmark shape for design partners. It is intentionally conservative:
 until these tasks are measured, "agent-ready markdown substrate" is a thesis, not a proven product
@@ -18,7 +18,7 @@ Run the same task set against three modes:
    and loose notes.
 2. **Plain markitdown dump** - one-off Markdown produced from the same convertible source files,
    with no manifest identity, lifecycle state, curated hubs, or refresh semantics.
-3. **Vaultwright markdown** - generated mirrors, manifests, source-linked hubs, entity pages, and
+3. **NoeticWeave markdown** - generated mirrors, manifests, source-linked hubs, entity pages, and
    linted conventions.
 
 Do not mix evidence between modes during scoring.
@@ -26,7 +26,7 @@ Do not mix evidence between modes during scoring.
 For private external pilots, create the plain dump inside the copied pilot vault before scoring:
 
 ```bash
-python3.11 /path/to/vaultwright/scripts/create_plain_markitdown_dump.py \
+python3.11 /path/to/noeticweave/scripts/create_plain_markitdown_dump.py \
   --root "$VW" \
   --force
 ```
@@ -72,7 +72,7 @@ Use a simple 0-2 score for each task:
 - `1` - partially correct but missing caveats, citations, or update/audit evidence;
 - `2` - correct, source-backed, and operationally useful.
 
-Vaultwright should not claim agent-readiness superiority unless the markdown mode improves total
+NoeticWeave should not claim agent-readiness superiority unless the markdown mode improves total
 score, reduces correction effort, or improves auditability across multiple corpora.
 
 ## Required Evidence
@@ -96,7 +96,7 @@ those tasks in each comparison mode. Keep result packs in the private pilot vaul
 review packet; do not commit confidential answers, protected names, source text, mirror text, or
 reviewer notes to this public repository.
 
-The public Vaultwright repository rejects committed private `_meta/agent-readiness-tasks.yml` and
+The public NoeticWeave repository rejects committed private `_meta/agent-readiness-tasks.yml` and
 `_meta/agent-readiness-results.yml` files by default. The checked-in government-services task pack
 and its reviewed public synthetic result packet are approved public examples. Store private task
 and result packs in pilot workspaces, then copy only aggregate numbers into a review packet after
@@ -115,7 +115,7 @@ schema_version: 1
 corpus: government-services-vault
 results:
   - task_id: answer-gst-readiness
-    mode: vaultwright_markdown
+    mode: noeticweave_markdown
     score: 2
     reviewer_corrections: 0
     elapsed_seconds: 95
@@ -132,7 +132,7 @@ Rules enforced by the validator:
 
 - `task_id` must exist in the task pack;
 - `mode` must be one of `raw_source_folder`, `plain_markitdown_dump`, or
-  `vaultwright_markdown`;
+  `noeticweave_markdown`;
 - `score` must be `0`, `1`, or `2`;
 - reviewer corrections must be a non-negative integer;
 - elapsed seconds, when present, must be finite and non-negative;
@@ -154,14 +154,14 @@ Rules enforced by the validator:
 Validate and summarize results with:
 
 ```bash
-python3.11 tools/vaultwright.py benchmark --init-tasks
-python3.11 tools/vaultwright.py benchmark --worksheet
-python3.11 tools/vaultwright.py benchmark --init-results
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml --require-results
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml --require-citations
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml --require-prompt-safety
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml --json
+python3.11 tools/noeticweave.py benchmark --init-tasks
+python3.11 tools/noeticweave.py benchmark --worksheet
+python3.11 tools/noeticweave.py benchmark --init-results
+python3.11 tools/noeticweave.py benchmark --results _meta/agent-readiness-results.yml
+python3.11 tools/noeticweave.py benchmark --results _meta/agent-readiness-results.yml --require-results
+python3.11 tools/noeticweave.py benchmark --results _meta/agent-readiness-results.yml --require-citations
+python3.11 tools/noeticweave.py benchmark --results _meta/agent-readiness-results.yml --require-prompt-safety
+python3.11 tools/noeticweave.py benchmark --results _meta/agent-readiness-results.yml --json
 ```
 
 `--init-tasks` creates a private `_meta/agent-readiness-tasks.yml` scaffold from synced source
@@ -200,8 +200,8 @@ approved public examples and rejects task/result-pack-shaped YAML elsewhere.
 Validate a configured task pack with:
 
 ```bash
-python3.11 tools/vaultwright.py benchmark
-python3.11 tools/vaultwright.py benchmark --require-generated  # after sync
+python3.11 tools/noeticweave.py benchmark
+python3.11 tools/noeticweave.py benchmark --require-generated  # after sync
 ```
 
 The public synthetic result packet lives at
@@ -210,7 +210,7 @@ scores, correction counts, prompt-safety flags, and source-path citations; it do
 answer text, reviewer notes, source bodies, or mirror bodies. Validate it with:
 
 ```bash
-python3.11 tools/vaultwright.py benchmark --results _meta/public-agent-readiness-results.yml --require-results --require-citations --require-prompt-safety
+python3.11 tools/noeticweave.py benchmark --results _meta/public-agent-readiness-results.yml --require-results --require-citations --require-prompt-safety
 ```
 
 The aggregate write-up is in [`AGENT_READINESS_BENCHMARK_RESULTS.md`](AGENT_READINESS_BENCHMARK_RESULTS.md).
@@ -222,7 +222,7 @@ the source checkout:
 
 ```bash
 python3.11 scripts/generate_messy_benchmark_corpus.py \
-  --target /tmp/vaultwright-messy-benchmark \
+  --target /tmp/noeticweave-messy-benchmark \
   --files 200
 ```
 
@@ -249,5 +249,5 @@ synthetic score evidence only; it must not be described as external design-partn
 
 No external benchmark has been completed yet. The government-services public result and the messy
 200-file reviewed result packet are synthetic dogfood runs for the review-plan baseline; they are
-useful evidence about the protocol and current generated corpora, not proof that Vaultwright
+useful evidence about the protocol and current generated corpora, not proof that NoeticWeave
 improves real agent performance on client-shaped corpora.

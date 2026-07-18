@@ -1,6 +1,6 @@
 # Design Partner Recruiting
 
-Vaultwright's next validation work is not another adapter, index, or visualization surface. It is
+NoeticWeave's next validation work is not another adapter, index, or visualization surface. It is
 finding a small number of external operators who can test the core mirror/catalog workflow on
 permission-cleared, real client-shaped corpora.
 
@@ -32,15 +32,15 @@ Prioritize teams that:
 - can legally make a local duplicate of one bounded corpus;
 - have 50 to 2,000 files in one engagement or protected boundary;
 - can spare one operator for setup, first sync, second sync, and one-week follow-up;
-- are willing to compare raw-folder, plain-dump, and Vaultwright-Markdown task answers;
+- are willing to compare raw-folder, plain-dump, and NoeticWeave-Markdown task answers;
 - will say what failed, not only what looked promising.
 
 Defer teams that:
 
 - need hosted multi-user storage before local validation;
 - cannot duplicate or process the corpus locally;
-- require legal, tax, accounting, medical, or compliance conclusions from Vaultwright;
-- expect Vaultwright to mutate original source files;
+- require legal, tax, accounting, medical, or compliance conclusions from NoeticWeave;
+- expect NoeticWeave to mutate original source files;
 - want mailbox, SharePoint, Teams, Docling, MCP, Explorer, or vector-RAG work before proving the
   core mirror/catalog workflow.
 
@@ -114,7 +114,7 @@ Stop or defer the pilot when:
 ```text
 Hi [name],
 
-I am looking for 2-3 design partners for Vaultwright, a local tool that turns a copied document
+I am looking for 2-3 design partners for NoeticWeave, a local tool that turns a copied document
 collection into a governed Markdown workspace without changing the original files.
 
 The current test is narrow: can a consulting/advisory/operations-style team get clearer inventory,
@@ -123,7 +123,7 @@ from raw folders or a plain one-time Markdown dump?
 
 The pilot would use a permission-cleared copy of one bounded corpus, not production originals. We
 would run the first sync together, compare a fixed question set across raw folder, plain dump, and
-Vaultwright Markdown, then ask you to run a second sync after changing or moving a few copied
+NoeticWeave Markdown, then ask you to run a second sync after changing or moving a few copied
 source files.
 
 No private files, mirror bodies, answer text, or source paths would be published. I would only keep
@@ -137,7 +137,7 @@ Would you be open to a 15-minute pre-screen to see whether your workflow is a fi
 ```text
 Hi [name],
 
-Quick follow-up on the Vaultwright design-partner pilot. The best-fit workflow is a messy but
+Quick follow-up on the NoeticWeave design-partner pilot. The best-fit workflow is a messy but
 bounded document collection where provenance, refresh, review status, or handoff is currently
 painful.
 
@@ -148,7 +148,7 @@ useful signal too.
 ### Confirmation
 
 ```text
-Thanks for agreeing to pre-screen Vaultwright.
+Thanks for agreeing to pre-screen NoeticWeave.
 
 Before we touch any files, we will confirm:
 

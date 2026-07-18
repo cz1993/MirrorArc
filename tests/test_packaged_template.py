@@ -4,20 +4,20 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_TEMPLATE = ROOT / "template"
-PACKAGE_TEMPLATE = ROOT / "src" / "vaultwright" / "template"
+PACKAGE_TEMPLATE = ROOT / "src" / "noeticweave" / "template"
 PACKAGE_OWNED_TOOL_MODULES = {
-    "benchmark_tasks.py": ("vaultwright.benchmark", True),
-    "catalog_report.py": ("vaultwright.catalog", True),
-    "conversion_report.py": ("vaultwright.conversion", True),
-    "lint_vault.py": ("vaultwright.lint", False),
-    "m365_report.py": ("vaultwright.m365", True),
-    "migration_report.py": ("vaultwright.migration", True),
-    "overlap_report.py": ("vaultwright.overlap", True),
-    "pilot_report.py": ("vaultwright.pilot", True),
-    "recovery_report.py": ("vaultwright.recovery", True),
-    "review_ledger.py": ("vaultwright.review_ledger", True),
-    "sandbox_report.py": ("vaultwright.sandbox", True),
-    "vaultwright.py": ("vaultwright.cli", False),
+    "benchmark_tasks.py": ("noeticweave.benchmark", True),
+    "catalog_report.py": ("noeticweave.catalog", True),
+    "conversion_report.py": ("noeticweave.conversion", True),
+    "lint_vault.py": ("noeticweave.lint", False),
+    "m365_report.py": ("noeticweave.m365", True),
+    "migration_report.py": ("noeticweave.migration", True),
+    "overlap_report.py": ("noeticweave.overlap", True),
+    "pilot_report.py": ("noeticweave.pilot", True),
+    "recovery_report.py": ("noeticweave.recovery", True),
+    "review_ledger.py": ("noeticweave.review_ledger", True),
+    "sandbox_report.py": ("noeticweave.sandbox", True),
+    "noeticweave.py": ("noeticweave.cli", False),
 }
 
 
@@ -62,4 +62,4 @@ def test_package_owned_template_tools_are_shims() -> None:
             or f"from {module} import main" in text
         )
         assert imports_package_main
-        assert "Missing Vaultwright package runtime" in text
+        assert "Missing NoeticWeave package runtime" in text

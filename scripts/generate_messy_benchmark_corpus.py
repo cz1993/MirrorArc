@@ -21,7 +21,7 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "template"
-MODES = ("raw_source_folder", "plain_markitdown_dump", "vaultwright_markdown")
+MODES = ("raw_source_folder", "plain_markitdown_dump", "noeticweave_markdown")
 DOMAINS = (
     ("20_market", "market", "market-entry"),
     ("30_customers", "customers", "account-discovery"),
@@ -46,7 +46,7 @@ REVIEWED_SCORE_MATRIX = {
         "audit": (1, 1),
         "consolidate": (0, 3),
     },
-    "vaultwright_markdown": {
+    "noeticweave_markdown": {
         "answer": (2, 0),
         "reconcile": (2, 0),
         "update": (2, 0),
@@ -69,7 +69,7 @@ def protected_targets() -> set[Path]:
 def safe_target(path: Path) -> Path:
     target = path.expanduser().resolve()
     if target == ROOT or ROOT in target.parents:
-        raise ValueError("target must be outside the Vaultwright source checkout")
+        raise ValueError("target must be outside the NoeticWeave source checkout")
     if target in protected_targets():
         raise ValueError(f"target is too broad to replace safely: {target}")
     if len(target.parts) < 3:
@@ -153,7 +153,7 @@ def source_paragraphs(index: int) -> list[str]:
     return [
         f"Domain: {domain}; folder: {folder}; topic: {topic}.",
         f"{account} has a {quarter} operating question with one intentionally overlapping fact.",
-        f"Evidence marker VW-MESSY-{index:03d} should be cited when this source is used.",
+        f"Evidence marker NW-MESSY-{index:03d} should be cited when this source is used.",
         "This synthetic file contains no personal data, confidential client data, or real company facts.",
     ]
 
@@ -173,7 +173,7 @@ def write_curated(target: Path, index: int) -> str:
         note_frontmatter(title, domain)
         + f"\n# {title}\n\n"
         + f"- Consolidates recurring {domain} observations for synthetic account work.\n"
-        + f"- Related marker: VW-MESSY-CURATED-{index:03d}.\n"
+        + f"- Related marker: NW-MESSY-CURATED-{index:03d}.\n"
         + "- Prefer updating this note before creating a duplicate hub.\n"
     )
     path = target / rel
@@ -200,7 +200,7 @@ def write_plain_dump(target: Path, source: str, index: int) -> str:
             "",
             *source_paragraphs(index),
             "",
-            "No Vaultwright manifest identity, lifecycle state, or curated hub context is attached.",
+            "No NoeticWeave manifest identity, lifecycle state, or curated hub context is attached.",
         ]
     )
     path.write_text(text + "\n", encoding="utf-8")
@@ -300,7 +300,7 @@ def reviewed_result_pack(tasks: list[dict]) -> dict:
                 "reviewer_corrections": corrections,
                 "elapsed_seconds": None,
                 "cited_source_paths": sources[:1] if score > 0 else [],
-                "cited_generated_mirror_paths": mirrors[:1] if score > 0 and mode == "vaultwright_markdown" else [],
+                "cited_generated_mirror_paths": mirrors[:1] if score > 0 and mode == "noeticweave_markdown" else [],
                 "privacy_or_provenance_violation": False,
                 "prompt_safety_reviewed": True,
                 "prompt_safety_violation": False,
@@ -331,9 +331,9 @@ workspace.
 ## Commands
 
 ```bash
-vaultwright --root {quoted_target} sync
-vaultwright --root {quoted_target} benchmark --require-generated
-vaultwright --root {quoted_target} benchmark --worksheet > {quoted_target}/_benchmark/agent-readiness-worksheet.md
+noeticweave --root {quoted_target} sync
+noeticweave --root {quoted_target} benchmark --require-generated
+noeticweave --root {quoted_target} benchmark --worksheet > {quoted_target}/_benchmark/agent-readiness-worksheet.md
 ```
 
 After the same agent answers each task in each mode, copy
@@ -341,7 +341,7 @@ After the same agent answers each task in each mode, copy
 scores, and validate it with:
 
 ```bash
-vaultwright --root {quoted_target} benchmark \\
+noeticweave --root {quoted_target} benchmark \\
   --results _benchmark/agent-readiness-results-scaffold.yml \\
   --require-results \\
   --require-citations \\
@@ -447,7 +447,7 @@ def main(argv: list[str] | None = None) -> int:
                   curated: {summary['curated_files']}
                   plain dump: {summary['plain_dump_files']}
                   tasks: {summary['tasks']} across {len(summary['comparison_modes'])} modes{reviewed_line}
-                  next: vaultwright --root {summary['target']} sync
+                  next: noeticweave --root {summary['target']} sync
                 """
             ).strip()
         )

@@ -9,16 +9,16 @@ from pathlib import Path
 import pytest
 import yaml
 
-from vaultwright.mirrors import office as office_sync
-from vaultwright.profile_migration import target_dir_paths
-from vaultwright.profiles import (
+from noeticweave.mirrors import office as office_sync
+from noeticweave.profile_migration import target_dir_paths
+from noeticweave.profiles import (
     ProfileContract,
     ProfileValidationError,
     load_profile,
     profile_folder_paths,
     validate_profile_mapping,
 )
-from vaultwright.runtime_profile import (
+from noeticweave.runtime_profile import (
     configured_office_mirror_root,
     profile_context_aliases,
     profile_frontmatter_key_order,
@@ -27,8 +27,8 @@ from vaultwright.runtime_profile import (
     profile_mirror_status,
     profile_repo_notes_dir,
 )
-from vaultwright.views import render_documents_base
-from vaultwright.mirrors import github_repos
+from noeticweave.views import render_documents_base
+from noeticweave.mirrors import github_repos
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,7 +51,7 @@ def run_cli(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[
     )
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     return subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", *args],
+        [sys.executable, "-m", "noeticweave.cli", *args],
         cwd=cwd or ROOT,
         env=env,
         text=True,
@@ -87,7 +87,7 @@ def test_template_business_operations_profile_validates() -> None:
 def test_documents_base_matches_profile_generated_view() -> None:
     vaults = [
         ROOT / "template",
-        ROOT / "src" / "vaultwright" / "template",
+        ROOT / "src" / "noeticweave" / "template",
         ROOT / "examples" / "government-services-vault",
         ROOT / "examples" / "northwind-robotics-vault",
     ]
@@ -101,7 +101,7 @@ def test_packaged_and_example_profiles_match_template() -> None:
     template_profile = (ROOT / "template" / "_meta" / "profile.yml").read_bytes()
 
     profile_paths = [
-        ROOT / "src" / "vaultwright" / "template" / "_meta" / "profile.yml",
+        ROOT / "src" / "noeticweave" / "template" / "_meta" / "profile.yml",
         ROOT / "examples" / "government-services-vault" / "_meta" / "profile.yml",
         ROOT / "examples" / "northwind-robotics-vault" / "_meta" / "profile.yml",
     ]
@@ -737,10 +737,10 @@ def test_profile_cli_initializes_and_validates_current_profile(tmp_path: Path) -
     init = run_cli("init", "--profile", "business-operations", str(vault))
     assert init.returncode == 0, init.stderr
     assert "Profile: business-operations 0.1.0" in init.stdout
-    assert "Next (with an installed Vaultwright CLI):" in init.stdout
-    assert f"vaultwright --root {vault} doctor" in init.stdout
-    assert f"vaultwright --root {vault} sync --json" in init.stdout
-    assert "python3.11 tools/vaultwright.py" not in init.stdout
+    assert "Next (with an installed NoeticWeave CLI):" in init.stdout
+    assert f"noeticweave --root {vault} doctor" in init.stdout
+    assert f"noeticweave --root {vault} sync --json" in init.stdout
+    assert "python3.11 tools/noeticweave.py" not in init.stdout
 
     validation = run_cli("--root", str(vault), "profile", "validate")
     assert validation.returncode == 0, validation.stderr

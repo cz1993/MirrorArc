@@ -1,6 +1,6 @@
 # Stage 3 Validation Status
 
-This is the public-safe status ledger for Vaultwright's external validation gate. It tracks
+This is the public-safe status ledger for NoeticWeave's external validation gate. It tracks
 design-partner attempts without naming participants, publishing source paths, or committing
 private corpus, mirror, transcript, answer, or reviewer-note content.
 

@@ -10,7 +10,7 @@ import sys
 
 import yaml
 
-from vaultwright.annotation_migration import annotation_migration_plan, write_annotation_sidecars
+from noeticweave.annotation_migration import annotation_migration_plan, write_annotation_sidecars
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -54,23 +54,23 @@ class FailingConverter:
 
 
 def load_sync_module():
-    return importlib.import_module("vaultwright.mirrors.github_repos")
+    return importlib.import_module("noeticweave.mirrors.github_repos")
 
 
 def load_office_sync_module():
-    return importlib.import_module("vaultwright.mirrors.office")
+    return importlib.import_module("noeticweave.mirrors.office")
 
 
-def test_vaultwright_cli_doctor_passes_on_template() -> None:
+def test_noeticweave_cli_doctor_passes_on_template() -> None:
     result = subprocess.run(
-        [sys.executable, str(ROOT / "template/tools/vaultwright.py"), "doctor"],
+        [sys.executable, str(ROOT / "template/tools/noeticweave.py"), "doctor"],
         cwd=ROOT / "template",
         text=True,
         capture_output=True,
     )
 
     assert result.returncode == 0, result.stderr or result.stdout
-    assert "vaultwright doctor: OK" in result.stdout
+    assert "noeticweave doctor: OK" in result.stdout
     assert "info: source-manifest.json: not generated yet" in result.stdout
     assert "info: repo-manifest.json: not generated yet" in result.stdout
     assert "info: sync-audit.jsonl: not generated yet" in result.stdout
@@ -96,7 +96,7 @@ def test_vaultwright_cli_doctor_passes_on_template() -> None:
     assert (ROOT / "template/tools/sandbox_report.py").exists()
 
 
-def test_vaultwright_cli_doctor_reports_manifest_lifecycle_counts(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_reports_manifest_lifecycle_counts(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     sync = load_sync_module()
@@ -132,7 +132,7 @@ def test_vaultwright_cli_doctor_reports_manifest_lifecycle_counts(tmp_path: Path
     )
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -143,10 +143,10 @@ def test_vaultwright_cli_doctor_reports_manifest_lifecycle_counts(tmp_path: Path
     assert "repo-manifest.json: 1 records (clean=1)" in result.stdout
     assert "sync-audit.jsonl: 2 events" in result.stdout
     assert "warning: recovery: 1 item needs operator action (office=1, repo=0, temp=0)" in result.stdout
-    assert "vaultwright doctor: OK" in result.stdout
+    assert "noeticweave doctor: OK" in result.stdout
 
 
-def test_vaultwright_cli_doctor_reports_review_ledger_posture_without_details(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_reports_review_ledger_posture_without_details(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     (vault / "CATALOG.html").write_text("<!doctype html><title>Private catalog</title>\n", encoding="utf-8")
@@ -155,7 +155,7 @@ def test_vaultwright_cli_doctor_reports_review_ledger_posture_without_details(tm
     approved = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "review",
             "--artifact",
             "CATALOG.html",
@@ -173,7 +173,7 @@ def test_vaultwright_cli_doctor_reports_review_ledger_posture_without_details(tm
     needs_work = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "review",
             "--artifact",
             "CATALOG.md",
@@ -191,7 +191,7 @@ def test_vaultwright_cli_doctor_reports_review_ledger_posture_without_details(tm
     (vault / "CATALOG.html").write_text("<!doctype html><title>Changed private catalog</title>\n", encoding="utf-8")
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -201,8 +201,8 @@ def test_vaultwright_cli_doctor_reports_review_ledger_posture_without_details(tm
     assert needs_work.returncode == 0, needs_work.stderr or needs_work.stdout
     assert result.returncode == 0, result.stderr or result.stdout
     assert "info: review ledger: 2 reviewed artifact(s) (approved=1, needs-work=1; current=1, stale=1)" in result.stdout
-    assert "warning: review ledger: 1 reviewed artifact(s) are stale, missing, or unreadable; run `vaultwright review`." in result.stdout
-    assert "warning: review ledger: 1 reviewed artifact(s) are not approved; run `vaultwright review`." in result.stdout
+    assert "warning: review ledger: 1 reviewed artifact(s) are stale, missing, or unreadable; run `noeticweave review`." in result.stdout
+    assert "warning: review ledger: 1 reviewed artifact(s) are not approved; run `noeticweave review`." in result.stdout
     assert "CATALOG.html" not in result.stdout
     assert "CATALOG.md" not in result.stdout
     assert "Private Reviewer" not in result.stdout
@@ -210,7 +210,7 @@ def test_vaultwright_cli_doctor_reports_review_ledger_posture_without_details(tm
     assert "private issue note" not in result.stdout
 
 
-def test_vaultwright_cli_doctor_reports_obsidian_and_backup_posture(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_reports_obsidian_and_backup_posture(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     obsidian = vault / ".obsidian"
@@ -227,7 +227,7 @@ def test_vaultwright_cli_doctor_reports_obsidian_and_backup_posture(tmp_path: Pa
     )
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -244,12 +244,12 @@ def test_vaultwright_cli_doctor_reports_obsidian_and_backup_posture(tmp_path: Pa
     assert "warning: Vault root is not inside a git work tree; back up curated notes before production sync." in result.stdout
 
 
-def test_vaultwright_cli_doctor_warns_on_cloud_synced_storage(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_warns_on_cloud_synced_storage(tmp_path: Path) -> None:
     vault = tmp_path / "OneDrive - Example" / "vault"
     shutil.copytree(ROOT / "template", vault)
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -259,7 +259,7 @@ def test_vaultwright_cli_doctor_warns_on_cloud_synced_storage(tmp_path: Path) ->
     assert "warning: storage location: vault appears inside a cloud-synced folder" in result.stdout
 
 
-def test_vaultwright_cli_doctor_reports_profile_neutral_nested_git_boundary(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_reports_profile_neutral_nested_git_boundary(tmp_path: Path) -> None:
     parent = tmp_path / "parent"
     parent.mkdir()
     init = subprocess.run(["git", "init"], cwd=parent, text=True, capture_output=True)
@@ -268,7 +268,7 @@ def test_vaultwright_cli_doctor_reports_profile_neutral_nested_git_boundary(tmp_
     shutil.copytree(ROOT / "template", vault)
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -282,24 +282,24 @@ def test_vaultwright_cli_doctor_reports_profile_neutral_nested_git_boundary(tmp_
     assert "confirm client boundary" not in result.stdout
 
 
-def test_vaultwright_cli_doctor_reports_missing_profile_declared_view(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_reports_missing_profile_declared_view(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     (vault / "Documents.base").unlink()
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
 
     assert result.returncode == 0, result.stderr or result.stdout
-    assert "warning: profile view: Documents.base missing; run `vaultwright profile views --write`." in result.stdout
+    assert "warning: profile view: Documents.base missing; run `noeticweave profile views --write`." in result.stdout
     assert "Obsidian Bases index: Documents.base missing" not in result.stdout
 
 
-def test_vaultwright_cli_doctor_does_not_assume_documents_base_when_profile_omits_views(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_does_not_assume_documents_base_when_profile_omits_views(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     profile_path = vault / "_meta" / "profile.yml"
@@ -309,7 +309,7 @@ def test_vaultwright_cli_doctor_does_not_assume_documents_base_when_profile_omit
     (vault / "Documents.base").unlink()
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -320,14 +320,14 @@ def test_vaultwright_cli_doctor_does_not_assume_documents_base_when_profile_omit
     assert "Documents.base missing" not in result.stdout
 
 
-def test_vaultwright_cli_doctor_uses_profile_defaults_without_legacy_alias_files(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_uses_profile_defaults_without_legacy_alias_files(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     (vault / "_meta" / "domain-map.yml").unlink()
     (vault / "_meta" / "mirror-config.yml").unlink()
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -341,7 +341,7 @@ def test_vaultwright_cli_doctor_uses_profile_defaults_without_legacy_alias_files
     assert "Missing required vault file: _meta/mirror-config.yml" not in result.stderr
 
 
-def test_vaultwright_cli_doctor_requires_legacy_files_without_profile(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_requires_legacy_files_without_profile(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     (vault / "_meta" / "profile.yml").unlink()
@@ -349,7 +349,7 @@ def test_vaultwright_cli_doctor_requires_legacy_files_without_profile(tmp_path: 
     (vault / "_meta" / "mirror-config.yml").unlink()
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -361,13 +361,13 @@ def test_vaultwright_cli_doctor_requires_legacy_files_without_profile(tmp_path: 
     assert "error: Missing required vault file: _meta/mirror-config.yml" in result.stderr
 
 
-def test_vaultwright_cli_doctor_fails_invalid_profile_contract(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_fails_invalid_profile_contract(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     (vault / "_meta" / "profile.yml").write_text("schema_version: nope\n", encoding="utf-8")
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -377,7 +377,7 @@ def test_vaultwright_cli_doctor_fails_invalid_profile_contract(tmp_path: Path) -
     assert "error: profile contract: invalid _meta/profile.yml" in result.stderr
 
 
-def test_vaultwright_cli_doctor_does_not_trust_commented_gitignore_patterns(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_does_not_trust_commented_gitignore_patterns(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     (vault / ".gitignore").write_text(
@@ -392,7 +392,7 @@ def test_vaultwright_cli_doctor_does_not_trust_commented_gitignore_patterns(tmp_
     )
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -403,7 +403,7 @@ def test_vaultwright_cli_doctor_does_not_trust_commented_gitignore_patterns(tmp_
     assert "warning: backup guard: .gitignore unsafe; missing effective ignores: data/, secrets/" in result.stdout
 
 
-def test_vaultwright_cli_doctor_flags_negated_gitignore_patterns(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_flags_negated_gitignore_patterns(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     (vault / ".gitignore").write_text(
@@ -419,7 +419,7 @@ def test_vaultwright_cli_doctor_flags_negated_gitignore_patterns(tmp_path: Path)
     )
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -432,7 +432,7 @@ def test_vaultwright_cli_doctor_flags_negated_gitignore_patterns(tmp_path: Path)
     assert "negated high-risk paths: data/" in result.stdout
 
 
-def test_vaultwright_cli_doctor_handles_unreadable_obsidian_json(tmp_path: Path) -> None:
+def test_noeticweave_cli_doctor_handles_unreadable_obsidian_json(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     obsidian = vault / ".obsidian"
@@ -440,7 +440,7 @@ def test_vaultwright_cli_doctor_handles_unreadable_obsidian_json(tmp_path: Path)
     (obsidian / "app.json").write_bytes(b"\xff\xfe\x00")
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -451,7 +451,7 @@ def test_vaultwright_cli_doctor_handles_unreadable_obsidian_json(tmp_path: Path)
     assert "warning: Obsidian app.json: unreadable text" in result.stdout
 
 
-def test_vaultwright_cli_root_uses_target_vault_tools(tmp_path: Path) -> None:
+def test_noeticweave_cli_root_uses_target_vault_tools(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     fixture = vault / "_fixtures" / "repo"
@@ -468,7 +468,7 @@ def test_vaultwright_cli_root_uses_target_vault_tools(tmp_path: Path) -> None:
     )
 
     result = subprocess.run(
-        [sys.executable, str(ROOT / "template/tools/vaultwright.py"), "--root", str(vault), "plan"],
+        [sys.executable, str(ROOT / "template/tools/noeticweave.py"), "--root", str(vault), "plan"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -481,34 +481,34 @@ def test_vaultwright_cli_root_uses_target_vault_tools(tmp_path: Path) -> None:
     assert not (vault / "80_sources" / "repos" / "fixture.md").exists()
 
 
-def test_vaultwright_cli_wrapper_defaults_to_own_vault_root(tmp_path: Path) -> None:
+def test_noeticweave_cli_wrapper_defaults_to_own_vault_root(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     elsewhere = tmp_path / "elsewhere"
     shutil.copytree(ROOT / "template", vault)
     elsewhere.mkdir()
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "doctor"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "doctor"],
         cwd=elsewhere,
         text=True,
         capture_output=True,
     )
 
     assert result.returncode == 0, result.stderr or result.stdout
-    assert f"vaultwright doctor: {vault.resolve()}" in result.stdout
-    assert "vaultwright doctor: OK" in result.stdout
+    assert f"noeticweave doctor: {vault.resolve()}" in result.stdout
+    assert "noeticweave doctor: OK" in result.stdout
 
 
 def test_packaged_plan_sync_status_do_not_require_vault_wrapper(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     results: dict[str, subprocess.CompletedProcess[str]] = {}
     for command in ("plan", "sync", "status"):
         result = subprocess.run(
-            [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), command],
+            [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), command],
             cwd=ROOT,
             env=env,
             text=True,
@@ -518,35 +518,35 @@ def test_packaged_plan_sync_status_do_not_require_vault_wrapper(tmp_path: Path) 
         assert result.returncode == 0, result.stderr or result.stdout
 
     assert "sync_office_md plan" in results["plan"].stdout
-    assert "vaultwright plan: no tools/repos.yml found; repo plan skipped" in results["plan"].stdout
+    assert "noeticweave plan: no tools/repos.yml found; repo plan skipped" in results["plan"].stdout
     assert "sync_office_md:" in results["sync"].stdout
     assert "sync_github_repos: no repos.yml found; skipped" in results["sync"].stdout
     assert "sync_office_md status" in results["status"].stdout
-    assert "vaultwright status: no tools/repos.yml found; repo status skipped" in results["status"].stdout
+    assert "noeticweave status: no tools/repos.yml found; repo status skipped" in results["status"].stdout
 
 
 def test_packaged_sync_status_doctor_json_outputs_are_structured(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     doctor = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "doctor", "--json"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "doctor", "--json"],
         cwd=ROOT,
         env=env,
         text=True,
         capture_output=True,
     )
     status = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "status", "--json"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "status", "--json"],
         cwd=ROOT,
         env=env,
         text=True,
         capture_output=True,
     )
     sync = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "sync", "--json"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "sync", "--json"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -563,7 +563,7 @@ def test_packaged_sync_status_doctor_json_outputs_are_structured(tmp_path: Path)
     assert doctor_payload["ok"] is True
     assert doctor_payload["root"] == str(vault.resolve())
     assert any(item.startswith("Python: 3.11") for item in doctor_payload["info"])
-    assert "vaultwright doctor:" not in doctor.stdout
+    assert "noeticweave doctor:" not in doctor.stdout
 
     assert status_payload["mode"] == "status"
     assert status_payload["office"]["tool"] == "sync_office_md"
@@ -582,11 +582,11 @@ def test_packaged_sync_status_doctor_json_outputs_are_structured(tmp_path: Path)
 def test_packaged_doctor_does_not_require_vault_wrapper(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "doctor"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "doctor"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -594,23 +594,23 @@ def test_packaged_doctor_does_not_require_vault_wrapper(tmp_path: Path) -> None:
     )
 
     assert result.returncode == 0, result.stderr or result.stdout
-    assert "vaultwright doctor: OK" in result.stdout
+    assert "noeticweave doctor: OK" in result.stdout
     assert "info: lifecycle contract: office=13 states, repo=11 states" in result.stdout
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "missing tools/noeticweave.py" not in result.stderr
 
 
 def test_packaged_review_does_not_require_vault_wrapper(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     (vault / "CATALOG.md").write_text("# Documentation Catalog\n", encoding="utf-8")
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     record = subprocess.run(
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "review",
@@ -636,7 +636,7 @@ def test_packaged_review_does_not_require_vault_wrapper(tmp_path: Path) -> None:
     assert (vault / "_meta" / "review-ledger.jsonl").exists()
 
     check = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "review", "--check"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "review", "--check"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -645,18 +645,18 @@ def test_packaged_review_does_not_require_vault_wrapper(tmp_path: Path) -> None:
 
     assert check.returncode == 0, check.stderr or check.stdout
     assert "approved/current" in check.stdout
-    assert "missing tools/vaultwright.py" not in check.stderr
+    assert "missing tools/noeticweave.py" not in check.stderr
 
 
 def test_packaged_recovery_does_not_require_vault_wrapper_or_local_report(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     (vault / "tools" / "recovery_report.py").unlink()
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "recovery"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "recovery"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -665,11 +665,11 @@ def test_packaged_recovery_does_not_require_vault_wrapper_or_local_report(tmp_pa
 
     assert result.returncode == 0, result.stderr or result.stdout
     assert "recovery: no manifest records need operator action" in result.stdout
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "recovery_report.py" not in result.stderr
 
     worksheet = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "recovery", "--worksheet"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "recovery", "--worksheet"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -677,19 +677,19 @@ def test_packaged_recovery_does_not_require_vault_wrapper_or_local_report(tmp_pa
     )
 
     assert worksheet.returncode == 0, worksheet.stderr or worksheet.stdout
-    assert "# Vaultwright Recovery Worksheet" in worksheet.stdout
+    assert "# NoeticWeave Recovery Worksheet" in worksheet.stdout
     assert "Recovery items needing operator action: 0 (office=0, repo=0, temp=0)" in worksheet.stdout
 
 
 def test_packaged_m365_does_not_require_vault_wrapper_or_local_report(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     (vault / "tools" / "m365_report.py").unlink()
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "m365"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "m365"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -698,12 +698,12 @@ def test_packaged_m365_does_not_require_vault_wrapper_or_local_report(tmp_path: 
 
     assert result.returncode == 0, result.stderr or result.stdout
     assert "m365 handoff: read-only readiness report; no source content was printed" in result.stdout
-    assert "Run `vaultwright sync` before handoff" in result.stdout
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "Run `noeticweave sync` before handoff" in result.stdout
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "m365_report.py" not in result.stderr
 
     json_result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "m365", "--json"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "m365", "--json"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -719,7 +719,7 @@ def test_packaged_m365_does_not_require_vault_wrapper_or_local_report(tmp_path: 
 def test_packaged_conversion_does_not_require_vault_wrapper_or_local_report(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     (vault / "tools" / "conversion_report.py").unlink()
     source = vault / "30_customers" / "acme-manufacturing" / "conversion-source.docx"
     mirror = vault / "_mirrors" / "30_customers" / "acme-manufacturing" / "conversion-source.md"
@@ -750,7 +750,7 @@ def test_packaged_conversion_does_not_require_vault_wrapper_or_local_report(tmp_
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "conversion"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "conversion"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -760,11 +760,11 @@ def test_packaged_conversion_does_not_require_vault_wrapper_or_local_report(tmp_
     assert result.returncode == 0, result.stderr or result.stdout
     assert "conversion: read-only spot-check report; no files were changed" in result.stdout
     assert "conversion-smoke-source" not in result.stdout
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "conversion_report.py" not in result.stderr
 
     guide = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "conversion", "--guide"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "conversion", "--guide"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -775,7 +775,7 @@ def test_packaged_conversion_does_not_require_vault_wrapper_or_local_report(tmp_
     assert "conversion guide: operator review checklist; no files were changed" in guide.stdout
 
     scaffold = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "conversion", "--init-results"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "conversion", "--init-results"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -798,7 +798,7 @@ def test_packaged_conversion_does_not_require_vault_wrapper_or_local_report(tmp_
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "conversion",
@@ -823,7 +823,7 @@ def test_packaged_conversion_does_not_require_vault_wrapper_or_local_report(tmp_
 def test_packaged_migration_does_not_require_vault_wrapper_or_local_report(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     (vault / "tools" / "migration_report.py").unlink()
     legacy = vault / "marketing"
     legacy.mkdir()
@@ -843,7 +843,7 @@ def test_packaged_migration_does_not_require_vault_wrapper_or_local_report(tmp_p
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "migration"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -853,11 +853,11 @@ def test_packaged_migration_does_not_require_vault_wrapper_or_local_report(tmp_p
     assert result.returncode == 0, result.stderr or result.stdout
     assert "migration: dry-run only; no files were moved" in result.stdout
     assert "[alias_folder  ] marketing -> 20_market" in result.stdout
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "migration_report.py" not in result.stderr
 
     json_result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--json"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "migration", "--json"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -871,7 +871,7 @@ def test_packaged_migration_does_not_require_vault_wrapper_or_local_report(tmp_p
     assert report["items"][0]["recommended_folder"] == "20_market"
 
     worksheet = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--worksheet"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "migration", "--worksheet"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -879,11 +879,11 @@ def test_packaged_migration_does_not_require_vault_wrapper_or_local_report(tmp_p
     )
 
     assert worksheet.returncode == 0, worksheet.stderr or worksheet.stdout
-    assert "# Vaultwright Migration Review Worksheet" in worksheet.stdout
+    assert "# NoeticWeave Migration Review Worksheet" in worksheet.stdout
     assert "- [ ] `marketing` -> `20_market`" in worksheet.stdout
 
     runbook = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--runbook"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "migration", "--runbook"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -891,14 +891,14 @@ def test_packaged_migration_does_not_require_vault_wrapper_or_local_report(tmp_p
     )
 
     assert runbook.returncode == 0, runbook.stderr or runbook.stdout
-    assert "# Vaultwright Legacy Folder Migration Runbook" in runbook.stdout
+    assert "# NoeticWeave Legacy Folder Migration Runbook" in runbook.stdout
     assert "- [ ] `marketing/` -> `20_market/`" in runbook.stdout
 
     normalize_write = subprocess.run(
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "migration",
@@ -923,7 +923,7 @@ def test_packaged_migration_does_not_require_vault_wrapper_or_local_report(tmp_p
 def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     (vault / "tools" / "overlap_report.py").unlink()
     left = vault / "20_market" / "overlap-a.md"
     right = vault / "20_market" / "overlap-b.md"
@@ -959,7 +959,7 @@ def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_pat
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "overlap", "--max-pairs", "1"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "overlap", "--max-pairs", "1"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -970,11 +970,11 @@ def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_pat
     assert "overlap: read-only calibration report" in result.stdout
     assert "20_market/overlap-a.md <-> 20_market/overlap-b.md" in result.stdout
     assert "Shared planning readiness" not in result.stdout
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "overlap_report.py" not in result.stderr
 
     json_result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "1"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "1"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -991,7 +991,7 @@ def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_pat
     assert "Shared planning readiness" not in json_result.stdout
 
     worksheet = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "overlap", "--worksheet", "--max-pairs", "1"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "overlap", "--worksheet", "--max-pairs", "1"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -999,19 +999,19 @@ def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_pat
     )
 
     assert worksheet.returncode == 0, worksheet.stderr or worksheet.stdout
-    assert "# Vaultwright Overlap Calibration Worksheet" in worksheet.stdout
+    assert "# NoeticWeave Overlap Calibration Worksheet" in worksheet.stdout
     assert "No note bodies, shared terms, source text, or reviewer notes are included." in worksheet.stdout
     assert "20_market/overlap-a.md" in worksheet.stdout
     assert "Shared planning readiness" not in worksheet.stdout
 
 
-def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> None:
+def test_packaged_noeticweave_cli_runs_target_vault_commands(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "plan"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "plan"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1022,7 +1022,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "sync_office_md plan" in result.stdout
 
     benchmark = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "benchmark"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "benchmark"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1033,7 +1033,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "benchmark validation skipped" in benchmark.stdout
 
     pilot = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "pilot"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "pilot"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1045,7 +1045,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "_meta/source-manifest.json: missing" in pilot.stdout
 
     conversion = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "conversion"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "conversion"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1053,11 +1053,11 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     )
 
     assert conversion.returncode == 0, conversion.stderr or conversion.stdout
-    assert "_meta/source-manifest.json: missing; run `vaultwright sync` first." in conversion.stdout
+    assert "_meta/source-manifest.json: missing; run `noeticweave sync` first." in conversion.stdout
     assert "conversion: no source-manifest records available for spot-checking" in conversion.stdout
 
     conversion_guide = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "conversion", "--guide"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "conversion", "--guide"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1068,7 +1068,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "conversion guide: operator review checklist; no files were changed" in conversion_guide.stdout
 
     migration = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "migration"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1079,7 +1079,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "migration: no legacy or unknown top-level folders found" in migration.stdout
 
     migration_worksheet = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--worksheet"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "migration", "--worksheet"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1087,12 +1087,12 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     )
 
     assert migration_worksheet.returncode == 0, migration_worksheet.stderr or migration_worksheet.stdout
-    assert "# Vaultwright Migration Review Worksheet" in migration_worksheet.stdout
+    assert "# NoeticWeave Migration Review Worksheet" in migration_worksheet.stdout
     assert "No legacy or unknown top-level folders found" in migration_worksheet.stdout
     assert "No legacy frontmatter domains found" in migration_worksheet.stdout
 
     migration_runbook = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--runbook"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "migration", "--runbook"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1100,7 +1100,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     )
 
     assert migration_runbook.returncode == 0, migration_runbook.stderr or migration_runbook.stdout
-    assert "# Vaultwright Legacy Folder Migration Runbook" in migration_runbook.stdout
+    assert "# NoeticWeave Legacy Folder Migration Runbook" in migration_runbook.stdout
     assert "Top-level folders needing review: 0 (alias=0, unknown=0)" in migration_runbook.stdout
     assert "No legacy alias folders found" in migration_runbook.stdout
 
@@ -1108,7 +1108,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "migration",
@@ -1128,7 +1128,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "migration",
@@ -1144,12 +1144,12 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert migration_normalize_worksheet.returncode == 0, (
         migration_normalize_worksheet.stderr or migration_normalize_worksheet.stdout
     )
-    assert "# Vaultwright Frontmatter Domain Normalization Worksheet" in migration_normalize_worksheet.stdout
+    assert "# NoeticWeave Frontmatter Domain Normalization Worksheet" in migration_normalize_worksheet.stdout
     assert "Alias domains eligible for known canonical rewrite: 0" in migration_normalize_worksheet.stdout
     assert "No known alias frontmatter updates found" in migration_normalize_worksheet.stdout
 
     recovery = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "recovery"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "recovery"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1160,7 +1160,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "recovery: no manifest records need operator action" in recovery.stdout
 
     recovery_worksheet = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "recovery", "--worksheet"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "recovery", "--worksheet"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1168,12 +1168,12 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     )
 
     assert recovery_worksheet.returncode == 0, recovery_worksheet.stderr or recovery_worksheet.stdout
-    assert "# Vaultwright Recovery Worksheet" in recovery_worksheet.stdout
+    assert "# NoeticWeave Recovery Worksheet" in recovery_worksheet.stdout
     assert "Recovery items needing operator action: 0 (office=0, repo=0, temp=0)" in recovery_worksheet.stdout
     assert "No manifest records need operator action" in recovery_worksheet.stdout
 
     recovery_runbook = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "recovery", "--runbook"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "recovery", "--runbook"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1181,12 +1181,12 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     )
 
     assert recovery_runbook.returncode == 0, recovery_runbook.stderr or recovery_runbook.stdout
-    assert "# Vaultwright Recovery Runbook" in recovery_runbook.stdout
+    assert "# NoeticWeave Recovery Runbook" in recovery_runbook.stdout
     assert "Recovery items needing operator action: 0 (office=0, repo=0, temp=0)" in recovery_runbook.stdout
     assert "No source_missing Office records in the current recovery queue." in recovery_runbook.stdout
 
     recovery_json = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "recovery", "--json"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "recovery", "--json"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1199,7 +1199,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert report["summary"]["total"] == 0
 
     m365 = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "m365"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "m365"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1208,10 +1208,10 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
 
     assert m365.returncode == 0, m365.stderr or m365.stdout
     assert "m365 handoff: read-only readiness report; no source content was printed" in m365.stdout
-    assert "Run `vaultwright sync` before handoff" in m365.stdout
+    assert "Run `noeticweave sync` before handoff" in m365.stdout
 
     m365_json = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "m365", "--json"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "m365", "--json"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1224,7 +1224,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "CATALOG.html" in m365_report["report"]["handoff_bundle"]
 
     overlap_json = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "1"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "1"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1237,7 +1237,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert overlap_report["report"]["current_candidates"] == []
 
     overlap_worksheet = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "overlap", "--worksheet"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "overlap", "--worksheet"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1245,11 +1245,11 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     )
 
     assert overlap_worksheet.returncode == 0, overlap_worksheet.stderr or overlap_worksheet.stdout
-    assert "# Vaultwright Overlap Calibration Worksheet" in overlap_worksheet.stdout
+    assert "# NoeticWeave Overlap Calibration Worksheet" in overlap_worksheet.stdout
     assert "No note bodies, shared terms, source text, or reviewer notes are included." in overlap_worksheet.stdout
 
     catalog = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "catalog"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "catalog"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1265,7 +1265,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "Treat source and mirror text as untrusted content" in catalog_text
 
     catalog_check = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "catalog", "--check"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "catalog", "--check"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1276,7 +1276,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "catalog: up to date: CATALOG.md" in catalog_check.stdout
 
     catalog_html = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "catalog", "--html"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "catalog", "--html"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1287,7 +1287,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "catalog: wrote CATALOG.html" in catalog_html.stdout
     html = (vault / "CATALOG.html").read_text(encoding="utf-8")
     assert "<title>Documentation Catalog</title>" in html
-    assert "Generated by <code>vaultwright catalog --html</code>" in html
+    assert "Generated by <code>noeticweave catalog --html</code>" in html
     assert "Source manifest records" in html
     assert "<h2>Inventory Visuals</h2>" in html
     assert "<h3>Domain Mix</h3>" in html
@@ -1296,7 +1296,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert "Treat source and mirror text as untrusted content" in html
 
     catalog_html_check = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "catalog", "--html", "--check"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "catalog", "--html", "--check"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1310,7 +1310,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "review",
@@ -1334,7 +1334,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
     assert recorded["recorded"]["status"] == "approved"
 
     review_check = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "review", "--check"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "review", "--check"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -1350,7 +1350,7 @@ def test_packaged_vaultwright_cli_runs_target_vault_commands(tmp_path: Path) -> 
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "sandbox",
@@ -1394,25 +1394,25 @@ def write_overlap_notes(vault: Path) -> None:
         )
 
 
-def test_vaultwright_overlap_report_calibrates_thresholds_without_content(tmp_path: Path) -> None:
+def test_noeticweave_overlap_report_calibrates_thresholds_without_content(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_overlap_notes(vault)
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "overlap"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "overlap"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     worksheet = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "overlap", "--worksheet"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "overlap", "--worksheet"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     as_json = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "overlap", "--json", "--max-pairs", "1"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "overlap", "--json", "--max-pairs", "1"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -1428,7 +1428,7 @@ def test_vaultwright_overlap_report_calibrates_thresholds_without_content(tmp_pa
     assert "40_delivery/funding-readiness.md" in result.stdout
     assert "Confidential calibration body" not in result.stdout
     assert "payroll evidence" not in result.stdout
-    assert "# Vaultwright Overlap Calibration Worksheet" in worksheet.stdout
+    assert "# NoeticWeave Overlap Calibration Worksheet" in worksheet.stdout
     assert "Reviewer decision: duplicate / related-but-distinct / false-positive" in worksheet.stdout
     assert "payroll evidence" not in worksheet.stdout
     payload = json.loads(as_json.stdout)
@@ -1469,7 +1469,7 @@ def write_agent_benchmark_fixture(vault: Path) -> None:
                 "comparison_modes": [
                     "raw_source_folder",
                     "plain_markitdown_dump",
-                    "vaultwright_markdown",
+                    "noeticweave_markdown",
                 ],
                 "scoring": {"scale": "0-2"},
                 "tasks": tasks,
@@ -1486,7 +1486,7 @@ def write_agent_benchmark_fixture(vault: Path) -> None:
                 "results": [
                     {
                         "task_id": "answer-1",
-                        "mode": "vaultwright_markdown",
+                        "mode": "noeticweave_markdown",
                         "score": 2,
                         "reviewer_corrections": 0,
                         "elapsed_seconds": 12.5,
@@ -1560,11 +1560,11 @@ def write_agent_benchmark_manifest_fixture(vault: Path) -> None:
 
 
 def remove_local_benchmark_runtime(vault: Path) -> None:
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     (vault / "tools" / "benchmark_tasks.py").unlink()
 
 
-def test_vaultwright_benchmark_reports_result_scores_without_answer_content(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_reports_result_scores_without_answer_content(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -1572,7 +1572,7 @@ def test_vaultwright_benchmark_reports_result_scores_without_answer_content(tmp_
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--results",
             "_meta/agent-readiness-results.yml",
@@ -1586,7 +1586,7 @@ def test_vaultwright_benchmark_reports_result_scores_without_answer_content(tmp_
     assert "benchmark_tasks: 5 tasks" in result.stdout
     assert "benchmark_results: 3 results" in result.stdout
     assert (
-        "vaultwright_markdown: results=1 score=2/2 avg=2.00 corrections=0 violations=0 "
+        "noeticweave_markdown: results=1 score=2/2 avg=2.00 corrections=0 violations=0 "
         "citations=1+1 uncited_scored=0 prompt_safety=1/1 prompt_violations=0 missing_prompt_safety=0"
     ) in result.stdout
     assert (
@@ -1600,7 +1600,7 @@ def test_vaultwright_benchmark_reports_result_scores_without_answer_content(tmp_
     assert "warning: benchmark results incomplete: missing 12 task/mode scores" in result.stdout
 
 
-def test_vaultwright_benchmark_accepts_legacy_document_chat_mode(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_accepts_legacy_document_chat_mode(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -1609,7 +1609,7 @@ def test_vaultwright_benchmark_accepts_legacy_document_chat_mode(tmp_path: Path)
     task_pack["comparison_modes"] = [
         "raw_source_folder",
         "document_chat_transcript",
-        "vaultwright_markdown",
+        "noeticweave_markdown",
     ]
     task_path.write_text(yaml.safe_dump(task_pack, sort_keys=False), encoding="utf-8")
     result_path = vault / "_meta" / "agent-readiness-results.yml"
@@ -1622,7 +1622,7 @@ def test_vaultwright_benchmark_accepts_legacy_document_chat_mode(tmp_path: Path)
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--results",
             "_meta/agent-readiness-results.yml",
@@ -1637,7 +1637,44 @@ def test_vaultwright_benchmark_accepts_legacy_document_chat_mode(tmp_path: Path)
     assert "warning: comparison_modes uses legacy document_chat_transcript; prefer plain_markitdown_dump" in result.stdout
 
 
-def test_vaultwright_benchmark_warns_on_uncited_scored_result(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_accepts_legacy_product_mode(tmp_path: Path) -> None:
+    vault = tmp_path / "vault"
+    shutil.copytree(ROOT / "template", vault)
+    write_agent_benchmark_fixture(vault)
+    task_path = vault / "_meta" / "agent-readiness-tasks.yml"
+    task_pack = yaml.safe_load(task_path.read_text(encoding="utf-8"))
+    task_pack["comparison_modes"] = [
+        "raw_source_folder",
+        "plain_markitdown_dump",
+        "vaultwright_markdown",
+    ]
+    task_path.write_text(yaml.safe_dump(task_pack, sort_keys=False), encoding="utf-8")
+    result_path = vault / "_meta" / "agent-readiness-results.yml"
+    result_pack = yaml.safe_load(result_path.read_text(encoding="utf-8"))
+    for item in result_pack["results"]:
+        if item["mode"] == "noeticweave_markdown":
+            item["mode"] = "vaultwright_markdown"
+    result_path.write_text(yaml.safe_dump(result_pack, sort_keys=False), encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(vault / "tools" / "noeticweave.py"),
+            "benchmark",
+            "--results",
+            "_meta/agent-readiness-results.yml",
+        ],
+        cwd=vault,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert "vaultwright_markdown: results=1 score=2/2" in result.stdout
+    assert "warning: comparison_modes uses legacy vaultwright_markdown; prefer noeticweave_markdown" in result.stdout
+
+
+def test_noeticweave_benchmark_warns_on_uncited_scored_result(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -1649,7 +1686,7 @@ def test_vaultwright_benchmark_warns_on_uncited_scored_result(tmp_path: Path) ->
                 "results": [
                     {
                         "task_id": "answer-1",
-                        "mode": "vaultwright_markdown",
+                        "mode": "noeticweave_markdown",
                         "score": 1,
                         "reviewer_corrections": 0,
                     }
@@ -1663,7 +1700,7 @@ def test_vaultwright_benchmark_warns_on_uncited_scored_result(tmp_path: Path) ->
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--results",
             "_meta/agent-readiness-results.yml",
@@ -1679,7 +1716,7 @@ def test_vaultwright_benchmark_warns_on_uncited_scored_result(tmp_path: Path) ->
     assert "warning: answer-1: prompt-safety review is missing or incomplete" in result.stdout
 
 
-def test_vaultwright_benchmark_require_citations_fails_on_uncited_scored_result(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_require_citations_fails_on_uncited_scored_result(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -1691,7 +1728,7 @@ def test_vaultwright_benchmark_require_citations_fails_on_uncited_scored_result(
                 "results": [
                     {
                         "task_id": "answer-1",
-                        "mode": "vaultwright_markdown",
+                        "mode": "noeticweave_markdown",
                         "score": 2,
                         "reviewer_corrections": 0,
                     }
@@ -1705,7 +1742,7 @@ def test_vaultwright_benchmark_require_citations_fails_on_uncited_scored_result(
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--results",
             "_meta/agent-readiness-results.yml",
@@ -1720,7 +1757,7 @@ def test_vaultwright_benchmark_require_citations_fails_on_uncited_scored_result(
     assert "answer-1: scored result has no valid cited source or mirror paths" in result.stderr
 
 
-def test_vaultwright_benchmark_require_prompt_safety_fails_on_missing_or_violation(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_require_prompt_safety_fails_on_missing_or_violation(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -1732,7 +1769,7 @@ def test_vaultwright_benchmark_require_prompt_safety_fails_on_missing_or_violati
                 "results": [
                     {
                         "task_id": "answer-1",
-                        "mode": "vaultwright_markdown",
+                        "mode": "noeticweave_markdown",
                         "score": 2,
                         "reviewer_corrections": 0,
                         "cited_source_paths": ["40_delivery/client-plan.docx"],
@@ -1757,7 +1794,7 @@ def test_vaultwright_benchmark_require_prompt_safety_fails_on_missing_or_violati
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--results",
             "_meta/agent-readiness-results.yml",
@@ -1773,7 +1810,7 @@ def test_vaultwright_benchmark_require_prompt_safety_fails_on_missing_or_violati
     assert "audit-1: prompt-safety violation recorded" in result.stderr
 
 
-def test_vaultwright_benchmark_require_results_fails_on_incomplete_scores(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_require_results_fails_on_incomplete_scores(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -1781,7 +1818,7 @@ def test_vaultwright_benchmark_require_results_fails_on_incomplete_scores(tmp_pa
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--results",
             "_meta/agent-readiness-results.yml",
@@ -1796,7 +1833,7 @@ def test_vaultwright_benchmark_require_results_fails_on_incomplete_scores(tmp_pa
     assert "benchmark results incomplete: missing 12 task/mode scores" in result.stderr
 
 
-def test_vaultwright_benchmark_rejects_answer_text_and_reviewer_notes(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_rejects_answer_text_and_reviewer_notes(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -1808,7 +1845,7 @@ def test_vaultwright_benchmark_rejects_answer_text_and_reviewer_notes(tmp_path: 
                 "results": [
                     {
                         "task_id": "answer-1",
-                        "mode": "vaultwright_markdown",
+                        "mode": "noeticweave_markdown",
                         "score": 2,
                         "reviewer_corrections": 0,
                         "cited_source_paths": ["40_delivery/client-plan.docx"],
@@ -1826,7 +1863,7 @@ def test_vaultwright_benchmark_rejects_answer_text_and_reviewer_notes(tmp_path: 
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--results",
             "_meta/agent-readiness-results.yml",
@@ -1845,7 +1882,7 @@ def test_vaultwright_benchmark_rejects_answer_text_and_reviewer_notes(tmp_path: 
     assert "private reviewer notes" not in result.stderr
 
 
-def test_vaultwright_benchmark_rejects_top_level_private_result_fields(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_rejects_top_level_private_result_fields(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -1859,7 +1896,7 @@ def test_vaultwright_benchmark_rejects_top_level_private_result_fields(tmp_path:
                 "results": [
                     {
                         "task_id": "answer-1",
-                        "mode": "vaultwright_markdown",
+                        "mode": "noeticweave_markdown",
                         "score": 2,
                         "reviewer_corrections": 0,
                         "cited_source_paths": ["40_delivery/client-plan.docx"],
@@ -1874,7 +1911,7 @@ def test_vaultwright_benchmark_rejects_top_level_private_result_fields(tmp_path:
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--results",
             "_meta/agent-readiness-results.yml",
@@ -1893,7 +1930,7 @@ def test_vaultwright_benchmark_rejects_top_level_private_result_fields(tmp_path:
     assert "private top-level notes" not in result.stderr
 
 
-def test_vaultwright_benchmark_rejects_unrelated_citations(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_rejects_unrelated_citations(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -1908,7 +1945,7 @@ def test_vaultwright_benchmark_rejects_unrelated_citations(tmp_path: Path) -> No
                 "results": [
                     {
                         "task_id": "answer-1",
-                        "mode": "vaultwright_markdown",
+                        "mode": "noeticweave_markdown",
                         "score": 2,
                         "reviewer_corrections": 0,
                         "cited_source_paths": ["50_operations/unrelated.docx"],
@@ -1923,7 +1960,7 @@ def test_vaultwright_benchmark_rejects_unrelated_citations(tmp_path: Path) -> No
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--results",
             "_meta/agent-readiness-results.yml",
@@ -1937,7 +1974,7 @@ def test_vaultwright_benchmark_rejects_unrelated_citations(tmp_path: Path) -> No
     assert "cited_source_paths must cite a path declared by the task: 50_operations/unrelated.docx" in result.stderr
 
 
-def test_vaultwright_benchmark_rejects_non_finite_elapsed_seconds(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_rejects_non_finite_elapsed_seconds(tmp_path: Path) -> None:
     for value in ("-1", ".nan", ".inf"):
         vault = tmp_path / f"vault-{value.replace('.', 'dot').replace('-', 'neg')}"
         shutil.copytree(ROOT / "template", vault)
@@ -1947,7 +1984,7 @@ def test_vaultwright_benchmark_rejects_non_finite_elapsed_seconds(tmp_path: Path
             "corpus: fixture\n"
             "results:\n"
             "  - task_id: answer-1\n"
-            "    mode: vaultwright_markdown\n"
+            "    mode: noeticweave_markdown\n"
             "    score: 2\n"
             "    reviewer_corrections: 0\n"
             "    elapsed_seconds: " + value + "\n"
@@ -1958,7 +1995,7 @@ def test_vaultwright_benchmark_rejects_non_finite_elapsed_seconds(tmp_path: Path
         result = subprocess.run(
             [
                 sys.executable,
-                str(vault / "tools" / "vaultwright.py"),
+                str(vault / "tools" / "noeticweave.py"),
                 "benchmark",
                 "--results",
                 "_meta/agent-readiness-results.yml",
@@ -1975,12 +2012,12 @@ def test_vaultwright_benchmark_rejects_non_finite_elapsed_seconds(tmp_path: Path
         assert "Infinity" not in result.stdout
 
 
-def test_vaultwright_benchmark_require_results_requires_task_pack(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_require_results_requires_task_pack(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "benchmark", "--require-results"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "benchmark", "--require-results"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -1990,7 +2027,7 @@ def test_vaultwright_benchmark_require_results_requires_task_pack(tmp_path: Path
     assert "benchmark_tasks: missing task pack: _meta/agent-readiness-tasks.yml" in result.stderr
 
 
-def test_vaultwright_benchmark_default_result_file_requires_task_pack(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_default_result_file_requires_task_pack(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     (vault / "_meta" / "agent-readiness-results.yml").write_text(
@@ -1999,7 +2036,7 @@ def test_vaultwright_benchmark_default_result_file_requires_task_pack(tmp_path: 
     )
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "benchmark"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "benchmark"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -2009,7 +2046,7 @@ def test_vaultwright_benchmark_default_result_file_requires_task_pack(tmp_path: 
     assert "benchmark_tasks: missing task pack: _meta/agent-readiness-tasks.yml" in result.stderr
 
 
-def test_vaultwright_benchmark_init_tasks_writes_private_scaffold_from_manifest(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_init_tasks_writes_private_scaffold_from_manifest(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_manifest_fixture(vault)
@@ -2017,7 +2054,7 @@ def test_vaultwright_benchmark_init_tasks_writes_private_scaffold_from_manifest(
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--init-tasks",
             "--scaffold-sources",
@@ -2042,7 +2079,7 @@ def test_vaultwright_benchmark_init_tasks_writes_private_scaffold_from_manifest(
     assert set(task_pack["comparison_modes"]) == {
         "raw_source_folder",
         "plain_markitdown_dump",
-        "vaultwright_markdown",
+        "noeticweave_markdown",
     }
     assert {task["family"] for task in task_pack["tasks"]} == {
         "answer",
@@ -2060,7 +2097,7 @@ def test_vaultwright_benchmark_init_tasks_writes_private_scaffold_from_manifest(
     validation = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--require-generated",
         ],
@@ -2072,7 +2109,7 @@ def test_vaultwright_benchmark_init_tasks_writes_private_scaffold_from_manifest(
     assert "benchmark_tasks: 5 tasks" in validation.stdout
 
 
-def test_vaultwright_benchmark_init_tasks_refuses_existing_pack_without_force(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_init_tasks_refuses_existing_pack_without_force(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_manifest_fixture(vault)
@@ -2081,7 +2118,7 @@ def test_vaultwright_benchmark_init_tasks_refuses_existing_pack_without_force(tm
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--init-tasks",
         ],
@@ -2094,7 +2131,7 @@ def test_vaultwright_benchmark_init_tasks_refuses_existing_pack_without_force(tm
     assert "_meta/agent-readiness-tasks.yml already exists; use --force to overwrite" in result.stderr
 
 
-def test_vaultwright_benchmark_init_results_writes_private_scaffold(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_init_results_writes_private_scaffold(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -2104,7 +2141,7 @@ def test_vaultwright_benchmark_init_results_writes_private_scaffold(tmp_path: Pa
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--init-results",
             "--results",
@@ -2128,7 +2165,7 @@ def test_vaultwright_benchmark_init_results_writes_private_scaffold(tmp_path: Pa
     } == {
         (f"{family}-1", mode)
         for family in ("answer", "reconcile", "update", "audit", "consolidate")
-        for mode in ("raw_source_folder", "plain_markitdown_dump", "vaultwright_markdown")
+        for mode in ("raw_source_folder", "plain_markitdown_dump", "noeticweave_markdown")
     }
     assert all(entry["score"] is None for entry in scaffold["results"])
     assert all(entry["reviewer_corrections"] is None for entry in scaffold["results"])
@@ -2139,7 +2176,7 @@ def test_vaultwright_benchmark_init_results_writes_private_scaffold(tmp_path: Pa
     assert "client-plan" not in scaffold_text
 
 
-def test_vaultwright_benchmark_init_results_refuses_existing_pack_without_force(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_init_results_refuses_existing_pack_without_force(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -2147,7 +2184,7 @@ def test_vaultwright_benchmark_init_results_refuses_existing_pack_without_force(
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--init-results",
             "--results",
@@ -2162,7 +2199,7 @@ def test_vaultwright_benchmark_init_results_refuses_existing_pack_without_force(
     assert "_meta/agent-readiness-results.yml already exists; use --force to overwrite" in result.stderr
 
 
-def test_vaultwright_benchmark_worksheet_prints_private_run_sheet_without_paths(tmp_path: Path) -> None:
+def test_noeticweave_benchmark_worksheet_prints_private_run_sheet_without_paths(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -2170,7 +2207,7 @@ def test_vaultwright_benchmark_worksheet_prints_private_run_sheet_without_paths(
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "benchmark",
             "--worksheet",
         ],
@@ -2188,7 +2225,7 @@ def test_vaultwright_benchmark_worksheet_prints_private_run_sheet_without_paths(
     assert "What should the answer task prove?" in result.stdout
     assert "#### raw_source_folder" in result.stdout
     assert "#### plain_markitdown_dump" in result.stdout
-    assert "#### vaultwright_markdown" in result.stdout
+    assert "#### noeticweave_markdown" in result.stdout
     assert "Score (0-2)" in result.stdout
     assert "Prompt safety reviewed (true/false)" in result.stdout
     assert "Prompt-safety violation (true/false)" in result.stdout
@@ -2198,7 +2235,7 @@ def test_vaultwright_benchmark_worksheet_prints_private_run_sheet_without_paths(
     assert "Synthetic mirror" not in result.stdout
 
 
-def test_packaged_vaultwright_cli_runs_benchmark_result_args_without_local_runtime(tmp_path: Path) -> None:
+def test_packaged_noeticweave_cli_runs_benchmark_result_args_without_local_runtime(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -2209,7 +2246,7 @@ def test_packaged_vaultwright_cli_runs_benchmark_result_args_without_local_runti
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "benchmark",
@@ -2228,16 +2265,16 @@ def test_packaged_vaultwright_cli_runs_benchmark_result_args_without_local_runti
     payload = json.loads(result.stdout)
     assert payload["summary"]["tasks"] == 5
     assert payload["result_summary"]["results"] == 3
-    assert payload["result_summary"]["modes"]["vaultwright_markdown"]["score"] == 2
-    assert payload["result_summary"]["modes"]["vaultwright_markdown"]["source_citations"] == 1
-    assert payload["result_summary"]["modes"]["vaultwright_markdown"]["generated_mirror_citations"] == 1
-    assert payload["result_summary"]["modes"]["vaultwright_markdown"]["prompt_safety_reviewed"] == 1
+    assert payload["result_summary"]["modes"]["noeticweave_markdown"]["score"] == 2
+    assert payload["result_summary"]["modes"]["noeticweave_markdown"]["source_citations"] == 1
+    assert payload["result_summary"]["modes"]["noeticweave_markdown"]["generated_mirror_citations"] == 1
+    assert payload["result_summary"]["modes"]["noeticweave_markdown"]["prompt_safety_reviewed"] == 1
     assert payload["result_summary"]["modes"]["plain_markitdown_dump"]["prompt_safety_violations"] == 1
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "benchmark_tasks.py" not in result.stderr
 
 
-def test_packaged_vaultwright_cli_runs_benchmark_prompt_safety_gate_without_local_runtime(tmp_path: Path) -> None:
+def test_packaged_noeticweave_cli_runs_benchmark_prompt_safety_gate_without_local_runtime(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -2249,7 +2286,7 @@ def test_packaged_vaultwright_cli_runs_benchmark_prompt_safety_gate_without_loca
                 "results": [
                     {
                         "task_id": "answer-1",
-                        "mode": "vaultwright_markdown",
+                        "mode": "noeticweave_markdown",
                         "score": 2,
                         "reviewer_corrections": 0,
                         "cited_source_paths": ["40_delivery/client-plan.docx"],
@@ -2270,7 +2307,7 @@ def test_packaged_vaultwright_cli_runs_benchmark_prompt_safety_gate_without_loca
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "benchmark",
@@ -2287,13 +2324,13 @@ def test_packaged_vaultwright_cli_runs_benchmark_prompt_safety_gate_without_loca
 
     assert result.returncode == 0, result.stderr or result.stdout
     payload = json.loads(result.stdout)
-    assert payload["result_summary"]["modes"]["vaultwright_markdown"]["prompt_safety_reviewed"] == 1
-    assert payload["result_summary"]["modes"]["vaultwright_markdown"]["prompt_safety_violations"] == 0
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert payload["result_summary"]["modes"]["noeticweave_markdown"]["prompt_safety_reviewed"] == 1
+    assert payload["result_summary"]["modes"]["noeticweave_markdown"]["prompt_safety_violations"] == 0
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "benchmark_tasks.py" not in result.stderr
 
 
-def test_packaged_vaultwright_cli_runs_benchmark_init_results_without_local_runtime(tmp_path: Path) -> None:
+def test_packaged_noeticweave_cli_runs_benchmark_init_results_without_local_runtime(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -2304,7 +2341,7 @@ def test_packaged_vaultwright_cli_runs_benchmark_init_results_without_local_runt
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "benchmark",
@@ -2328,11 +2365,11 @@ def test_packaged_vaultwright_cli_runs_benchmark_init_results_without_local_runt
         "path": "_meta/agent-readiness-results.yml",
         "results": 15,
     }
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "benchmark_tasks.py" not in result.stderr
 
 
-def test_packaged_vaultwright_cli_runs_benchmark_init_tasks_without_local_runtime(tmp_path: Path) -> None:
+def test_packaged_noeticweave_cli_runs_benchmark_init_tasks_without_local_runtime(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_manifest_fixture(vault)
@@ -2343,7 +2380,7 @@ def test_packaged_vaultwright_cli_runs_benchmark_init_tasks_without_local_runtim
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "benchmark",
@@ -2371,11 +2408,11 @@ def test_packaged_vaultwright_cli_runs_benchmark_init_tasks_without_local_runtim
         "source_paths": 1,
         "tasks": 5,
     }
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "benchmark_tasks.py" not in result.stderr
 
 
-def test_packaged_vaultwright_cli_runs_benchmark_worksheet_without_local_runtime(tmp_path: Path) -> None:
+def test_packaged_noeticweave_cli_runs_benchmark_worksheet_without_local_runtime(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     write_agent_benchmark_fixture(vault)
@@ -2386,7 +2423,7 @@ def test_packaged_vaultwright_cli_runs_benchmark_worksheet_without_local_runtime
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "benchmark",
@@ -2403,16 +2440,16 @@ def test_packaged_vaultwright_cli_runs_benchmark_worksheet_without_local_runtime
     assert "private evidence" in result.stdout
     assert "client evidence" not in result.stdout
     assert "40_delivery/client-plan.docx" not in result.stdout
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "benchmark_tasks.py" not in result.stderr
 
 
-def test_packaged_vaultwright_cli_init_from_source_checkout(tmp_path: Path) -> None:
+def test_packaged_noeticweave_cli_init_from_source_checkout(tmp_path: Path) -> None:
     target = tmp_path / "new-vault"
-    env = {**os.environ, "PYTHONPATH": str(ROOT / "src"), "VAULTWRIGHT_REPO": str(ROOT)}
+    env = {**os.environ, "PYTHONPATH": str(ROOT / "src"), "NOETICWEAVE_REPO": str(ROOT)}
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "init", str(target)],
+        [sys.executable, "-m", "noeticweave.cli", "init", str(target)],
         cwd=ROOT,
         env=env,
         text=True,
@@ -2421,19 +2458,19 @@ def test_packaged_vaultwright_cli_init_from_source_checkout(tmp_path: Path) -> N
 
     assert result.returncode == 0, result.stderr or result.stdout
     assert (target / "CLAUDE.md").exists()
-    assert (target / "tools" / "vaultwright.py").exists()
-    assert f"vaultwright --root {target} doctor" in result.stdout
-    assert f"vaultwright --root {target} status --json" in result.stdout
-    assert "python3.11 tools/vaultwright.py" not in result.stdout
+    assert (target / "tools" / "noeticweave.py").exists()
+    assert f"noeticweave --root {target} doctor" in result.stdout
+    assert f"noeticweave --root {target} status --json" in result.stdout
+    assert "python3.11 tools/noeticweave.py" not in result.stdout
 
 
-def test_packaged_vaultwright_cli_init_from_packaged_template(tmp_path: Path) -> None:
+def test_packaged_noeticweave_cli_init_from_packaged_template(tmp_path: Path) -> None:
     target = tmp_path / "packaged-vault"
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
-    env.pop("VAULTWRIGHT_REPO", None)
+    env.pop("NOETICWEAVE_REPO", None)
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "init", str(target)],
+        [sys.executable, "-m", "noeticweave.cli", "init", str(target)],
         cwd=tmp_path,
         env=env,
         text=True,
@@ -2450,10 +2487,10 @@ def test_packaged_vaultwright_cli_init_from_packaged_template(tmp_path: Path) ->
     assert (target / "tools" / "recovery_report.py").exists()
     assert (target / "tools" / "review_ledger.py").exists()
     assert (target / "tools" / "sandbox_report.py").exists()
-    assert (target / "tools" / "vaultwright.py").exists()
-    assert f"vaultwright --root {target} doctor" in result.stdout
-    assert f"vaultwright --root {target} sync --json" in result.stdout
-    assert "python3.11 tools/vaultwright.py" not in result.stdout
+    assert (target / "tools" / "noeticweave.py").exists()
+    assert f"noeticweave --root {target} doctor" in result.stdout
+    assert f"noeticweave --root {target} sync --json" in result.stdout
+    assert "python3.11 tools/noeticweave.py" not in result.stdout
 
 
 def test_repos_example_has_no_active_placeholder_repo() -> None:
@@ -2462,7 +2499,7 @@ def test_repos_example_has_no_active_placeholder_repo() -> None:
     assert cfg["repos"] == []
 
 
-def test_vaultwright_conversion_report_prioritizes_spot_checks(tmp_path: Path) -> None:
+def test_noeticweave_conversion_report_prioritizes_spot_checks(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     source_manifest = vault / "_meta" / "source-manifest.json"
@@ -2572,25 +2609,25 @@ def test_vaultwright_conversion_report_prioritizes_spot_checks(tmp_path: Path) -
     )
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "conversion"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "conversion"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     json_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "conversion", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "conversion", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     guide_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "conversion", "--guide"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "conversion", "--guide"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     guide_json_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "conversion", "--guide", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "conversion", "--guide", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -2663,7 +2700,7 @@ def test_vaultwright_conversion_report_prioritizes_spot_checks(tmp_path: Path) -
     assert {path: path.read_text(encoding="utf-8") for path in before_mirrors} == before_mirrors
 
 
-def test_vaultwright_pilot_report_summarizes_evidence_without_content(tmp_path: Path) -> None:
+def test_noeticweave_pilot_report_summarizes_evidence_without_content(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     sync = load_sync_module()
@@ -2756,7 +2793,7 @@ def test_vaultwright_pilot_report_summarizes_evidence_without_content(tmp_path: 
     (vault / "_meta" / "agent-readiness-tasks.yml").write_text(
         "schema_version: 1\n"
         "corpus: fixture\n"
-        "comparison_modes: [raw_source_folder, plain_markitdown_dump, vaultwright_markdown]\n"
+        "comparison_modes: [raw_source_folder, plain_markitdown_dump, noeticweave_markdown]\n"
         "scoring:\n"
         "  scale: 0-2\n"
         "tasks:\n"
@@ -2805,7 +2842,7 @@ def test_vaultwright_pilot_report_summarizes_evidence_without_content(tmp_path: 
                 "results": [
                     {
                         "task_id": "answer-1",
-                        "mode": "vaultwright_markdown",
+                        "mode": "noeticweave_markdown",
                         "score": 2,
                         "reviewer_corrections": 0,
                         "cited_source_paths": ["40_delivery/client-plan.docx"],
@@ -2822,7 +2859,7 @@ def test_vaultwright_pilot_report_summarizes_evidence_without_content(tmp_path: 
     review_record = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "review",
             "--artifact",
             "_mirrors/40_delivery/client-plan.md",
@@ -2841,19 +2878,19 @@ def test_vaultwright_pilot_report_summarizes_evidence_without_content(tmp_path: 
     assert review_record.returncode == 0, review_record.stderr or review_record.stdout
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "pilot"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "pilot"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     json_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "pilot", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "pilot", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     worksheet_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "pilot", "--worksheet"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "pilot", "--worksheet"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -2909,8 +2946,8 @@ def test_vaultwright_pilot_report_summarizes_evidence_without_content(tmp_path: 
     }
     assert report["report"]["benchmark"]["summary"]["tasks"] == 5
     benchmark_results = report["report"]["benchmark"]["summary"]["results"]["summary"]
-    assert benchmark_results["modes"]["vaultwright_markdown"]["prompt_safety_reviewed"] == 1
-    assert benchmark_results["modes"]["vaultwright_markdown"]["prompt_safety_violations"] == 0
+    assert benchmark_results["modes"]["noeticweave_markdown"]["prompt_safety_reviewed"] == 1
+    assert benchmark_results["modes"]["noeticweave_markdown"]["prompt_safety_violations"] == 0
     review = report["report"]["review"]["summary"]
     assert review["reviewed_artifacts"] == 1
     assert review["statuses"] == {"needs-work": 1}
@@ -2920,7 +2957,7 @@ def test_vaultwright_pilot_report_summarizes_evidence_without_content(tmp_path: 
     assert "latest_reviews" not in review
 
     assert worksheet_result.returncode == 0, worksheet_result.stderr or worksheet_result.stdout
-    assert "# Vaultwright Pilot Evidence Summary" in worksheet_result.stdout
+    assert "# NoeticWeave Pilot Evidence Summary" in worksheet_result.stdout
     assert "protected identifiers" in worksheet_result.stdout
     assert "client identifiers" not in worksheet_result.stdout
     assert "Source manifest records: 1" in worksheet_result.stdout
@@ -2986,7 +3023,7 @@ def test_packaged_pilot_does_not_require_vault_wrapper_or_local_reports(tmp_path
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "review",
@@ -3007,7 +3044,7 @@ def test_packaged_pilot_does_not_require_vault_wrapper_or_local_reports(tmp_path
     assert review.returncode == 0, review.stderr or review.stdout
 
     for script in (
-        "vaultwright.py",
+        "noeticweave.py",
         "pilot_report.py",
         "conversion_report.py",
         "recovery_report.py",
@@ -3018,21 +3055,21 @@ def test_packaged_pilot_does_not_require_vault_wrapper_or_local_reports(tmp_path
         (vault / "tools" / script).unlink()
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "pilot"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "pilot"],
         cwd=ROOT,
         env=env,
         text=True,
         capture_output=True,
     )
     json_result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "pilot", "--json"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "pilot", "--json"],
         cwd=ROOT,
         env=env,
         text=True,
         capture_output=True,
     )
     worksheet = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "pilot", "--worksheet"],
+        [sys.executable, "-m", "noeticweave.cli", "--root", str(vault), "pilot", "--worksheet"],
         cwd=ROOT,
         env=env,
         text=True,
@@ -3046,7 +3083,7 @@ def test_packaged_pilot_does_not_require_vault_wrapper_or_local_reports(tmp_path
     assert "pilot: benchmark available=True tasks=5" in result.stdout
     assert "pilot: review ledger available=True reviewed=1 stale_or_missing=0 non_approved=1" in result.stdout
     for forbidden in (
-        "missing tools/vaultwright.py",
+        "missing tools/noeticweave.py",
         "pilot_report.py",
         "conversion_report.py",
         "recovery_report.py",
@@ -3085,7 +3122,7 @@ def test_packaged_pilot_does_not_require_vault_wrapper_or_local_reports(tmp_path
         assert forbidden not in json_result.stdout
 
     assert worksheet.returncode == 0, worksheet.stderr or worksheet.stdout
-    assert "# Vaultwright Pilot Evidence Summary" in worksheet.stdout
+    assert "# NoeticWeave Pilot Evidence Summary" in worksheet.stdout
     assert "protected identifiers" in worksheet.stdout
     assert "client identifiers" not in worksheet.stdout
     assert "Benchmark tasks: available=True tasks=5" in worksheet.stdout
@@ -3096,7 +3133,7 @@ def test_packaged_pilot_does_not_require_vault_wrapper_or_local_reports(tmp_path
     assert "_mirrors/40_delivery/client-plan.md" not in worksheet.stdout
 
 
-def test_vaultwright_m365_report_summarizes_handoff_without_content(tmp_path: Path) -> None:
+def test_noeticweave_m365_report_summarizes_handoff_without_content(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     sync = load_sync_module()
@@ -3178,13 +3215,13 @@ def test_vaultwright_m365_report_summarizes_handoff_without_content(tmp_path: Pa
     )
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "m365"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "m365"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     json_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "m365", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "m365", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -3250,31 +3287,31 @@ def test_catalog_and_m365_surface_unconfigured_repo_mirror_before_resync(tmp_pat
     assert manifest["records"][0]["lifecycle_state"] == "clean"
 
     catalog_json = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "catalog", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "catalog", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     catalog_md = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "catalog", "--stdout"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "catalog", "--stdout"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     catalog_html = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "catalog", "--html", "--stdout"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "catalog", "--html", "--stdout"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     m365 = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "m365"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "m365"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     m365_json = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "m365", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "m365", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -3318,7 +3355,7 @@ def test_catalog_and_m365_surface_unconfigured_repo_mirror_before_resync(tmp_pat
     assert "Synthetic repo docs" not in m365_json.stdout
 
 
-def test_vaultwright_review_ledger_records_hashes_without_artifact_content(tmp_path: Path) -> None:
+def test_noeticweave_review_ledger_records_hashes_without_artifact_content(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     source = vault / "40_delivery" / "client-plan.docx"
@@ -3341,7 +3378,7 @@ def test_vaultwright_review_ledger_records_hashes_without_artifact_content(tmp_p
     record = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "review",
             "--artifact",
             "_mirrors/40_delivery/client-plan.md",
@@ -3374,13 +3411,13 @@ def test_vaultwright_review_ledger_records_hashes_without_artifact_content(tmp_p
     assert "spot checked headings" in ledger_text
 
     summary = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "review"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "review"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     summary_json = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "review", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "review", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -3397,13 +3434,13 @@ def test_vaultwright_review_ledger_records_hashes_without_artifact_content(tmp_p
 
     mirror.write_text(mirror.read_text(encoding="utf-8") + "\nChanged generated body\n", encoding="utf-8")
     stale = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "review", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "review", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     check = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "review", "--check"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "review", "--check"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -3418,7 +3455,7 @@ def test_vaultwright_review_ledger_records_hashes_without_artifact_content(tmp_p
     source_review = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "review",
             "--artifact",
             "40_delivery/client-plan.docx",
@@ -3436,7 +3473,7 @@ def test_vaultwright_review_ledger_records_hashes_without_artifact_content(tmp_p
     assert "artifact must be a generated mirror" in source_review.stderr
 
 
-def test_vaultwright_sandbox_report_checks_copied_boundary_without_content(tmp_path: Path) -> None:
+def test_noeticweave_sandbox_report_checks_copied_boundary_without_content(tmp_path: Path) -> None:
     source_root = tmp_path / "original-documents"
     source_root.mkdir()
     (source_root / "original-client-plan.docx").write_bytes(b"original private source bytes")
@@ -3517,7 +3554,7 @@ def test_vaultwright_sandbox_report_checks_copied_boundary_without_content(tmp_p
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "sandbox",
             "--source-root",
             str(source_root),
@@ -3529,7 +3566,7 @@ def test_vaultwright_sandbox_report_checks_copied_boundary_without_content(tmp_p
     json_result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "sandbox",
             "--source-root",
             str(source_root),
@@ -3575,7 +3612,7 @@ def test_vaultwright_sandbox_report_checks_copied_boundary_without_content(tmp_p
     assert archived_raw_folder_mirror.read_text(encoding="utf-8") == before_archived_raw_folder_mirror
 
 
-def test_vaultwright_sandbox_reports_profile_neutral_nested_git_boundary(tmp_path: Path) -> None:
+def test_noeticweave_sandbox_reports_profile_neutral_nested_git_boundary(tmp_path: Path) -> None:
     source_root = tmp_path / "original-documents"
     source_root.mkdir()
     parent = tmp_path / "parent"
@@ -3588,7 +3625,7 @@ def test_vaultwright_sandbox_reports_profile_neutral_nested_git_boundary(tmp_pat
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "sandbox",
             "--source-root",
             str(source_root),
@@ -3603,7 +3640,7 @@ def test_vaultwright_sandbox_reports_profile_neutral_nested_git_boundary(tmp_pat
     assert "confirm client/project boundary" not in result.stdout
 
 
-def test_packaged_vaultwright_sandbox_does_not_require_vault_wrapper_or_local_sandbox_runtime(
+def test_packaged_noeticweave_sandbox_does_not_require_vault_wrapper_or_local_sandbox_runtime(
     tmp_path: Path,
 ) -> None:
     source_root = tmp_path / "original-documents"
@@ -3623,14 +3660,14 @@ def test_packaged_vaultwright_sandbox_does_not_require_vault_wrapper_or_local_sa
         "Packaged sandbox mirror text that should not appear\n",
         encoding="utf-8",
     )
-    (vault / "tools" / "vaultwright.py").unlink()
+    (vault / "tools" / "noeticweave.py").unlink()
     (vault / "tools" / "sandbox_report.py").unlink()
 
     result = subprocess.run(
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "sandbox",
@@ -3645,7 +3682,7 @@ def test_packaged_vaultwright_sandbox_does_not_require_vault_wrapper_or_local_sa
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "noeticweave.cli",
             "--root",
             str(vault),
             "sandbox",
@@ -3662,8 +3699,8 @@ def test_packaged_vaultwright_sandbox_does_not_require_vault_wrapper_or_local_sa
     assert "sandbox: source boundary status=distinct" in result.stdout
     assert "machine_owned=0" in result.stdout
     assert "sandbox: generated mirrors dedicated=1 raw_folder=0 repo=0" in result.stdout
-    assert "missing tools/vaultwright.py" not in result.stdout
-    assert "missing tools/vaultwright.py" not in result.stderr
+    assert "missing tools/noeticweave.py" not in result.stdout
+    assert "missing tools/noeticweave.py" not in result.stderr
     assert "sandbox_report.py" not in result.stdout
     assert "sandbox_report.py" not in result.stderr
     assert "copied private source bytes" not in result.stdout
@@ -3677,8 +3714,8 @@ def test_packaged_vaultwright_sandbox_does_not_require_vault_wrapper_or_local_sa
     assert payload["report"]["source_boundary"]["status"] == "distinct"
     assert payload["report"]["inventory"]["machine_owned_markdown"] == 0
     assert payload["report"]["inventory"]["dedicated_generated_mirrors"] == 1
-    assert "missing tools/vaultwright.py" not in json_result.stdout
-    assert "missing tools/vaultwright.py" not in json_result.stderr
+    assert "missing tools/noeticweave.py" not in json_result.stdout
+    assert "missing tools/noeticweave.py" not in json_result.stderr
     assert "sandbox_report.py" not in json_result.stdout
     assert "copied private source bytes" not in json_result.stdout
     assert "Packaged sandbox mirror text" not in json_result.stdout
@@ -3687,14 +3724,14 @@ def test_packaged_vaultwright_sandbox_does_not_require_vault_wrapper_or_local_sa
     assert str(source_root) not in json_result.stdout
 
 
-def test_vaultwright_sandbox_report_fails_when_source_root_is_vault(tmp_path: Path) -> None:
+def test_noeticweave_sandbox_report_fails_when_source_root_is_vault(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
 
     result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "sandbox",
             "--source-root",
             str(vault),
@@ -3710,12 +3747,12 @@ def test_vaultwright_sandbox_report_fails_when_source_root_is_vault(tmp_path: Pa
     assert str(vault) not in result.stdout
 
 
-def test_vaultwright_conversion_report_handles_invalid_inputs(tmp_path: Path) -> None:
+def test_noeticweave_conversion_report_handles_invalid_inputs(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
 
     invalid_args = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "conversion", "--low-risk-per-format", "-1"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "conversion", "--low-risk-per-format", "-1"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -3727,13 +3764,13 @@ def test_vaultwright_conversion_report_handles_invalid_inputs(tmp_path: Path) ->
     manifest = vault / "_meta" / "source-manifest.json"
     manifest.write_text(json.dumps({"records": {}}), encoding="utf-8")
     malformed = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "conversion"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "conversion"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     malformed_json = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "conversion", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "conversion", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -3769,7 +3806,7 @@ def test_vaultwright_conversion_report_handles_invalid_inputs(tmp_path: Path) ->
     unsafe = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "conversion",
             "--low-risk-per-format",
             "0",
@@ -3781,7 +3818,7 @@ def test_vaultwright_conversion_report_handles_invalid_inputs(tmp_path: Path) ->
     unsafe_json = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "conversion",
             "--json",
             "--low-risk-per-format",
@@ -3803,7 +3840,7 @@ def test_vaultwright_conversion_report_handles_invalid_inputs(tmp_path: Path) ->
     assert "mirror path is unsafe: ../outside.md" in report["items"][0]["reasons"]
 
 
-def test_vaultwright_conversion_quality_results_are_metadata_only(tmp_path: Path) -> None:
+def test_noeticweave_conversion_quality_results_are_metadata_only(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     (vault / "40_delivery").mkdir(exist_ok=True)
@@ -3844,7 +3881,7 @@ def test_vaultwright_conversion_quality_results_are_metadata_only(tmp_path: Path
     )
 
     scaffold = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "conversion", "--init-results"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "conversion", "--init-results"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -3865,7 +3902,7 @@ def test_vaultwright_conversion_quality_results_are_metadata_only(tmp_path: Path
     gated = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "conversion",
             "--results",
             "_meta/conversion-quality-results.yml",
@@ -3918,7 +3955,7 @@ def test_vaultwright_conversion_quality_results_are_metadata_only(tmp_path: Path
     json_result = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "conversion",
             "--results",
             "_meta/conversion-quality-results.yml",
@@ -3944,13 +3981,13 @@ def test_vaultwright_conversion_quality_results_are_metadata_only(tmp_path: Path
     assert "40_delivery/registration.docx" not in json_result.stdout
 
     pilot = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "pilot"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "pilot"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     pilot_json = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "pilot", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "pilot", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -3992,7 +4029,7 @@ def test_vaultwright_conversion_quality_results_are_metadata_only(tmp_path: Path
     invalid = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "conversion",
             "--results",
             "_meta/conversion-quality-results.yml",
@@ -4007,7 +4044,7 @@ def test_vaultwright_conversion_quality_results_are_metadata_only(tmp_path: Path
     assert "copied private source text" not in invalid.stderr
 
 
-def test_vaultwright_migration_reports_legacy_and_unknown_folders(tmp_path: Path) -> None:
+def test_noeticweave_migration_reports_legacy_and_unknown_folders(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     marketing = vault / "marketing"
@@ -4047,31 +4084,31 @@ def test_vaultwright_migration_reports_legacy_and_unknown_folders(tmp_path: Path
     (hidden / "import.pdf").write_bytes(b"pdf bytes")
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "migration"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "migration"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     json_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "migration", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "migration", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     worksheet_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "migration", "--worksheet"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "migration", "--worksheet"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     runbook_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "migration", "--runbook"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "migration", "--runbook"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
     normalize_preview = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "migration", "--normalize-frontmatter-domains"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "migration", "--normalize-frontmatter-domains"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -4079,7 +4116,7 @@ def test_vaultwright_migration_reports_legacy_and_unknown_folders(tmp_path: Path
     normalize_worksheet = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "migration",
             "--normalize-frontmatter-domains",
             "--worksheet",
@@ -4141,7 +4178,7 @@ def test_vaultwright_migration_reports_legacy_and_unknown_folders(tmp_path: Path
     assert by_path["client_uploads/unknown-domain.md"]["current_domain"] == "special-projects"
 
     assert worksheet_result.returncode == 0, worksheet_result.stderr or worksheet_result.stdout
-    assert "# Vaultwright Migration Review Worksheet" in worksheet_result.stdout
+    assert "# NoeticWeave Migration Review Worksheet" in worksheet_result.stdout
     assert "Dry-run only; no files were moved." in worksheet_result.stdout
     assert "Top-level folders needing review: 4 (alias=1, unknown=3)" in worksheet_result.stdout
     assert "Note frontmatter domains needing review: 2 (alias=1, unknown=1)" in worksheet_result.stdout
@@ -4150,11 +4187,11 @@ def test_vaultwright_migration_reports_legacy_and_unknown_folders(tmp_path: Path
     assert "- [ ] `client_uploads/unknown-domain.md`: `special-projects` -> `manual classification`" in worksheet_result.stdout
 
     assert runbook_result.returncode == 0, runbook_result.stderr or runbook_result.stdout
-    assert "# Vaultwright Legacy Folder Migration Runbook" in runbook_result.stdout
+    assert "# NoeticWeave Legacy Folder Migration Runbook" in runbook_result.stdout
     assert "Read-only; no files were moved or changed." in runbook_result.stdout
     assert "Top-level folders needing review: 4 (alias=1, unknown=3)" in runbook_result.stdout
     assert "Frontmatter domains needing review: 2 (alias=1, unknown=1)" in runbook_result.stdout
-    assert "Resolve `vaultwright recovery --worksheet` items before trusting generated mirrors." in runbook_result.stdout
+    assert "Resolve `noeticweave recovery --worksheet` items before trusting generated mirrors." in runbook_result.stdout
     assert "Move one alias folder batch at a time into the recommended canonical folder." in runbook_result.stdout
     assert "- [ ] `marketing/` -> `20_market/` (domain=`market`, files=1, markdown=1, office=0)" in (
         runbook_result.stdout
@@ -4171,7 +4208,7 @@ def test_vaultwright_migration_reports_legacy_and_unknown_folders(tmp_path: Path
     assert yaml.safe_load(preview_fm)["domain"] == "marketing"
 
     assert normalize_worksheet.returncode == 0, normalize_worksheet.stderr or normalize_worksheet.stdout
-    assert "# Vaultwright Frontmatter Domain Normalization Worksheet" in normalize_worksheet.stdout
+    assert "# NoeticWeave Frontmatter Domain Normalization Worksheet" in normalize_worksheet.stdout
     assert "Dry-run only; no files were changed." in normalize_worksheet.stdout
     assert "Alias domains eligible for known canonical rewrite: 1" in normalize_worksheet.stdout
     assert "Planned frontmatter updates: 1" in normalize_worksheet.stdout
@@ -4181,12 +4218,12 @@ def test_vaultwright_migration_reports_legacy_and_unknown_folders(tmp_path: Path
     assert "- [ ] `client_uploads/unknown-domain.md`: `special-projects` -> `manual classification`" in (
         normalize_worksheet.stdout
     )
-    assert "vaultwright migration --normalize-frontmatter-domains --write" in normalize_worksheet.stdout
+    assert "noeticweave migration --normalize-frontmatter-domains --write" in normalize_worksheet.stdout
 
     normalize_write = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "migration",
             "--normalize-frontmatter-domains",
             "--write",
@@ -4211,7 +4248,7 @@ def test_vaultwright_migration_reports_legacy_and_unknown_folders(tmp_path: Path
     normalize_write_worksheet = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "migration",
             "--normalize-frontmatter-domains",
             "--write",
@@ -4228,7 +4265,7 @@ def test_vaultwright_migration_reports_legacy_and_unknown_folders(tmp_path: Path
     normalize_runbook = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "noeticweave.py"),
             "migration",
             "--normalize-frontmatter-domains",
             "--runbook",
@@ -4242,7 +4279,7 @@ def test_vaultwright_migration_reports_legacy_and_unknown_folders(tmp_path: Path
     assert "--normalize-frontmatter-domains cannot be combined with --json or --runbook" in normalize_runbook.stderr
 
 
-def test_vaultwright_recovery_reports_manifest_actions(tmp_path: Path) -> None:
+def test_noeticweave_recovery_reports_manifest_actions(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     sync = load_sync_module()
@@ -4326,7 +4363,7 @@ def test_vaultwright_recovery_reports_manifest_actions(tmp_path: Path) -> None:
                         ],
                         "lifecycle_state": "conflict",
                         "errors": [
-                            "Source bytes match multiple missing manifest records; Vaultwright cannot choose the correct source history automatically."
+                            "Source bytes match multiple missing manifest records; NoeticWeave cannot choose the correct source history automatically."
                         ],
                     },
                 ],
@@ -4389,7 +4426,7 @@ def test_vaultwright_recovery_reports_manifest_actions(tmp_path: Path) -> None:
     )
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "recovery"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "recovery"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -4399,7 +4436,7 @@ def test_vaultwright_recovery_reports_manifest_actions(tmp_path: Path) -> None:
     assert "recovery: 6 items need operator action (office=5, repo=1, temp=0)" in result.stdout
     assert "[office:source_missing" in result.stdout
     assert "Locate, restore, or intentionally archive the source" in result.stdout
-    assert "state explanation: Vaultwright retains the mirror and manifest record for review instead of deleting evidence." in result.stdout
+    assert "state explanation: NoeticWeave retains the mirror and manifest record for review instead of deleting evidence." in result.stdout
     assert "exit condition: The source is restored, a move is resolved, or the manifest/mirror is deliberately retired." in result.stdout
     assert "[office:manual_modification" in result.stdout
     assert "Migrate legacy annotations or preserve human edits in curated notes" in result.stdout
@@ -4421,20 +4458,20 @@ def test_vaultwright_recovery_reports_manifest_actions(tmp_path: Path) -> None:
     assert "audit error: Target note belongs to another repo_id." in result.stdout
 
     worksheet_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "recovery", "--worksheet"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "recovery", "--worksheet"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
 
     assert worksheet_result.returncode == 0, worksheet_result.stderr or worksheet_result.stdout
-    assert "# Vaultwright Recovery Worksheet" in worksheet_result.stdout
+    assert "# NoeticWeave Recovery Worksheet" in worksheet_result.stdout
     assert "Read-only; no files were changed." in worksheet_result.stdout
     assert "Recovery items needing operator action: 6 (office=5, repo=1, temp=0)" in worksheet_result.stdout
     assert "- [ ] `office:source_missing` `src-missing`" in worksheet_result.stdout
     assert "Source: `40_delivery/missing.docx`" in worksheet_result.stdout
     assert "Action: Locate, restore, or intentionally archive the source" in worksheet_result.stdout
-    assert "State explanation: Vaultwright retains the mirror and manifest record for review instead of deleting evidence." in worksheet_result.stdout
+    assert "State explanation: NoeticWeave retains the mirror and manifest record for review instead of deleting evidence." in worksheet_result.stdout
     assert "Contract next actions:" in worksheet_result.stdout
     assert "Locate or restore the source." in worksheet_result.stdout
     assert "Exit condition: The source is restored, a move is resolved, or the manifest/mirror is deliberately retired." in worksheet_result.stdout
@@ -4448,14 +4485,14 @@ def test_vaultwright_recovery_reports_manifest_actions(tmp_path: Path) -> None:
     assert "Audit error: Target note belongs to another repo_id." in worksheet_result.stdout
 
     runbook_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "recovery", "--runbook"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "recovery", "--runbook"],
         cwd=vault,
         text=True,
         capture_output=True,
     )
 
     assert runbook_result.returncode == 0, runbook_result.stderr or runbook_result.stdout
-    assert "# Vaultwright Recovery Runbook" in runbook_result.stdout
+    assert "# NoeticWeave Recovery Runbook" in runbook_result.stdout
     assert "Read-only; no files were changed." in runbook_result.stdout
     assert "Recovery items needing operator action: 6 (office=5, repo=1, temp=0)" in runbook_result.stdout
     assert "## Source Missing Resolution" in runbook_result.stdout
@@ -4473,7 +4510,7 @@ def test_vaultwright_recovery_reports_manifest_actions(tmp_path: Path) -> None:
     assert "## Verification Gate" in runbook_result.stdout
 
     json_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "recovery", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "recovery", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -4485,7 +4522,7 @@ def test_vaultwright_recovery_reports_manifest_actions(tmp_path: Path) -> None:
     by_id = {item["id"]: item for item in report["items"]}
     assert by_id["src-moved"]["previous_target"] == "_mirrors/40_delivery/registration.md"
     assert by_id["src-moved"]["lifecycle"]["explanation"] == (
-        "Vaultwright found a likely move but will not strand or duplicate generated mirrors automatically."
+        "NoeticWeave found a likely move but will not strand or duplicate generated mirrors automatically."
     )
     assert "Rerun sync after resolving the old mirror path." in by_id["src-moved"]["lifecycle"]["permitted_next_actions"]
     assert by_id["src-moved"]["lifecycle"]["exit_condition"] == (
@@ -4509,7 +4546,7 @@ def test_vaultwright_recovery_reports_manifest_actions(tmp_path: Path) -> None:
     assert by_id[repo_conflict_id]["latest_audit"]["errors"] == ["Target note belongs to another repo_id."]
 
 
-def test_vaultwright_recovery_reports_refresh_and_planned_states(tmp_path: Path) -> None:
+def test_noeticweave_recovery_reports_refresh_and_planned_states(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     sync = load_sync_module()
@@ -4621,7 +4658,7 @@ def test_vaultwright_recovery_reports_refresh_and_planned_states(tmp_path: Path)
     )
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "recovery"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "recovery"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -4647,7 +4684,7 @@ def test_vaultwright_recovery_reports_refresh_and_planned_states(tmp_path: Path)
     assert "Run plan review, then sync to create the repo mirror." in result.stdout
 
     json_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "recovery", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "recovery", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -4667,7 +4704,7 @@ def test_vaultwright_recovery_reports_refresh_and_planned_states(tmp_path: Path)
     assert states[("repo", repo_planned_id)] == "planned"
 
 
-def test_vaultwright_recovery_reports_stale_atomic_temp_files(tmp_path: Path) -> None:
+def test_noeticweave_recovery_reports_stale_atomic_temp_files(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     mirror = vault / "_mirrors" / "40_delivery" / "registration.md"
@@ -4677,7 +4714,7 @@ def test_vaultwright_recovery_reports_stale_atomic_temp_files(tmp_path: Path) ->
     temp.write_text("Interrupted write body\n", encoding="utf-8")
 
     result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "recovery"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "recovery"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -4690,7 +4727,7 @@ def test_vaultwright_recovery_reports_stale_atomic_temp_files(tmp_path: Path) ->
     assert "Rerun status/sync to confirm the canonical generated file is complete" in result.stdout
 
     json_result = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "recovery", "--json"],
+        [sys.executable, str(vault / "tools" / "noeticweave.py"), "recovery", "--json"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -7088,9 +7125,9 @@ def test_office_lifecycle_guidance_explains_review_states() -> None:
 
     assert any("manual_modification (1): Human or external edits may exist inside machine-owned content." in line for line in lines)
     assert any("Next: Inspect content below the generated sentinel." in line for line in lines)
-    assert any("source_missing (2): Vaultwright retains the mirror and manifest record for review instead of deleting evidence." in line for line in lines)
+    assert any("source_missing (2): NoeticWeave retains the mirror and manifest record for review instead of deleting evidence." in line for line in lines)
     assert any("Next: Locate or restore the source." in line for line in lines)
-    assert any("source_moved (1): Vaultwright found a likely move but will not strand or duplicate generated mirrors automatically." in line for line in lines)
+    assert any("source_moved (1): NoeticWeave found a likely move but will not strand or duplicate generated mirrors automatically." in line for line in lines)
     assert not any(line.startswith("clean") for line in lines)
 
 
@@ -7863,7 +7900,7 @@ def test_repo_sync_marks_manifest_record_unconfigured_when_config_entry_removed(
     )
 
     assert runbook.returncode == 0, runbook.stderr or runbook.stdout
-    assert "# Vaultwright Recovery Runbook" in runbook.stdout
+    assert "# NoeticWeave Recovery Runbook" in runbook.stdout
     assert "Repo config queue: 1" in runbook.stdout
     assert f"- [ ] `{record['repo_id']}`: restore config or retire `80_sources/repos/fixture.md`" in runbook.stdout
     assert "Repo identity: `local/fixture`" in runbook.stdout

@@ -7,13 +7,13 @@ import shutil
 
 import yaml
 
-from vaultwright.changes.fingerprint import MetadataFingerprint
-from vaultwright.changes.materialize import (
+from noeticweave.changes.fingerprint import MetadataFingerprint
+from noeticweave.changes.materialize import (
     MaterializationError,
     materialize_office_delete,
     materialize_office_source,
 )
-from vaultwright.mirrors import office as office_sync
+from noeticweave.mirrors import office as office_sync
 
 
 ROOT = Path(__file__).resolve().parents[1]

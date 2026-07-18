@@ -1,4 +1,4 @@
-# Vaultwright lint configuration.
+# NoeticWeave lint configuration.
 # Tune these only in copied pilot vaults after reviewing real overlap warnings.
 overlap:
   min_shared_terms: 18

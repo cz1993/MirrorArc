@@ -32,6 +32,8 @@ private/
 *.log
 
 # local scratch vaults
+/.noeticweave/
+# Legacy local state during the NoeticWeave rename transition.
 /.vaultwright/
 /.obsidian/
 /examples/local-*-vault/
