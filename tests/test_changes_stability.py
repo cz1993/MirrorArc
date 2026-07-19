@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from noeticweave.changes.fingerprint import MetadataFingerprint
-from noeticweave.changes.stability import StabilityError, wait_for_file_stability
+from mirrorarc.changes.fingerprint import MetadataFingerprint
+from mirrorarc.changes.stability import StabilityError, wait_for_file_stability
 
 
 class FakeClock:

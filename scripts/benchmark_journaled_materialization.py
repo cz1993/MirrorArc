@@ -20,8 +20,8 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from noeticweave.changes import feed, watch  # noqa: E402
-from noeticweave.mirrors import office as office_sync  # noqa: E402
+from mirrorarc.changes import feed, watch  # noqa: E402
+from mirrorarc.mirrors import office as office_sync  # noqa: E402
 
 
 FOLDERS = ("40_delivery", "50_operations", "60_finance", "80_sources")
@@ -130,7 +130,7 @@ def seed_baseline(root: Path, count: int) -> list[str]:
 def run_benchmark(source_count: int) -> dict[str, Any]:
     if source_count < 10:
         raise ValueError("source_count must be at least 10")
-    with tempfile.TemporaryDirectory(prefix="noeticweave-journal-bench-") as temp:
+    with tempfile.TemporaryDirectory(prefix="mirrorarc-journal-bench-") as temp:
         root = (Path(temp) / "vault").resolve()
         root.mkdir()
         sources = seed_baseline(root, source_count)

@@ -51,15 +51,15 @@ def test_no_data_scan_flags_openai_project_key(tmp_path: Path) -> None:
 
 
 def test_no_data_scan_flags_generated_python_package_artifacts(tmp_path: Path) -> None:
-    artifact = tmp_path / "src" / "noeticweave.egg-info" / "PKG-INFO"
+    artifact = tmp_path / "src" / "mirrorarc.egg-info" / "PKG-INFO"
     artifact.parent.mkdir(parents=True)
-    artifact.write_text("Metadata-Version: 2.1\nName: noeticweave\n", encoding="utf-8")
+    artifact.write_text("Metadata-Version: 2.1\nName: mirrorarc\n", encoding="utf-8")
 
     result = run_scan(artifact)
 
     assert result.returncode == 1
     assert "generated/vendor directory must not be committed" in result.stderr
-    assert "noeticweave.egg-info" in result.stderr
+    assert "mirrorarc.egg-info" in result.stderr
 
 
 def test_no_data_scan_flags_data_file_outside_allowed_dirs(tmp_path: Path) -> None:
@@ -91,7 +91,7 @@ def test_no_data_scan_flags_renamed_agent_readiness_result_pack_shape(tmp_path: 
         "corpus: fixture\n"
         "results:\n"
         "  - task_id: answer-1\n"
-        "    mode: noeticweave_markdown\n"
+        "    mode: mirrorarc_markdown\n"
         "    score: 2\n",
         encoding="utf-8",
     )
@@ -147,7 +147,7 @@ def test_no_data_scan_flags_private_agent_readiness_task_packs(tmp_path: Path) -
     path.write_text(
         "schema_version: 1\n"
         "corpus: private-client\n"
-        "comparison_modes: [raw_source_folder, plain_markitdown_dump, noeticweave_markdown]\n"
+        "comparison_modes: [raw_source_folder, plain_markitdown_dump, mirrorarc_markdown]\n"
         "scoring:\n"
         "  scale: \"0-2\"\n"
         "tasks:\n"
@@ -350,12 +350,12 @@ def test_no_data_scan_default_includes_ignored_paths(tmp_path: Path) -> None:
     assert "generated/vendor directory" in result.stderr
 
 
-def test_no_data_scan_default_skips_ignored_noeticweave_state(tmp_path: Path) -> None:
+def test_no_data_scan_default_skips_ignored_mirrorarc_state(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()
     subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
-    (repo / ".gitignore").write_text(".noeticweave/\n", encoding="utf-8")
-    state = repo / ".noeticweave" / "state.sqlite"
+    (repo / ".gitignore").write_text(".mirrorarc/\n", encoding="utf-8")
+    state = repo / ".mirrorarc" / "state.sqlite"
     state.parent.mkdir()
     state.write_bytes(b"SQLite format 3\0synthetic local state")
 
@@ -390,15 +390,15 @@ def test_no_data_scan_default_skips_ignored_legacy_state(tmp_path: Path) -> None
     assert "OK" in result.stdout
 
 
-def test_no_data_scan_blocks_staged_noeticweave_state(tmp_path: Path) -> None:
+def test_no_data_scan_blocks_staged_mirrorarc_state(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()
     subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
-    (repo / ".gitignore").write_text(".noeticweave/\n", encoding="utf-8")
-    state = repo / ".noeticweave" / "state.sqlite"
+    (repo / ".gitignore").write_text(".mirrorarc/\n", encoding="utf-8")
+    state = repo / ".mirrorarc" / "state.sqlite"
     state.parent.mkdir()
     state.write_bytes(b"SQLite format 3\0synthetic local state")
-    subprocess.run(["git", "add", "-f", ".noeticweave/state.sqlite"], cwd=repo, check=True)
+    subprocess.run(["git", "add", "-f", ".mirrorarc/state.sqlite"], cwd=repo, check=True)
 
     result = subprocess.run(
         [sys.executable, str(SCAN), "--staged"],
@@ -408,7 +408,7 @@ def test_no_data_scan_blocks_staged_noeticweave_state(tmp_path: Path) -> None:
     )
 
     assert result.returncode == 1
-    assert ".noeticweave/state.sqlite" in result.stderr
+    assert ".mirrorarc/state.sqlite" in result.stderr
     assert "local derived state must not be committed" in result.stderr
 
 
@@ -434,15 +434,15 @@ def test_no_data_scan_blocks_staged_legacy_state(tmp_path: Path) -> None:
     assert "local derived state must not be committed" in result.stderr
 
 
-def test_no_data_scan_default_blocks_tracked_noeticweave_state(tmp_path: Path) -> None:
+def test_no_data_scan_default_blocks_tracked_mirrorarc_state(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()
     subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
-    (repo / ".gitignore").write_text(".noeticweave/\n", encoding="utf-8")
-    state = repo / ".noeticweave" / "state.sqlite"
+    (repo / ".gitignore").write_text(".mirrorarc/\n", encoding="utf-8")
+    state = repo / ".mirrorarc" / "state.sqlite"
     state.parent.mkdir()
     state.write_bytes(b"SQLite format 3\0synthetic local state")
-    subprocess.run(["git", "add", "-f", ".noeticweave/state.sqlite"], cwd=repo, check=True)
+    subprocess.run(["git", "add", "-f", ".mirrorarc/state.sqlite"], cwd=repo, check=True)
 
     result = subprocess.run(
         [sys.executable, str(SCAN)],
@@ -452,7 +452,7 @@ def test_no_data_scan_default_blocks_tracked_noeticweave_state(tmp_path: Path) -
     )
 
     assert result.returncode == 1
-    assert ".noeticweave/state.sqlite" in result.stderr
+    assert ".mirrorarc/state.sqlite" in result.stderr
     assert "local derived state must not be committed" in result.stderr
 
 
@@ -505,7 +505,7 @@ def test_no_data_scan_flags_secret_in_ooxml_body(tmp_path: Path) -> None:
         "<?xml version='1.0' encoding='UTF-8'?>"
         "<cp:coreProperties xmlns:cp='http://schemas.openxmlformats.org/package/2006/metadata/core-properties' "
         "xmlns:dc='http://purl.org/dc/elements/1.1/'>"
-        "<dc:creator>NoeticWeave Example</dc:creator>"
+        "<dc:creator>MirrorArc Example</dc:creator>"
         "</cp:coreProperties>"
     )
     document = (
@@ -530,7 +530,7 @@ def test_no_data_scan_flags_secret_in_ooxml_header(tmp_path: Path) -> None:
         "<?xml version='1.0' encoding='UTF-8'?>"
         "<cp:coreProperties xmlns:cp='http://schemas.openxmlformats.org/package/2006/metadata/core-properties' "
         "xmlns:dc='http://purl.org/dc/elements/1.1/'>"
-        "<dc:creator>NoeticWeave Example</dc:creator>"
+        "<dc:creator>MirrorArc Example</dc:creator>"
         "</cp:coreProperties>"
     )
     header_xml = (

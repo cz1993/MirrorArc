@@ -28,16 +28,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip build
           python -m build
-          python -m pip wheel . --no-deps -w /tmp/noeticweave-wheelhouse
+          python -m pip wheel . --no-deps -w /tmp/mirrorarc-wheelhouse
       - name: Verify wheel install
         run: |
-          python -m venv "$RUNNER_TEMP/noeticweave-release-venv"
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/python" -m pip install dist/noeticweave-*.whl
-          tmp_vault="$RUNNER_TEMP/noeticweave-release-vault"
-          mkdir -p "$RUNNER_TEMP/noeticweave-release-original-documents"
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" init "$tmp_vault"
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/vaultwright" --version
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/python" -c 'import noeticweave, vaultwright; assert noeticweave.__version__ == vaultwright.__version__'
+          python -m venv "$RUNNER_TEMP/mirrorarc-release-venv"
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/python" -m pip install dist/mirrorarc-*.whl
+          tmp_vault="$RUNNER_TEMP/mirrorarc-release-vault"
+          mkdir -p "$RUNNER_TEMP/mirrorarc-release-original-documents"
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" init "$tmp_vault"
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/vaultwright" --version
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/python" -c 'import mirrorarc, vaultwright; assert mirrorarc.__version__ == vaultwright.__version__'
           test -f "$tmp_vault/CLAUDE.md"
           test -f "$tmp_vault/tools/catalog_report.py"
           test -f "$tmp_vault/tools/conversion_report.py"
@@ -45,25 +45,25 @@ jobs:
           test -f "$tmp_vault/tools/overlap_report.py"
           test -f "$tmp_vault/tools/review_ledger.py"
           test -f "$tmp_vault/tools/sandbox_report.py"
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" profile diff 0.1.0
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" profile migrate --plan
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" profile migrate --write --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" profile views --check
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" migrate annotations --plan
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" doctor
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" doctor --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" lint
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" plan
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" sync
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" sync --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" status
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" status --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" sandbox --source-root "$RUNNER_TEMP/noeticweave-release-original-documents" --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" benchmark
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" catalog
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" catalog --check
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" catalog --html
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" catalog --html --check
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" profile diff 0.1.0
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" profile migrate --plan
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" profile migrate --write --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" profile views --check
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" migrate annotations --plan
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" doctor
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" doctor --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" lint
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" plan
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" sync
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" sync --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" status
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" status --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" sandbox --source-root "$RUNNER_TEMP/mirrorarc-release-original-documents" --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" benchmark
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" catalog
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" catalog --check
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" catalog --html
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" catalog --html --check
           python -c 'import json, pathlib, sys; root = pathlib.Path(sys.argv[1]); (root / "40_delivery").mkdir(exist_ok=True); (root / "_mirrors" / "40_delivery").mkdir(parents=True, exist_ok=True); (root / "40_delivery" / "release-smoke.docx").write_bytes(b"synthetic release smoke source"); (root / "_mirrors" / "40_delivery" / "release-smoke.md").write_text("---\ntitle: Release Smoke\n---\n# Release Smoke\n", encoding="utf-8"); (root / "_meta" / "source-manifest.json").write_text(json.dumps({"version": 1, "records": [{"source_id": "release-smoke-source", "current_source_path": "40_delivery/release-smoke.docx", "mirror_path": "_mirrors/40_delivery/release-smoke.md", "source_format": "docx", "source_size": 30, "lifecycle_state": "clean", "warnings": [], "errors": []}]}), encoding="utf-8")' "$tmp_vault"
           python - "$tmp_vault" <<'PY'
           import pathlib
@@ -72,7 +72,7 @@ jobs:
           root = pathlib.Path(sys.argv[1])
           task_pack = """schema_version: 1
           corpus: release-wheel-smoke
-          comparison_modes: [raw_source_folder, document_chat_transcript, noeticweave_markdown]
+          comparison_modes: [raw_source_folder, document_chat_transcript, mirrorarc_markdown]
           scoring:
             scale: 0-2
           tasks:
@@ -116,7 +116,7 @@ jobs:
           corpus: release-wheel-smoke
           results:
             - task_id: smoke-answer
-              mode: noeticweave_markdown
+              mode: mirrorarc_markdown
               score: 2
               reviewer_corrections: 0
               cited_source_paths: [40_delivery/release-smoke.docx]
@@ -128,28 +128,28 @@ jobs:
           (root / "_meta" / "agent-readiness-tasks.yml").write_text(task_pack, encoding="utf-8")
           (root / "_meta" / "agent-readiness-results.yml").write_text(result_pack, encoding="utf-8")
           PY
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" benchmark --results _meta/agent-readiness-results.yml --require-citations --require-prompt-safety --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" conversion --guide --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" conversion --init-results
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" benchmark --results _meta/agent-readiness-results.yml --require-citations --require-prompt-safety --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" conversion --guide --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" conversion --init-results
           python -c 'import pathlib, sys; root = pathlib.Path(sys.argv[1]); (root / "_meta" / "conversion-quality-results.yml").write_text("schema_version: 1\ncorpus: release-wheel-smoke\nreviews:\n- source_id: release-smoke-source\n  source_format: docx\n  priority: low\n  status: pass\n  score: 2\n  reviewer_corrections: 0\n  checked_source: true\n  checked_mirror: true\n  checked_links: true\n  issue_codes: []\n", encoding="utf-8")' "$tmp_vault"
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" conversion --results _meta/conversion-quality-results.yml --require-reviewed --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" overlap --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" overlap --worksheet
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" m365 --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" review --artifact CATALOG.html --status approved --reviewer Release --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" review --check
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" migration --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" migration --worksheet
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" migration --runbook
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" migration --normalize-frontmatter-domains --worksheet
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" pilot --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" pilot --worksheet
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" recovery --json
-          "$RUNNER_TEMP/noeticweave-release-venv/bin/noeticweave" --root "$tmp_vault" recovery --worksheet
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" conversion --results _meta/conversion-quality-results.yml --require-reviewed --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" overlap --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" overlap --worksheet
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" m365 --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" review --artifact CATALOG.html --status approved --reviewer Release --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" review --check
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" migration --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" migration --worksheet
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" migration --runbook
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" migration --normalize-frontmatter-domains --worksheet
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" pilot --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" pilot --worksheet
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" recovery --json
+          "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" --root "$tmp_vault" recovery --worksheet
       - name: Upload workflow artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: noeticweave-dist-${{ github.ref_name }}
+          name: mirrorarc-dist-${{ github.ref_name }}
           path: dist/*
           if-no-files-found: error
 
@@ -162,7 +162,7 @@ jobs:
       - name: Download workflow artifacts
         uses: actions/download-artifact@v8
         with:
-          name: noeticweave-dist-${{ github.ref_name }}
+          name: mirrorarc-dist-${{ github.ref_name }}
           path: dist
       - name: Create draft GitHub release
         env:

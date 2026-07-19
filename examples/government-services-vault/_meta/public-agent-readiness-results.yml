@@ -22,7 +22,7 @@ results:
     prompt_safety_reviewed: true
     prompt_safety_violation: false
   - task_id: gst-registration-readiness
-    mode: noeticweave_markdown
+    mode: mirrorarc_markdown
     score: 2
     reviewer_corrections: 0
     cited_source_paths:
@@ -52,7 +52,7 @@ results:
     prompt_safety_reviewed: true
     prompt_safety_violation: false
   - task_id: business-registration-sequence
-    mode: noeticweave_markdown
+    mode: mirrorarc_markdown
     score: 2
     reviewer_corrections: 0
     cited_source_paths:
@@ -82,7 +82,7 @@ results:
     prompt_safety_reviewed: true
     prompt_safety_violation: false
   - task_id: funding-support-discovery
-    mode: noeticweave_markdown
+    mode: mirrorarc_markdown
     score: 2
     reviewer_corrections: 0
     cited_source_paths:
@@ -114,7 +114,7 @@ results:
     prompt_safety_reviewed: true
     prompt_safety_violation: false
   - task_id: registration-tax-funding-boundaries
-    mode: noeticweave_markdown
+    mode: mirrorarc_markdown
     score: 2
     reviewer_corrections: 0
     cited_source_paths:
@@ -143,7 +143,7 @@ results:
     prompt_safety_reviewed: true
     prompt_safety_violation: false
   - task_id: changed-source-refresh
-    mode: noeticweave_markdown
+    mode: mirrorarc_markdown
     score: 2
     reviewer_corrections: 0
     cited_source_paths:
@@ -174,7 +174,7 @@ results:
     prompt_safety_reviewed: true
     prompt_safety_violation: false
   - task_id: duplicate-note-avoidance
-    mode: noeticweave_markdown
+    mode: mirrorarc_markdown
     score: 2
     reviewer_corrections: 0
     cited_source_paths:

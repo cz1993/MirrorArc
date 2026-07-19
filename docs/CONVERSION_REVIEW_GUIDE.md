@@ -1,20 +1,20 @@
 # Conversion Review Guide
 
-NoeticWeave mirrors make source collections easier to inspect, search, link, and hand to agents.
+MirrorArc mirrors make source collections easier to inspect, search, link, and hand to agents.
 They do not replace the original source files. This guide defines the operator review loop for
 conversion quality before mirrors are used for source-backed conclusions or durable curated notes.
 
 Run it from a copied, permission-cleared vault:
 
 ```bash
-python3.11 tools/noeticweave.py sandbox --source-root /path/to/original-documents
-python3.11 tools/noeticweave.py status
-python3.11 tools/noeticweave.py recovery
-python3.11 tools/noeticweave.py conversion --guide
-python3.11 tools/noeticweave.py conversion --init-results
-python3.11 tools/noeticweave.py conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
-python3.11 tools/noeticweave.py conversion --guide --json
-python3.11 tools/noeticweave.py review --artifact <generated-artifact> --status approved --reviewer <name>
+python3.11 tools/mirrorarc.py sandbox --source-root /path/to/original-documents
+python3.11 tools/mirrorarc.py status
+python3.11 tools/mirrorarc.py recovery
+python3.11 tools/mirrorarc.py conversion --guide
+python3.11 tools/mirrorarc.py conversion --init-results
+python3.11 tools/mirrorarc.py conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
+python3.11 tools/mirrorarc.py conversion --guide --json
+python3.11 tools/mirrorarc.py review --artifact <generated-artifact> --status approved --reviewer <name>
 ```
 
 `sandbox`, `conversion --guide`, and `conversion --results ...` are read-only. `sandbox` verifies
@@ -28,9 +28,9 @@ None of these commands may print source text, mirror text, source paths, or docu
 
 ## Review Order
 
-1. Confirm `noeticweave status` does not report unexplained stale, moved, conflicted, missing, or
+1. Confirm `mirrorarc status` does not report unexplained stale, moved, conflicted, missing, or
    manual-modification states.
-2. Resolve `noeticweave recovery` items before trusting generated mirrors.
+2. Resolve `mirrorarc recovery` items before trusting generated mirrors.
 3. Review all high-priority conversion items.
 4. Spot-check all medium-priority items that will support a decision, quote, answer, or curated
    note.
@@ -38,8 +38,8 @@ None of these commands may print source text, mirror text, source paths, or docu
 6. Fill `_meta/conversion-quality-results.yml` with metadata-only statuses, 0-2 scores, correction
    counts, booleans, and controlled issue codes.
 7. After the scaffold is filled, validate the result pack with
-   `noeticweave conversion --results _meta/conversion-quality-results.yml --require-reviewed`.
-8. Record artifact-level review decisions with `noeticweave review`, then record aggregate defects
+   `mirrorarc conversion --results _meta/conversion-quality-results.yml --require-reviewed`.
+8. Record artifact-level review decisions with `mirrorarc review`, then record aggregate defects
    and manual corrections in the pilot worksheet.
 
 ## Priority Meaning
@@ -105,8 +105,8 @@ In `docs/PILOT_WORKSHEET.md` or a private engagement worksheet, record aggregate
 - conversion defects by format;
 - manual corrections made;
 - source files verified unchanged;
-- current approval and stale-review counts from `noeticweave review --json`;
+- current approval and stale-review counts from `mirrorarc review --json`;
 - whether the second sync remained idempotent.
 
 Do not paste source text, mirror text, personal data, protected identifiers, secrets, or private
-benchmark answers into the public NoeticWeave repository.
+benchmark answers into the public MirrorArc repository.

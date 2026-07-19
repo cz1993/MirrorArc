@@ -31,7 +31,7 @@ SKIP_DIRS = {
     "venv",
 }
 
-LOCAL_DERIVED_STATE_DIRS = {".noeticweave", ".vaultwright"}
+LOCAL_DERIVED_STATE_DIRS = {".mirrorarc", ".vaultwright"}
 
 HIGH_RISK_NAME_PATTERNS = [
     re.compile(p, re.IGNORECASE)
@@ -121,8 +121,8 @@ PROVENANCE_FILES = (
 )
 ALLOWED_OFFICE_METADATA = {
     "",
-    "NoeticWeave",
-    "NoeticWeave Example",
+    "MirrorArc",
+    "MirrorArc Example",
     "Northwind Robotics",
 }
 IDENTITY_METADATA_FIELDS = {

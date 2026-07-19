@@ -8,7 +8,7 @@ import sys
 
 import yaml
 
-from noeticweave.annotation_migration import annotation_migration_plan, write_annotation_sidecars
+from mirrorarc.annotation_migration import annotation_migration_plan, write_annotation_sidecars
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -110,7 +110,7 @@ def test_template_linter_skips_generated_meta_markdown_reports(tmp_path: Path) -
     vault = tmp_path / "vault"
     shutil.copytree(ROOT / "template", vault)
     report = vault / "_meta" / "migration-review-worksheet.md"
-    report.write_text("# NoeticWeave Migration Review Worksheet\n", encoding="utf-8")
+    report.write_text("# MirrorArc Migration Review Worksheet\n", encoding="utf-8")
 
     result = subprocess.run(
         [sys.executable, str(vault / "tools" / "lint_vault.py")],
@@ -756,7 +756,7 @@ def test_template_linter_blocks_unmigrated_source_mirror_annotations(tmp_path: P
 
     assert result.returncode == 1
     assert "Mirror annotations needing migration: 1" in result.stdout
-    assert "above-sentinel annotations need sidecar migration; run noeticweave migrate annotations --write" in result.stdout
+    assert "above-sentinel annotations need sidecar migration; run mirrorarc migrate annotations --write" in result.stdout
     assert "Human migration note" not in result.stdout
 
 
@@ -1272,7 +1272,7 @@ def test_template_linter_blocks_stale_source_mirror_when_source_hash_changed(tmp
 
     assert result.returncode == 1
     assert "Stale Office mirrors: 1" in result.stdout
-    assert "_mirrors/40_delivery/brief.md  [source hash changed; run noeticweave sync before relying on mirror]" in result.stdout
+    assert "_mirrors/40_delivery/brief.md  [source hash changed; run mirrorarc sync before relying on mirror]" in result.stdout
 
 
 def test_template_linter_blocks_source_mirror_with_noncurrent_manifest_state(tmp_path: Path) -> None:
@@ -1312,7 +1312,7 @@ def test_template_linter_blocks_source_mirror_with_noncurrent_manifest_state(tmp
 
     assert result.returncode == 1
     assert "Stale Office mirrors: 1" in result.stdout
-    assert "source-manifest lifecycle_state=source_changed; run noeticweave sync/status before relying on mirror" in result.stdout
+    assert "source-manifest lifecycle_state=source_changed; run mirrorarc sync/status before relying on mirror" in result.stdout
 
 
 def test_template_linter_blocks_repo_mirror_type_outside_repo_mirror_root(tmp_path: Path) -> None:
@@ -1642,7 +1642,7 @@ def test_template_linter_blocks_configured_repo_identity_mismatch(tmp_path: Path
     assert result.returncode == 1
     assert "Repo config errors: 0" in result.stdout
     assert "Configured repos without a mirror: 1" in result.stdout
-    assert "80_sources/repos/fixture.md  (configured repo mirror repo_id mismatch; run noeticweave sync)" in result.stdout
+    assert "80_sources/repos/fixture.md  (configured repo mirror repo_id mismatch; run mirrorarc sync)" in result.stdout
 
 
 def test_template_linter_blocks_invalid_repo_mirror_config_path(tmp_path: Path) -> None:
@@ -1772,7 +1772,7 @@ def test_template_linter_blocks_repo_mirror_with_noncurrent_manifest_state(tmp_p
 
     assert result.returncode == 1
     assert "Stale repo mirrors: 1" in result.stdout
-    assert "repo-manifest lifecycle_state=repo_changed; run noeticweave sync/status before relying on mirror" in result.stdout
+    assert "repo-manifest lifecycle_state=repo_changed; run mirrorarc sync/status before relying on mirror" in result.stdout
 
 
 def test_template_linter_blocks_unconfigured_repo_manifest_record(tmp_path: Path) -> None:
@@ -1882,7 +1882,7 @@ def test_template_linter_blocks_repo_mirror_frontmatter_repo_drift(tmp_path: Pat
 
     assert result.returncode == 1
     assert "Stale repo mirrors: 1" in result.stdout
-    assert "repo frontmatter repo differs from repo manifest; run noeticweave sync before relying on mirror" in result.stdout
+    assert "repo frontmatter repo differs from repo manifest; run mirrorarc sync before relying on mirror" in result.stdout
 
 
 def test_template_linter_accepts_resolved_repo_identity_for_aliased_repo(tmp_path: Path) -> None:
@@ -1993,7 +1993,7 @@ def test_template_linter_blocks_local_repo_mirror_when_tree_changed(tmp_path: Pa
 
     assert result.returncode == 1
     assert "Stale repo mirrors: 1" in result.stdout
-    assert "80_sources/repos/fixture.md  [local repo tree changed; run noeticweave sync before relying on mirror]" in result.stdout
+    assert "80_sources/repos/fixture.md  [local repo tree changed; run mirrorarc sync before relying on mirror]" in result.stdout
 
 
 def test_template_linter_reports_overlap_candidates_as_warning_only(tmp_path: Path) -> None:

@@ -21,7 +21,7 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "template"
-MODES = ("raw_source_folder", "plain_markitdown_dump", "noeticweave_markdown")
+MODES = ("raw_source_folder", "plain_markitdown_dump", "mirrorarc_markdown")
 DOMAINS = (
     ("20_market", "market", "market-entry"),
     ("30_customers", "customers", "account-discovery"),
@@ -46,7 +46,7 @@ REVIEWED_SCORE_MATRIX = {
         "audit": (1, 1),
         "consolidate": (0, 3),
     },
-    "noeticweave_markdown": {
+    "mirrorarc_markdown": {
         "answer": (2, 0),
         "reconcile": (2, 0),
         "update": (2, 0),
@@ -69,7 +69,7 @@ def protected_targets() -> set[Path]:
 def safe_target(path: Path) -> Path:
     target = path.expanduser().resolve()
     if target == ROOT or ROOT in target.parents:
-        raise ValueError("target must be outside the NoeticWeave source checkout")
+        raise ValueError("target must be outside the MirrorArc source checkout")
     if target in protected_targets():
         raise ValueError(f"target is too broad to replace safely: {target}")
     if len(target.parts) < 3:
@@ -200,7 +200,7 @@ def write_plain_dump(target: Path, source: str, index: int) -> str:
             "",
             *source_paragraphs(index),
             "",
-            "No NoeticWeave manifest identity, lifecycle state, or curated hub context is attached.",
+            "No MirrorArc manifest identity, lifecycle state, or curated hub context is attached.",
         ]
     )
     path.write_text(text + "\n", encoding="utf-8")
@@ -300,7 +300,7 @@ def reviewed_result_pack(tasks: list[dict]) -> dict:
                 "reviewer_corrections": corrections,
                 "elapsed_seconds": None,
                 "cited_source_paths": sources[:1] if score > 0 else [],
-                "cited_generated_mirror_paths": mirrors[:1] if score > 0 and mode == "noeticweave_markdown" else [],
+                "cited_generated_mirror_paths": mirrors[:1] if score > 0 and mode == "mirrorarc_markdown" else [],
                 "privacy_or_provenance_violation": False,
                 "prompt_safety_reviewed": True,
                 "prompt_safety_violation": False,
@@ -331,9 +331,9 @@ workspace.
 ## Commands
 
 ```bash
-noeticweave --root {quoted_target} sync
-noeticweave --root {quoted_target} benchmark --require-generated
-noeticweave --root {quoted_target} benchmark --worksheet > {quoted_target}/_benchmark/agent-readiness-worksheet.md
+mirrorarc --root {quoted_target} sync
+mirrorarc --root {quoted_target} benchmark --require-generated
+mirrorarc --root {quoted_target} benchmark --worksheet > {quoted_target}/_benchmark/agent-readiness-worksheet.md
 ```
 
 After the same agent answers each task in each mode, copy
@@ -341,7 +341,7 @@ After the same agent answers each task in each mode, copy
 scores, and validate it with:
 
 ```bash
-noeticweave --root {quoted_target} benchmark \\
+mirrorarc --root {quoted_target} benchmark \\
   --results _benchmark/agent-readiness-results-scaffold.yml \\
   --require-results \\
   --require-citations \\
@@ -447,7 +447,7 @@ def main(argv: list[str] | None = None) -> int:
                   curated: {summary['curated_files']}
                   plain dump: {summary['plain_dump_files']}
                   tasks: {summary['tasks']} across {len(summary['comparison_modes'])} modes{reviewed_line}
-                  next: noeticweave --root {summary['target']} sync
+                  next: mirrorarc --root {summary['target']} sync
                 """
             ).strip()
         )

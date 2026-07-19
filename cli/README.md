@@ -1,36 +1,36 @@
-# NoeticWeave CLI
+# MirrorArc CLI
 
-The vault-local wrapper exists today as `template/tools/noeticweave.py` and is copied into new
+The vault-local wrapper exists today as `template/tools/mirrorarc.py` and is copied into new
 vaults. The source-installable console entry point is defined in `pyproject.toml` as
-`noeticweave = noeticweave.cli:main`.
+`mirrorarc = mirrorarc.cli:main`.
 
 Current wrapper commands:
 
 | Command | Does |
 | --- | --- |
-| `python3.11 tools/noeticweave.py init <dir>` | scaffold a vault when run from the repo checkout |
-| `python3.11 tools/noeticweave.py plan` | inventory source files and proposed mirror actions without writing |
-| `python3.11 tools/noeticweave.py sync` | run the Office + GitHub repo mirror syncs |
-| `python3.11 tools/noeticweave.py status` | report manifest-backed clean, stale, missing, conflicted, and unsupported states |
-| `python3.11 tools/noeticweave.py recovery` | print a read-only recovery checklist from source/repo manifests |
-| `python3.11 tools/noeticweave.py lint` | run the vault health check |
-| `python3.11 tools/noeticweave.py benchmark` | validate `_meta/agent-readiness-tasks.yml`; add `--require-generated` after sync |
-| `python3.11 tools/noeticweave.py doctor` | read-only preflight for required files/tools, Python dependencies, manifest lifecycle counts, sync audit presence, git backup posture, and GitHub auth posture |
+| `python3.11 tools/mirrorarc.py init <dir>` | scaffold a vault when run from the repo checkout |
+| `python3.11 tools/mirrorarc.py plan` | inventory source files and proposed mirror actions without writing |
+| `python3.11 tools/mirrorarc.py sync` | run the Office + GitHub repo mirror syncs |
+| `python3.11 tools/mirrorarc.py status` | report manifest-backed clean, stale, missing, conflicted, and unsupported states |
+| `python3.11 tools/mirrorarc.py recovery` | print a read-only recovery checklist from source/repo manifests |
+| `python3.11 tools/mirrorarc.py lint` | run the vault health check |
+| `python3.11 tools/mirrorarc.py benchmark` | validate `_meta/agent-readiness-tasks.yml`; add `--require-generated` after sync |
+| `python3.11 tools/mirrorarc.py doctor` | read-only preflight for required files/tools, Python dependencies, manifest lifecycle counts, sync audit presence, git backup posture, and GitHub auth posture |
 
 Use `--root <vault-dir>` before the subcommand to operate on another vault that has its own
-`tools/` directory, for example `python3.11 tools/noeticweave.py --root ~/client-vault plan`.
+`tools/` directory, for example `python3.11 tools/mirrorarc.py --root ~/client-vault plan`.
 
 For source/development installs:
 
 ```bash
 python3.11 -m pip install -e .
-noeticweave --root ~/client-vault plan
-noeticweave --root ~/client-vault benchmark
-noeticweave --root ~/client-vault recovery
-noeticweave init ~/new-vault
+mirrorarc --root ~/client-vault plan
+mirrorarc --root ~/client-vault benchmark
+mirrorarc --root ~/client-vault recovery
+mirrorarc init ~/new-vault
 ```
 
-`noeticweave init` copies the packaged template. Set `NOETICWEAVE_REPO` only when you intentionally
+`mirrorarc init` copies the packaged template. Set `MIRRORARC_REPO` only when you intentionally
 want to scaffold from a specific source checkout template instead.
 
 Design notes:

@@ -50,12 +50,12 @@ Before the participant is on the call, confirm the installed command is the one 
 use:
 
 ```bash
-command -v noeticweave
-noeticweave --version
-noeticweave profile list
+command -v mirrorarc
+mirrorarc --version
+mirrorarc profile list
 ```
 
-If the installed command is unavailable, either install NoeticWeave with the package-first
+If the installed command is unavailable, either install MirrorArc with the package-first
 `uvx`/`pipx` path from `docs/quickstart.md` or plan to use the copied vault's compatibility wrapper
 explicitly. Do not spend participant time debugging Python packaging.
 
@@ -67,13 +67,13 @@ use the copied vault's compatibility wrapper as described in `docs/PILOT_WORKSHE
 ### 1. Boundary And Readiness
 
 ```bash
-noeticweave --root "$VW" sandbox --source-root "$ORIGINAL_ROOT" \
+mirrorarc --root "$VW" sandbox --source-root "$ORIGINAL_ROOT" \
   > "$PRIVATE_EVIDENCE/01_sandbox.txt"
-noeticweave --root "$VW" doctor --json \
+mirrorarc --root "$VW" doctor --json \
   > "$PRIVATE_EVIDENCE/02_doctor.json"
-noeticweave --root "$VW" plan \
+mirrorarc --root "$VW" plan \
   > "$PRIVATE_EVIDENCE/03_plan.txt"
-noeticweave --root "$VW" status --json \
+mirrorarc --root "$VW" status --json \
   > "$PRIVATE_EVIDENCE/04_status_before_sync.json"
 ```
 
@@ -83,13 +83,13 @@ lifecycle, tool, or dependency errors.
 ### 2. First Sync And Front Door
 
 ```bash
-noeticweave --root "$VW" sync --json \
+mirrorarc --root "$VW" sync --json \
   > "$PRIVATE_EVIDENCE/05_sync.json"
-noeticweave --root "$VW" status --json \
+mirrorarc --root "$VW" status --json \
   > "$PRIVATE_EVIDENCE/06_status_after_sync.json"
-noeticweave --root "$VW" catalog \
+mirrorarc --root "$VW" catalog \
   > "$PRIVATE_EVIDENCE/07_catalog.txt"
-noeticweave --root "$VW" catalog --html --stdout \
+mirrorarc --root "$VW" catalog --html --stdout \
   > "$PRIVATE_EVIDENCE/08_catalog.html"
 ```
 
@@ -99,11 +99,11 @@ block the participant's first workflow.
 ### 3. Conversion, Recovery, And Review
 
 ```bash
-noeticweave --root "$VW" conversion --guide \
+mirrorarc --root "$VW" conversion --guide \
   > "$PRIVATE_EVIDENCE/09_conversion_guide.txt"
-noeticweave --root "$VW" recovery --worksheet \
+mirrorarc --root "$VW" recovery --worksheet \
   > "$PRIVATE_EVIDENCE/10_recovery_worksheet.md"
-noeticweave --root "$VW" review --json \
+mirrorarc --root "$VW" review --json \
   > "$PRIVATE_EVIDENCE/11_review.json"
 ```
 
@@ -116,7 +116,7 @@ Create the plain conversion baseline in the copied pilot vault before scoring. T
 `plain_markitdown_dump` comparison mode required by `docs/VALIDATION_GATE.md`:
 
 ```bash
-python3.11 /path/to/noeticweave/scripts/create_plain_markitdown_dump.py \
+python3.11 /path/to/mirrorarc/scripts/create_plain_markitdown_dump.py \
   --root "$VW" \
   --force \
   > "$PRIVATE_EVIDENCE/12_plain_markitdown_dump.txt"
@@ -126,22 +126,22 @@ The dump lives under `$VW/_benchmark/plain_markitdown_dump/`. Treat it as privat
 it may contain source-derived text and private relative paths.
 
 ```bash
-noeticweave --root "$VW" benchmark --init-tasks
-noeticweave --root "$VW" benchmark --worksheet \
+mirrorarc --root "$VW" benchmark --init-tasks
+mirrorarc --root "$VW" benchmark --worksheet \
   > "$PRIVATE_EVIDENCE/13_benchmark_worksheet.md"
-noeticweave --root "$VW" benchmark --init-results
+mirrorarc --root "$VW" benchmark --init-results
 ```
 
 Edit the task and result packs privately. The three comparison modes must remain:
 
 - `raw_source_folder`;
 - `plain_markitdown_dump`;
-- `noeticweave_markdown`.
+- `mirrorarc_markdown`.
 
 Validate the private result pack after scoring:
 
 ```bash
-noeticweave --root "$VW" benchmark \
+mirrorarc --root "$VW" benchmark \
   --results _meta/agent-readiness-results.yml \
   --require-results \
   --require-citations \
@@ -154,11 +154,11 @@ Stop the benchmark claim if scored answers lack citations or prompt-safety revie
 ### 5. Aggregate Private Evidence
 
 ```bash
-noeticweave --root "$VW" pilot --json \
+mirrorarc --root "$VW" pilot --json \
   > "$PRIVATE_EVIDENCE/15_pilot.json"
-noeticweave --root "$VW" pilot --worksheet \
+mirrorarc --root "$VW" pilot --worksheet \
   > "$PRIVATE_EVIDENCE/16_pilot_worksheet.md"
-noeticweave --root "$VW" lint \
+mirrorarc --root "$VW" lint \
   > "$PRIVATE_EVIDENCE/17_lint.txt"
 ```
 
@@ -176,16 +176,16 @@ Before the call ends, choose a small copied-source change that the participant u
 Then ask the participant to run the refresh without hands-on help:
 
 ```bash
-noeticweave --root "$VW" sync --changed --json \
+mirrorarc --root "$VW" sync --changed --json \
   > "$PRIVATE_EVIDENCE/18_second_sync_changed.json"
-noeticweave --root "$VW" status --json \
+mirrorarc --root "$VW" status --json \
   > "$PRIVATE_EVIDENCE/19_status_after_second_sync.json"
 ```
 
 If changed-file sync is not appropriate for the pilot vault, use the full recovery path instead:
 
 ```bash
-noeticweave --root "$VW" sync --full --json \
+mirrorarc --root "$VW" sync --full --json \
   > "$PRIVATE_EVIDENCE/18_second_sync_full.json"
 ```
 

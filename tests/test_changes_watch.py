@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-from noeticweave.changes import feed, journal, watch
+from mirrorarc.changes import feed, journal, watch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,7 +43,7 @@ def run_cli(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     return subprocess.run(
-        [sys.executable, "-m", "noeticweave.cli", "--root", str(root), *args],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(root), *args],
         cwd=ROOT,
         env=env,
         text=True,
@@ -144,4 +144,4 @@ def test_native_watch_without_optional_dependency_explains_install(tmp_path: Pat
     result = run_cli(tmp_path, "watch", "--native", "--cycles", "1", "--flush-interval-seconds", "0.01")
 
     assert result.returncode == 2
-    assert "noeticweave[watch]" in result.stderr
+    assert "mirrorarc[watch]" in result.stderr

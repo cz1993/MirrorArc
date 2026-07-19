@@ -3,7 +3,7 @@
 """Check or refresh repository copies derived from the canonical template.
 
 The root `template/` directory is the source of truth. The packaged template under
-`src/noeticweave/template/` must match it exactly, while example vaults keep their local
+`src/mirrorarc/template/` must match it exactly, while example vaults keep their local
 `tools/repos.yml` but otherwise inherit every file from `template/tools/`.
 """
 from __future__ import annotations
@@ -169,8 +169,8 @@ def sync_example_shared_meta(root: Path, write: bool) -> list[Drift]:
 def sync_template_copies(root: Path, write: bool) -> list[Drift]:
     drifts = sync_exact_tree(
         root / "template",
-        root / "src" / "noeticweave" / "template",
-        "src/noeticweave/template",
+        root / "src" / "mirrorarc" / "template",
+        "src/mirrorarc/template",
         write,
     )
     drifts.extend(sync_example_tools(root, write))
@@ -180,13 +180,13 @@ def sync_template_copies(root: Path, write: bool) -> list[Drift]:
 
 def validate_root(root: Path) -> None:
     if not (root / "template" / "CLAUDE.md").is_file():
-        raise ValueError(f"{root} does not look like the NoeticWeave repository: missing template/CLAUDE.md")
+        raise ValueError(f"{root} does not look like the MirrorArc repository: missing template/CLAUDE.md")
     if not (root / "template" / "tools").is_dir():
-        raise ValueError(f"{root} does not look like the NoeticWeave repository: missing template/tools/")
+        raise ValueError(f"{root} does not look like the MirrorArc repository: missing template/tools/")
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Check or refresh NoeticWeave template-derived copies.")
+    parser = argparse.ArgumentParser(description="Check or refresh MirrorArc template-derived copies.")
     parser.add_argument("--root", type=Path, default=Path.cwd(), help="Repository root. Defaults to cwd.")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--check", action="store_true", help="Fail if copied template files drift. Default.")

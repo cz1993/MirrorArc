@@ -29,11 +29,11 @@ def load_tool_module(filename: str):
 
 
 def load_office_sync_module():
-    return importlib.import_module("noeticweave.mirrors.office")
+    return importlib.import_module("mirrorarc.mirrors.office")
 
 
 def load_repo_sync_module():
-    return importlib.import_module("noeticweave.mirrors.github_repos")
+    return importlib.import_module("mirrorarc.mirrors.github_repos")
 
 
 def load_contract() -> dict:

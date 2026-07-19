@@ -1,6 +1,6 @@
-# NoeticWeave Profile Schema
+# MirrorArc Profile Schema
 
-NoeticWeave profiles are versioned contracts that describe a workspace's domain vocabulary, allowed
+MirrorArc profiles are versioned contracts that describe a workspace's domain vocabulary, allowed
 metadata, starter folders, views, skills, and benchmark hooks. Core runtime code should read this
 contract instead of hard-coding business-specific folders, note types, statuses, or required
 properties.
@@ -8,7 +8,7 @@ properties.
 The current schema is `schema_version: 1`. Packaged v1 profile contracts currently include
 `business-operations`, `research-learning`, `software-project`, and `blank`, each at
 `profile_version: 0.1.0`. All four official profiles can be initialized through the package-owned
-`noeticweave init --profile <id>` flow.
+`mirrorarc init --profile <id>` flow.
 
 ## Contract File
 
@@ -27,10 +27,10 @@ template/_meta/profile.yml
 The other packaged profile contracts live under:
 
 ```text
-src/noeticweave/builtin_profiles/
+src/mirrorarc/builtin_profiles/
 ```
 
-For `research-learning`, `software-project`, and `blank`, `noeticweave init` derives starter
+For `research-learning`, `software-project`, and `blank`, `mirrorarc init` derives starter
 folders, `_meta/domain-map.yml`, `CLAUDE.md`, `INDEX.md`, `RETENTION.md`, and
 `_meta/conventions.md` from the selected profile contract instead of copying the business
 template vocabulary. Only profile-declared note templates and views are included.
@@ -42,18 +42,18 @@ or private corpus to the repository.
 Use these commands to inspect and validate the contract:
 
 ```bash
-noeticweave profile list
-noeticweave profile show business-operations
-noeticweave profile show research-learning
-noeticweave init --profile research-learning <vault>
-noeticweave init --profile software-project <vault>
-noeticweave init --profile blank <vault>
-noeticweave --root <vault> profile validate
-noeticweave --root <vault> profile diff 0.1.0
-noeticweave --root <vault> profile migrate --plan
-noeticweave --root <vault> profile migrate --write
-noeticweave --root <vault> profile views --check
-noeticweave --root <vault> profile views --write
+mirrorarc profile list
+mirrorarc profile show business-operations
+mirrorarc profile show research-learning
+mirrorarc init --profile research-learning <vault>
+mirrorarc init --profile software-project <vault>
+mirrorarc init --profile blank <vault>
+mirrorarc --root <vault> profile validate
+mirrorarc --root <vault> profile diff 0.1.0
+mirrorarc --root <vault> profile migrate --plan
+mirrorarc --root <vault> profile migrate --write
+mirrorarc --root <vault> profile views --check
+mirrorarc --root <vault> profile views --write
 ```
 
 ## Required Fields
@@ -143,7 +143,7 @@ noeticweave --root <vault> profile views --write
   migration. The current profile
   also declares
   `original_sources_authoritative: true` and `real_data_in_repo: false`, which preserve the
-  NoeticWeave policy that source systems remain authoritative and real/private data stays outside
+  MirrorArc policy that source systems remain authoritative and real/private data stays outside
   the repository. `repo_notes_dir`, when present, must be a safe vault-relative folder inside a
   declared profile domain and must not overlap the profile's Office mirror root. `context_aliases`,
   when present, must be a mapping whose keys and targets are distinct optional frontmatter
@@ -151,7 +151,7 @@ noeticweave --root <vault> profile views --write
 
 ## Validation Rules
 
-`noeticweave profile validate` currently enforces:
+`mirrorarc profile validate` currently enforces:
 
 - no unknown top-level fields;
 - all required top-level fields are present;
@@ -193,7 +193,7 @@ noeticweave --root <vault> profile views --write
 - optional `policy_defaults.original_sources_authoritative`, when present, must be `true`.
 - optional `policy_defaults.real_data_in_repo`, when present, must be `false`.
 
-`noeticweave lint`, `noeticweave catalog`, `noeticweave migration`, and `noeticweave overlap` read
+`mirrorarc lint`, `mirrorarc catalog`, `mirrorarc migration`, and `mirrorarc overlap` read
 `_meta/profile.yml` for domain folders. Catalog, Microsoft 365 handoff, and sandbox inventory also
 read profile-defined machine-owned note types so generated Markdown artifacts are reported
 separately from curated Markdown/domain note counts. Overlap calibration also reads `related` plus
@@ -211,7 +211,7 @@ block invalid profile contracts.
 The review ledger accepts profile-defined machine-owned Markdown note types as generated artifacts
 eligible for metadata-only review decisions; it records hashes and frontmatter metadata, not
 artifact bodies.
-`noeticweave benchmark` and the aggregate `noeticweave pilot` evidence report load
+`mirrorarc benchmark` and the aggregate `mirrorarc pilot` evidence report load
 profile-declared `benchmark_tasks` through the same profile contract validator, while an explicit
 `--tasks` argument still takes precedence and the legacy `_meta/agent-readiness-tasks.yml` path
 remains a compatibility fallback. Benchmark task-pack validation, result citation validation, and
@@ -238,11 +238,11 @@ Generic doctor, sandbox, pilot, benchmark, and conversion report copy stays prof
 workspace boundaries, protected identifiers, private evidence, and source-backed conclusions are
 the core terms. Business/client/account wording belongs to the `business-operations` profile data,
 its compatibility aliases, or product-positioning examples rather than the shared runtime.
-`noeticweave doctor` validates `_meta/profile.yml` first; when that profile contract is present and
+`mirrorarc doctor` validates `_meta/profile.yml` first; when that profile contract is present and
 valid, missing `_meta/domain-map.yml` and `_meta/mirror-config.yml` are reported as legacy
-alias/override posture instead of required-file failures. `noeticweave sandbox` uses the same
+alias/override posture instead of required-file failures. `mirrorarc sandbox` uses the same
 profile-first required-file posture: a valid profile makes those legacy alias/config files
-optional, while profile-less legacy vaults keep the older required-file check. `noeticweave lint`
+optional, while profile-less legacy vaults keep the older required-file check. `mirrorarc lint`
 uses the same profile-first domain posture: missing `_meta/domain-map.yml` is a non-blocking
 warning when the active profile provides canonical domain folders, while malformed or
 contradictory domain-map content remains blocking and profile-less legacy vaults keep the older
@@ -261,7 +261,7 @@ mirrors and GitHub repo mirrors use the active profile's context fields when ord
 frontmatter before managed source/repo metadata. Microsoft 365 handoff, sandbox preflight,
 recovery, and review-ledger
 reporting also resolve repo mirror folders from the active profile, while honoring an explicit
-`tools/repos.yml` `settings.notes_dir` override. The `noeticweave migration` command uses
+`tools/repos.yml` `settings.notes_dir` override. The `mirrorarc migration` command uses
 validated `_meta/profile.yml` domains for canonical domain folders and `_meta/domain-map.yml` for
 legacy aliases.
 Migration worksheets, runbooks, and frontmatter-normalization worksheets print the active profile
@@ -272,15 +272,15 @@ domain folders.
 
 ## Profile-Generated Views
 
-`noeticweave profile views --check` is read-only. It loads the current vault profile and fails when
+`mirrorarc profile views --check` is read-only. It loads the current vault profile and fails when
 a supported generated view is missing or stale, or when the profile requests a view path this
-installed NoeticWeave version cannot safely generate.
+installed MirrorArc version cannot safely generate.
 
-`noeticweave doctor` uses the same generated-view plan for preflight reporting. It reports
+`mirrorarc doctor` uses the same generated-view plan for preflight reporting. It reports
 profile-declared view files as current, missing, or stale; older vaults without `_meta/profile.yml`
 fall back to the legacy `Documents.base` presence check.
 
-`noeticweave profile views --write` regenerates supported profile-owned view files. In the current
+`mirrorarc profile views --write` regenerates supported profile-owned view files. In the current
 release, the supported generated view is `Documents.base`. Its tables are derived from the active
 profile's required properties, optional properties, note types, and statuses:
 
@@ -294,7 +294,7 @@ notes.
 
 ## Migration Semantics
 
-`noeticweave profile migrate --plan` is read-only. It reports:
+`mirrorarc profile migrate --plan` is read-only. It reports:
 
 - missing profile contract files;
 - missing shared directories, the target profile's Office mirror root, and `folder_plan`
@@ -304,7 +304,7 @@ notes.
 - existing template/view files that differ from the packaged target;
 - blockers such as target profile ID mismatch.
 
-`noeticweave profile migrate --write` is intentionally conservative. It may:
+`mirrorarc profile migrate --write` is intentionally conservative. It may:
 
 - create missing shared directories, the target profile's Office mirror root, and `folder_plan`
   directories;
@@ -320,11 +320,11 @@ It will not:
 - normalize frontmatter domains;
 - resolve template drift automatically.
 
-Use `noeticweave profile views --write` after reviewing view drift when you want to regenerate the
+Use `mirrorarc profile views --write` after reviewing view drift when you want to regenerate the
 profile-owned `Documents.base` file from the active profile contract.
 
-Use `noeticweave migration --normalize-frontmatter-domains --worksheet` for frontmatter cleanup
-review, and `noeticweave migrate annotations --write` for mirror annotation sidecars. Profile
+Use `mirrorarc migration --normalize-frontmatter-domains --worksheet` for frontmatter cleanup
+review, and `mirrorarc migrate annotations --write` for mirror annotation sidecars. Profile
 migration and annotation migration are separate safety boundaries.
 
 ## Current `business-operations` Shape

@@ -8,8 +8,8 @@
 
 1. Be genuinely open source.
 2. Build on permissive open-source dependencies (markitdown, PyYAML, etc.) without friction.
-3. Ensure people who reuse NoeticWeave **respect the project's IP** (attribution; can't quietly
-   close-source improvements; can't pass a fork off as official "NoeticWeave").
+3. Ensure people who reuse MirrorArc **respect the project's IP** (attribution; can't quietly
+   close-source improvements; can't pass a fork off as official "MirrorArc").
 4. Be able to **charge enterprises** that use it at scale, and offer **consulting / implementation**.
 
 ## The model: AGPL-3.0 open core + commercial dual-license + trademark
@@ -18,7 +18,7 @@
 
 - *Why it fits the goals:* AGPL is OSI-approved open source (goal 1). It is compatible with our
   permissive MIT dependencies — permissive deps impose no obligations on us (goal 2). Its
-  copyleft + the network clause (§13) mean anyone who modifies NoeticWeave — **including running
+  copyleft + the network clause (§13) mean anyone who modifies MirrorArc — **including running
   a modified version as a hosted service** — must release their source under AGPL too (goal 3).
 - *Why it enables revenue (goal 4):* precisely because many companies' policies forbid AGPL in
   their stack or won't open-source their changes, they will prefer to **buy a commercial
@@ -35,9 +35,9 @@ this buyer is.
 (e.g. SSO, multi-vault governance dashboards, hosted sync) in a **separate** repository under a
 commercial license. Don't retro-close anything already shipped as AGPL.
 
-**Trademark.** The *name* "NoeticWeave" and any logo are protected separately from the code — see
+**Trademark.** The *name* "MirrorArc" and any logo are protected separately from the code — see
 `TRADEMARK.md`. AGPL lets anyone fork the code; trademark stops them from calling their fork
-"NoeticWeave." This is the cleanest mechanism for goal 3 ("respect our IP / no impersonation").
+"MirrorArc." This is the cleanest mechanism for goal 3 ("respect our IP / no impersonation").
 
 **Services.** Consulting, personalization, and implementation are sold independently of the
 license and are compatible with all of the above.
@@ -71,7 +71,7 @@ you want to keep commercial dual-licensing clean. Consider assigning copyright t
 
 - [x] Vendor the full AGPL-3.0 text into `LICENSE`.
 - [ ] Decide CLA vs DCO with counsel; wire up CLA Assistant if CLA.
-- [ ] Obtain counsel-led Canadian/US/international trademark clearance for "NoeticWeave" and
+- [ ] Obtain counsel-led Canadian/US/international trademark clearance for "MirrorArc" and
   register or otherwise secure the mark before launch; the 2026-07-18 exact-name screening in
   ADR 0003 is only a preliminary product/package/domain check.
 - [ ] Draft the commercial license agreement + pricing tiers (what counts as "at scale").

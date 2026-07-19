@@ -1,6 +1,6 @@
 # Information Architecture
 
-NoeticWeave uses a function-based file plan, not a department chart. The top-level folders are a
+MirrorArc uses a function-based file plan, not a department chart. The top-level folders are a
 starter architecture for business records; adapt the subfolders and domain map to the company.
 
 This guidance follows three practical records/intranet architecture patterns:
@@ -62,10 +62,10 @@ Use subfolders and templates to adapt the starter map:
 
 ## Migration From Department Folders
 
-Run `python3.11 tools/noeticweave.py migration` before moving folders. The report is read-only: it
+Run `python3.11 tools/mirrorarc.py migration` before moving folders. The report is read-only: it
 uses `_meta/profile.yml` for canonical domains and folders, uses `_meta/domain-map.yml` only for
 legacy aliases, and prints recommended canonical destinations while unknown folders are flagged for
-human classification. Use `python3.11 tools/noeticweave.py migration --runbook` to print the
+human classification. Use `python3.11 tools/mirrorarc.py migration --runbook` to print the
 active profile context and reviewed execution protocol for legacy folder moves; it is intentionally
 manual and does not move files.
 

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 set -eu
 
-PYTHON="${NOETICWEAVE_PYTHON:-${VAULTWRIGHT_PYTHON:-}}"
+PYTHON="${MIRRORARC_PYTHON:-${VAULTWRIGHT_PYTHON:-}}"
 if [ -z "$PYTHON" ]; then
   if command -v python3.11 >/dev/null 2>&1; then
     PYTHON="python3.11"

@@ -10,10 +10,10 @@ TOOL_DIR = Path(__file__).resolve().parent
 sys.path = [entry for entry in sys.path if Path(entry or ".").resolve() != TOOL_DIR]
 
 try:
-    from noeticweave.mirrors.office import main
+    from mirrorarc.mirrors.office import main
 except ImportError as exc:
     raise SystemExit(
-        "Missing NoeticWeave package runtime. Install NoeticWeave or run with PYTHONPATH pointing "
+        "Missing MirrorArc package runtime. Install MirrorArc or run with PYTHONPATH pointing "
         f"at the source checkout. Import error: {exc}"
     ) from exc
 

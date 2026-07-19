@@ -4,20 +4,20 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_TEMPLATE = ROOT / "template"
-PACKAGE_TEMPLATE = ROOT / "src" / "noeticweave" / "template"
+PACKAGE_TEMPLATE = ROOT / "src" / "mirrorarc" / "template"
 PACKAGE_OWNED_TOOL_MODULES = {
-    "benchmark_tasks.py": ("noeticweave.benchmark", True),
-    "catalog_report.py": ("noeticweave.catalog", True),
-    "conversion_report.py": ("noeticweave.conversion", True),
-    "lint_vault.py": ("noeticweave.lint", False),
-    "m365_report.py": ("noeticweave.m365", True),
-    "migration_report.py": ("noeticweave.migration", True),
-    "overlap_report.py": ("noeticweave.overlap", True),
-    "pilot_report.py": ("noeticweave.pilot", True),
-    "recovery_report.py": ("noeticweave.recovery", True),
-    "review_ledger.py": ("noeticweave.review_ledger", True),
-    "sandbox_report.py": ("noeticweave.sandbox", True),
-    "noeticweave.py": ("noeticweave.cli", False),
+    "benchmark_tasks.py": ("mirrorarc.benchmark", True),
+    "catalog_report.py": ("mirrorarc.catalog", True),
+    "conversion_report.py": ("mirrorarc.conversion", True),
+    "lint_vault.py": ("mirrorarc.lint", False),
+    "m365_report.py": ("mirrorarc.m365", True),
+    "migration_report.py": ("mirrorarc.migration", True),
+    "overlap_report.py": ("mirrorarc.overlap", True),
+    "pilot_report.py": ("mirrorarc.pilot", True),
+    "recovery_report.py": ("mirrorarc.recovery", True),
+    "review_ledger.py": ("mirrorarc.review_ledger", True),
+    "sandbox_report.py": ("mirrorarc.sandbox", True),
+    "mirrorarc.py": ("mirrorarc.cli", False),
 }
 
 
@@ -62,4 +62,4 @@ def test_package_owned_template_tools_are_shims() -> None:
             or f"from {module} import main" in text
         )
         assert imports_package_main
-        assert "Missing NoeticWeave package runtime" in text
+        assert "Missing MirrorArc package runtime" in text

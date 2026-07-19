@@ -15,7 +15,7 @@ try:
 except ImportError:
     sys.exit("Missing dependency: pip install 'markitdown[docx,pptx,xlsx,pdf]'")
 
-from noeticweave.mirrors import office as office_sync
+from mirrorarc.mirrors import office as office_sync
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -94,7 +94,7 @@ def render_dump(source_rel: Path, source_format: str, text: str) -> str:
             "",
             f"Source: `{source_rel.as_posix()}`",
             "",
-            "> Baseline-only conversion. No NoeticWeave manifest identity, lifecycle state,",
+            "> Baseline-only conversion. No MirrorArc manifest identity, lifecycle state,",
             "> generated-mirror sentinel, review ledger, or curated hub context is attached.",
             "",
             cleaned,
@@ -121,7 +121,7 @@ def create_dump(
     if not root.exists() or not root.is_dir():
         raise ValueError(f"vault root does not exist or is not a directory: {root}")
     if in_source_checkout(root) and not allow_source_checkout_root:
-        raise ValueError("refusing to write private benchmark output inside the NoeticWeave source checkout")
+        raise ValueError("refusing to write private benchmark output inside the MirrorArc source checkout")
     reset_output(root, output_root, force=force)
     converter = MarkItDown()
     records: list[dict[str, Any]] = []
@@ -188,7 +188,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--allow-source-checkout-root",
         action="store_true",
-        help="Allow writing under the NoeticWeave source checkout; intended only for controlled local tests.",
+        help="Allow writing under the MirrorArc source checkout; intended only for controlled local tests.",
     )
     parser.add_argument("--json", action="store_true", help="Print machine-readable aggregate JSON.")
     return parser

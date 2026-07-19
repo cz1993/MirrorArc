@@ -10,11 +10,11 @@ TOOL_DIR = Path(__file__).resolve().parent
 sys.path = [entry for entry in sys.path if Path(entry or ".").resolve() != TOOL_DIR]
 
 try:
-    from noeticweave.m365 import *  # noqa: F403
-    from noeticweave.m365 import main as _package_main
+    from mirrorarc.m365 import *  # noqa: F403
+    from mirrorarc.m365 import main as _package_main
 except ImportError as exc:
     raise SystemExit(
-        "Missing NoeticWeave package runtime. Install NoeticWeave or run with PYTHONPATH pointing "
+        "Missing MirrorArc package runtime. Install MirrorArc or run with PYTHONPATH pointing "
         f"at the source checkout. Import error: {exc}"
     ) from exc
 

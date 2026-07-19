@@ -2,7 +2,7 @@
 
 ## Purpose
 
-NoeticWeave must be recoverable because it works near authoritative business records. Recovery
+MirrorArc must be recoverable because it works near authoritative business records. Recovery
 procedures preserve the core promise: source files stay untouched, generated mirrors can be
 regenerated, and human-curated notes can be restored from versioned backups.
 
@@ -23,16 +23,16 @@ Do not back up secrets into the vault. Keep tokens in the OS keychain or environ
 
 ## Copied-Vault Sandbox Preflight
 
-Before piloting on a real document collection, duplicate the source collection and run NoeticWeave
+Before piloting on a real document collection, duplicate the source collection and run MirrorArc
 only in the copied vault. Then run the read-only sandbox report:
 
 ```bash
-python3.11 tools/noeticweave.py sandbox --source-root /path/to/original-documents
-python3.11 tools/noeticweave.py sandbox --source-root /path/to/original-documents --json
+python3.11 tools/mirrorarc.py sandbox --source-root /path/to/original-documents
+python3.11 tools/mirrorarc.py sandbox --source-root /path/to/original-documents --json
 ```
 
 The report verifies that the pilot vault is not the same path as the original source root, checks
-required NoeticWeave files/tools, counts source candidates, flags generated source mirrors sitting
+required MirrorArc files/tools, counts source candidates, flags generated source mirrors sitting
 outside `_mirrors/`, summarizes manifest/audit/recovery readiness, and checks basic git backup
 posture. It does not print source paths, document text, mirror text, or repository document bodies.
 Treat sandbox errors as blockers before the first sync. Treat warnings as review items to resolve
@@ -45,10 +45,10 @@ Generated mirrors can be deleted and rebuilt from sources:
 ```bash
 rm -rf _mirrors
 rm -f 80_sources/repos/*.md
-python3.11 tools/noeticweave.py plan
-python3.11 tools/noeticweave.py sync
-python3.11 tools/noeticweave.py status
-python3.11 tools/noeticweave.py lint
+python3.11 tools/mirrorarc.py plan
+python3.11 tools/mirrorarc.py sync
+python3.11 tools/mirrorarc.py status
+python3.11 tools/mirrorarc.py lint
 ```
 
 Review the plan before sync if the source tree changed, especially after folder renames or cloud
@@ -66,10 +66,10 @@ the new complete mirror. A hard interruption can also leave a hidden atomic temp
 `.registration.md.12345.tmp` beside the target. After interruption:
 
 ```bash
-python3.11 tools/noeticweave.py status
-python3.11 tools/noeticweave.py recovery
-python3.11 tools/noeticweave.py sync
-python3.11 tools/noeticweave.py lint
+python3.11 tools/mirrorarc.py status
+python3.11 tools/mirrorarc.py recovery
+python3.11 tools/mirrorarc.py sync
+python3.11 tools/mirrorarc.py lint
 ```
 
 If `_meta/source-manifest.json`, `_meta/repo-manifest.json`, or `_meta/sync-audit.jsonl` is missing,
@@ -78,11 +78,11 @@ from the current sources and mirrors, then review all `planned`, `stale`, `sourc
 `unreachable`, and `manual_modification` states.
 
 Interrupted Stage 1B changed-file materialization should first be inspected with
-`noeticweave journal status` and recovered with `noeticweave journal replay`. Replay recovers
-events left in `processing`; use `noeticweave journal replay --retry-failed` only when a failed
-event is ready for an explicit retry. Use `noeticweave reconcile` to queue missed source/manifest
-events before replaying recovered work, or use `noeticweave sync --changed` to run those two steps
-as one changed-file pass. `noeticweave watch --once` runs the same startup reconciliation posture
+`mirrorarc journal status` and recovered with `mirrorarc journal replay`. Replay recovers
+events left in `processing`; use `mirrorarc journal replay --retry-failed` only when a failed
+event is ready for an explicit retry. Use `mirrorarc reconcile` to queue missed source/manifest
+events before replaying recovered work, or use `mirrorarc sync --changed` to run those two steps
+as one changed-file pass. `mirrorarc watch --once` runs the same startup reconciliation posture
 plus any queued feed work for a deterministic one-cycle watch check. When changed sync, replay,
 reconciliation, or watch startup cannot prove consistency, run full sync as the recovery path.
 
@@ -93,10 +93,10 @@ When the vault has `_meta/lifecycle-states.yml`, source/repo manifest records an
 identify that lifecycle contract path and schema version so reviewers can tie a state back to the
 operator contract used by sync.
 
-Important limitation: without the old manifest, NoeticWeave cannot prove whether an existing
+Important limitation: without the old manifest, MirrorArc cannot prove whether an existing
 generated region is pristine. Existing Office and repo mirrors without a manifest-generated baseline
 are treated as review-required, and `--force` will not accept them as clean. If the sentinel boundary
-is valid, run `noeticweave migrate annotations --write` to preserve any legacy above-sentinel
+is valid, run `mirrorarc migrate annotations --write` to preserve any legacy above-sentinel
 annotations before regenerating from the original source. If the sentinel is missing or altered,
 restore the mirror from backup or remove the untrusted mirror after preserving any known-curated
 notes elsewhere, then regenerate from the source.
@@ -106,10 +106,10 @@ notes elsewhere, then regenerate from the source.
 Use the read-only recovery report before changing files:
 
 ```bash
-python3.11 tools/noeticweave.py recovery
-python3.11 tools/noeticweave.py recovery --worksheet
-python3.11 tools/noeticweave.py recovery --runbook
-python3.11 tools/noeticweave.py recovery --json
+python3.11 tools/mirrorarc.py recovery
+python3.11 tools/mirrorarc.py recovery --worksheet
+python3.11 tools/mirrorarc.py recovery --runbook
+python3.11 tools/mirrorarc.py recovery --json
 ```
 
 The report reads `_meta/source-manifest.json`, `_meta/repo-manifest.json`,
@@ -148,31 +148,31 @@ For ambiguous move conflicts, the report and Office manifest record include
 `ambiguous_move_candidates` with the missing source paths whose bytes match the new source. Choose
 the correct history manually, or preserve/archive the old mirrors and treat the new file as a
 deliberate duplicate or new source before rerunning sync. The human report shows a bounded
-candidate summary with a total count; use `noeticweave recovery --json` when the full candidate list
+candidate summary with a total count; use `mirrorarc recovery --json` when the full candidate list
 is longer than the human summary.
 For manifest repair mistakes where multiple non-synthetic records claim the same current source
 path, the report includes `duplicate_source_ids`. Correct the duplicate manifest records before
-syncing; NoeticWeave will not choose one source history silently.
+syncing; MirrorArc will not choose one source history silently.
 
 For each item with audit history, the report includes the latest audit timestamp, status, lifecycle
 state, lifecycle contract provenance when available, and structured warnings/errors. This is
 diagnostic metadata only; it should not contain raw document text or repo documentation bodies.
 
 For `temp:interrupted_write` items, rerun status/sync first to confirm the canonical generated file
-or manifest is complete. Then remove the temp file after backup review; NoeticWeave does not delete
+or manifest is complete. Then remove the temp file after backup review; MirrorArc does not delete
 it automatically.
 
 For Office `conflict` records caused by a mirror-root or mirror-mode change, archive or remove the
-previous generated mirror after review. NoeticWeave will not write the new mirror path while the
+previous generated mirror after review. MirrorArc will not write the new mirror path while the
 old generated mirror still exists, because that would leave two generated notes claiming the same
 source.
 
 For Office `source_moved` records with `previous_mirror_path`, migrate any legacy annotations from
-the old mirror, then move, archive, or remove that previous generated mirror. NoeticWeave will not
+the old mirror, then move, archive, or remove that previous generated mirror. MirrorArc will not
 write the new mirror path while the old generated mirror still exists.
 
 For Office `conflict` records with `ambiguous_move_candidates`, do not force sync. Multiple missing
-manifest records have identical bytes, so NoeticWeave cannot prove which prior source path moved.
+manifest records have identical bytes, so MirrorArc cannot prove which prior source path moved.
 Use the candidate paths, old mirrors, and Git history/backups to choose the correct source record;
 if you want to preserve one candidate's source history, edit or restore the manifest deliberately.
 If the new file should be treated as a deliberate new or duplicate source, either restore the
@@ -188,7 +188,7 @@ correct, restore the other source files to their actual paths or archive their m
 then rerun status.
 
 If a manifest is missing, restore it from backup when possible. Without manifest evidence,
-NoeticWeave cannot safely prove whether an existing generated region is pristine.
+MirrorArc cannot safely prove whether an existing generated region is pristine.
 
 ## Recover From Bad Generated Output
 
@@ -197,16 +197,16 @@ If extraction quality is poor or a converter update produces worse markdown:
 1. Restore the prior mirror from Git or backup if humans need the previous readable output.
 2. Keep the original source file unchanged.
 3. Pin or revert the converter dependency if needed.
-4. Run `tools/noeticweave.py status` and inspect converter-related stale states.
+4. Run `tools/mirrorarc.py status` and inspect converter-related stale states.
 5. Record the decision in `log.md`.
 
-If conversion fails before writing, NoeticWeave records an `error` lifecycle state and leaves the
-previous mirror untouched. Fix the converter/source issue, rerun `tools/noeticweave.py sync`, then
-confirm `tools/noeticweave.py status` returns the source to `clean`.
+If conversion fails before writing, MirrorArc records an `error` lifecycle state and leaves the
+previous mirror untouched. Fix the converter/source issue, rerun `tools/mirrorarc.py sync`, then
+confirm `tools/mirrorarc.py status` returns the source to `clean`.
 
-If writing the mirror fails, NoeticWeave records an `error` lifecycle state and leaves the previous
+If writing the mirror fails, MirrorArc records an `error` lifecycle state and leaves the previous
 mirror untouched. Fix the filesystem, permission, disk-space, or cloud-sync issue, rerun
-`tools/noeticweave.py sync`, then confirm the source returns to `clean`.
+`tools/mirrorarc.py sync`, then confirm the source returns to `clean`.
 
 Repo mirror note writes follow the same rule: a write failure records an `error` lifecycle state,
 keeps the previous repo note, and can recover to `clean` after the filesystem issue is fixed and
@@ -220,14 +220,14 @@ generated mirrors. If an agent made a bad curated edit:
 ```bash
 git diff
 git restore -- path/to/note.md
-python3.11 tools/noeticweave.py lint
+python3.11 tools/mirrorarc.py lint
 ```
 
 Only restore with explicit owner approval when the note contains current business decisions.
 
 ## Source Missing Review
 
-NoeticWeave does not delete mirrors automatically when a source disappears. A missing source means:
+MirrorArc does not delete mirrors automatically when a source disappears. A missing source means:
 
 - the source was intentionally moved or deleted;
 - a cloud-sync file is not pinned locally;
@@ -241,7 +241,7 @@ human-reviewed change and keep the audit trail.
 
 Before public release, recovery must be tested on a copied vault:
 
-- run `tools/noeticweave.py sandbox --source-root <original-source-root>` and resolve errors;
+- run `tools/mirrorarc.py sandbox --source-root <original-source-root>` and resolve errors;
 - delete `_mirrors/` and regenerate;
 - interrupt sync and rerun;
 - force a converter failure and verify the previous mirror is preserved, then fix the converter and
@@ -262,7 +262,7 @@ Before public release, recovery must be tested on a copied vault:
   exists, then remove or move the previous mirror and verify the new mirror can be generated;
 - change the Office mirror root with the old mirror present and verify `conflict`, then remove the
   old mirror and verify the new mirror can be generated;
-- run `tools/noeticweave.py recovery` and verify the checklist matches the manifest states;
+- run `tools/mirrorarc.py recovery` and verify the checklist matches the manifest states;
 - restore a curated note from Git;
 - run no-data scan and lint after recovery.
 

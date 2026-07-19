@@ -37,4 +37,4 @@ Licence posture reviewed 2026-06-19. Government of Canada reference pages are tr
 Government Licence - Canada 2.0 material and are attributed as source information without implying
 endorsement. B.C. pages are reference-only in these fixtures; no B.C. text, logo, mark, or data
 table is copied. This repository's generated fixtures are synthetic, paraphrased, and intended only
-to test NoeticWeave.
+to test MirrorArc.

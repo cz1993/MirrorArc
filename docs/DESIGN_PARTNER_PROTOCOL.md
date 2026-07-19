@@ -2,12 +2,12 @@
 
 ## Purpose
 
-NoeticWeave is not validated until external operators use it on real client-shaped corpora. This
+MirrorArc is not validated until external operators use it on real client-shaped corpora. This
 protocol keeps validation concrete, comparable, and honest.
 
 Use `docs/DESIGN_PARTNER_RECRUITING.md` to recruit and pre-screen partners before scheduling a
 run. Use `docs/PILOT_WORKSHEET.md` as the working artifact for each accepted pilot. Attach
-aggregate output from `noeticweave --root "$VW" pilot --json` to the private pilot record, not to
+aggregate output from `mirrorarc --root "$VW" pilot --json` to the private pilot record, not to
 this public repository. Use `docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md` for the first accepted run, and
 track public-safe attempt state in `docs/STAGE3_VALIDATION_STATUS.md`.
 
@@ -40,31 +40,31 @@ Set the copied pilot vault path once for the run:
 export VW="/path/to/copied-pilot-vault"
 ```
 
-Use the installed `noeticweave --root "$VW"` command for pilot runs. The vault-local
-`python3.11 tools/noeticweave.py ...` wrappers remain compatibility fallbacks when the package is
+Use the installed `mirrorarc --root "$VW"` command for pilot runs. The vault-local
+`python3.11 tools/mirrorarc.py ...` wrappers remain compatibility fallbacks when the package is
 not installed.
 
 ## Evaluation Steps
 
 1. Baseline interview: current process, pain points, tools, security constraints.
-2. Copied-vault preflight: run `noeticweave --root "$VW" sandbox --source-root <original-root>`.
-3. Non-destructive inventory: run `noeticweave --root "$VW" doctor`, `plan`, and `status`.
-4. First sync: run `noeticweave --root "$VW" sync --json` and capture manifests/audit logs.
-5. Conversion review: run `noeticweave --root "$VW" conversion --guide` and spot-check high/medium-priority
+2. Copied-vault preflight: run `mirrorarc --root "$VW" sandbox --source-root <original-root>`.
+3. Non-destructive inventory: run `mirrorarc --root "$VW" doctor`, `plan`, and `status`.
+4. First sync: run `mirrorarc --root "$VW" sync --json` and capture manifests/audit logs.
+5. Conversion review: run `mirrorarc --root "$VW" conversion --guide` and spot-check high/medium-priority
    mirrors before relying on generated content.
 6. Review exceptions: unsupported, stale, missing, unreachable, conflicted, or manual-modification
    states.
-7. Catalog review: run `noeticweave --root "$VW" catalog`, `catalog --html`, and `m365` if the
+7. Catalog review: run `mirrorarc --root "$VW" catalog`, `catalog --html`, and `m365` if the
    participant expects Microsoft 365 handoff.
-8. Record artifact review decisions with `noeticweave --root "$VW" review` after spot-checking
+8. Record artifact review decisions with `mirrorarc --root "$VW" review` after spot-checking
    selected mirrors, catalogs, and handoff reports.
 9. Curate the first hubs and entity pages.
 10. Answer a fixed set of operational questions with citations.
-11. Score the agent-readiness task pack across raw-folder, plain-dump, and NoeticWeave-Markdown
+11. Score the agent-readiness task pack across raw-folder, plain-dump, and MirrorArc-Markdown
    modes, then validate the private result pack with `--require-results`, `--require-citations`,
    and `--require-prompt-safety`.
-12. Capture aggregate evidence: run `noeticweave --root "$VW" pilot --json` and
-   `noeticweave --root "$VW" pilot --worksheet`, then store the outputs with the private pilot
+12. Capture aggregate evidence: run `mirrorarc --root "$VW" pilot --json` and
+   `mirrorarc --root "$VW" pilot --worksheet`, then store the outputs with the private pilot
    worksheet.
 13. Modify or move selected sources, have the participant rerun sync without help, then verify
    lifecycle reporting and unexpected regressions.
@@ -83,7 +83,7 @@ Record:
 - provenance spot-check pass/fail rate;
 - stale or missing source detection after changes;
 - reviewed-artifact counts and stale-review counts from `_meta/review-ledger.jsonl`;
-- time to answer fixed operational questions before and after NoeticWeave;
+- time to answer fixed operational questions before and after MirrorArc;
 - operator confidence score;
 - support time required.
 
@@ -102,7 +102,7 @@ Use this matrix to decide whether a pilot is evidence, partial evidence, or a st
 
 The review-plan success metric for a tool-shaped product is the second-sync gate: a participant
 runs `sync` themselves a second time without help. If three attempts fail on that gate, treat
-NoeticWeave as a service workflow before treating it as self-serve software.
+MirrorArc as a service workflow before treating it as self-serve software.
 
 ## Evidence Artifacts
 
@@ -117,8 +117,8 @@ For each pilot, maintain an anonymized summary:
 - product changes made;
 - participant quote only with written permission.
 
-`noeticweave --root "$VW" pilot --json` is designed for machine-readable aggregate evidence.
-`noeticweave --root "$VW" pilot --worksheet` prints a redacted Markdown summary for private pilot
+`mirrorarc --root "$VW" pilot --json` is designed for machine-readable aggregate evidence.
+`mirrorarc --root "$VW" pilot --worksheet` prints a redacted Markdown summary for private pilot
 records. Both report aggregate counts only, including review-ledger approval/stale-review counts,
 and must not be treated as permission to commit pilot evidence to this repository.
 
