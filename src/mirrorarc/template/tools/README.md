@@ -1,16 +1,17 @@
 # tools/ — mirror & lint scripts
 
-These keep your knowledge base current and healthy. See `../CLAUDE.md` §6 for the mirror pattern.
+These keep your knowledge base current and healthy. See `../_meta/agent-rules.md` for the mirror
+and governance rules used by every supported agent entry point.
 
 | Script | Purpose |
 | --- | --- |
 | `sync_office_md.py` | markdown **mirror** under `_mirrors/` for every `.docx/.pptx/.xlsx` (Microsoft markitdown), refreshed on content change |
-| `sync_github_repos.py` | markdown **mirror** under `80_sources/repos/` for each repo in `repos.yml` (README + docs + metadata), refreshed on HEAD change |
+| `sync_github_repos.py` | markdown **mirror** under `20_sources/repos/` for each repo in `repos.yml` (README + docs + metadata), refreshed on HEAD change |
 | `mirrorarc.py` | thin operator wrapper: `plan`, `sync`, `status`, `catalog`, `conversion`, `m365`, `migration`, `overlap`, `pilot`, `recovery`, `sandbox`, `lint`, `benchmark`, `doctor`, and repo-root `init` |
 | `lint_vault.py` | health check — frontmatter, broken wikilinks, orphans, overlap warnings, mirror gaps, configured repo mirror gaps, stale generated mirrors |
 | `overlap_report.py` | prints a read-only overlap-threshold calibration report without note bodies or shared terms |
 | `benchmark_tasks.py` | validates `_meta/agent-readiness-tasks.yml` task packs and optional aggregate result packs |
-| `catalog_report.py` | writes source-path-only `CATALOG.md` or `CATALOG.html` inventory gateways for reviewers and agents |
+| `catalog_report.py` | writes source-path-only `CATALOG.md` inventory or the metadata-only `CATALOG.html` Catalog Explorer for reviewers and agents |
 | `conversion_report.py` | prints a read-only conversion spot-check report from the source manifest |
 | `m365_report.py` | prints a read-only Microsoft 365/Copilot handoff readiness report |
 | `migration_report.py` | reports legacy or unknown top-level folders and can normalize known frontmatter domain aliases with explicit `--write` |
@@ -98,8 +99,10 @@ and a tooling contract; it does not make destructive cleanup automatic.
 generated source-path and manifest inventories, not content extraction layers: they list counts,
 lifecycle states, source/mirror links, repo mirror links, unmanaged source candidates, profile-
 declared machine-owned Markdown counts, and legacy top-level folders without copying document text.
-The HTML gateway also includes static aggregate charts for domain mix, source and repo lifecycle
-states, source formats, and top-level file distribution. Catalog generation compares
+The self-contained HTML Catalog Explorer adds profile-aware browsing and search, a 1–3 hop
+relationship map with explicit original-to-mirror lineage, a rendered metadata view, an evidence
+inspector, and metadata-only Markdown/JSON context-pack downloads. It does not embed source or mirror
+bodies, require a server, or create an evidence index. Catalog generation compares
 `_meta/repo-manifest.json` with `tools/repos.yml` so retained repo mirrors whose config entry was
 removed appear as `repo_unconfigured` even before repo sync rewrites the manifest. When source/repo
 manifest records include lifecycle contract provenance, the catalog also reports which contract

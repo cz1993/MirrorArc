@@ -1,8 +1,8 @@
 ---
 title: {{title}}
-type: record
-status: active
-domain:
+type: decision
+status: draft
+domain: governance
 created: {{date}}
 updated: {{date}}
 owner: you
@@ -12,9 +12,9 @@ related: []
 
 # {{title}}
 
-- **Date:** {{date}}
 - **Decision:**
-- **Context:**
+- **Evidence:**
 - **Options considered:**
 - **Rationale:**
 - **Consequences:**
+- **Review trigger:**

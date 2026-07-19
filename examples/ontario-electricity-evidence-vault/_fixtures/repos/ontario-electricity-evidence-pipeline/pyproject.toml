@@ -1,0 +1,9 @@
+[project]
+name = "ontario-electricity-evidence-pipeline"
+version = "0.1.0"
+description = "Clean-room public-data pipeline fixture for MirrorArc"
+requires-python = ">=3.11"
+license = "MIT"
+
+[tool.unittest]
+start-directory = "tests"

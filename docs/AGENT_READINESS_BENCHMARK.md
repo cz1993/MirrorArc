@@ -96,11 +96,9 @@ those tasks in each comparison mode. Keep result packs in the private pilot vaul
 review packet; do not commit confidential answers, protected names, source text, mirror text, or
 reviewer notes to this public repository.
 
-The public MirrorArc repository rejects committed private `_meta/agent-readiness-tasks.yml` and
-`_meta/agent-readiness-results.yml` files by default. The checked-in government-services task pack
-and its reviewed public synthetic result packet are approved public examples. Store private task
-and result packs in pilot workspaces, then copy only aggregate numbers into a review packet after
-no-data review.
+The public MirrorArc repository rejects committed `_meta/agent-readiness-tasks.yml` and
+`_meta/agent-readiness-results.yml` files by default. Store task and result packs in private pilot
+workspaces, then copy only aggregate numbers into a review packet after no-data review.
 
 Default local path:
 
@@ -112,17 +110,17 @@ Minimal schema:
 
 ```yaml
 schema_version: 1
-corpus: government-services-vault
+corpus: private-example-vault
 results:
-  - task_id: answer-gst-readiness
+  - task_id: answer-source-question
     mode: mirrorarc_markdown
     score: 2
     reviewer_corrections: 0
     elapsed_seconds: 95
     cited_source_paths:
-      - 60_finance/tax/gst-hst-readiness.docx
+      - 20_sources/example-source.docx
     cited_generated_mirror_paths:
-      - _mirrors/60_finance/tax/gst-hst-readiness.md
+      - _mirrors/20_sources/example-source.md
     privacy_or_provenance_violation: false
     prompt_safety_reviewed: true
     prompt_safety_violation: false
@@ -183,19 +181,11 @@ violation counts, citation counts, uncited scored-result counts, and prompt-safe
 counts. It does not print answer text, reviewer notes, source text, mirror text, or document
 bodies.
 
-## Example Task Pack
+## Task Packs
 
-The public government-services demo includes a starter task pack at
-`examples/government-services-vault/_meta/agent-readiness-tasks.yml`. It is not a completed
-benchmark result; it is a source-linked prompt set for exercising the protocol against synthetic
-business-registration, GST/HST, funding/support, update, audit, and consolidation tasks.
-
-The task pack deliberately references both committed source files and generated mirror paths. The
-mirror paths should exist only after running sync in a temporary or local working copy, not in the
-committed example tree.
-
-Do not add private pilot task or result packs to this public repo. The no-data scanner allows only
-approved public examples and rejects task/result-pack-shaped YAML elsewhere.
+Task and result packs are intentionally not committed in the flagship example. Create them in a
+copied vault or private workspace, and keep prompts, answers, reviewer notes, and corpus-specific
+evaluation details outside this public repository.
 
 Validate a configured task pack with:
 
@@ -204,16 +194,11 @@ python3.11 tools/mirrorarc.py benchmark
 python3.11 tools/mirrorarc.py benchmark --require-generated  # after sync
 ```
 
-The public synthetic result packet lives at
-`examples/government-services-vault/_meta/public-agent-readiness-results.yml`. It records only
-scores, correction counts, prompt-safety flags, and source-path citations; it does not contain
-answer text, reviewer notes, source bodies, or mirror bodies. Validate it with:
+Validate a private result packet with:
 
 ```bash
 python3.11 tools/mirrorarc.py benchmark --results _meta/public-agent-readiness-results.yml --require-results --require-citations --require-prompt-safety
 ```
-
-The aggregate write-up is in [`AGENT_READINESS_BENCHMARK_RESULTS.md`](AGENT_READINESS_BENCHMARK_RESULTS.md).
 
 ## Messy Corpus Generator
 
@@ -245,9 +230,8 @@ synthetic score evidence only; it must not be described as external design-partn
   completion and violations in private result packs.
 - Do not let an agent delete, move, or consolidate records without explicit review.
 
-## Current Status
+## Evidence Boundary
 
-No external benchmark has been completed yet. The government-services public result and the messy
-200-file reviewed result packet are synthetic dogfood runs for the review-plan baseline; they are
-useful evidence about the protocol and current generated corpora, not proof that MirrorArc
-improves real agent performance on client-shaped corpora.
+Synthetic dogfood runs can validate the protocol and generated corpus mechanics, but they are not
+proof that MirrorArc improves agent performance on a real private corpus. Publish only aggregate,
+non-sensitive results after independent review.

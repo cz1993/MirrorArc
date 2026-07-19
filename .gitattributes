@@ -1,0 +1,6 @@
+# Preserve licensed public-source payloads byte-for-byte. Their upstream CRLF and trailing fields
+# are data, not repository formatting, so Git must not normalize or whitespace-diff them.
+examples/ontario-electricity-evidence-vault/20_sources/open-data/** -text -diff
+
+# Generated/public binary artefacts should never be normalized or whitespace-diffed.
+*.pdf binary

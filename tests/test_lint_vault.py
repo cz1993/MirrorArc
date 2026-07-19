@@ -2,18 +2,29 @@
 import hashlib
 import json
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 
 import yaml
 
 from mirrorarc.annotation_migration import annotation_migration_plan, write_annotation_sidecars
+from mirrorarc.profile_scaffold import scaffold_profile_vault
+from mirrorarc.profiles import load_profile as load_profile_contract
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SENTINEL = "%% AUTO-GENERATED BELOW — DO NOT EDIT %%"
 TEST_SHA = "0" * 64
+BUSINESS_PROFILE_PATH = ROOT / "src" / "mirrorarc" / "builtin_profiles" / "business-operations.yml"
+
+
+def copy_business_operations_template(vault: Path) -> None:
+    scaffold_profile_vault(
+        vault,
+        ROOT / "template",
+        load_profile_contract(BUSINESS_PROFILE_PATH),
+        BUSINESS_PROFILE_PATH,
+    )
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -91,7 +102,7 @@ def write_profile(vault: Path, profile: dict) -> None:
 
 def test_template_linter_exits_nonzero_for_blocking_issue(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     bad_note = vault / "10_governance" / "bad.md"
     bad_note.write_text("# Missing frontmatter\n", encoding="utf-8")
 
@@ -108,7 +119,7 @@ def test_template_linter_exits_nonzero_for_blocking_issue(tmp_path: Path) -> Non
 
 def test_template_linter_skips_generated_meta_markdown_reports(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     report = vault / "_meta" / "migration-review-worksheet.md"
     report.write_text("# MirrorArc Migration Review Worksheet\n", encoding="utf-8")
 
@@ -126,7 +137,7 @@ def test_template_linter_skips_generated_meta_markdown_reports(tmp_path: Path) -
 
 def test_template_linter_skips_catalog_gateway_for_orphan_warnings(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     catalog = vault / "CATALOG.md"
     catalog.write_text("# Documentation Catalog\n", encoding="utf-8")
 
@@ -144,7 +155,7 @@ def test_template_linter_skips_catalog_gateway_for_orphan_warnings(tmp_path: Pat
 
 def test_template_linter_keeps_warning_only_orphans_zero_exit(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "10_governance" / "orphan.md"
     note.write_text(
         "---\n"
@@ -172,7 +183,7 @@ def test_template_linter_keeps_warning_only_orphans_zero_exit(tmp_path: Path) ->
 
 def test_template_linter_reports_domain_alias_recommendation(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "10_governance" / "bad-domain.md"
     note.write_text(
         "---\n"
@@ -201,7 +212,7 @@ def test_template_linter_reports_domain_alias_recommendation(tmp_path: Path) -> 
 
 def test_template_linter_blocks_unknown_domain(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "10_governance" / "bad-domain.md"
     note.write_text(
         "---\n"
@@ -230,7 +241,7 @@ def test_template_linter_blocks_unknown_domain(tmp_path: Path) -> None:
 
 def test_template_linter_reads_profile_contract_for_allowed_values(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     profile = load_profile(vault)
     profile["domains"]["research"] = {
         "folder": "25_research",
@@ -274,7 +285,7 @@ def test_template_linter_reads_profile_contract_for_allowed_values(tmp_path: Pat
 
 def test_template_linter_blocks_full_profile_validator_errors(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     profile = load_profile(vault)
     profile["policy_defaults"]["repo_notes_dir"] = "90_repos"
     write_profile(vault, profile)
@@ -296,7 +307,7 @@ def test_template_linter_blocks_full_profile_validator_errors(tmp_path: Path) ->
 
 def test_template_linter_blocks_missing_profile_contract(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "profile.yml").unlink()
 
     result = subprocess.run(
@@ -313,7 +324,7 @@ def test_template_linter_blocks_missing_profile_contract(tmp_path: Path) -> None
 
 def test_template_linter_uses_profileless_legacy_context_aliases(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "profile.yml").unlink()
     note = vault / "30_customers" / "client-only.md"
     note.write_text(
@@ -346,7 +357,7 @@ def test_template_linter_uses_profileless_legacy_context_aliases(tmp_path: Path)
 
 def test_template_linter_warns_missing_domain_map_when_profile_valid(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "domain-map.yml").unlink()
 
     result = subprocess.run(
@@ -365,7 +376,7 @@ def test_template_linter_warns_missing_domain_map_when_profile_valid(tmp_path: P
 
 def test_template_linter_blocks_missing_domain_map_without_profile(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "profile.yml").unlink()
     (vault / "_meta" / "domain-map.yml").unlink()
 
@@ -385,7 +396,7 @@ def test_template_linter_blocks_missing_domain_map_without_profile(tmp_path: Pat
 
 def test_template_linter_blocks_malformed_domain_map(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "domain-map.yml").write_text("domains: [", encoding="utf-8")
 
     result = subprocess.run(
@@ -402,7 +413,7 @@ def test_template_linter_blocks_malformed_domain_map(tmp_path: Path) -> None:
 
 def test_template_linter_blocks_domain_folder_mismatch(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     legacy = vault / "clients"
     legacy.mkdir()
     note = legacy / "Acme.md"
@@ -433,7 +444,7 @@ def test_template_linter_blocks_domain_folder_mismatch(tmp_path: Path) -> None:
 
 def test_template_linter_checks_account_frontmatter_links(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "10_governance" / "account-link.md"
     note.write_text(
         "---\n"
@@ -463,7 +474,7 @@ def test_template_linter_checks_account_frontmatter_links(tmp_path: Path) -> Non
 
 def test_template_linter_blocks_account_client_mismatch(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     customers = vault / "30_customers"
     (customers / "Acme.md").write_text(
         "---\n"
@@ -518,7 +529,7 @@ def test_template_linter_blocks_account_client_mismatch(tmp_path: Path) -> None:
 
 def test_template_linter_blocks_client_without_account(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "30_customers" / "client-only.md"
     note.write_text(
         "---\n"
@@ -548,7 +559,7 @@ def test_template_linter_blocks_client_without_account(tmp_path: Path) -> None:
 
 def test_template_linter_does_not_infer_context_aliases_when_profile_omits_policy(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     profile = load_profile(vault)
     profile["policy_defaults"].pop("context_aliases")
     write_profile(vault, profile)
@@ -607,7 +618,7 @@ def test_template_linter_does_not_infer_context_aliases_when_profile_omits_polic
 
 def test_template_linter_does_not_infer_context_aliases_for_other_profiles(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     profile = load_profile(vault)
     profile["id"] = "research-learning"
     profile["policy_defaults"].pop("context_aliases")
@@ -667,7 +678,7 @@ def test_template_linter_does_not_infer_context_aliases_for_other_profiles(tmp_p
 
 def test_template_linter_blocks_uppercase_markdown_extension(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "10_governance" / "Bad.MD"
     note.write_text("# Missing frontmatter\n", encoding="utf-8")
 
@@ -685,7 +696,7 @@ def test_template_linter_blocks_uppercase_markdown_extension(tmp_path: Path) -> 
 
 def test_template_linter_accepts_dedicated_office_mirror_layout(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     source = vault / "30_customers" / "acme" / "brief.docx"
     source.parent.mkdir(parents=True)
     source.write_bytes(b"not a real docx; lint only checks mirror presence")
@@ -723,7 +734,7 @@ def test_template_linter_accepts_dedicated_office_mirror_layout(tmp_path: Path) 
 
 def test_template_linter_blocks_unmigrated_source_mirror_annotations(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     source = vault / "40_delivery" / "registration.docx"
     source.parent.mkdir(parents=True, exist_ok=True)
     source.write_bytes(b"not a real docx; lint only checks mirror presence")
@@ -762,7 +773,7 @@ def test_template_linter_blocks_unmigrated_source_mirror_annotations(tmp_path: P
 
 def test_template_linter_accepts_source_mirror_annotations_with_matching_sidecar(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     source = vault / "40_delivery" / "registration.docx"
     source.parent.mkdir(parents=True, exist_ok=True)
     source.write_bytes(b"not a real docx; lint only checks mirror presence")
@@ -801,7 +812,7 @@ def test_template_linter_accepts_source_mirror_annotations_with_matching_sidecar
 
 def test_template_linter_accepts_alias_source_with_canonical_mirror_layout(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     source = vault / "clients" / "acme" / "brief.docx"
     source.parent.mkdir(parents=True)
     source.write_bytes(b"not a real docx; lint only checks mirror presence")
@@ -839,7 +850,7 @@ def test_template_linter_accepts_alias_source_with_canonical_mirror_layout(tmp_p
 
 def test_template_linter_blocks_sibling_office_mirror_by_default(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     source = vault / "30_customers" / "brief.docx"
     source.write_bytes(b"not a real docx; lint only checks mirror presence")
     (vault / "30_customers" / "brief.md").write_text(
@@ -870,7 +881,7 @@ def test_template_linter_blocks_sibling_office_mirror_by_default(tmp_path: Path)
 
 def test_template_linter_requires_generated_sibling_mirror_not_curated_note(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "mirror-config.yml").write_text(
         "office_mirrors:\n"
         "  mode: sibling\n"
@@ -907,7 +918,7 @@ def test_template_linter_requires_generated_sibling_mirror_not_curated_note(tmp_
 
 def test_template_linter_accepts_sibling_office_mirror_in_legacy_mode(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "mirror-config.yml").write_text(
         "office_mirrors:\n"
         "  mode: sibling\n"
@@ -944,7 +955,7 @@ def test_template_linter_accepts_sibling_office_mirror_in_legacy_mode(tmp_path: 
 
 def test_template_linter_accepts_alias_source_with_sibling_mirror_in_legacy_mode(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "mirror-config.yml").write_text(
         "office_mirrors:\n"
         "  mode: sibling\n"
@@ -986,7 +997,7 @@ def test_template_linter_accepts_alias_source_with_sibling_mirror_in_legacy_mode
 
 def test_template_linter_blocks_sibling_mirror_from_unmapped_source_root(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "mirror-config.yml").write_text(
         "office_mirrors:\n"
         "  mode: sibling\n"
@@ -1030,7 +1041,7 @@ def test_template_linter_blocks_sibling_mirror_from_unmapped_source_root(tmp_pat
 
 def test_template_linter_blocks_source_mirror_type_with_wrong_sibling_path(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "mirror-config.yml").write_text(
         "office_mirrors:\n"
         "  mode: sibling\n"
@@ -1066,7 +1077,7 @@ def test_template_linter_blocks_source_mirror_type_with_wrong_sibling_path(tmp_p
 
 def test_template_linter_blocks_source_mirror_type_outside_dedicated_mirror_root(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "40_delivery" / "hidden-generated-type.md"
     note.write_text(
         "---\n"
@@ -1097,7 +1108,7 @@ def test_template_linter_blocks_source_mirror_type_outside_dedicated_mirror_root
 
 def test_template_linter_uses_profile_mirror_root_when_config_missing(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "mirror-config.yml").unlink()
     profile_path = vault / "_meta" / "profile.yml"
     profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
@@ -1136,7 +1147,7 @@ def test_template_linter_uses_profile_mirror_root_when_config_missing(tmp_path: 
 
 def test_template_linter_reports_profile_mirror_root_for_misplaced_source_mirror(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "mirror-config.yml").unlink()
     profile_path = vault / "_meta" / "profile.yml"
     profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
@@ -1172,7 +1183,7 @@ def test_template_linter_reports_profile_mirror_root_for_misplaced_source_mirror
 
 def test_template_linter_blocks_source_mirror_under_mirror_root_with_wrong_source_path(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "_mirrors" / "40_delivery" / "hand-authored.md"
     note.parent.mkdir(parents=True)
     note.write_text(
@@ -1209,7 +1220,7 @@ def test_template_linter_blocks_source_mirror_under_mirror_root_with_wrong_sourc
 
 def test_template_linter_blocks_source_mirror_without_generated_contract_under_mirror_root(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "_mirrors" / "40_delivery" / "missing.md"
     note.parent.mkdir(parents=True)
     note.write_text(
@@ -1240,7 +1251,7 @@ def test_template_linter_blocks_source_mirror_without_generated_contract_under_m
 
 def test_template_linter_blocks_stale_source_mirror_when_source_hash_changed(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     source_rel = "40_delivery/brief.docx"
     source = vault / source_rel
     source.write_bytes(b"original source bytes")
@@ -1277,7 +1288,7 @@ def test_template_linter_blocks_stale_source_mirror_when_source_hash_changed(tmp
 
 def test_template_linter_blocks_source_mirror_with_noncurrent_manifest_state(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     source_rel = "40_delivery/brief.docx"
     source = vault / source_rel
     source.write_bytes(b"source bytes")
@@ -1317,7 +1328,7 @@ def test_template_linter_blocks_source_mirror_with_noncurrent_manifest_state(tmp
 
 def test_template_linter_blocks_repo_mirror_type_outside_repo_mirror_root(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "40_delivery" / "hidden-repo-type.md"
     note.write_text(
         "---\n"
@@ -1347,7 +1358,7 @@ def test_template_linter_blocks_repo_mirror_type_outside_repo_mirror_root(tmp_pa
 
 def test_template_linter_blocks_repo_mirror_without_generated_contract_under_repo_root(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     note = vault / "80_sources" / "repos" / "fixture.md"
     note.parent.mkdir(parents=True, exist_ok=True)
     note.write_text(
@@ -1378,7 +1389,7 @@ def test_template_linter_blocks_repo_mirror_without_generated_contract_under_rep
 
 def test_template_linter_blocks_configured_repo_without_generated_mirror(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
         "  notes_dir: 80_sources/repos\n"
@@ -1403,7 +1414,7 @@ def test_template_linter_blocks_configured_repo_without_generated_mirror(tmp_pat
 
 def test_template_linter_uses_profile_default_repo_notes_dir(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     profile = load_profile(vault)
     profile["domains"]["research"] = {
         "folder": "25_research",
@@ -1434,7 +1445,7 @@ def test_template_linter_uses_profile_default_repo_notes_dir(tmp_path: Path) -> 
 
 def test_template_linter_uses_configured_repo_notes_dir_for_layout_checks(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
         "  notes_dir: 80_sources/custom-repos\n"
@@ -1476,7 +1487,7 @@ def test_template_linter_uses_configured_repo_notes_dir_for_layout_checks(tmp_pa
 
 def test_template_linter_accepts_configured_repo_with_generated_mirror(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     repo_id = repo_id_for("local/fixture", "fixture.md")
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
@@ -1517,7 +1528,7 @@ def test_template_linter_accepts_configured_repo_with_generated_mirror(tmp_path:
 
 def test_template_linter_accepts_configured_repo_seed_frontmatter(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     repo_id = repo_id_for("local/fixture", "fixture.md")
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
@@ -1562,7 +1573,7 @@ def test_template_linter_accepts_configured_repo_seed_frontmatter(tmp_path: Path
 
 def test_template_linter_accepts_configured_repo_with_custom_notes_dir(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     repo_id = repo_id_for("local/fixture", "fixture.md")
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
@@ -1605,7 +1616,7 @@ def test_template_linter_accepts_configured_repo_with_custom_notes_dir(tmp_path:
 
 def test_template_linter_blocks_configured_repo_identity_mismatch(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     old_repo_id = repo_id_for("old/fixture", "fixture.md")
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
@@ -1647,7 +1658,7 @@ def test_template_linter_blocks_configured_repo_identity_mismatch(tmp_path: Path
 
 def test_template_linter_blocks_invalid_repo_mirror_config_path(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
         "  notes_dir: _meta/repos\n"
@@ -1671,7 +1682,7 @@ def test_template_linter_blocks_invalid_repo_mirror_config_path(tmp_path: Path) 
 
 def test_template_linter_blocks_duplicate_repo_mirror_config_target(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
         "  notes_dir: 80_sources/repos\n"
@@ -1700,7 +1711,7 @@ def test_template_linter_blocks_duplicate_repo_mirror_config_target(tmp_path: Pa
 
 def test_template_linter_blocks_case_only_duplicate_repo_mirror_config_target(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
         "  notes_dir: 80_sources/repos\n"
@@ -1729,7 +1740,7 @@ def test_template_linter_blocks_case_only_duplicate_repo_mirror_config_target(tm
 
 def test_template_linter_blocks_repo_mirror_with_noncurrent_manifest_state(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     repo_note = vault / "80_sources" / "repos" / "fixture.md"
     repo_note.parent.mkdir(parents=True, exist_ok=True)
     repo_note.write_text(
@@ -1777,7 +1788,7 @@ def test_template_linter_blocks_repo_mirror_with_noncurrent_manifest_state(tmp_p
 
 def test_template_linter_blocks_unconfigured_repo_manifest_record(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     repo_id = repo_id_for("local/fixture", "fixture.md")
     repo_note = vault / "80_sources" / "repos" / "fixture.md"
     repo_note.parent.mkdir(parents=True, exist_ok=True)
@@ -1837,7 +1848,7 @@ def test_template_linter_blocks_unconfigured_repo_manifest_record(tmp_path: Path
 
 def test_template_linter_blocks_repo_mirror_frontmatter_repo_drift(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     repo_note = vault / "80_sources" / "repos" / "fixture.md"
     repo_note.parent.mkdir(parents=True, exist_ok=True)
     repo_note.write_text(
@@ -1887,7 +1898,7 @@ def test_template_linter_blocks_repo_mirror_frontmatter_repo_drift(tmp_path: Pat
 
 def test_template_linter_accepts_resolved_repo_identity_for_aliased_repo(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     repo_id = repo_id_for("old/fixture", "fixture.md")
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
@@ -1945,7 +1956,7 @@ def test_template_linter_accepts_resolved_repo_identity_for_aliased_repo(tmp_pat
 
 def test_template_linter_blocks_local_repo_mirror_when_tree_changed(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     fixture = vault / "_fixtures" / "repos" / "fixture"
     fixture.mkdir(parents=True)
     (fixture / "README.md").write_text("# Changed fixture\n", encoding="utf-8")
@@ -1998,7 +2009,7 @@ def test_template_linter_blocks_local_repo_mirror_when_tree_changed(tmp_path: Pa
 
 def test_template_linter_reports_overlap_candidates_as_warning_only(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     first = vault / "40_delivery" / "grant-readiness.md"
     second = vault / "40_delivery" / "funding-readiness.md"
     body = (
@@ -2048,7 +2059,7 @@ def test_template_linter_reports_overlap_candidates_as_warning_only(tmp_path: Pa
 
 def test_template_linter_overlap_suggests_inbound_canonical_note(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     first = vault / "40_delivery" / "grant-readiness.md"
     second = vault / "40_delivery" / "funding-readiness.md"
     index = vault / "40_delivery" / "delivery-index.md"
@@ -2113,7 +2124,7 @@ def test_template_linter_overlap_suggests_inbound_canonical_note(tmp_path: Path)
 
 def test_template_linter_overlap_uses_inbound_signal_across_note_types(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     guide = vault / "40_delivery" / "grant-readiness.md"
     note = vault / "40_delivery" / "funding-readiness-note.md"
     index = vault / "40_delivery" / "delivery-index.md"
@@ -2175,7 +2186,7 @@ def test_template_linter_overlap_uses_inbound_signal_across_note_types(tmp_path:
 
 def test_template_linter_path_qualified_links_count_only_exact_overlap_target(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     delivery = vault / "40_delivery" / "grant-readiness.md"
     operations = vault / "50_operations" / "grant-readiness.md"
     index = vault / "40_delivery" / "delivery-index.md"
@@ -2238,7 +2249,7 @@ def test_template_linter_path_qualified_links_count_only_exact_overlap_target(tm
 
 def test_template_linter_broken_path_qualified_link_does_not_fallback_to_same_stem(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     delivery = vault / "40_delivery" / "grant-readiness.md"
     operations = vault / "50_operations" / "grant-readiness.md"
     index = vault / "40_delivery" / "delivery-index.md"
@@ -2308,7 +2319,7 @@ def test_template_linter_broken_path_qualified_link_does_not_fallback_to_same_st
 
 def test_template_linter_allows_overlap_threshold_calibration(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     first = vault / "40_delivery" / "grant-readiness.md"
     second = vault / "40_delivery" / "funding-readiness.md"
     body = (
@@ -2352,7 +2363,7 @@ def test_template_linter_allows_overlap_threshold_calibration(tmp_path: Path) ->
 
 def test_template_linter_blocks_invalid_lint_config(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "_meta" / "lint-config.yml").write_text(
         "overlap:\n"
         "  min_shared_terms: one\n"
@@ -2375,7 +2386,7 @@ def test_template_linter_blocks_invalid_lint_config(tmp_path: Path) -> None:
 
 def test_template_linter_skips_generated_mirrors_for_overlap_and_orphan_candidates(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     body = (
         "Repeated generated mirror text about eligibility incorporation payroll tax registration "
         "cashflow runway milestones supporting documents application deadline budget assumptions "

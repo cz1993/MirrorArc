@@ -1,0 +1,3 @@
+Note :
+1. Values may not add up to the total due to rounding.
+2. Related reports can be found at http://reports.ieso.ca/public/IntertieScheduleFlowYear

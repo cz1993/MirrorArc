@@ -14,8 +14,10 @@ related: []
 
 ## Summary
 
+## Evidence
 
-## Details
+## Interpretation
 
+## Open questions
 
-## Links
+## Related

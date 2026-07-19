@@ -5,6 +5,7 @@ _tmp/
 data/
 secrets/
 private/
+_private-overlay/
 
 # Private pilot evidence/results stay outside the public codebase
 _meta/agent-readiness-results.yml

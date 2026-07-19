@@ -1,51 +1,73 @@
 ---
 title: INDEX
-type: moc
+type: hub
 status: active
-domain: governance
+domain: inbox
+created: '2026-01-01'
+updated: '2026-01-01'
 owner: you
-created: 2026-01-01
-updated: 2026-01-01
-tags: [index, moc]
-related: ["[[CLAUDE]]", "[[RETENTION]]"]
+tags:
+- index
+- moc
+related:
+- '[[CLAUDE]]'
+- '[[INDEX]]'
 ---
 
-# Knowledge Base — Index
+# Data Product - Index
 
-The map of the vault. **Start here.** Conventions live in [[CLAUDE]]; the one-screen cheat sheet is
+Welcome. This is the front door for people and AI agents working in this data-product workspace.
+You do not need to understand the folder structure before you begin.
+
+## First five minutes
+
+1. **Name the outcome.** Add the product purpose, users, decisions, and success measures to a note
+   in `10_context/`.
+2. **Register evidence before interpreting it.** Add original files or source references under
+   `20_sources/`; MirrorArc keeps those records authoritative.
+3. **Generate the mirror layer.** Run `mirrorarc plan`, review the proposed actions, then run
+   `mirrorarc sync` to create derived Markdown mirrors without modifying the originals.
+4. **Open the portal.** Run `mirrorarc catalog --html --include-content`, then open `CATALOG.html`.
+   Use Document view for content, Document metadata for trust and lifecycle details, and
+   Relationship map for connected context.
+5. **Build knowledge with restraint.** Update and link existing notes before creating new ones;
+   cite the authoritative source and record important decisions or publication gates.
+
+The workspace contract lives in `_meta/profile.yml`. Human and agent operating rules live in
+[[_meta/agent-rules|agent rules]], and the one-screen reference lives in
 [[_meta/conventions|conventions]].
 
-> [!tip] Two ways to navigate
-> - **This page** — the curated map of function hubs and key entities.
-> - **[[Documents.base|Documents]]** — live tables generated from note frontmatter (Obsidian Bases),
->   so they never drift.
+## What MirrorArc protects
+
+- Original files and repositories remain the source of truth.
+- Generated mirrors are derived, refreshable, searchable, and agent-readable.
+- Curated notes connect evidence, findings, decisions, and operating guidance.
+- Provenance, lifecycle state, retention, and secrets-out rules stay visible.
+- Consolidation is preferred over uncontrolled documentation growth.
 
 ## Starter Domains
 
-Each function gets a **hub note** (`type: moc`) as you populate it. Suggested starter file plan:
-
-| Folder | Covers |
-| --- | --- |
-| `00_inbox/` | unprocessed files, imports, triage notes |
-| `10_governance/` | company identity, ownership, legal, policy, compliance, risk |
-| `20_market/` | market research, positioning, brand, campaigns, partnerships |
-| `30_customers/` | accounts/clients, sales, discovery, proposals, support |
-| `40_delivery/` | products/services, projects, implementations, delivery playbooks |
-| `50_operations/` | internal process, vendors, procurement, IT, security, facilities |
-| `60_finance/` | accounting, tax, payroll, budgets, funding, banking, reporting |
-| `70_people/` | hiring, employees, contractors, onboarding, training |
-| `80_sources/` | repo mirrors, public datasets, source inventories |
+| Domain | Folder | Purpose |
+| --- | --- | --- |
+| `inbox` | `00_inbox` | Triage lane for new sources, questions, and agent drafts. |
+| `context` | `10_context` | Product purpose, stakeholder questions, scope, glossary, and system context. |
+| `sources` | `20_sources` | Original source files, source references, repository fixtures, and provenance records. |
+| `contracts` | `30_data-contracts` | Schemas, semantic definitions, quality expectations, and interface contracts. |
+| `pipelines` | `40_pipelines` | Ingestion, transformation, orchestration, lineage, and validation workflows. |
+| `analysis` | `50_analysis` | Exploratory work, evidence synthesis, findings, and reproducible analytical narratives. |
+| `models` | `60_models` | Model definitions, evaluations, gates, limitations, and monitoring context. |
+| `outputs` | `70_outputs` | Reports, briefings, dashboards, published datasets, and stakeholder-ready artifacts. |
+| `governance` | `80_governance` | Licensing, privacy, security, retention, approvals, risks, controls, and decisions. |
+| `operations` | `90_operations` | Runbooks, incidents, release records, support, freshness, and reliability evidence. |
 
 ## How this knowledge base works
 
-- **Four layers** (raw sources → generated mirrors → wiki → schema) — see [[CLAUDE]].
-- **Function-based file plan** — see [[_meta/domain-map|domain map]].
-- **Every note has frontmatter**; [[Documents.base|Documents]] reads it so the index maintains itself.
-- **Office mirrors** and optional PDF text mirrors live under `_mirrors/`; **repo mirrors** live under `80_sources/repos/`.
-  Originals stay source of truth, with lifecycle state tracked in `_meta/source-manifest.json` and
-  `_meta/repo-manifest.json`, plus generated events in `_meta/sync-audit.jsonl`.
-- **Link over filing**, and **consolidate over creating** (see [[CLAUDE]] §4–5).
+- Source files and repositories remain authoritative.
+- Generated mirrors make sources searchable and reviewable without replacing originals.
+- Curated notes summarize, connect, and cite source-backed evidence.
+- The profile contract defines domains, note types, statuses, templates, and generated views.
 
 ## Governance
 
-[[CLAUDE]] (schema & workflows) · [[RETENTION]] (how long things are kept) · [[_meta/conventions|conventions]] · `log.md`
+[[_meta/agent-rules|agent rules]] - [[RETENTION]] (retention guidance) -
+[[_meta/conventions|conventions]] - `log.md`

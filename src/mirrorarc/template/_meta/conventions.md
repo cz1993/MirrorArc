@@ -1,60 +1,49 @@
 ---
 title: Conventions cheat sheet
-type: guide
+type: note
 status: active
-domain: governance
-created: 2026-01-01
-updated: 2026-01-01
+domain: inbox
+created: '2026-01-01'
+updated: '2026-01-01'
 owner: you
-tags: [meta, conventions]
-related: ["[[CLAUDE]]"]
+tags:
+- meta
+- conventions
+related:
+- '[[CLAUDE]]'
+- '[[INDEX]]'
 ---
 
-# Conventions cheat sheet
+# Conventions Cheat Sheet
 
-`CLAUDE.md` is authoritative. This is the one-screen quick reference.
+`_meta/agent-rules.md` and `_meta/profile.yml` are authoritative. This is the quick reference.
 
-## Frontmatter (every note)
+## Frontmatter
 
-- **required:** `title, type, status, domain, created, updated`
-- **recommended:** `owner, tags, related`, plus entity links `account/program/vendor`
+Required: `title`, `type`, `status`, `domain`, `created`, `updated`
 
-## `domain`
+Optional: `owner`, `tags`, `related`, `source`, `source_url`, `source_format`, `license`, `dataset`, `pipeline`, `model`, `decision`
 
-`intake` · `governance` · `market` · `customers` · `delivery` · `operations` · `finance` ·
-`people` · `sources`
+## Domains
 
-Use `_meta/domain-map.yml` for folder mapping and old-folder aliases.
+`inbox` - `context` - `sources` - `contracts` - `pipelines` - `analysis` - `models` - `outputs` - `governance` - `operations`
 
-## `type`
+## Note Types
 
-`moc` · `entity` · `note` · `guide` · `policy` · `record` · `source-mirror` · `source-ref` · `repo-mirror`
+`hub` - `note` - `source-ref` - `source-mirror` - `dataset` - `data-contract` - `pipeline` - `model` - `evaluation` - `decision` - `risk` - `control` - `runbook` - `report` - `repo-mirror`
 
-## `status`
+## Statuses
 
-`draft` · `active` · `in-review` · `sent` · `signed` · `submitted` · `awarded` · `superseded` · `archived`
+`draft` - `active` - `in-review` - `accepted` - `monitored` - `suppressed` - `superseded` - `archived`
 
-## `tags` — themes only, nested with `/`
+## Generated Mirrors
 
-e.g. `customers/proposal` · `governance/contract` · `finance/tax` · `market/brand` · `operations/runbook`
+- Office mirrors and optional PDF text mirrors live under `_mirrors/`.
+- Repository mirrors live under `20_sources/repos/` by default.
+- Edit originals, not generated mirror bodies.
 
-## Entities go in frontmatter as links, not tags
+## Working Disciplines
 
-`account: "[[Acme Corp]]"` · `program: "[[Some Program]]"` · `vendor: "[[Some Vendor]]"`
-
-## Naming
-
-- dated/versioned: `YYYY-MM-DD_<slug>_<vN>.<ext>`
-- evergreen notes: Title Case or kebab slug (reads well as a wikilink)
-- UPPERCASE only: `README`, `INDEX`, `CLAUDE`, `RETENTION`
-
-## Mirrors
-
-- Office mirrors and optional PDF text mirrors live under `_mirrors/<canonical-source-path>.md`.
-- Repo mirrors live under `80_sources/repos/`.
-- Edit originals, and curate mirror notes only above the auto-generated sentinel.
-
-## The two disciplines
-
-- **Link generously** — every cluster has a `[[hub]]` (moc); every recurring noun an `[[entity]]`.
-- **Consolidate before creating** — extend an existing note rather than spawning a new one (§5).
+- Link generously.
+- Consolidate before creating.
+- Keep source-backed conclusions citeable.

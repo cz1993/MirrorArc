@@ -102,15 +102,6 @@ def test_no_data_scan_flags_renamed_agent_readiness_result_pack_shape(tmp_path: 
     assert "benchmark result packs must stay out of the public repo" in result.stderr
 
 
-def test_no_data_scan_allows_public_agent_readiness_result_pack() -> None:
-    path = ROOT / "examples/government-services-vault/_meta/public-agent-readiness-results.yml"
-
-    result = run_scan(path)
-
-    assert result.returncode == 0, result.stderr
-    assert "OK" in result.stdout
-
-
 def test_no_data_scan_flags_conversion_quality_result_packs(tmp_path: Path) -> None:
     path = tmp_path / "vault" / "_meta" / "conversion-quality-results.yml"
     path.parent.mkdir(parents=True)
@@ -187,14 +178,6 @@ def test_no_data_scan_flags_renamed_agent_readiness_task_pack_shape(tmp_path: Pa
 
     assert result.returncode == 1
     assert "private benchmark task packs must stay out of the public repo" in result.stderr
-
-
-def test_no_data_scan_allows_public_government_agent_readiness_task_pack() -> None:
-    path = ROOT / "examples" / "government-services-vault" / "_meta" / "agent-readiness-tasks.yml"
-
-    result = run_scan(path)
-
-    assert result.returncode == 0, result.stderr
 
 
 def test_no_data_scan_allows_generated_sync_audit_but_scans_text(tmp_path: Path) -> None:
@@ -601,6 +584,46 @@ def test_no_data_scan_flags_payment_card_in_ooxml_custom_xml(tmp_path: Path) -> 
     assert "payment card" in result.stderr
 
 
+def test_no_data_scan_does_not_join_spreadsheet_measurements_into_payment_card(tmp_path: Path) -> None:
+    path = tmp_path / "measurements.xlsx"
+    worksheet = (
+        "<worksheet xmlns='http://schemas.openxmlformats.org/spreadsheetml/2006/main'>"
+        "<sheetData><row>"
+        "<c r='A1'><v>4111</v></c><c r='B1'><v>1111</v></c>"
+        "<c r='C1'><v>1111</v></c><c r='D1'><v>1111</v></c>"
+        "</row></sheetData></worksheet>"
+    )
+    with ZipFile(path, "w") as zf:
+        zf.writestr("xl/worksheets/sheet1.xml", worksheet)
+
+    result = run_scan(path)
+
+    assert "payment card" not in result.stderr
+
+
+def test_no_data_scan_flags_payment_card_in_provenance_allowlisted_pdf(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    (repo / "examples").mkdir()
+    (repo / "examples" / "DATA_PROVENANCE.md").write_text(
+        "# Data Provenance\n\n`synthetic.pdf`\n",
+        encoding="utf-8",
+    )
+    path = repo / "synthetic.pdf"
+    path.write_bytes(b"%PDF-1.4\n4111111111111111\n%%EOF\n")
+
+    result = subprocess.run(
+        [sys.executable, str(SCAN), "--paths", "synthetic.pdf"],
+        cwd=repo,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 1
+    assert "payment card" in result.stderr
+
+
 def test_no_data_scan_flags_unexpected_ooxml_app_metadata(tmp_path: Path) -> None:
     path = tmp_path / "brief.docx"
     app = (
@@ -763,7 +786,7 @@ def test_no_data_scan_blocks_staged_symlink_typechange(tmp_path: Path) -> None:
 
 
 def test_no_data_scan_allows_provenance_listed_example_office_files() -> None:
-    path = ROOT / "examples/northwind-robotics-vault/40_delivery/2026-q1_service_readiness_review.pptx"
+    path = ROOT / "examples/ontario-electricity-evidence-vault/50_analysis/workbooks/historical-demand-profile.xlsx"
 
     result = run_scan(path)
 

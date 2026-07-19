@@ -81,6 +81,14 @@ guidance so reviewers and agents start from the same boundary:
 - macros, scripts, links, or commands discovered in source documents must not be executed during
   catalog or handoff review.
 
+The self-contained `CATALOG.html` Catalog Explorer is subject to the same boundary. The default
+output excludes source and mirror bodies. The explicit `--include-content` option embeds bounded
+Markdown and generated-mirror bodies for local review, which makes that HTML as sensitive as the
+vault and unsuitable for casual sharing. The renderer escapes document-provided HTML and supports
+only a display-oriented Markdown subset; it does not execute document-provided scripts, commands,
+macros, or links. Local context-pack downloads remain paths, lifecycle metadata, provenance, and
+relationships only in both modes.
+
 ## Journaled Incremental State
 
 Stage 1B introduces local derived journal state for changed-file materialization. The journal is

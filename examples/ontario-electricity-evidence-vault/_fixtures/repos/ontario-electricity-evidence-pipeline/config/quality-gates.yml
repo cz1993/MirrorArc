@@ -1,0 +1,13 @@
+schema_version: 1
+gates:
+  - id: annual_demand_complete
+    field: total_twh
+    rule: non_null
+  - id: peak_exceeds_minimum
+    fields: [peak_mw, minimum_mw]
+    rule: left_greater_than_right
+  - id: historical_rows_present
+    field: row_count
+    rule: greater_than
+    threshold: 0
+    failure_action: review

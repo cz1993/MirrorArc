@@ -4,7 +4,7 @@
 sync_github_repos.py — keep markdown mirrors of GitHub repos in the knowledge base.
 
 For each repo in tools/repos.yml, write a mirror note under the active profile's default repo
-mirror folder (`80_sources/repos/` in the packaged business-operations profile) unless
+mirror folder (`20_sources/repos/` in the default data-product profile) unless
 tools/repos.yml overrides it. Each mirror captures the repo's README, docs, and metadata —
 refreshed when the repo's HEAD changes. The repo on GitHub stays the source of truth; the mirror
 makes its knowledge searchable, linkable, and visible in Obsidian. Idempotent: a quick

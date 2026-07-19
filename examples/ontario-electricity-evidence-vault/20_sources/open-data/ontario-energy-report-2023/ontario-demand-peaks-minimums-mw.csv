@@ -1,0 +1,14 @@
+Year,Quantity,MW,EST,Date
+2022,Ontario Peak Demand,"22,607",6:00 PM,2022-07-19
+2023,Ontario Peak Demand,"23,713",5:00 PM,2023-09-05
+2022,Ontario Minimum Demand,"10,485",5:00 AM,2022-05-22
+2023,Ontario Minimum Demand,"10,859",4:00 AM,2023-05-21
+2023,Q1 Ontario Peak Demand,"21,388",7:00 PM,2023-02-03
+2023,Q2 Ontario Peak Demand,"21,463",5:00 PM,2023-06-02
+2023,Q3 Ontario Peak Demand,"23,713",5:00 PM,2023-09-05
+2023,Q4 Ontario Peak Demand,"20,849",5:00 PM,2023-10-03
+2023,Q1 Ontario Minimum Demand,"12,603",4:00 AM,2023-01-02
+2023,Q2 Ontario Minimum Demand,"10,859",4:00 AM,2023-05-21
+2023,Q3 Ontario Minimum Demand,"11,402",4:00 AM,2023-09-24
+2023,Q4 Ontario Minimum Demand,"11,260",4:00 AM,2023-10-08
+,,,,

@@ -36,8 +36,6 @@ jobs:
           tmp_vault="$RUNNER_TEMP/mirrorarc-release-vault"
           mkdir -p "$RUNNER_TEMP/mirrorarc-release-original-documents"
           "$RUNNER_TEMP/mirrorarc-release-venv/bin/mirrorarc" init "$tmp_vault"
-          "$RUNNER_TEMP/mirrorarc-release-venv/bin/vaultwright" --version
-          "$RUNNER_TEMP/mirrorarc-release-venv/bin/python" -c 'import mirrorarc, vaultwright; assert mirrorarc.__version__ == vaultwright.__version__'
           test -f "$tmp_vault/CLAUDE.md"
           test -f "$tmp_vault/tools/catalog_report.py"
           test -f "$tmp_vault/tools/conversion_report.py"
