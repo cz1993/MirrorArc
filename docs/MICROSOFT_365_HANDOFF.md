@@ -18,9 +18,9 @@ For a reviewed pilot or enterprise handoff, use:
 
 - `CATALOG.html` for browser-based inventory review.
 - `CATALOG.md` for agent-readable inventory review.
-- the active Office mirror root (`_mirrors/` in the packaged business-operations profile) for
+- the active Office mirror root (`_mirrors/` in the default `data-product` profile) for
   generated markdown mirrors of Office/PDF-like source records.
-- the active profile's `repo_notes_dir` (`80_sources/repos/` in the packaged business-operations
+- the active profile's `repo_notes_dir` (`20_sources/repos/` in the default `data-product`
   profile) for generated repository mirrors, if configured.
 - `_meta/source-manifest.json`, `_meta/repo-manifest.json`, and `_meta/sync-audit.jsonl` for
   provenance and refresh evidence.

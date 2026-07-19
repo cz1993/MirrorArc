@@ -1,107 +1,92 @@
 # MirrorArc
 
-**Compile changing source collections into governed, profile-driven knowledge workspaces without
-modifying the original records.**
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-2979c9)](https://www.python.org/)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-008f83)](LICENSE)
+[![Status: technical alpha](https://img.shields.io/badge/Status-technical%20alpha-f1902f)](#status)
 
-MirrorArc is a pre-release methodology + small toolkit for source-backed knowledge workspaces.
-The first commercial wedge remains consulting and implementation teams with document-heavy client
-work, but the core is now converging toward profile-driven workspaces for business operations,
-research/learning, software-project documentation, and minimal blank starts. You bring source files,
-a local vault, an AI coding agent (Claude Code, OpenAI Codex, etc.), and optionally
-[Obsidian](https://obsidian.md) as a reference human UI.
+**A governed documentation layer for both people and AI agents.**
 
-MirrorArc is the new project identity for the technical alpha formerly called Vaultwright.
-“Mirror” names the deterministic, source-preserving mirror layer; “Arc” describes the connected
-path from changing source records through provenance and lifecycle state to governed, inspectable
-knowledge.
-See [ADR 0003](docs/adr/0003-mirrorarc-project-identity.md) for the naming decision and technical
-migration boundary.
+MirrorArc is an open-source, local-first Python toolkit that turns changing Office files, PDFs,
+GitHub repositories, datasets, and Markdown notes into a source-backed knowledge workspace. It
+keeps original records authoritative, creates deterministic Markdown mirrors, connects evidence in
+an explorable knowledge graph, and gives agents durable context without adding a vector database.
+
+![MirrorArc beginner landing page showing the Ontario Grid evidence workspace](docs/assets/mirrorarc-index-tutorial.jpg)
+
+## Why MirrorArc exists
+
+Teams do not need another chat window over a folder. They need a documentation layer that improves
+as work progresses and remains inspectable after the chat ends.
+
+| Common failure | MirrorArc's response |
+| --- | --- |
+| Contracts, decks, spreadsheets, repos, and notes stay isolated. | **Linking-first knowledge:** source, mirror, finding, decision, and runbook become navigable relationships. |
+| AI documentation creates more files than anyone can govern. | **Anti-proliferation:** consolidate and update before creating; lint for structural drift and likely overlap. |
+| Generated text quietly replaces the record it came from. | **Source-preserving mirrors:** originals remain authoritative; derived Markdown is content-hashed, refreshable, and reproducible. |
+| Agent context disappears between sessions. | **Durable agent context:** Markdown, frontmatter, provenance, lifecycle state, and metadata-only context packs persist outside a model. |
+| Sensitive or stale material enters an opaque index. | **Visible governance:** secrets-out, retention, licensing, PII boundaries, publication gates, and lifecycle warnings remain explicit. |
+
+## See the connected evidence
+
+The self-contained Catalog Explorer provides three complementary views: a relationship map, a
+provenance and lifecycle inspector, and a rendered document view. The catalog panel is resizable,
+long filenames wrap instead of disappearing, and `INDEX.md` is pinned as the beginner guide.
+
+![MirrorArc relationship map connecting original sources and generated mirrors](docs/assets/mirrorarc-relationship-map.jpg)
+
+![MirrorArc document metadata view showing provenance, authority, lifecycle state, and relationships](docs/assets/mirrorarc-document-metadata.jpg)
+
+## Flagship demo: Ontario Grid evidence workspace
+
+[`examples/ontario-grid-evidence-vault/`](examples/ontario-grid-evidence-vault/) is a 50+ file,
+clean-room data-product example built from OGL Ontario data, metadata-only public references,
+independently authored Office/PDF artifacts, and a synthetic repository fixture. It demonstrates:
+
+- original Office, spreadsheet, presentation, PDF, and repository records connected to Markdown
+  mirrors;
+- contracts, pipelines, analysis, model evaluation, outputs, governance, and operations in one
+  navigable workspace;
+- a deliberately suppressed synthetic model result—7.7% MAPE exceeds a 5% publication threshold;
+- a clear public/private boundary with exact provenance in
+  [`examples/DATA_PROVENANCE.md`](examples/DATA_PROVENANCE.md).
+
+The committed snapshot is educational, not live grid data, forecasting, alerts, or an affiliated
+Ontario energy product.
+
+## Try the demo locally
+
+```bash
+git clone https://github.com/cz1993/MirrorArc.git
+cd MirrorArc
+python3.11 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e .
+
+mirrorarc --root examples/ontario-grid-evidence-vault sync
+mirrorarc --root examples/ontario-grid-evidence-vault catalog --html --include-content
+python -m http.server 8000 --directory examples/ontario-grid-evidence-vault
+```
+
+Open `http://127.0.0.1:8000/CATALOG.html`. Start with the pinned `INDEX.md`, then follow the
+five-minute tour. The `--include-content` output is for local review because it embeds bounded
+Markdown bodies; omit that flag for the safe metadata-only catalog.
+
+## How it works
+
+1. **Plan** what will be mirrored without changing source records.
+2. **Sync** supported Office files, PDFs, and repositories into machine-owned Markdown mirrors.
+3. **Connect** mirrors to curated notes, contracts, findings, decisions, and runbooks.
+4. **Inspect** content, provenance, lifecycle state, and relationships in Markdown, Obsidian, or the
+   portable Catalog Explorer.
+5. **Refresh** incrementally from observed source changes, with full sync retained for recovery and
+   verification.
+
+The default `data-product` profile covers sources, contracts, pipelines, analysis, models, outputs,
+governance, and operations. Additional packaged profiles support business operations,
+research/learning, software-project documentation, and minimal blank starts.
 
 > Inspired by Andrej Karpathy's ["LLM wiki" pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
-> Honest about the landscape — see [`docs/positioning.md`](docs/positioning.md).
-
-## The problem
-
-- **Silos.** Your contracts, decks, spreadsheets, repos, and notes don't know about each other.
-- **"When everything is documented, nothing is."** Naive AI doc-generation *spawns* files until
-  the pile is unusable.
-- **RAG re-derives every time.** Chat-over-your-files tools answer from a vector index and forget;
-  nothing is *built up*.
-
-## What makes MirrorArc different
-
-Most "AI second brain in Obsidian" projects stop at the wiki pattern. MirrorArc leads with the
-parts nobody else ships:
-
-1. **The mirror layer.** Your Office files (`.docx/.pptx/.xlsx`, via Microsoft
-   [markitdown](https://github.com/microsoft/markitdown)) and your **GitHub repos** get
-   auto-generated markdown **mirrors** that refresh when the original changes (content-hashed,
-   idempotent). Office mirrors live under `_mirrors/` so raw source folders stay clean; text-based
-   PDF mirrors are available with `sync_office_md.py --include-pdf` or by setting
-   `office_mirrors.include_pdf: true` in `_meta/mirror-config.yml` for unattended syncs. The
-   original stays the source of truth; the mirror is searchable, linkable, diffable, and easier for
-   agents to inspect than opaque binaries. Generated mirrors are machine-owned; durable human notes
-   belong in curated notes or migrated `_meta/mirror-annotations/` sidecars.
-2. **Linking-first retrieval.** Maps of Content, entity pages, backlinks, and a frontmatter-driven
-   index (Obsidian **Bases**) are the initial retrieval engine. `mirrorarc catalog` also
-   generates a path-and-metadata-only `CATALOG.md` gateway for reviewers and agents that do not use
-   Obsidian. Vector or semantic indexes may help later, but they are not the source of truth.
-3. **Anti-proliferation discipline.** The agent is told to **consolidate and update before
-   creating**, and the linter flags structural drift plus likely note overlap with review-only
-   consolidation suggestions. Restraint is a feature.
-4. **Governance for real business records.** PII isolation, a retention policy, and
-   secrets-stay-out-of-the-vault — because this holds finance, governance, customer, people, and
-   operational records, not just personal notes.
-
-## Who it's for
-
-Small consulting, advisory, implementation, and operations teams that receive messy client or
-engagement document collections and need to turn them into governed, source-linked operating
-knowledge. Owner-operators may benefit later, but the first release is scoped around teams that
-already understand provenance, engagement boundaries, and source preservation.
-
-## How it works (seven layers)
-
-| Layer | What | Who owns it |
-| --- | --- | --- |
-| **Sources** | original files, repositories, exports, and external records | authoritative; never altered by MirrorArc |
-| **Change journal** | future ordered local observations, retries, and materialization checkpoints | operational, derived state |
-| **Mirrors** | machine-generated Markdown and extraction metadata | derived, reproducible artifacts |
-| **Curated knowledge** | human-reviewed notes, syntheses, entities, and decisions | human-governed |
-| **Profile** | domain vocabulary, schemas, templates, views, skills, and benchmarks | versioned contract |
-| **Evidence index** | future full-text/graph cache for retrieval and context assembly | disposable derived cache |
-| **Presentation** | Obsidian, catalogs, Canvas, Explorer, MCP, and context packs | derived interfaces |
-
-Product contract: [`docs/PRODUCT.md`](docs/PRODUCT.md). Sync contract:
-[`docs/SYNC_SPEC.md`](docs/SYNC_SPEC.md). Security model:
-[`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md). Recovery guide:
-[`docs/RECOVERY.md`](docs/RECOVERY.md). Design-partner protocol:
-[`docs/DESIGN_PARTNER_PROTOCOL.md`](docs/DESIGN_PARTNER_PROTOCOL.md).
-Design-partner recruiting:
-[`docs/DESIGN_PARTNER_RECRUITING.md`](docs/DESIGN_PARTNER_RECRUITING.md).
-First external pilot runbook:
-[`docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md`](docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md).
-Stage 3 validation status:
-[`docs/STAGE3_VALIDATION_STATUS.md`](docs/STAGE3_VALIDATION_STATUS.md).
-Validation gate:
-[`docs/VALIDATION_GATE.md`](docs/VALIDATION_GATE.md).
-Conversion review guide:
-[`docs/CONVERSION_REVIEW_GUIDE.md`](docs/CONVERSION_REVIEW_GUIDE.md).
-Release checklist:
-[`docs/RELEASE.md`](docs/RELEASE.md).
-Agent-readiness benchmark:
-[`docs/AGENT_READINESS_BENCHMARK.md`](docs/AGENT_READINESS_BENCHMARK.md).
-Public benchmark results:
-[`docs/AGENT_READINESS_BENCHMARK_RESULTS.md`](docs/AGENT_READINESS_BENCHMARK_RESULTS.md).
-Full write-up: [`docs/methodology.md`](docs/methodology.md).
-Professional review brief: [`docs/MIRRORARC_WHITEPAPER.md`](docs/MIRRORARC_WHITEPAPER.md).
-Current v1 architecture decision:
-[`docs/adr/0001-profile-driven-v1-architecture.md`](docs/adr/0001-profile-driven-v1-architecture.md).
-Journaled incremental materialization decision:
-[`docs/adr/0002-journaled-incremental-materialization.md`](docs/adr/0002-journaled-incremental-materialization.md).
-Project identity decision:
-[`docs/adr/0003-mirrorarc-project-identity.md`](docs/adr/0003-mirrorarc-project-identity.md).
-Finish-line matrix: [`docs/V1_FINISH_LINE.md`](docs/V1_FINISH_LINE.md).
+> See [`docs/positioning.md`](docs/positioning.md) for the product landscape and boundaries.
 
 ## Quick start
 
@@ -110,15 +95,15 @@ Create a vault without cloning MirrorArc itself. The installable command require
 Before the package is published to PyPI, use the Git URL:
 
 ```bash
-uvx --from git+https://github.com/cz1993/MirrorArc.git mirrorarc init --profile business-operations ~/my-business-vault
+uvx --from git+https://github.com/cz1993/MirrorArc.git mirrorarc init --profile data-product ~/my-data-product
 
 # or, with pipx:
-pipx run --spec git+https://github.com/cz1993/MirrorArc.git mirrorarc init --profile business-operations ~/my-business-vault
+pipx run --spec git+https://github.com/cz1993/MirrorArc.git mirrorarc init --profile data-product ~/my-data-product
 ```
 
 Once MirrorArc is published to PyPI, the equivalent short forms are
-`uvx mirrorarc init --profile business-operations ~/my-business-vault` and
-`pipx run mirrorarc init --profile business-operations ~/my-business-vault`.
+`uvx mirrorarc init --profile data-product ~/my-data-product` and
+`pipx run mirrorarc init --profile data-product ~/my-data-product`.
 
 For repeated local use, install the console command once:
 
@@ -131,40 +116,41 @@ pipx install git+https://github.com/cz1993/MirrorArc.git
 mirrorarc --version
 ```
 
-Then open the vault in Obsidian if you want a human UI, point your agent at it (it reads
-`CLAUDE.md` first), and run the installed command from any folder:
+Then open the vault in Obsidian if you want a human UI, point your agent at it (`CLAUDE.md` routes
+all agents to `_meta/agent-rules.md`), and run the installed command from any folder:
 
 ```bash
-mirrorarc --root ~/my-business-vault doctor          # check dependencies and vault structure
-mirrorarc --root ~/my-business-vault plan            # inspect proposed mirror actions first
-mirrorarc --root ~/my-business-vault sync            # mirror Office files and configured repos
-mirrorarc --root ~/my-business-vault status          # review manifest-backed lifecycle state
-mirrorarc --root ~/my-business-vault sync --json     # machine-readable sync evidence for agents/pilots
-mirrorarc --root ~/my-business-vault status --json   # machine-readable lifecycle status
-mirrorarc --root ~/my-business-vault doctor --json   # machine-readable preflight report
-mirrorarc --root ~/my-business-vault conversion --guide   # read-only conversion spot-check + guide
-mirrorarc --root ~/my-business-vault conversion --init-results # private quality review scaffold
-mirrorarc --root ~/my-business-vault conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
-mirrorarc --root ~/my-business-vault migration       # dry-run report for legacy/unknown folders
-mirrorarc --root ~/my-business-vault migration --runbook  # legacy folder move protocol
-mirrorarc --root ~/my-business-vault migration --normalize-frontmatter-domains --worksheet # review domain alias cleanup
-mirrorarc --root ~/my-business-vault recovery --worksheet # review manifest recovery actions
-mirrorarc --root ~/my-business-vault sandbox --source-root /path/to/original-documents
-mirrorarc --root ~/my-business-vault catalog         # generate CATALOG.md inventory gateway
-mirrorarc --root ~/my-business-vault catalog --html  # generate CATALOG.html visual inventory gateway
-mirrorarc --root ~/my-business-vault m365            # Microsoft 365/Copilot handoff readiness
-mirrorarc --root ~/my-business-vault review --json   # summarize metadata-only human review decisions
-mirrorarc --root ~/my-business-vault overlap         # calibrate overlap thresholds without note bodies
-mirrorarc --root ~/my-business-vault pilot           # aggregate pilot evidence, no source content
-mirrorarc --root ~/my-business-vault pilot --worksheet    # redacted Markdown private-pilot summary
-mirrorarc --root ~/my-business-vault benchmark            # validate agent-readiness task pack, if present
-mirrorarc --root ~/my-business-vault benchmark --init-tasks    # create private task scaffold
-mirrorarc --root ~/my-business-vault benchmark --worksheet     # print private benchmark run sheet
-mirrorarc --root ~/my-business-vault benchmark --init-results  # create private result scaffold
-mirrorarc --root ~/my-business-vault benchmark --results _meta/agent-readiness-results.yml --require-prompt-safety # after scoring
+mirrorarc --root ~/my-data-product doctor          # check dependencies and vault structure
+mirrorarc --root ~/my-data-product plan            # inspect proposed mirror actions first
+mirrorarc --root ~/my-data-product sync            # mirror Office files and configured repos
+mirrorarc --root ~/my-data-product status          # review manifest-backed lifecycle state
+mirrorarc --root ~/my-data-product sync --json     # machine-readable sync evidence for agents/pilots
+mirrorarc --root ~/my-data-product status --json   # machine-readable lifecycle status
+mirrorarc --root ~/my-data-product doctor --json   # machine-readable preflight report
+mirrorarc --root ~/my-data-product conversion --guide   # read-only conversion spot-check + guide
+mirrorarc --root ~/my-data-product conversion --init-results # private quality review scaffold
+mirrorarc --root ~/my-data-product conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
+mirrorarc --root ~/my-data-product migration       # dry-run report for legacy/unknown folders
+mirrorarc --root ~/my-data-product migration --runbook  # legacy folder move protocol
+mirrorarc --root ~/my-data-product migration --normalize-frontmatter-domains --worksheet # review domain alias cleanup
+mirrorarc --root ~/my-data-product recovery --worksheet # review manifest recovery actions
+mirrorarc --root ~/my-data-product sandbox --source-root /path/to/original-documents
+mirrorarc --root ~/my-data-product catalog         # generate CATALOG.md inventory gateway
+mirrorarc --root ~/my-data-product catalog --html  # generate the interactive CATALOG.html explorer
+mirrorarc --root ~/my-data-product catalog --html --include-content # local content-review portal
+mirrorarc --root ~/my-data-product m365            # Microsoft 365/Copilot handoff readiness
+mirrorarc --root ~/my-data-product review --json   # summarize metadata-only human review decisions
+mirrorarc --root ~/my-data-product overlap         # calibrate overlap thresholds without note bodies
+mirrorarc --root ~/my-data-product pilot           # aggregate pilot evidence, no source content
+mirrorarc --root ~/my-data-product pilot --worksheet    # redacted Markdown private-pilot summary
+mirrorarc --root ~/my-data-product benchmark            # validate agent-readiness task pack, if present
+mirrorarc --root ~/my-data-product benchmark --init-tasks    # create private task scaffold
+mirrorarc --root ~/my-data-product benchmark --worksheet     # print private benchmark run sheet
+mirrorarc --root ~/my-data-product benchmark --init-results  # create private result scaffold
+mirrorarc --root ~/my-data-product benchmark --results _meta/agent-readiness-results.yml --require-prompt-safety # after scoring
 # edit tools/repos.yml, then:
-mirrorarc --root ~/my-business-vault sync           # mirror configured GitHub repos too
-mirrorarc --root ~/my-business-vault lint           # health check
+mirrorarc --root ~/my-data-product sync           # mirror configured GitHub repos too
+mirrorarc --root ~/my-data-product lint           # health check
 ```
 
 Run `sandbox` from a duplicated pilot vault, not the original document folder. It is read-only and
@@ -175,6 +161,13 @@ Use `review` after spot-checking mirrors, catalogs, or handoff reports. It appen
 decisions to `_meta/review-ledger.jsonl` with artifact hashes, so later changes are reported as
 stale reviews instead of silently preserving old approvals.
 
+The generated `CATALOG.html` is a self-contained Catalog Explorer. It opens on `INDEX.md`, offers
+separate relationship-map, document-metadata, and rendered-document views, preserves explicit
+original-to-mirror lineage, and keeps local context-pack exports metadata-only. The safe default
+does not embed document bodies. Use `catalog --html --include-content` only for a local review copy;
+that opt-in mode embeds bounded Markdown and generated-mirror bodies, so the resulting HTML must be
+protected like the vault itself. Neither mode requires a server or creates an evidence index.
+
 Source checkout fallback:
 
 ```bash
@@ -182,35 +175,47 @@ git clone https://github.com/cz1993/MirrorArc.git mirrorarc && cd mirrorarc
 python3.11 -m pip install -e .
 mirrorarc --version
 mirrorarc profile list
+mirrorarc init --profile data-product ~/my-data-product
 mirrorarc init --profile business-operations ~/my-business-vault
 mirrorarc init --profile research-learning ~/my-research-vault
 mirrorarc init --profile software-project ~/my-software-vault
 mirrorarc init --profile blank ~/my-blank-vault
-mirrorarc --root ~/my-business-vault profile validate
-mirrorarc --root ~/my-business-vault profile diff 0.1.0
-mirrorarc --root ~/my-business-vault profile migrate --plan
-mirrorarc --root ~/my-business-vault profile migrate --write
-mirrorarc --root ~/my-business-vault profile views --check
-mirrorarc --root ~/my-business-vault migrate annotations --plan
-mirrorarc --root ~/my-business-vault plan
+mirrorarc --root ~/my-data-product profile validate
+mirrorarc --root ~/my-data-product profile diff 0.1.0
+mirrorarc --root ~/my-data-product profile migrate --plan
+mirrorarc --root ~/my-data-product profile migrate --write
+mirrorarc --root ~/my-data-product profile views --check
+mirrorarc --root ~/my-data-product migrate annotations --plan
+mirrorarc --root ~/my-data-product plan
 ```
 
-The packaged v1 profiles are `business-operations`, `research-learning`, `software-project`, and
-`blank`. Each initializes from the installable package; non-business profiles get profile-owned
-starter folders, `_meta/profile.yml`, generated scaffold docs, and only the templates declared by
-their contracts.
+The packaged v1 profiles are `data-product` (the default), `business-operations`,
+`research-learning`, `software-project`, and `blank`. Each initializes from the installable
+package with profile-owned folders, `_meta/profile.yml`, generated scaffold docs, and only the
+templates declared by its contract.
 
 Profile contract details: [`docs/PROFILE_SCHEMA.md`](docs/PROFILE_SCHEMA.md).
 
 Step-by-step: [`docs/quickstart.md`](docs/quickstart.md).
 
+## Documentation
+
+- [Product contract](docs/PRODUCT.md) — audience, workflow, outcomes, and non-goals.
+- [Quickstart](docs/quickstart.md) — demo-first setup and daily workflow.
+- [Sync specification](docs/SYNC_SPEC.md) — authority, mirroring, manifests, and refresh behavior.
+- [Security model](docs/SECURITY_MODEL.md) — trust boundaries, prompt safety, and local-review rules.
+- [Profile schema](docs/PROFILE_SCHEMA.md) — configurable domains, note types, folders, and policies.
+- [Methodology](docs/methodology.md) and [whitepaper](docs/MIRRORARC_WHITEPAPER.md) — detailed design
+  rationale and professional review brief.
+- [Positioning](docs/positioning.md) — where MirrorArc fits relative to LLM wikis, RAG, PKM, and
+  document-management tools.
+
 ## Status
 
 **v0 - technical alpha.** The template vault, schema, thin tool CLI, source-installable console
-entry point, sync/lint tools, examples, safety guards, Office/repo manifests, audit logs,
-journaled changed-file materialization, and all four official profile init fixtures work today.
-The v1 finish line now pulls external corpus validation ahead of optional Obsidian adapter,
-indexing, Explorer, and visualization work, with explicit stop/pivot rules in the validation gate.
+entry point, sync/lint tools, the Ontario Grid flagship example, safety guards, Office/repo
+manifests, audit logs, journaled changed-file materialization, and all five official profile init
+fixtures work today.
 Full sync remains the baseline and recovery path; journaled incremental operation is the
 steady-state changed-file path.
 

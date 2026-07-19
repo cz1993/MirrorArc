@@ -60,12 +60,14 @@ def run_cli(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[
     )
 
 
-def test_template_business_operations_profile_validates() -> None:
+def test_template_data_product_profile_validates() -> None:
     profile = load_profile(ROOT / "template" / "_meta" / "profile.yml")
 
     assert profile.schema_version == 1
-    assert profile.id == "business-operations"
-    assert profile.domains["customers"]["folder"] == "30_customers"
+    assert profile.id == "data-product"
+    assert profile.domains["sources"]["folder"] == "20_sources"
+    assert profile.domains["contracts"]["folder"] == "30_data-contracts"
+    assert profile.domains["models"]["folder"] == "60_models"
     assert "source-mirror" in profile.note_types
     assert profile.note_types["source-mirror"]["machine_owned"] is True
     assert profile.note_types["repo-mirror"]["machine_owned"] is True
@@ -78,7 +80,7 @@ def test_template_business_operations_profile_validates() -> None:
     assert profile.policy_defaults["mirror_root"] == "_mirrors"
     assert profile.policy_defaults["mirror_status"] == "active"
     assert profile.policy_defaults["repo_stub_status"] == "draft"
-    assert profile.policy_defaults["context_aliases"] == {"client": "account"}
+    assert profile.policy_defaults["repo_notes_dir"] == "20_sources/repos"
     assert profile.policy_defaults["original_sources_authoritative"] is True
     assert profile.policy_defaults["real_data_in_repo"] is False
     assert "Documents.base" in profile.views
@@ -88,8 +90,7 @@ def test_documents_base_matches_profile_generated_view() -> None:
     vaults = [
         ROOT / "template",
         ROOT / "src" / "mirrorarc" / "template",
-        ROOT / "examples" / "government-services-vault",
-        ROOT / "examples" / "northwind-robotics-vault",
+        ROOT / "examples" / "ontario-grid-evidence-vault",
     ]
 
     for vault in vaults:
@@ -102,13 +103,12 @@ def test_packaged_and_example_profiles_match_template() -> None:
 
     profile_paths = [
         ROOT / "src" / "mirrorarc" / "template" / "_meta" / "profile.yml",
-        ROOT / "examples" / "government-services-vault" / "_meta" / "profile.yml",
-        ROOT / "examples" / "northwind-robotics-vault" / "_meta" / "profile.yml",
+        ROOT / "examples" / "ontario-grid-evidence-vault" / "_meta" / "profile.yml",
     ]
 
     for path in profile_paths:
         assert path.read_bytes() == template_profile
-        assert load_profile(path).id == "business-operations"
+        assert load_profile(path).id == "data-product"
 
 
 def write_profile_with_invalid_runtime_defaults(vault: Path) -> None:
@@ -159,7 +159,7 @@ def test_runtime_profile_content_roots_are_contract_owned(tmp_path: Path) -> Non
     profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
 
     assert "25_research" in profile_content_roots(vault)
-    assert "30_customers" in profile_content_roots(vault)
+    assert "30_data-contracts" in profile_content_roots(vault)
 
 
 def test_runtime_profile_context_aliases_are_contract_owned(tmp_path: Path) -> None:
@@ -167,7 +167,7 @@ def test_runtime_profile_context_aliases_are_contract_owned(tmp_path: Path) -> N
     shutil.copytree(ROOT / "template", vault)
     profile_path = vault / "_meta" / "profile.yml"
     profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
-    profile["policy_defaults"].pop("context_aliases")
+    profile["policy_defaults"].pop("context_aliases", None)
     profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
 
     assert profile_context_aliases(vault) == {}
@@ -185,12 +185,7 @@ def test_runtime_profile_frontmatter_key_order_is_contract_owned(tmp_path: Path)
     shutil.copytree(ROOT / "template", vault)
     profile_path = vault / "_meta" / "profile.yml"
     profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
-    profile["optional_properties"] = [
-        value
-        for value in profile["optional_properties"]
-        if value not in {"account", "client", "program", "vendor"}
-    ]
-    profile["optional_properties"].extend(["research_project", "component"])
+    profile["optional_properties"] = ["research_project", "component"]
     profile["policy_defaults"].pop("context_aliases", None)
     profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
 
@@ -693,6 +688,7 @@ def test_profile_cli_lists_built_in_profile() -> None:
 
     assert result.returncode == 0, result.stderr
     assert "business-operations" in result.stdout
+    assert "data-product" in result.stdout
     assert "research-learning" in result.stdout
     assert "software-project" in result.stdout
     assert "blank" in result.stdout
@@ -705,7 +701,7 @@ def test_profile_cli_lists_all_official_profile_contracts_json() -> None:
     assert result.returncode == 0, result.stderr
     payload = json.loads(result.stdout)
     ids = [item["id"] for item in payload]
-    assert ids == ["blank", "business-operations", "research-learning", "software-project"]
+    assert ids == ["blank", "business-operations", "data-product", "research-learning", "software-project"]
     assert all(item["schema_version"] == 1 for item in payload)
 
 
@@ -731,12 +727,24 @@ def test_profile_cli_shows_non_business_official_profile_contract_json() -> None
     assert data["policy_defaults"]["repo_notes_dir"] == "10_sources/repos"
 
 
+def test_profile_cli_init_defaults_to_data_product(tmp_path: Path) -> None:
+    vault = tmp_path / "vault"
+
+    result = run_cli("init", str(vault))
+
+    assert result.returncode == 0, result.stderr
+    assert "Profile: data-product 0.1.0" in result.stdout
+    assert yaml.safe_load((vault / "_meta" / "profile.yml").read_text(encoding="utf-8"))["id"] == "data-product"
+    assert (vault / "20_sources" / "repos" / ".gitkeep").is_file()
+    assert not (vault / "40_delivery").exists()
+
+
 def test_profile_cli_initializes_and_validates_current_profile(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
 
-    init = run_cli("init", "--profile", "business-operations", str(vault))
+    init = run_cli("init", "--profile", "data-product", str(vault))
     assert init.returncode == 0, init.stderr
-    assert "Profile: business-operations 0.1.0" in init.stdout
+    assert "Profile: data-product 0.1.0" in init.stdout
     assert "Next (with an installed MirrorArc CLI):" in init.stdout
     assert f"mirrorarc --root {vault} doctor" in init.stdout
     assert f"mirrorarc --root {vault} sync --json" in init.stdout
@@ -744,11 +752,11 @@ def test_profile_cli_initializes_and_validates_current_profile(tmp_path: Path) -
 
     validation = run_cli("--root", str(vault), "profile", "validate")
     assert validation.returncode == 0, validation.stderr
-    assert "profile validate: OK business-operations 0.1.0" in validation.stdout
+    assert "profile validate: OK data-product 0.1.0" in validation.stdout
 
     current = run_cli("--root", str(vault), "profile", "show", "--json")
     assert current.returncode == 0, current.stderr
-    assert json.loads(current.stdout)["id"] == "business-operations"
+    assert json.loads(current.stdout)["id"] == "data-product"
 
 
 @pytest.mark.parametrize(
@@ -758,6 +766,11 @@ def test_profile_cli_initializes_and_validates_current_profile(tmp_path: Path) -
             "business-operations",
             {"10_governance", "30_customers", "80_sources"},
             {"10_product", "10_sources", "20_literature"},
+        ),
+        (
+            "data-product",
+            {"10_context", "20_sources/repos", "30_data-contracts", "60_models", "90_operations"},
+            {"10_governance", "20_literature", "30_customers"},
         ),
         (
             "research-learning",
@@ -837,6 +850,7 @@ def test_non_business_profile_init_uses_profile_owned_scaffold_docs(tmp_path: Pa
     ("profile_id", "source_rel"),
     [
         ("business-operations", "40_delivery/stage2-business-profile-smoke.docx"),
+        ("data-product", "20_sources/stage2-data-product-profile-smoke.docx"),
         ("research-learning", "20_literature/stage2-research-profile-smoke.docx"),
         ("software-project", "20_architecture/stage2-software-profile-smoke.docx"),
         ("blank", "80_sources/stage2-blank-profile-smoke.docx"),
@@ -1048,7 +1062,7 @@ def test_profile_cli_migrate_plan_bootstraps_missing_profile_contract(tmp_path: 
 
     assert plan.returncode == 0, plan.stderr
     payload = json.loads(plan.stdout)
-    assert payload["profile_id"] == "business-operations"
+    assert payload["profile_id"] == "data-product"
     assert payload["current_version"] is None
     assert payload["target_version"] == "0.1.0"
     assert {
@@ -1067,9 +1081,9 @@ def test_profile_cli_migrate_write_bootstraps_missing_profile_without_overwrites
     tmp_path: Path,
 ) -> None:
     vault = tmp_path / "vault"
-    init = run_cli("init", "--profile", "business-operations", str(vault))
+    init = run_cli("init", "--profile", "data-product", str(vault))
     assert init.returncode == 0, init.stderr
-    source = vault / "40_delivery" / "private-plan.docx"
+    source = vault / "20_sources" / "private-plan.docx"
     source.parent.mkdir(parents=True, exist_ok=True)
     source.write_bytes(b"private source bytes must not change")
     index = vault / "INDEX.md"
@@ -1077,7 +1091,7 @@ def test_profile_cli_migrate_write_bootstraps_missing_profile_without_overwrites
     index.write_text(custom_index, encoding="utf-8")
     (vault / "_meta" / "profile.yml").unlink()
     (vault / "Documents.base").unlink()
-    shutil.rmtree(vault / "70_people")
+    shutil.rmtree(vault / "90_operations")
 
     write = run_cli("--root", str(vault), "profile", "migrate", "--write", "--json")
 
@@ -1087,12 +1101,12 @@ def test_profile_cli_migrate_write_bootstraps_missing_profile_without_overwrites
     skipped = {(item["action"], item["path"]) for item in payload["write"]["skipped"]}
     assert "_meta/profile.yml" in written_paths
     assert "Documents.base" in written_paths
-    assert "70_people" in written_paths
+    assert "90_operations" in written_paths
     assert ("review-template-drift", "INDEX.md") in skipped
     assert payload["write"]["summary"]["errors"] == 0
-    assert load_profile(vault / "_meta" / "profile.yml").id == "business-operations"
+    assert load_profile(vault / "_meta" / "profile.yml").id == "data-product"
     assert (vault / "Documents.base").exists()
-    assert (vault / "70_people").is_dir()
+    assert (vault / "90_operations").is_dir()
     assert index.read_text(encoding="utf-8") == custom_index
     assert source.read_bytes() == b"private source bytes must not change"
 

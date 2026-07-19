@@ -8,17 +8,42 @@ version = "0.1.0a1"
 description = "Compile changing source collections into governed knowledge workspaces."
 readme = "README.md"
 requires-python = ">=3.11"
+keywords = [
+  "ai-agents",
+  "documentation",
+  "knowledge-graph",
+  "knowledge-management",
+  "local-first",
+  "markdown",
+  "document-processing",
+  "provenance",
+  "governance",
+]
 license = "AGPL-3.0-or-later"
 license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "cz1993" }]
 classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
+  "Topic :: Documentation",
+  "Topic :: Office/Business",
 ]
 dependencies = [
   "markitdown[docx,pptx,xlsx,pdf]>=0.1.0",
   "pyyaml>=6.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/cz1993/MirrorArc"
+Documentation = "https://github.com/cz1993/MirrorArc#readme"
+Issues = "https://github.com/cz1993/MirrorArc/issues"
+Source = "https://github.com/cz1993/MirrorArc"
 
 [project.optional-dependencies]
 watch = [
@@ -39,3 +64,6 @@ mirrorarc = [
   "template/.gitignore",
   "template/**/.gitkeep",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

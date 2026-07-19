@@ -45,7 +45,7 @@ from mirrorarc.changes import watch as watch_module
 from mirrorarc.mirrors import github_repos as repo_sync_module
 from mirrorarc.mirrors import office as office_sync_module
 from mirrorarc.profile_migration import profile_migration_plan, write_profile_migration
-from mirrorarc.profile_scaffold import BUSINESS_OPERATIONS_PROFILE_ID, scaffold_profile_vault
+from mirrorarc.profile_scaffold import DEFAULT_TEMPLATE_PROFILE_ID, scaffold_profile_vault
 from mirrorarc.profiles import ProfileContract, ProfileValidationError, load_profile
 from mirrorarc.views import profile_views_plan, write_profile_views
 
@@ -102,7 +102,7 @@ def ensure_empty_or_missing(target: Path) -> None:
 
 def built_in_profile() -> tuple[ProfileContract, Path] | None:
     profiles = built_in_profiles()
-    return profiles.get("business-operations")
+    return profiles.get(DEFAULT_TEMPLATE_PROFILE_ID)
 
 
 def print_profile_summary(profile: ProfileContract) -> None:
@@ -254,7 +254,7 @@ def load_target_profile(profile_id: str | None = None) -> tuple[ProfileContract,
     profiles = built_in_profiles()
     if not profiles:
         raise ProfileValidationError("no built-in profiles found")
-    target_id = profile_id or "business-operations"
+    target_id = profile_id or DEFAULT_TEMPLATE_PROFILE_ID
     loaded = profiles.get(target_id)
     if not loaded:
         raise ProfileValidationError(f"unknown built-in profile: {target_id}")
@@ -354,7 +354,7 @@ def command_init(args: argparse.Namespace) -> int:
         print(str(exc), file=sys.stderr)
         return 1
     target.mkdir(parents=True, exist_ok=True)
-    if profile.id == BUSINESS_OPERATIONS_PROFILE_ID:
+    if profile.id == DEFAULT_TEMPLATE_PROFILE_ID:
         shutil.copytree(template, target, dirs_exist_ok=True)
     else:
         scaffold_profile_vault(target, template, profile, _profile_path)
@@ -373,6 +373,7 @@ def catalog_args(args: argparse.Namespace) -> list[str]:
     return (
         (["--json"] if args.json else [])
         + (["--html"] if args.html else [])
+        + (["--include-content"] if args.include_content else [])
         + (["--stdout"] if args.stdout else [])
         + (["--check"] if args.check else [])
         + (["--output", str(args.output)] if args.output != Path("CATALOG.md") else [])
@@ -951,7 +952,7 @@ def build_parser() -> argparse.ArgumentParser:
     init = sub.add_parser("init", help="Scaffold a new MirrorArc vault from the template.")
     init.add_argument(
         "--profile",
-        default="business-operations",
+        default=DEFAULT_TEMPLATE_PROFILE_ID,
         help="Official profile to initialize.",
     )
     init.add_argument("target", type=Path)
@@ -1212,9 +1213,17 @@ def build_parser() -> argparse.ArgumentParser:
     review.add_argument("--json", action="store_true", help="Print machine-readable review ledger output.")
     review.add_argument("--check", action="store_true", help="Fail unless every latest review is approved and current.")
     review.set_defaults(func=command_review)
-    catalog = sub.add_parser("catalog", help="Generate a source-path-only documentation catalog.")
+    catalog = sub.add_parser("catalog", help="Generate a documentation catalog and local explorer.")
     catalog.add_argument("--json", action="store_true", help="Print machine-readable catalog JSON.")
     catalog.add_argument("--html", action="store_true", help="Write or print an HTML catalog instead of Markdown.")
+    catalog.add_argument(
+        "--include-content",
+        action="store_true",
+        help=(
+            "Embed bounded Markdown bodies in the HTML explorer for local review. "
+            "The resulting file may contain sensitive workspace content."
+        ),
+    )
     catalog.add_argument("--stdout", action="store_true", help="Print catalog output instead of writing a file.")
     catalog.add_argument("--check", action="store_true", help="Fail if the catalog output is missing or stale.")
     catalog.add_argument(

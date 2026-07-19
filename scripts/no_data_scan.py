@@ -61,12 +61,8 @@ PRIVATE_CONVERSION_RESULT_FILENAMES = {
     "conversion-quality-results.yml",
     "conversion-quality-results.yaml",
 }
-PUBLIC_TASK_PACKS = {
-    "examples/government-services-vault/_meta/agent-readiness-tasks.yml",
-}
-PUBLIC_RESULT_PACKS = {
-    "examples/government-services-vault/_meta/public-agent-readiness-results.yml",
-}
+PUBLIC_TASK_PACKS: set[str] = set()
+PUBLIC_RESULT_PACKS: set[str] = set()
 YAML_SUFFIXES = {".yaml", ".yml"}
 
 DISALLOWED_DATA_EXTS = {
@@ -100,6 +96,22 @@ SECRET_PATTERNS = [
 ]
 
 OOXML_EXTS = {".docx", ".pptx", ".xlsx"}
+OPAQUE_BINARY_EXTS = {
+    ".7z",
+    ".db",
+    ".doc",
+    ".docx",
+    ".gz",
+    ".parquet",
+    ".pdf",
+    ".ppt",
+    ".pptx",
+    ".sqlite",
+    ".tar",
+    ".xls",
+    ".xlsx",
+    ".zip",
+}
 OOXML_TEXT_PART_SUFFIXES = (".xml", ".rels", ".txt", ".csv")
 OOXML_CONTENT_PART_PREFIXES = (
     "customxml/",
@@ -123,7 +135,6 @@ ALLOWED_OFFICE_METADATA = {
     "",
     "MirrorArc",
     "MirrorArc Example",
-    "Northwind Robotics",
 }
 IDENTITY_METADATA_FIELDS = {
     "category",
@@ -295,6 +306,25 @@ def scan_text_patterns(rel: str, text: str, *, include_payment_card: bool = True
     return findings
 
 
+def ooxml_payment_card_text(part_name: str, root: ET.Element) -> str:
+    """Return user-authored OOXML text without joining spreadsheet numeric cells.
+
+    Worksheet XML stores ordinary measurements as adjacent numeric ``<v>`` values. Joining those
+    values with spaces can accidentally form a Luhn-valid 13-19 digit sequence. Text cells are
+    represented by ``<t>`` nodes (or shared strings, scanned in their own part), so restrict
+    worksheet payment-card checks to those nodes while keeping the broader scan for documents,
+    slides, comments, and custom XML.
+    """
+
+    if part_name.lower().startswith("xl/worksheets/"):
+        return " ".join(
+            node_text(node)
+            for node in root.iter()
+            if xml_local_name(node.tag).lower() == "t" and node_text(node)
+        )
+    return " ".join(root.itertext())
+
+
 def looks_like_agent_readiness_results(rel_path: Path, text: str) -> bool:
     if rel_path.suffix.lower() not in YAML_SUFFIXES or "_meta" not in rel_path.parts:
         return False
@@ -402,7 +432,11 @@ def scan_ooxml(rel: str, raw: bytes) -> list[str]:
         part_rel = f"{rel}:{part_name}"
         raw_text = xml.decode("utf-8", errors="ignore")
         content_part = is_ooxml_content_part(part_name) or part_name.lower().endswith(".rels")
-        findings.extend(scan_text_patterns(part_rel, raw_text, include_payment_card=content_part))
+        # Raw OOXML contains numeric IDs, dimensions, and GUIDs that can accidentally satisfy
+        # Luhn. Scan raw markup for explicit secret patterns, but only inspect visible text for
+        # payment-card-like numbers.
+        relationship_part = part_name.lower().endswith(".rels")
+        findings.extend(scan_text_patterns(part_rel, raw_text, include_payment_card=relationship_part))
         if part_name.lower().startswith("docprops/"):
             findings.extend(scan_docprops_metadata(rel, part_name, xml))
         try:
@@ -412,11 +446,18 @@ def scan_ooxml(rel: str, raw: bytes) -> list[str]:
                 for node in part_root.iter()
                 for value in node.attrib.values()
             )
-            text = " ".join([*part_root.itertext(), attr_text])
+            text = " ".join(part_root.itertext())
+            findings.extend(scan_text_patterns(part_rel, attr_text, include_payment_card=relationship_part))
         except ET.ParseError:
             text = raw_text
-        for finding in scan_text_patterns(part_rel, text, include_payment_card=content_part):
-            findings.append(finding)
+            payment_text = raw_text
+        else:
+            payment_text = ooxml_payment_card_text(part_name, part_root)
+        findings.extend(scan_text_patterns(part_rel, text, include_payment_card=False))
+        if content_part:
+            for finding in scan_text_patterns(part_rel, payment_text):
+                if "payment card" in finding:
+                    findings.append(finding)
     return findings
 
 
@@ -504,7 +545,13 @@ def scan_bytes(
         and not private_task_pack_name
     ):
         findings.append(f"{rel}: private benchmark task packs must stay out of the public repo")
-    findings.extend(scan_text_patterns(rel, text))
+    findings.extend(
+        scan_text_patterns(
+            rel,
+            text,
+            include_payment_card=suffix not in OPAQUE_BINARY_EXTS,
+        )
+    )
     return findings
 
 

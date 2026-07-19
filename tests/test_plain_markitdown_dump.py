@@ -96,7 +96,7 @@ def test_plain_markitdown_dump_refuses_existing_output_without_force(tmp_path: P
 
 def test_plain_markitdown_dump_refuses_source_checkout_root() -> None:
     result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--root", str(ROOT / "examples" / "government-services-vault")],
+        [sys.executable, str(SCRIPT), "--root", str(ROOT / "examples" / "ontario-grid-evidence-vault")],
         cwd=ROOT,
         text=True,
         capture_output=True,

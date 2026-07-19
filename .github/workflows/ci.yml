@@ -20,7 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e . pytest
       - name: Compile Python tools
-        run: python -m py_compile template/tools/lint_vault.py template/tools/sync_office_md.py template/tools/sync_github_repos.py template/tools/benchmark_tasks.py template/tools/catalog_report.py template/tools/conversion_report.py template/tools/m365_report.py template/tools/migration_report.py template/tools/overlap_report.py template/tools/pilot_report.py template/tools/recovery_report.py template/tools/review_ledger.py template/tools/sandbox_report.py template/tools/mirrorarc.py src/mirrorarc/annotation_migration.py src/mirrorarc/benchmark.py src/mirrorarc/catalog.py src/mirrorarc/cli.py src/mirrorarc/conversion.py src/mirrorarc/doctor.py src/mirrorarc/lint.py src/mirrorarc/m365.py src/mirrorarc/migration.py src/mirrorarc/overlap.py src/mirrorarc/pilot.py src/mirrorarc/recovery.py src/mirrorarc/review_ledger.py src/mirrorarc/runtime_profile.py src/mirrorarc/sandbox.py src/mirrorarc/views.py src/mirrorarc/mirrors/__init__.py src/mirrorarc/mirrors/github_repos.py src/mirrorarc/mirrors/office.py src/mirrorarc/profile_migration.py src/mirrorarc/__init__.py src/vaultwright/__init__.py scripts/no_data_scan.py scripts/sync_template_copies.py
+        run: python -m py_compile template/tools/lint_vault.py template/tools/sync_office_md.py template/tools/sync_github_repos.py template/tools/benchmark_tasks.py template/tools/catalog_report.py template/tools/conversion_report.py template/tools/m365_report.py template/tools/migration_report.py template/tools/overlap_report.py template/tools/pilot_report.py template/tools/recovery_report.py template/tools/review_ledger.py template/tools/sandbox_report.py template/tools/mirrorarc.py src/mirrorarc/annotation_migration.py src/mirrorarc/benchmark.py src/mirrorarc/catalog.py src/mirrorarc/catalog_explorer.py src/mirrorarc/cli.py src/mirrorarc/conversion.py src/mirrorarc/doctor.py src/mirrorarc/lint.py src/mirrorarc/m365.py src/mirrorarc/migration.py src/mirrorarc/overlap.py src/mirrorarc/pilot.py src/mirrorarc/profiles.py src/mirrorarc/profile_migration.py src/mirrorarc/profile_scaffold.py src/mirrorarc/recovery.py src/mirrorarc/review_ledger.py src/mirrorarc/runtime_profile.py src/mirrorarc/sandbox.py src/mirrorarc/views.py src/mirrorarc/mirrors/__init__.py src/mirrorarc/mirrors/github_repos.py src/mirrorarc/mirrors/office.py src/mirrorarc/__init__.py src/vaultwright/__init__.py scripts/no_data_scan.py scripts/sync_template_copies.py
       - name: Shell syntax
         run: bash -n scripts/init.sh template/tools/sync_all.sh .githooks/pre-commit
       - name: Template copy drift check
@@ -94,7 +94,7 @@ jobs:
           "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" catalog --check
           "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" catalog --html
           "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" catalog --html --check
-          python -c 'import json, pathlib, sys; root = pathlib.Path(sys.argv[1]); (root / "40_delivery").mkdir(exist_ok=True); (root / "_mirrors" / "40_delivery").mkdir(parents=True, exist_ok=True); (root / "40_delivery" / "release-smoke.docx").write_bytes(b"synthetic release smoke source"); (root / "_mirrors" / "40_delivery" / "release-smoke.md").write_text("---\ntitle: Release Smoke\n---\n# Release Smoke\n", encoding="utf-8"); (root / "_meta" / "source-manifest.json").write_text(json.dumps({"version": 1, "records": [{"source_id": "release-smoke-source", "current_source_path": "40_delivery/release-smoke.docx", "mirror_path": "_mirrors/40_delivery/release-smoke.md", "source_format": "docx", "source_size": 30, "lifecycle_state": "clean", "warnings": [], "errors": []}]}), encoding="utf-8")' "$tmp_vault"
+          python -c 'import json, pathlib, sys; root = pathlib.Path(sys.argv[1]); (root / "70_outputs").mkdir(exist_ok=True); (root / "_mirrors" / "70_outputs").mkdir(parents=True, exist_ok=True); (root / "70_outputs" / "release-smoke.docx").write_bytes(b"synthetic release smoke source"); (root / "_mirrors" / "70_outputs" / "release-smoke.md").write_text("---\ntitle: Release Smoke\n---\n# Release Smoke\n", encoding="utf-8"); (root / "_meta" / "source-manifest.json").write_text(json.dumps({"version": 1, "records": [{"source_id": "release-smoke-source", "current_source_path": "70_outputs/release-smoke.docx", "mirror_path": "_mirrors/70_outputs/release-smoke.md", "source_format": "docx", "source_size": 30, "lifecycle_state": "clean", "warnings": [], "errors": []}]}), encoding="utf-8")' "$tmp_vault"
           python - "$tmp_vault" <<'PY'
           import pathlib
           import sys
@@ -109,36 +109,36 @@ jobs:
             - id: smoke-answer
               family: answer
               prompt: What does the release smoke source prove?
-              source_paths: [40_delivery/release-smoke.docx]
-              generated_mirror_paths: [_mirrors/40_delivery/release-smoke.md]
+              source_paths: [70_outputs/release-smoke.docx]
+              generated_mirror_paths: [_mirrors/70_outputs/release-smoke.md]
               curated_paths: []
               success_criteria: [Uses source-backed evidence]
             - id: smoke-reconcile
               family: reconcile
               prompt: Does the release smoke evidence conflict?
-              source_paths: [40_delivery/release-smoke.docx]
-              generated_mirror_paths: [_mirrors/40_delivery/release-smoke.md]
+              source_paths: [70_outputs/release-smoke.docx]
+              generated_mirror_paths: [_mirrors/70_outputs/release-smoke.md]
               curated_paths: []
               success_criteria: [Identifies conflict state]
             - id: smoke-update
               family: update
               prompt: What should be reviewed after a source update?
-              source_paths: [40_delivery/release-smoke.docx]
-              generated_mirror_paths: [_mirrors/40_delivery/release-smoke.md]
+              source_paths: [70_outputs/release-smoke.docx]
+              generated_mirror_paths: [_mirrors/70_outputs/release-smoke.md]
               curated_paths: []
               success_criteria: [Names refresh action]
             - id: smoke-audit
               family: audit
               prompt: What evidence supports the smoke task?
-              source_paths: [40_delivery/release-smoke.docx]
-              generated_mirror_paths: [_mirrors/40_delivery/release-smoke.md]
+              source_paths: [70_outputs/release-smoke.docx]
+              generated_mirror_paths: [_mirrors/70_outputs/release-smoke.md]
               curated_paths: []
               success_criteria: [Finds provenance]
             - id: smoke-consolidate
               family: consolidate
               prompt: Where should release smoke facts live?
-              source_paths: [40_delivery/release-smoke.docx]
-              generated_mirror_paths: [_mirrors/40_delivery/release-smoke.md]
+              source_paths: [70_outputs/release-smoke.docx]
+              generated_mirror_paths: [_mirrors/70_outputs/release-smoke.md]
               curated_paths: []
               success_criteria: [Avoids duplicate notes]
           """
@@ -149,8 +149,8 @@ jobs:
               mode: mirrorarc_markdown
               score: 2
               reviewer_corrections: 0
-              cited_source_paths: [40_delivery/release-smoke.docx]
-              cited_generated_mirror_paths: [_mirrors/40_delivery/release-smoke.md]
+              cited_source_paths: [70_outputs/release-smoke.docx]
+              cited_generated_mirror_paths: [_mirrors/70_outputs/release-smoke.md]
               privacy_or_provenance_violation: false
               prompt_safety_reviewed: true
               prompt_safety_violation: false
@@ -181,7 +181,7 @@ jobs:
       - name: Regenerate example mirrors
         run: |
           tmp_example="$(mktemp -d)"
-          for name in northwind-robotics-vault government-services-vault; do
+          for name in ontario-grid-evidence-vault; do
             cp -R "examples/$name" "$tmp_example/"
             example="$tmp_example/$name"
             python "$example/tools/mirrorarc.py" plan

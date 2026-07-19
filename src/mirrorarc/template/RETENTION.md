@@ -1,44 +1,42 @@
 ---
 title: RETENTION
-type: policy
+type: note
 status: active
-domain: governance
-created: 2026-01-01
-updated: 2026-01-01
+domain: inbox
+created: '2026-01-01'
+updated: '2026-01-01'
 owner: you
-tags: [governance, retention]
-related: ["[[CLAUDE]]", "[[INDEX]]"]
+tags:
+- governance
+- retention
+related:
+- '[[CLAUDE]]'
+- '[[INDEX]]'
 ---
 
-# Document Retention Policy
+# Retention Guidance
 
-> **Starting template — not legal advice.** Adjust the windows to your jurisdiction, industry, and
-> contractual obligations. Defaults below are common North-American small-business norms; confirm
-> with your accountant / lawyer.
+This starter is not legal, compliance, accounting, or records-management advice.
+Replace these notes with profile-appropriate retention rules before production use.
 
-| Category | Suggested retention | Notes |
-| --- | --- | --- |
-| Receipts, invoices, financial statements | 6–7 years | Tax-authority norm (e.g. CRA/IRS) |
-| Tax filings & working papers | 6–7 years | |
-| Signed contracts, NDAs, MSAs, SOWs | 7 years after termination | Surviving clauses may extend |
-| Client deliverables | 5 years after engagement close | Or per contract |
-| Client communications of record | 5 years | Email exports, decisions, sign-offs |
-| Marketing — published | Indefinite | Brand history |
-| Marketing — drafts | 1 year | Then archive & prune |
-| Grant applications (submitted/awarded) | 7 years | Audit evidence |
-| Vendor records | 7 years | |
-| Internal runbooks/reports | While relevant | Archive when stale |
-| `_tmp/` | 30 days | Auto-prunable |
+## Defaults
 
-## Archival process
+| Category | Suggested handling |
+| --- | --- |
+| Source files | Keep originals in the authoritative source system. |
+| Generated mirrors | Regenerate from source evidence when stale. |
+| Curated notes | Archive when superseded or no longer useful. |
+| Scratch work | Keep outside committed history and prune regularly. |
 
-1. Identify documents past their active window.
-2. Move to `_archive/<original-category>/YYYY/` (do not delete).
-3. Set the note's `status:` to `archived`.
-4. Never delete from `_archive/` without explicit human approval.
+## Archival Process
 
-## Privacy & sensitivity
+1. Confirm the material is no longer active.
+2. Move retained curated material under `_archive/` when appropriate.
+3. Set frontmatter `status: archived` when the profile supports that state.
+4. Do not delete source evidence without explicit human approval.
 
-- **PII** stays in designated private areas (e.g. `30_customers/<account>/private/` or
-  `70_people/private/`); never in market/public-facing trees.
-- **Secrets/credentials never live in the vault** — OS keychain or a secrets manager only.
+## Privacy And Sensitivity
+
+- Keep private or regulated data outside this public scaffold.
+- Never store secrets or credentials in the vault.
+- Keep source-backed conclusions citeable to source paths or generated mirrors.

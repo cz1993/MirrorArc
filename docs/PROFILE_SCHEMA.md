@@ -5,9 +5,9 @@ metadata, starter folders, views, skills, and benchmark hooks. Core runtime code
 contract instead of hard-coding business-specific folders, note types, statuses, or required
 properties.
 
-The current schema is `schema_version: 1`. Packaged v1 profile contracts currently include
+The current schema is `schema_version: 1`. Packaged v1 profile contracts include `data-product`,
 `business-operations`, `research-learning`, `software-project`, and `blank`, each at
-`profile_version: 0.1.0`. All four official profiles can be initialized through the package-owned
+`profile_version: 0.1.0`. All five official profiles can be initialized through the package-owned
 `mirrorarc init --profile <id>` flow.
 
 ## Contract File
@@ -18,7 +18,7 @@ Each vault stores its active profile at:
 _meta/profile.yml
 ```
 
-The scaffolded `business-operations` target profile is copied from the compatibility template:
+The default `data-product` profile is copied from the canonical template:
 
 ```text
 template/_meta/profile.yml
@@ -30,10 +30,10 @@ The other packaged profile contracts live under:
 src/mirrorarc/builtin_profiles/
 ```
 
-For `research-learning`, `software-project`, and `blank`, `mirrorarc init` derives starter
+For compatibility and alternate profiles, `mirrorarc init` derives starter
 folders, `_meta/domain-map.yml`, `CLAUDE.md`, `INDEX.md`, `RETENTION.md`, and
-`_meta/conventions.md` from the selected profile contract instead of copying the business
-template vocabulary. Only profile-declared note templates and views are included.
+`_meta/agent-rules.md` from the selected profile contract instead of copying data-product
+vocabulary. Only profile-declared note templates and views are included.
 
 The Stage 2 profile fixture tests generate temporary synthetic Office-source paths under each
 initialized profile, then verify mirror lifecycle/status/lint behavior without committing a real
@@ -43,6 +43,7 @@ Use these commands to inspect and validate the contract:
 
 ```bash
 mirrorarc profile list
+mirrorarc profile show data-product
 mirrorarc profile show business-operations
 mirrorarc profile show research-learning
 mirrorarc init --profile research-learning <vault>
@@ -327,50 +328,50 @@ Use `mirrorarc migration --normalize-frontmatter-domains --worksheet` for frontm
 review, and `mirrorarc migrate annotations --write` for mirror annotation sidecars. Profile
 migration and annotation migration are separate safety boundaries.
 
-## Current `business-operations` Shape
+## Default `data-product` Shape
 
 The current packaged profile defines these canonical domains:
 
 ```text
-intake -> 00_inbox
-governance -> 10_governance
-market -> 20_market
-customers -> 30_customers
-delivery -> 40_delivery
-operations -> 50_operations
-finance -> 60_finance
-people -> 70_people
-sources -> 80_sources
+inbox -> 00_inbox
+context -> 10_context
+sources -> 20_sources
+contracts -> 30_data-contracts
+pipelines -> 40_pipelines
+analysis -> 50_analysis
+models -> 60_models
+outputs -> 70_outputs
+governance -> 80_governance
+operations -> 90_operations
 ```
 
 Its current generated-output defaults are:
 
 ```text
-repo_notes_dir -> 80_sources/repos
+repo_notes_dir -> 20_sources/repos
 mirror_mode -> dedicated
 mirror_root -> _mirrors
 mirror_status -> active
 repo_stub_status -> draft
-context_aliases -> client: account
 ```
 
 Allowed note types are:
 
 ```text
-moc, entity, note, guide, policy, record, source-mirror, source-ref, repo-mirror
+hub, note, source-ref, source-mirror, dataset, data-contract, pipeline, model, evaluation,
+decision, risk, control, runbook, report, repo-mirror
 ```
 
 Allowed statuses are:
 
 ```text
-draft, active, in-review, sent, signed, submitted, awarded, superseded, archived
+draft, active, in-review, accepted, monitored, suppressed, superseded, archived
 ```
 
-The packaged business profile marks `source-mirror` and `repo-mirror` as machine-owned note types,
+The default profile marks `source-mirror` and `repo-mirror` as machine-owned note types,
 marks `draft` and `in-review` as attention states, and marks `superseded` and `archived` as
 inactive states for overlap/lint calibration.
 
-These values belong to the `business-operations` profile, not the long-term core.
-`research-learning`, `software-project`, and `blank` scaffolds use their own package-owned
-domains, note types, statuses, policy defaults, views, and benchmark hooks instead of inheriting
-the business vocabulary.
+These values belong to `data-product`, not the long-term core. `business-operations`,
+`research-learning`, `software-project`, and `blank` scaffolds use their own package-owned domains,
+note types, statuses, policy defaults, views, and benchmark hooks.

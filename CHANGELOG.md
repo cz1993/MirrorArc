@@ -6,24 +6,41 @@ All notable changes to MirrorArc are documented here. Format loosely follows
 ## [Unreleased]
 
 ### Changed
+- Replaced the two legacy example vaults with the 50+ file Ontario Grid evidence workspace: 12
+  OGL Ontario CSVs plus source notes, 49 curated knowledge notes, 12 authored Office/PDF artifacts,
+  and an independently authored synthetic repository fixture. IESO and OEB pages remain
+  metadata-only references, and private project material is confined to an ignored overlay.
+- Made `data-product` the default profile with source, contract, pipeline, analysis, model, output,
+  governance, and operations domains; retained `business-operations` as a compatibility profile.
+- Replaced legacy note templates with data-product templates and consolidated runtime agent
+  guidance into `_meta/agent-rules.md`, with short `CLAUDE.md` and `AGENTS.md` entrypoints.
+- Removed internal prompt, ADR, revision, pilot-status, validation-gate, benchmark-result, and
+  handoff-planning documents from the public user-facing documentation set.
+- Replaced the previous static `CATALOG.html` dashboard with a self-contained Catalog Explorer that
+  adds profile-aware browsing and search, 1–3 hop relationship mapping, explicit original-to-mirror
+  lineage, distinct metadata and document views, an `INDEX.md` beginner landing, an evidence
+  inspector, and local metadata-only context-pack exports without adding a server or evidence index.
+- Reworked the graph as an adaptive layered layout with separated orthogonal routing lanes, fixed
+  card ports, focus-only relationship labels, hover emphasis, and responsive inspector behavior to
+  prevent node, line, and label collisions.
+- Made the catalog panel mouse- and keyboard-resizable, replaced single-line filename truncation
+  with readable wrapping and full-title affordances, and pinned `INDEX.md` above domain collections
+  as a dedicated beginner guide. Reworked the default and Ontario Grid indexes into five-minute
+  tutorials, and added screenshot-led public-repository onboarding plus discovery metadata.
+- Kept the replacement catalog UI inside an explicit security boundary: the default remains
+  metadata-only, while `--include-content` creates a local-review HTML copy containing bounded,
+  safely rendered Markdown and generated-mirror bodies. Original records remain authoritative and
+  context-pack downloads remain metadata-only in both modes.
 - Renamed the project from Vaultwright to **MirrorArc**; the distribution, canonical Python namespace, CLI,
   repository URLs, docs, templates, examples, benchmark mode, CI/release workflows, and local
   derived-state path now use the MirrorArc identity.
 - Kept narrow technical-alpha compatibility for the previous console command, Python namespace,
   environment variables, benchmark mode, and `.vaultwright/state.sqlite` journal path while all
   new output and documentation use MirrorArc.
-- Marked dated whitepaper, progress-audit, and mega-prompt files as historical so the current
-  Stage 3 validation gate remains the obvious execution authority.
-- Aligned the CodeX continuation prompt with the current Stage 3 external-validation gate so future
-  autonomous loops do not resume stale Stage 1 or sample-corpus work.
-- Tightened the design-partner pilot protocol and worksheet around package-first commands, strict
-  benchmark validation, and the second-sync self-service success gate.
-- Aligned the pilot worksheet's aggregate evidence examples with the installed package command,
-  keeping the vault-local wrapper documented only as a fallback.
+- Removed dated planning copies, revision snapshots, development prompts, and standalone ADR files;
+  the current product, profile, sync, security, and naming contracts now carry the durable decisions.
 - Updated the primary benchmark baseline from `document_chat_transcript` to
   `plain_markitdown_dump`, while preserving legacy task-pack compatibility.
-- Pulled external corpus validation ahead of Obsidian adapter, evidence-index, Explorer, and
-  visualization work in the controlling v1 docs.
 - Marked experimental report/scaffold command surfaces in CLI help while preserving compatibility
   commands.
 - Clarified the whitepaper's mirror-layer wording: MirrorArc mirrors are manifest-backed,
@@ -33,25 +50,10 @@ All notable changes to MirrorArc are documented here. Format loosely follows
 ### Added
 - Added `scripts/create_plain_markitdown_dump.py`, a private external-pilot helper that creates
   the required `plain_markitdown_dump` benchmark baseline outside the public source checkout.
-- Added a package-version CLI smoke check (`mirrorarc --version`) and wired it into
-  package-first onboarding plus the external-pilot runbook.
-- Added the 2026-07-03 independent project review to `docs/revisions/` so the active Stage 3
-  execution rationale is preserved with the repository history.
-- Added a first external pilot runbook that turns an accepted design-partner attempt into a
-  private-evidence first-run, benchmark, second-sync, and follow-up sequence.
-- Added a public-safe Stage 3 validation status ledger for external design-partner attempts and
-  gate counts without participant names, private paths, source text, or mirror content.
-- Added a design-partner recruiting and pre-screen packet so Stage 3 external validation can move
-  from protocol-only documentation to scheduled pilot attempts without starting gated Phase 2 work.
-- Added an explicit validation gate documenting benchmark, self-service, expansion, and evidence
-  stop/pivot rules before adapter, index, Explorer, connector, or visualization expansion.
 - Added reproducible reviewed-result generation for the messy synthetic benchmark corpus and
   published its aggregate dogfood scores.
 - Added a reproducible messy synthetic benchmark corpus generator for the review-plan 200-file
   baseline, including task-pack, plain-dump, private-result-scaffold, and run-sheet artifacts.
-- Added the first public synthetic agent-readiness benchmark result packet for the
-  government-services example, plus an aggregate results write-up and scanner/test coverage that
-  keeps private result packs blocked.
 - Added package-first `uvx`/`pipx` onboarding guidance and updated `mirrorarc init` next-step
   output to point beginners at the installed console command plus JSON pilot evidence checks.
 - Added structured top-level `--json` output for `mirrorarc sync`, `mirrorarc status`, and

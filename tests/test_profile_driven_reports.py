@@ -9,8 +9,21 @@ import sys
 
 import yaml
 
+from mirrorarc.profile_scaffold import scaffold_profile_vault
+from mirrorarc.profiles import load_profile as load_profile_contract
+
 
 ROOT = Path(__file__).resolve().parents[1]
+BUSINESS_PROFILE_PATH = ROOT / "src" / "mirrorarc" / "builtin_profiles" / "business-operations.yml"
+
+
+def copy_business_operations_template(vault: Path) -> None:
+    scaffold_profile_vault(
+        vault,
+        ROOT / "template",
+        load_profile_contract(BUSINESS_PROFILE_PATH),
+        BUSINESS_PROFILE_PATH,
+    )
 
 
 def package_cli_env() -> dict[str, str]:
@@ -627,7 +640,7 @@ def test_migration_uses_profile_when_domain_map_missing(tmp_path: Path) -> None:
 
 def test_migration_blocks_domain_map_folder_drift_from_profile(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     domain_map_path = vault / "_meta" / "domain-map.yml"
     domain_map = yaml.safe_load(domain_map_path.read_text(encoding="utf-8"))
     domain_map["domains"]["market"]["folder"] = "99_market"
@@ -1158,7 +1171,7 @@ def test_package_cli_overlap_uses_profile_machine_owned_note_type_flags(tmp_path
 
 def test_package_cli_migration_skips_profile_machine_owned_frontmatter_domains(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     add_research_repo_profile(vault)
     profile_path = vault / "_meta" / "profile.yml"
     profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
@@ -1302,7 +1315,7 @@ def test_package_cli_pilot_blocks_invalid_profile_contract_before_benchmark_disc
 
 def test_package_cli_benchmark_uses_configured_office_mirror_root(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     set_office_mirror_root(vault)
     source = vault / "40_delivery" / "brief.docx"
     mirror = vault / "_generated" / "40_delivery" / "brief.md"
@@ -1624,7 +1637,7 @@ def test_package_cli_review_accepts_profile_machine_owned_note_type(tmp_path: Pa
 def test_package_cli_reports_use_configured_office_mirror_root(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     source_root = tmp_path / "source-root"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     source_root.mkdir()
     set_office_mirror_root(vault)
     source = vault / "40_delivery" / "brief.docx"

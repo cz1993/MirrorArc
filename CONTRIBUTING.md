@@ -33,8 +33,8 @@ git commit -s -m "your message"     # adds: Signed-off-by: Your Name <you@exampl
 - If you touched `template/` or `template/tools/`, run
   `python3.11 scripts/sync_template_copies.py --write`, then
   `python3.11 scripts/sync_template_copies.py --check` before testing.
-- If you touched example fixtures or mirror behavior, regenerate and lint temporary copies of
-  `examples/northwind-robotics-vault/` and `examples/government-services-vault/` instead of
-  committing generated mirrors, manifests, or audit logs.
+- If you touched example fixtures or mirror behavior, regenerate and lint a temporary copy of
+  `examples/ontario-grid-evidence-vault/` instead of committing generated mirrors, manifests, or
+  audit logs.
 - Run `python3.11 -m pytest` and the no-data scan before requesting review.
 - Add/adjust docs in the same PR when behavior changes.

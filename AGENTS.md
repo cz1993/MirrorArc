@@ -1,8 +1,9 @@
 # AGENTS.md — rules for any agent working on the MirrorArc **codebase**
 
-> This governs development of MirrorArc itself (CodeX, Claude, etc.). It is **not** the schema
-> for a user's vault — that lives in `template/CLAUDE.md`. Read `docs/CODEX_KICKOFF_PROMPT.md` for
-> the current mission, and `README.md` + `docs/` for context.
+> This governs development of MirrorArc itself (Codex, Claude, etc.). It is **not** the schema
+> for a user's vault — that lives in `template/_meta/profile.yml`, with runtime guidance in
+> `template/_meta/agent-rules.md`. Read `README.md`, `docs/PRODUCT.md`,
+> and the relevant public specification under `docs/` before changing behavior.
 
 ## What this repo is
 
@@ -28,8 +29,8 @@ templates, tests, and *sample* data only.
 - Keep the safeguards working: `.gitignore` data/secret patterns, the CI "no-data" scan, and the
   pre-commit hook. Treat a tripped guard as a release blocker.
 - **Sample data is allowed and encouraged** — but only (a) synthetic/fictional data you generate,
-  or (b) genuinely public, permissively-licensed (CC0 / public-domain / CC-BY / MIT) files with
-  documented provenance + license. See the kickoff prompt's "Sample-data hunt."
+  or (b) genuinely public, permissively licensed (CC0 / public-domain / CC-BY / MIT) files with
+  documented provenance and licence in `examples/DATA_PROVENANCE.md`.
 
 ## Protect the differentiators
 

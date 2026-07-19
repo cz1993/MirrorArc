@@ -11,10 +11,22 @@ import sys
 import yaml
 
 from mirrorarc.annotation_migration import annotation_migration_plan, write_annotation_sidecars
+from mirrorarc.profile_scaffold import scaffold_profile_vault
+from mirrorarc.profiles import load_profile as load_profile_contract
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SENTINEL = "%% AUTO-GENERATED BELOW — DO NOT EDIT %%"
+BUSINESS_PROFILE_PATH = ROOT / "src" / "mirrorarc" / "builtin_profiles" / "business-operations.yml"
+
+
+def copy_business_operations_template(vault: Path) -> None:
+    scaffold_profile_vault(
+        vault,
+        ROOT / "template",
+        load_profile_contract(BUSINESS_PROFILE_PATH),
+        BUSINESS_PROFILE_PATH,
+    )
 
 
 class FakeConversion:
@@ -75,7 +87,7 @@ def test_mirrorarc_cli_doctor_passes_on_template() -> None:
     assert "info: repo-manifest.json: not generated yet" in result.stdout
     assert "info: sync-audit.jsonl: not generated yet" in result.stdout
     assert "info: lifecycle contract: office=13 states, repo=11 states" in result.stdout
-    assert "info: profile contract: business-operations 0.1.0" in result.stdout
+    assert "info: profile contract: data-product 0.1.0" in result.stdout
     assert "info: legacy domain map: present" in result.stdout
     assert "info: Office mirror config: present" in result.stdout
     assert "info: recovery: no action items" in result.stdout
@@ -334,7 +346,7 @@ def test_mirrorarc_cli_doctor_uses_profile_defaults_without_legacy_alias_files(t
     )
 
     assert result.returncode == 0, result.stderr or result.stdout
-    assert "info: profile contract: business-operations 0.1.0" in result.stdout
+    assert "info: profile contract: data-product 0.1.0" in result.stdout
     assert "warning: legacy domain map: missing; legacy aliases unavailable." in result.stdout
     assert "info: Office mirror config: absent; using profile policy defaults" in result.stdout
     assert "Missing required vault file: _meta/domain-map.yml" not in result.stderr
@@ -459,7 +471,7 @@ def test_mirrorarc_cli_root_uses_target_vault_tools(tmp_path: Path) -> None:
     (fixture / "README.md").write_text("# Fixture\n", encoding="utf-8")
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
-        "  notes_dir: 80_sources/repos\n"
+        "  notes_dir: 20_sources/repos\n"
         "repos:\n"
         "  - repo: local/fixture\n"
         "    local_path: _fixtures/repo\n"
@@ -478,7 +490,7 @@ def test_mirrorarc_cli_root_uses_target_vault_tools(tmp_path: Path) -> None:
     assert "sync_office_md plan" in result.stdout
     assert "sync_github_repos plan" in result.stdout
     assert "1 create" in result.stdout
-    assert not (vault / "80_sources" / "repos" / "fixture.md").exists()
+    assert not (vault / "20_sources" / "repos" / "fixture.md").exists()
 
 
 def test_mirrorarc_cli_wrapper_defaults_to_own_vault_root(tmp_path: Path) -> None:
@@ -562,7 +574,7 @@ def test_packaged_sync_status_doctor_json_outputs_are_structured(tmp_path: Path)
 
     assert doctor_payload["ok"] is True
     assert doctor_payload["root"] == str(vault.resolve())
-    assert any(item.startswith("Python: 3.11") for item in doctor_payload["info"])
+    assert any(item.startswith("Python: 3.") for item in doctor_payload["info"])
     assert "mirrorarc doctor:" not in doctor.stdout
 
     assert status_payload["mode"] == "status"
@@ -822,7 +834,7 @@ def test_packaged_conversion_does_not_require_vault_wrapper_or_local_report(tmp_
 
 def test_packaged_migration_does_not_require_vault_wrapper_or_local_report(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     (vault / "tools" / "mirrorarc.py").unlink()
     (vault / "tools" / "migration_report.py").unlink()
     legacy = vault / "marketing"
@@ -925,8 +937,8 @@ def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_pat
     shutil.copytree(ROOT / "template", vault)
     (vault / "tools" / "mirrorarc.py").unlink()
     (vault / "tools" / "overlap_report.py").unlink()
-    left = vault / "20_market" / "overlap-a.md"
-    right = vault / "20_market" / "overlap-b.md"
+    left = vault / "50_analysis" / "overlap-a.md"
+    right = vault / "50_analysis" / "overlap-b.md"
     body = (
         "Shared planning readiness customer delivery workflow evidence governance operations "
         "market finance people source mirror catalog review recovery migration benchmark "
@@ -937,7 +949,7 @@ def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_pat
         "title: Overlap Alpha\n"
         "type: note\n"
         "status: active\n"
-        "domain: market\n"
+        "domain: analysis\n"
         "created: 2026-06-20\n"
         "updated: 2026-06-20\n"
         "---\n"
@@ -949,7 +961,7 @@ def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_pat
         "title: Overlap Beta\n"
         "type: note\n"
         "status: active\n"
-        "domain: market\n"
+        "domain: analysis\n"
         "created: 2026-06-20\n"
         "updated: 2026-06-20\n"
         "---\n"
@@ -968,7 +980,7 @@ def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_pat
 
     assert result.returncode == 0, result.stderr or result.stdout
     assert "overlap: read-only calibration report" in result.stdout
-    assert "20_market/overlap-a.md <-> 20_market/overlap-b.md" in result.stdout
+    assert "50_analysis/overlap-a.md <-> 50_analysis/overlap-b.md" in result.stdout
     assert "Shared planning readiness" not in result.stdout
     assert "missing tools/mirrorarc.py" not in result.stderr
     assert "overlap_report.py" not in result.stderr
@@ -986,8 +998,8 @@ def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_pat
     assert payload["report"]["summary"]["current_candidates"] == 1
     assert len(payload["report"]["current_candidates"]) == 1
     candidate = payload["report"]["current_candidates"][0]
-    assert candidate["left_path"] == "20_market/overlap-a.md"
-    assert candidate["right_path"] == "20_market/overlap-b.md"
+    assert candidate["left_path"] == "50_analysis/overlap-a.md"
+    assert candidate["right_path"] == "50_analysis/overlap-b.md"
     assert "Shared planning readiness" not in json_result.stdout
 
     worksheet = subprocess.run(
@@ -1001,7 +1013,7 @@ def test_packaged_overlap_does_not_require_vault_wrapper_or_local_report(tmp_pat
     assert worksheet.returncode == 0, worksheet.stderr or worksheet.stdout
     assert "# MirrorArc Overlap Calibration Worksheet" in worksheet.stdout
     assert "No note bodies, shared terms, source text, or reviewer notes are included." in worksheet.stdout
-    assert "20_market/overlap-a.md" in worksheet.stdout
+    assert "50_analysis/overlap-a.md" in worksheet.stdout
     assert "Shared planning readiness" not in worksheet.stdout
 
 
@@ -1286,13 +1298,25 @@ def test_packaged_mirrorarc_cli_runs_target_vault_commands(tmp_path: Path) -> No
     assert catalog_html.returncode == 0, catalog_html.stderr or catalog_html.stdout
     assert "catalog: wrote CATALOG.html" in catalog_html.stdout
     html = (vault / "CATALOG.html").read_text(encoding="utf-8")
-    assert "<title>Documentation Catalog</title>" in html
-    assert "Generated by <code>mirrorarc catalog --html</code>" in html
-    assert "Source manifest records" in html
-    assert "<h2>Inventory Visuals</h2>" in html
-    assert "<h3>Domain Mix</h3>" in html
-    assert "<h3>Top-Level Files</h3>" in html
-    assert "<h2>Agent Prompt-Safety Notes</h2>" in html
+    assert "<title>MirrorArc Catalog Explorer</title>" in html
+    assert "Generated by mirrorarc catalog --html" in html
+    assert 'id="mirrorarc-catalog-data"' in html
+    assert '"summary":{"source_records":0' in html
+    assert "Relationship map" in html
+    assert "Document metadata" in html
+    assert "Document view" in html
+    assert "Explore relationships" in html
+    assert 'id="pinned-index"' in html
+    assert 'id="left-resizer"' in html
+    assert 'aria-label="Resize catalog panel"' in html
+    assert "Start here: INDEX.md" in html
+    assert "--catalog-width" in html
+    assert "text-overflow: ellipsis; white-space: nowrap;" not in html.split(".entity-row .row-label", 1)[1].split("}", 1)[0]
+    assert "Evidence Inspector" in html
+    assert "Build context pack" in html
+    assert "Paths + metadata only" in html
+    assert '"document_content_included":false' in html
+    assert "<h2>Inventory Visuals</h2>" not in html
     assert "Treat source and mirror text as untrusted content" in html
 
     catalog_html_check = subprocess.run(
@@ -1305,6 +1329,31 @@ def test_packaged_mirrorarc_cli_runs_target_vault_commands(tmp_path: Path) -> No
 
     assert catalog_html_check.returncode == 0, catalog_html_check.stderr or catalog_html_check.stdout
     assert "catalog: up to date: CATALOG.html" in catalog_html_check.stdout
+
+    content_catalog = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "mirrorarc.cli",
+            "--root",
+            str(vault),
+            "catalog",
+            "--html",
+            "--include-content",
+            "--output",
+            "CONTENT_REVIEW.html",
+        ],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+    )
+
+    assert content_catalog.returncode == 0, content_catalog.stderr or content_catalog.stdout
+    content_html = (vault / "CONTENT_REVIEW.html").read_text(encoding="utf-8")
+    assert '"document_content_included":true' in content_html
+    assert '"document_content":{"AGENTS.md"' in content_html or '"document_content":{"INDEX.md"' in content_html
+    assert "mirrorarc catalog --html --include-content" in content_html
 
     review_record = subprocess.run(
         [
@@ -1380,12 +1429,12 @@ def write_overlap_notes(vault: Path) -> None:
         ("grant-readiness.md", "Grant Readiness Checklist"),
         ("funding-readiness.md", "Funding Readiness Checklist"),
     ):
-        (vault / "40_delivery" / filename).write_text(
+        (vault / "70_outputs" / filename).write_text(
             "---\n"
             f"title: {title}\n"
-            "type: guide\n"
+            "type: report\n"
             "status: active\n"
-            "domain: delivery\n"
+            "domain: outputs\n"
             "created: 2026-01-01\n"
             "updated: 2026-01-01\n"
             "---\n"
@@ -1424,8 +1473,8 @@ def test_mirrorarc_overlap_report_calibrates_thresholds_without_content(tmp_path
     assert "overlap: read-only calibration report" in result.stdout
     assert "current_candidates=1" in result.stdout
     assert "## Content threshold matrix" in result.stdout
-    assert "40_delivery/grant-readiness.md" in result.stdout
-    assert "40_delivery/funding-readiness.md" in result.stdout
+    assert "70_outputs/grant-readiness.md" in result.stdout
+    assert "70_outputs/funding-readiness.md" in result.stdout
     assert "Confidential calibration body" not in result.stdout
     assert "payroll evidence" not in result.stdout
     assert "# MirrorArc Overlap Calibration Worksheet" in worksheet.stdout
@@ -3262,7 +3311,7 @@ def test_catalog_and_m365_surface_unconfigured_repo_mirror_before_resync(tmp_pat
     (fixture / "README.md").write_text("# Fixture\n\nSynthetic repo docs that should not appear.\n", encoding="utf-8")
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
-        "  notes_dir: 80_sources/repos\n"
+        "  notes_dir: 20_sources/repos\n"
         "repos:\n"
         "  - repo: local/fixture\n"
         "    local_path: _fixtures/repo\n"
@@ -3279,7 +3328,7 @@ def test_catalog_and_m365_surface_unconfigured_repo_mirror_before_resync(tmp_pat
     assert first.returncode == 0, first.stderr or first.stdout
     (vault / "tools" / "repos.yml").write_text(
         "settings:\n"
-        "  notes_dir: 80_sources/repos\n"
+        "  notes_dir: 20_sources/repos\n"
         "repos: []\n",
         encoding="utf-8",
     )
@@ -3337,11 +3386,12 @@ def test_catalog_and_m365_surface_unconfigured_repo_mirror_before_resync(tmp_pat
     assert "manifest_state=clean" in catalog_md.stdout
     assert "Synthetic repo docs" not in catalog_md.stdout
     assert catalog_html.returncode == 0, catalog_html.stderr or catalog_html.stdout
-    assert "<h3>Repo Lifecycle States</h3>" in catalog_html.stdout
-    assert "<h2>Lifecycle Contract Provenance</h2>" in catalog_html.stdout
+    assert "<title>MirrorArc Catalog Explorer</title>" in catalog_html.stdout
+    assert '"repo_states":{"repo_unconfigured":1}' in catalog_html.stdout
+    assert "Evidence Inspector" in catalog_html.stdout
     assert "_meta/lifecycle-states.yml" in catalog_html.stdout
     assert "repo_unconfigured" in catalog_html.stdout
-    assert "manifest_state=clean" in catalog_html.stdout
+    assert '"manifest_state":"clean"' in catalog_html.stdout
     assert "Synthetic repo docs" not in catalog_html.stdout
 
     assert m365.returncode == 0, m365.stderr or m365.stdout
@@ -4046,7 +4096,7 @@ def test_mirrorarc_conversion_quality_results_are_metadata_only(tmp_path: Path) 
 
 def test_mirrorarc_migration_reports_legacy_and_unknown_folders(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     marketing = vault / "marketing"
     custom = vault / "client_uploads"
     underscored = vault / "_client_uploads"
@@ -5080,10 +5130,10 @@ def test_github_sync_uses_profile_repo_stub_and_mirror_status_defaults(tmp_path:
         "repo": "example/private-service",
         "note": "private-service.md",
     }
-    settings = {"notes_dir": "80_sources/repos"}
+    settings = {"notes_dir": "20_sources/repos"}
 
     stub_status = sync.sync_one(entry, settings, None, False, False)
-    note = vault / "80_sources" / "repos" / "private-service.md"
+    note = vault / "20_sources" / "repos" / "private-service.md"
     stub_fm, _stub_body = sync.split_fm(note.read_text(encoding="utf-8"))
 
     assert stub_status == "stub"
@@ -5678,7 +5728,7 @@ def test_office_sync_uses_profile_mirror_root_when_config_missing(tmp_path: Path
     profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
     profile["policy_defaults"]["mirror_root"] = "_generated"
     profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
-    source = vault / "40_delivery" / "brief.docx"
+    source = vault / "70_outputs" / "brief.docx"
     source.write_bytes(b"fixture")
 
     config = sync.load_mirror_config(vault)
@@ -5686,7 +5736,7 @@ def test_office_sync_uses_profile_mirror_root_when_config_missing(tmp_path: Path
 
     assert config["mode"] == "dedicated"
     assert config["root"] == Path("_generated")
-    assert mirror == vault / "_generated" / "40_delivery" / "brief.md"
+    assert mirror == vault / "_generated" / "70_outputs" / "brief.md"
     assert collision is False
 
 
@@ -5704,22 +5754,21 @@ def test_office_sync_mirror_config_overrides_profile_mirror_root(tmp_path: Path)
         "  root: _operator_mirrors\n",
         encoding="utf-8",
     )
-    source = vault / "40_delivery" / "brief.docx"
+    source = vault / "70_outputs" / "brief.docx"
     source.write_bytes(b"fixture")
 
     config = sync.load_mirror_config(vault)
     mirror, collision = sync.mirror_path_for(source, vault, config)
 
     assert config["root"] == Path("_operator_mirrors")
-    assert mirror == vault / "_operator_mirrors" / "40_delivery" / "brief.md"
+    assert mirror == vault / "_operator_mirrors" / "70_outputs" / "brief.md"
     assert collision is False
 
 
 def test_office_sync_routes_domain_aliases_to_canonical_mirror_folder(tmp_path: Path) -> None:
     sync = load_office_sync_module()
     vault = tmp_path / "vault"
-    (vault / "_meta").mkdir(parents=True)
-    shutil.copy(ROOT / "template/_meta/domain-map.yml", vault / "_meta" / "domain-map.yml")
+    copy_business_operations_template(vault)
     source = vault / "clients" / "acme" / "brief.docx"
     source.parent.mkdir(parents=True)
     source.write_bytes(b"fixture")
@@ -5778,7 +5827,7 @@ def test_office_sync_frontmatter_order_uses_profile_context_fields(tmp_path: Pat
     profile["optional_properties"].append("research_project")
     profile["policy_defaults"].pop("context_aliases", None)
     profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
-    source = vault / "40_delivery" / "brief.docx"
+    source = vault / "70_outputs" / "brief.docx"
     source.write_bytes(b"fixture")
 
     fm = sync.managed_frontmatter(
@@ -5803,8 +5852,7 @@ def test_office_sync_frontmatter_order_uses_profile_context_fields(tmp_path: Pat
 def test_office_sync_alias_to_canonical_mirror_is_idempotent(tmp_path: Path) -> None:
     sync = load_office_sync_module()
     vault = tmp_path / "vault"
-    (vault / "_meta").mkdir(parents=True)
-    shutil.copy(ROOT / "template/_meta/domain-map.yml", vault / "_meta" / "domain-map.yml")
+    copy_business_operations_template(vault)
     source = vault / "clients" / "acme" / "brief.docx"
     source.parent.mkdir(parents=True)
     source.write_bytes(b"fixture")
@@ -6040,7 +6088,7 @@ def test_office_sync_unsafe_profile_mirror_root_reports_profile_path(tmp_path: P
     outside_generated = tmp_path / "outside-generated"
     outside_generated.mkdir()
     (vault / "_generated").symlink_to(outside_generated, target_is_directory=True)
-    source = vault / "40_delivery" / "unsafe.docx"
+    source = vault / "70_outputs" / "unsafe.docx"
     source.write_bytes(b"synthetic source bytes")
     config = sync.load_mirror_config(vault)
     manifest = sync.empty_manifest()
@@ -6050,9 +6098,9 @@ def test_office_sync_unsafe_profile_mirror_root_reports_profile_path(tmp_path: P
     assert plan["action"] == "error"
     assert plan["record"]["lifecycle_state"] == "error"
     assert plan["record"]["mirror_root"] == "_generated"
-    assert plan["record"]["mirror_path"] == "_generated/40_delivery/unsafe.md"
+    assert plan["record"]["mirror_path"] == "_generated/70_outputs/unsafe.md"
     assert any("Mirror path is unsafe" in error for error in plan["record"]["errors"])
-    assert not (vault / "_mirrors" / "40_delivery" / "unsafe.md").exists()
+    assert not (vault / "_mirrors" / "70_outputs" / "unsafe.md").exists()
 
 
 def test_office_sync_plan_is_non_mutating(tmp_path: Path) -> None:
@@ -7761,7 +7809,7 @@ def test_repo_frontmatter_does_not_infer_context_aliases_when_profile_omits_poli
 ) -> None:
     sync = load_sync_module()
     vault = tmp_path / "vault"
-    shutil.copytree(ROOT / "template", vault)
+    copy_business_operations_template(vault)
     profile_path = vault / "_meta" / "profile.yml"
     profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
     profile["policy_defaults"].pop("context_aliases")

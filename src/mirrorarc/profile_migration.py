@@ -8,8 +8,8 @@ from pathlib import Path
 from typing import Any
 
 from mirrorarc.profile_scaffold import (
-    BUSINESS_OPERATIONS_PROFILE_ID,
-    BUSINESS_TEMPLATE_PROFILE_FILES,
+    DEFAULT_TEMPLATE_PROFILE_FILES,
+    DEFAULT_TEMPLATE_PROFILE_ID,
     CORE_TEMPLATE_FILES,
     GENERATED_PROFILE_DOC_PATHS,
     PROFILE_REL,
@@ -17,6 +17,7 @@ from mirrorarc.profile_scaffold import (
 )
 from mirrorarc.profiles import ProfileContract, profile_folder_paths
 from mirrorarc.runtime_profile import LEGACY_MIRROR_ROOT
+from mirrorarc.views import render_documents_base
 
 
 SHARED_TEMPLATE_FILES = (*CORE_TEMPLATE_FILES, "tools/requirements.txt")
@@ -124,8 +125,8 @@ def profile_differences(current: ProfileContract, target: ProfileContract) -> li
 def target_file_paths(target: ProfileContract) -> list[Path]:
     rels = {Path(rel) for rel in SHARED_TEMPLATE_FILES}
     rels.add(PROFILE_REL)
-    if target.id == BUSINESS_OPERATIONS_PROFILE_ID:
-        rels.update(Path(rel) for rel in BUSINESS_TEMPLATE_PROFILE_FILES)
+    if target.id == DEFAULT_TEMPLATE_PROFILE_ID:
+        rels.update(Path(rel) for rel in DEFAULT_TEMPLATE_PROFILE_FILES)
     else:
         rels.update(GENERATED_PROFILE_DOC_PATHS)
     rels.update(Path(rel) for rel in target.templates)
@@ -141,7 +142,7 @@ def target_file_source_path(
 ) -> Path | None:
     if rel == PROFILE_REL:
         return target_profile_path
-    if target.id != BUSINESS_OPERATIONS_PROFILE_ID and rel in GENERATED_PROFILE_DOC_PATHS:
+    if target.id != DEFAULT_TEMPLATE_PROFILE_ID and rel in GENERATED_PROFILE_DOC_PATHS:
         return None
     return template_root / rel
 
@@ -152,6 +153,8 @@ def target_file_bytes(
     target_profile_path: Path,
     rel: Path,
 ) -> bytes:
+    if rel.as_posix() == "Documents.base" and "Documents.base" in target.views:
+        return render_documents_base(target).encode("utf-8")
     generated = generated_profile_files(target)
     source = target_file_source_path(template_root, target, target_profile_path, rel)
     if source is None:

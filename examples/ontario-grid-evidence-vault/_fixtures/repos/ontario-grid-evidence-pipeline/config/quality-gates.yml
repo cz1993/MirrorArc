@@ -1,0 +1,13 @@
+schema_version: 1
+gates:
+  - id: annual_demand_complete
+    field: total_twh
+    rule: non_null
+  - id: peak_exceeds_minimum
+    fields: [peak_mw, minimum_mw]
+    rule: left_greater_than_right
+  - id: forecast_publish_gate
+    field: mape_percent
+    rule: less_than_or_equal
+    threshold: 5.0
+    failure_action: suppress
