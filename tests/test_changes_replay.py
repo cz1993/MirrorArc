@@ -9,7 +9,7 @@ import sys
 
 import pytest
 
-from vaultwright.changes import journal, replay
+from mirrorarc.changes import journal, replay
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,7 +45,7 @@ def run_cli(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     return subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(root), *args],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(root), *args],
         cwd=ROOT,
         env=env,
         text=True,

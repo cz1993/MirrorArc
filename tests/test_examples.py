@@ -56,7 +56,7 @@ COPIED_TOOL_FILES = [
     "sync_all.sh",
     "sync_github_repos.py",
     "sync_office_md.py",
-    "vaultwright.py",
+    "mirrorarc.py",
 ]
 
 
@@ -176,7 +176,7 @@ def test_government_services_agent_readiness_tasks_reference_committed_sources()
     assert set(data["comparison_modes"]) == {
         "raw_source_folder",
         "plain_markitdown_dump",
-        "vaultwright_markdown",
+        "mirrorarc_markdown",
     }
     tasks = data["tasks"]
     assert isinstance(tasks, list)
@@ -203,7 +203,7 @@ def test_government_services_agent_readiness_tasks_reference_committed_sources()
             assert not (vault / mirror).exists(), rel
 
     benchmark = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "benchmark"],
+        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "benchmark"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -215,7 +215,7 @@ def test_government_services_agent_readiness_tasks_reference_committed_sources()
     public_results = subprocess.run(
         [
             sys.executable,
-            str(vault / "tools" / "vaultwright.py"),
+            str(vault / "tools" / "mirrorarc.py"),
             "benchmark",
             "--results",
             GOVERNMENT_PUBLIC_RESULTS.as_posix(),
@@ -231,7 +231,7 @@ def test_government_services_agent_readiness_tasks_reference_committed_sources()
     assert "benchmark_results: 18 results in _meta/public-agent-readiness-results.yml" in public_results.stdout
     assert "raw_source_folder: results=6 score=5/12 avg=0.83 corrections=7" in public_results.stdout
     assert "plain_markitdown_dump: results=6 score=6/12 avg=1.00 corrections=6" in public_results.stdout
-    assert "vaultwright_markdown: results=6 score=12/12 avg=2.00 corrections=0" in public_results.stdout
+    assert "mirrorarc_markdown: results=6 score=12/12 avg=2.00 corrections=0" in public_results.stdout
     assert "warning: benchmark results incomplete" not in public_results.stdout
 
 
@@ -253,7 +253,7 @@ def run_example_regeneration(tmp_path: Path, name: str, generated_rels: list[Pat
         assert not path.exists()
 
     cli_plan = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "plan"],
+        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "plan"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -311,7 +311,7 @@ def run_example_regeneration(tmp_path: Path, name: str, generated_rels: list[Pat
     assert "clean=" in status.stdout
 
     conversion = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "conversion"],
+        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "conversion"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -322,7 +322,7 @@ def run_example_regeneration(tmp_path: Path, name: str, generated_rels: list[Pat
     assert_source_payloads_unchanged(vault, original_sources)
 
     pilot = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "pilot"],
+        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "pilot"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -340,7 +340,7 @@ def run_example_regeneration(tmp_path: Path, name: str, generated_rels: list[Pat
 
     stable_generated = stable_generated_payloads(vault, generated_rels)
     second_sync = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "sync"],
+        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "sync"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -371,9 +371,9 @@ def assert_clean_lint(lint_output: str) -> None:
     assert "Configured repos without a mirror: 0" in lint_output
 
 
-def run_vaultwright(vault: Path, command: str) -> subprocess.CompletedProcess[str]:
+def run_mirrorarc(vault: Path, command: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), command],
+        [sys.executable, str(vault / "tools" / "mirrorarc.py"), command],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -401,7 +401,7 @@ def test_government_services_example_mirrors_regenerate_from_sources(tmp_path: P
     assert_clean_lint(lint_output)
     assert_benchmark_generated_mirrors_exist(vault)
     benchmark = subprocess.run(
-        [sys.executable, str(vault / "tools" / "vaultwright.py"), "benchmark", "--require-generated"],
+        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "benchmark", "--require-generated"],
         cwd=vault,
         text=True,
         capture_output=True,
@@ -421,7 +421,7 @@ def test_northwind_recovery_gate_regenerates_and_flags_review_states(tmp_path: P
     ]
     source_bytes = {rel: (vault / rel).read_bytes() for rel in source_rels}
 
-    first_sync = run_vaultwright(vault, "sync")
+    first_sync = run_mirrorarc(vault, "sync")
     assert first_sync.returncode == 0, first_sync.stderr or first_sync.stdout
     for rel in NORTHWIND_GENERATED:
         assert (vault / rel).exists()
@@ -431,15 +431,15 @@ def test_northwind_recovery_gate_regenerates_and_flags_review_states(tmp_path: P
         if rel.as_posix().startswith("80_sources/repos/"):
             (vault / rel).unlink()
 
-    recovery_plan = run_vaultwright(vault, "plan")
+    recovery_plan = run_mirrorarc(vault, "plan")
     assert recovery_plan.returncode == 0, recovery_plan.stderr or recovery_plan.stdout
     assert "create" in recovery_plan.stdout
-    recovery_sync = run_vaultwright(vault, "sync")
+    recovery_sync = run_mirrorarc(vault, "sync")
     assert recovery_sync.returncode == 0, recovery_sync.stderr or recovery_sync.stdout
-    recovery_status = run_vaultwright(vault, "status")
+    recovery_status = run_mirrorarc(vault, "status")
     assert recovery_status.returncode == 0, recovery_status.stderr or recovery_status.stdout
     assert "clean=" in recovery_status.stdout
-    lint = run_vaultwright(vault, "lint")
+    lint = run_mirrorarc(vault, "lint")
     assert lint.returncode == 0, lint.stderr or lint.stdout
     for rel in NORTHWIND_GENERATED:
         assert (vault / rel).exists()
@@ -461,7 +461,7 @@ def test_northwind_recovery_gate_regenerates_and_flags_review_states(tmp_path: P
 
     removed_source = vault / "30_customers/acme-manufacturing/2026-01-15_acme_discovery_brief.docx"
     removed_source.unlink()
-    missing_status = run_vaultwright(vault, "status")
+    missing_status = run_mirrorarc(vault, "status")
     assert missing_status.returncode == 0, missing_status.stderr or missing_status.stdout
     assert "source_missing" in missing_status.stdout
 
@@ -470,6 +470,6 @@ def test_northwind_recovery_gate_regenerates_and_flags_review_states(tmp_path: P
         mirror.read_text(encoding="utf-8").replace("Extracted content", "Manually edited generated content"),
         encoding="utf-8",
     )
-    manual_status = run_vaultwright(vault, "status")
+    manual_status = run_mirrorarc(vault, "status")
     assert manual_status.returncode == 0, manual_status.stderr or manual_status.stdout
     assert "manual_modification" in manual_status.stdout

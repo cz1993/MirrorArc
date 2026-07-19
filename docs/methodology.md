@@ -1,6 +1,6 @@
 # Methodology
 
-Vaultwright is mostly *discipline*, encoded so an agent follows it. This is the why behind the
+MirrorArc is mostly *discipline*, encoded so an agent follows it. This is the why behind the
 schema in `template/CLAUDE.md`.
 
 ## 1. Four layers
@@ -32,7 +32,7 @@ the original stays the editable source of truth.
   (regenerated). Edit the original, never the generated mirror body. Keep durable human notes in
   curated notes or migrate legacy mirror annotations into `_meta/mirror-annotations/` sidecars.
 
-This is Vaultwright's core technical idea and its main differentiator — see `positioning.md`.
+This is MirrorArc's core technical idea and its main differentiator — see `positioning.md`.
 The human-visible knowledge base is important, but the generated markdown layer is also an
 agent-facing substrate: agents can read headings, frontmatter, links, diffs, manifests, and
 sentinel boundaries directly with filesystem and Git tools. That makes the mirrors more useful
@@ -64,7 +64,7 @@ source/repo mirrors may be leaf artifacts when manifests and source paths preser
 > **When everything is documented, nothing is.** A knowledge base dies from *too many* notes faster
 > than from too few.
 
-So Vaultwright optimizes for *fewer, better-connected, current* notes:
+So MirrorArc optimizes for *fewer, better-connected, current* notes:
 
 1. **Consolidate before you create.** Before writing a new note, the agent searches for an existing
    one to extend. One canonical note per concept.
@@ -91,7 +91,7 @@ Most agent-wiki projects happily spawn notes. Disciplined restraint is a deliber
   paths; file reusable answers back as notes so work compounds.
 - **Lint** — periodically check frontmatter, links, orphans, overlap candidates, mirror gaps, and
   stale generated mirrors; fix mechanically where safe, flag judgment calls. Run
-  `vaultwright overlap` before tuning overlap sensitivity in copied pilot vaults through
+  `mirrorarc overlap` before tuning overlap sensitivity in copied pilot vaults through
   `_meta/lint-config.yml`.
 - **Log** — append one greppable line per change to `log.md`.
 

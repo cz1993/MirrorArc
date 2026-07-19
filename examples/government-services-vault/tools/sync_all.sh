@@ -6,7 +6,7 @@
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$DIR" || exit 1
-PYTHON="${VAULTWRIGHT_PYTHON:-}"
+PYTHON="${MIRRORARC_PYTHON:-${VAULTWRIGHT_PYTHON:-}}"
 if [ -z "$PYTHON" ]; then
   if command -v python3.11 >/dev/null 2>&1; then
     PYTHON="python3.11"

@@ -47,7 +47,7 @@ def test_generate_messy_benchmark_corpus_writes_private_run_artifacts(tmp_path: 
     assert payload["comparison_modes"] == [
         "raw_source_folder",
         "plain_markitdown_dump",
-        "vaultwright_markdown",
+        "mirrorarc_markdown",
     ]
     assert payload["result_slots"] == 15
 
@@ -81,7 +81,7 @@ def test_generate_messy_benchmark_corpus_writes_private_run_artifacts(tmp_path: 
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(target),
             "benchmark",
@@ -100,7 +100,7 @@ def test_generate_messy_benchmark_corpus_writes_private_run_artifacts(tmp_path: 
     assert benchmark_payload["summary"]["generated_mirror_paths"] == 25
     assert benchmark_payload["result_summary"] == {}
     assert benchmark_payload["errors"] == []
-    assert "VW-MESSY" not in benchmark.stdout
+    assert "NW-MESSY" not in benchmark.stdout
 
 
 def test_generate_messy_benchmark_corpus_reviewed_results_validate_after_sync(tmp_path: Path) -> None:
@@ -130,7 +130,7 @@ def test_generate_messy_benchmark_corpus_reviewed_results_validate_after_sync(tm
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(target),
             "sync",
@@ -148,7 +148,7 @@ def test_generate_messy_benchmark_corpus_reviewed_results_validate_after_sync(tm
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(target),
             "benchmark",
@@ -177,11 +177,11 @@ def test_generate_messy_benchmark_corpus_reviewed_results_validate_after_sync(tm
     assert modes["plain_markitdown_dump"]["score"] == 4
     assert modes["plain_markitdown_dump"]["max_score"] == 10
     assert modes["plain_markitdown_dump"]["reviewer_corrections"] == 8
-    assert modes["vaultwright_markdown"]["score"] == 10
-    assert modes["vaultwright_markdown"]["max_score"] == 10
-    assert modes["vaultwright_markdown"]["reviewer_corrections"] == 0
-    assert modes["vaultwright_markdown"]["generated_mirror_citations"] == 5
-    assert "VW-MESSY" not in benchmark.stdout
+    assert modes["mirrorarc_markdown"]["score"] == 10
+    assert modes["mirrorarc_markdown"]["max_score"] == 10
+    assert modes["mirrorarc_markdown"]["reviewer_corrections"] == 0
+    assert modes["mirrorarc_markdown"]["generated_mirror_citations"] == 5
+    assert "NW-MESSY" not in benchmark.stdout
 
 
 def test_generate_messy_benchmark_corpus_rejects_source_checkout_target() -> None:
@@ -199,7 +199,7 @@ def test_generate_messy_benchmark_corpus_rejects_source_checkout_target() -> Non
     )
 
     assert result.returncode == 1
-    assert "outside the Vaultwright source checkout" in result.stderr
+    assert "outside the MirrorArc source checkout" in result.stderr
 
 
 def test_generate_messy_benchmark_corpus_rejects_broad_force_target() -> None:

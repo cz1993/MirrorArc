@@ -2,7 +2,7 @@ schema_version: 1
 id: business-operations
 name: Business Operations
 profile_version: 0.1.0
-description: Transitional profile for the current Vaultwright business-operations template.
+description: Transitional profile for the current MirrorArc business-operations template.
 
 domains:
   intake:

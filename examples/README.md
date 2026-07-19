@@ -12,7 +12,7 @@ personal, or proprietary data.
 Use it to inspect:
 - Dedicated Office source mirrors (`.docx`, `.xlsx`, `.pptx` -> `_mirrors/` markdown),
   regenerated during validation.
-- Manifest-backed `tools/vaultwright.py plan` / `status` behavior without committing generated
+- Manifest-backed `tools/mirrorarc.py plan` / `status` behavior without committing generated
   mirrors, manifests, or audit logs.
 - A synthetic local repo mirror under `80_sources/repos/`, regenerated from `tools/repos.yml`.
 - MOC/entity linking, frontmatter, and the Obsidian Bases index.
@@ -26,18 +26,18 @@ To regenerate mirrors locally:
 
 ```bash
 cd northwind-robotics-vault
-python3.11 tools/vaultwright.py plan
-python3.11 tools/vaultwright.py sync
-python3.11 tools/vaultwright.py status
-python3.11 tools/vaultwright.py lint
+python3.11 tools/mirrorarc.py plan
+python3.11 tools/mirrorarc.py sync
+python3.11 tools/mirrorarc.py status
+python3.11 tools/mirrorarc.py lint
 ```
 
 For the public-service showcase:
 
 ```bash
 cd government-services-vault
-python3.11 tools/vaultwright.py plan
-python3.11 tools/vaultwright.py sync
-python3.11 tools/vaultwright.py status
-python3.11 tools/vaultwright.py lint
+python3.11 tools/mirrorarc.py plan
+python3.11 tools/mirrorarc.py sync
+python3.11 tools/mirrorarc.py status
+python3.11 tools/mirrorarc.py lint
 ```

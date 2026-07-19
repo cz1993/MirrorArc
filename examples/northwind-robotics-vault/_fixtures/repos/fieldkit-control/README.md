@@ -1,6 +1,6 @@
 # Fieldkit Control
 
-Synthetic Python package used by Vaultwright to exercise repository mirroring without relying on a
+Synthetic Python package used by MirrorArc to exercise repository mirroring without relying on a
 live external GitHub repository.
 
 ## Purpose

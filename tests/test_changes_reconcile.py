@@ -7,8 +7,8 @@ from pathlib import Path
 import subprocess
 import sys
 
-from vaultwright.changes import journal, reconcile
-from vaultwright.mirrors import office as office_sync
+from mirrorarc.changes import journal, reconcile
+from mirrorarc.mirrors import office as office_sync
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,7 +20,7 @@ def run_cli(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     return subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(root), *args],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(root), *args],
         cwd=ROOT,
         env=env,
         text=True,

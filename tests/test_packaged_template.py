@@ -4,20 +4,20 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_TEMPLATE = ROOT / "template"
-PACKAGE_TEMPLATE = ROOT / "src" / "vaultwright" / "template"
+PACKAGE_TEMPLATE = ROOT / "src" / "mirrorarc" / "template"
 PACKAGE_OWNED_TOOL_MODULES = {
-    "benchmark_tasks.py": ("vaultwright.benchmark", True),
-    "catalog_report.py": ("vaultwright.catalog", True),
-    "conversion_report.py": ("vaultwright.conversion", True),
-    "lint_vault.py": ("vaultwright.lint", False),
-    "m365_report.py": ("vaultwright.m365", True),
-    "migration_report.py": ("vaultwright.migration", True),
-    "overlap_report.py": ("vaultwright.overlap", True),
-    "pilot_report.py": ("vaultwright.pilot", True),
-    "recovery_report.py": ("vaultwright.recovery", True),
-    "review_ledger.py": ("vaultwright.review_ledger", True),
-    "sandbox_report.py": ("vaultwright.sandbox", True),
-    "vaultwright.py": ("vaultwright.cli", False),
+    "benchmark_tasks.py": ("mirrorarc.benchmark", True),
+    "catalog_report.py": ("mirrorarc.catalog", True),
+    "conversion_report.py": ("mirrorarc.conversion", True),
+    "lint_vault.py": ("mirrorarc.lint", False),
+    "m365_report.py": ("mirrorarc.m365", True),
+    "migration_report.py": ("mirrorarc.migration", True),
+    "overlap_report.py": ("mirrorarc.overlap", True),
+    "pilot_report.py": ("mirrorarc.pilot", True),
+    "recovery_report.py": ("mirrorarc.recovery", True),
+    "review_ledger.py": ("mirrorarc.review_ledger", True),
+    "sandbox_report.py": ("mirrorarc.sandbox", True),
+    "mirrorarc.py": ("mirrorarc.cli", False),
 }
 
 
@@ -62,4 +62,4 @@ def test_package_owned_template_tools_are_shims() -> None:
             or f"from {module} import main" in text
         )
         assert imports_package_main
-        assert "Missing Vaultwright package runtime" in text
+        assert "Missing MirrorArc package runtime" in text

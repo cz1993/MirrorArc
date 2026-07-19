@@ -183,7 +183,7 @@ def write_profile_benchmark_task_pack(vault: Path) -> Path:
                 "comparison_modes": [
                     "raw_source_folder",
                     "plain_markitdown_dump",
-                    "vaultwright_markdown",
+                    "mirrorarc_markdown",
                 ],
                 "scoring": {"scale": "0-2"},
                 "tasks": tasks,
@@ -269,7 +269,7 @@ def test_package_cli_catalog_separates_profile_machine_owned_markdown(tmp_path: 
         )
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "catalog", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "catalog", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -291,7 +291,7 @@ def test_package_cli_catalog_blocks_invalid_profile_contract_before_domain_routi
     (vault / "25_research").mkdir()
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "catalog", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "catalog", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -323,7 +323,7 @@ def test_package_cli_m365_separates_profile_machine_owned_markdown(tmp_path: Pat
     profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
 
     baseline = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "m365", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "m365", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -348,14 +348,14 @@ def test_package_cli_m365_separates_profile_machine_owned_markdown(tmp_path: Pat
     )
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "m365"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "m365"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
         capture_output=True,
     )
     json_result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "m365", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "m365", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -391,7 +391,7 @@ def test_package_cli_sandbox_separates_profile_machine_owned_markdown(tmp_path: 
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "sandbox",
@@ -426,7 +426,7 @@ def test_package_cli_sandbox_separates_profile_machine_owned_markdown(tmp_path: 
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "sandbox",
@@ -442,7 +442,7 @@ def test_package_cli_sandbox_separates_profile_machine_owned_markdown(tmp_path: 
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "sandbox",
@@ -480,7 +480,7 @@ def test_package_cli_sandbox_uses_profile_defaults_without_legacy_alias_files(tm
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "sandbox",
@@ -515,7 +515,7 @@ def test_package_cli_sandbox_requires_legacy_alias_files_without_profile(tmp_pat
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "sandbox",
@@ -550,7 +550,7 @@ def test_package_cli_catalog_does_not_delegate_to_vault_local_script(tmp_path: P
     )
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "catalog", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "catalog", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -590,7 +590,7 @@ def test_migration_reads_profile_domains_for_canonical_folders(tmp_path: Path) -
     )
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "migration", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -611,7 +611,7 @@ def test_migration_uses_profile_when_domain_map_missing(tmp_path: Path) -> None:
     (vault / "_meta" / "domain-map.yml").unlink()
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "migration", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -634,7 +634,7 @@ def test_migration_blocks_domain_map_folder_drift_from_profile(tmp_path: Path) -
     domain_map_path.write_text(yaml.safe_dump(domain_map, sort_keys=False), encoding="utf-8")
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "migration", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -653,7 +653,7 @@ def test_package_cli_migration_blocks_invalid_profile_contract_before_domain_rou
     (vault / "25_research").mkdir()
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "migration", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -704,14 +704,14 @@ def test_package_cli_migration_guidance_uses_active_profile_vocabulary(tmp_path:
     )
 
     runbook = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--runbook"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "migration", "--runbook"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
         capture_output=True,
     )
     worksheet = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--worksheet"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "migration", "--worksheet"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -721,7 +721,7 @@ def test_package_cli_migration_guidance_uses_active_profile_vocabulary(tmp_path:
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "migration",
@@ -779,14 +779,14 @@ def test_package_cli_repo_sync_uses_profile_repo_notes_dir(tmp_path: Path) -> No
     )
 
     plan = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "plan"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "plan"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
         capture_output=True,
     )
     sync = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "sync"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "sync"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -822,21 +822,21 @@ def test_package_cli_repo_sync_uses_profile_context_fields(tmp_path: Path) -> No
     )
 
     sync = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "sync"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "sync"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
         capture_output=True,
     )
     lint = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "lint"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "lint"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
         capture_output=True,
     )
     annotations = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migrate", "annotations", "--plan", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "migrate", "annotations", "--plan", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -881,21 +881,21 @@ def test_package_cli_sync_lint_and_annotations_use_profile_mirror_status_default
     )
 
     sync = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "sync"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "sync"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
         capture_output=True,
     )
     lint = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "lint"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "lint"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
         capture_output=True,
     )
     annotations = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migrate", "annotations", "--plan", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "migrate", "annotations", "--plan", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -944,7 +944,7 @@ def test_package_cli_overlap_reads_profile_content_roots(tmp_path: Path) -> None
         )
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "1"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "1"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1023,7 +1023,7 @@ def test_package_cli_overlap_reads_profile_context_links(tmp_path: Path) -> None
     )
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "1"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "1"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1080,7 +1080,7 @@ def test_package_cli_overlap_uses_profile_inactive_status_flags(tmp_path: Path) 
         )
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "3"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "3"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1137,7 +1137,7 @@ def test_package_cli_overlap_uses_profile_machine_owned_note_type_flags(tmp_path
         )
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "3"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "overlap", "--json", "--max-pairs", "3"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1188,7 +1188,7 @@ def test_package_cli_migration_skips_profile_machine_owned_frontmatter_domains(t
         )
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "migration", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "migration", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1208,7 +1208,7 @@ def test_package_cli_benchmark_reads_profile_task_pack(tmp_path: Path) -> None:
     task_pack = write_profile_benchmark_task_pack(vault)
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "benchmark", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "benchmark", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1233,7 +1233,7 @@ def test_package_cli_benchmark_blocks_invalid_profile_contract_before_task_disco
     invalidate_profile_repo_notes_dir(vault)
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "benchmark", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "benchmark", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1256,7 +1256,7 @@ def test_package_cli_pilot_reads_profile_benchmark_task_pack(tmp_path: Path) -> 
     task_pack = write_profile_benchmark_task_pack(vault)
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "pilot", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "pilot", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1283,7 +1283,7 @@ def test_package_cli_pilot_blocks_invalid_profile_contract_before_benchmark_disc
     invalidate_profile_repo_notes_dir(vault)
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "pilot", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "pilot", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1337,7 +1337,7 @@ def test_package_cli_benchmark_uses_configured_office_mirror_root(tmp_path: Path
                 "comparison_modes": [
                     "raw_source_folder",
                     "plain_markitdown_dump",
-                    "vaultwright_markdown",
+                    "mirrorarc_markdown",
                 ],
                 "scoring": {"scale": "0-2"},
                 "tasks": tasks,
@@ -1354,7 +1354,7 @@ def test_package_cli_benchmark_uses_configured_office_mirror_root(tmp_path: Path
                 "results": [
                     {
                         "task_id": "configured-root-answer",
-                        "mode": "vaultwright_markdown",
+                        "mode": "mirrorarc_markdown",
                         "score": 2,
                         "reviewer_corrections": 0,
                         "cited_source_paths": ["40_delivery/brief.docx"],
@@ -1389,7 +1389,7 @@ def test_package_cli_benchmark_uses_configured_office_mirror_root(tmp_path: Path
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "benchmark",
@@ -1407,7 +1407,7 @@ def test_package_cli_benchmark_uses_configured_office_mirror_root(tmp_path: Path
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "benchmark",
@@ -1429,7 +1429,7 @@ def test_package_cli_benchmark_uses_configured_office_mirror_root(tmp_path: Path
     payload = json.loads(benchmark.stdout)
     assert payload["summary"]["path"] == task_pack.as_posix()
     assert payload["summary"]["generated_mirror_paths"] == 5
-    assert payload["result_summary"]["modes"]["vaultwright_markdown"]["generated_mirror_citations"] == 1
+    assert payload["result_summary"]["modes"]["mirrorarc_markdown"]["generated_mirror_citations"] == 1
     assert payload["errors"] == []
     assert "must point into _mirrors" not in benchmark.stdout
     assert "must point into _mirrors" not in benchmark.stderr
@@ -1504,7 +1504,7 @@ def test_package_cli_reports_use_profile_repo_notes_dir(tmp_path: Path) -> None:
     )
 
     m365 = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "m365", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "m365", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1514,7 +1514,7 @@ def test_package_cli_reports_use_profile_repo_notes_dir(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "sandbox",
@@ -1531,7 +1531,7 @@ def test_package_cli_reports_use_profile_repo_notes_dir(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "review",
@@ -1593,7 +1593,7 @@ def test_package_cli_review_accepts_profile_machine_owned_note_type(tmp_path: Pa
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "review",
@@ -1673,14 +1673,14 @@ def test_package_cli_reports_use_configured_office_mirror_root(tmp_path: Path) -
     )
 
     catalog = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "catalog", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "catalog", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
         capture_output=True,
     )
     m365 = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "m365", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "m365", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1690,7 +1690,7 @@ def test_package_cli_reports_use_configured_office_mirror_root(tmp_path: Path) -
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "sandbox",
@@ -1704,14 +1704,14 @@ def test_package_cli_reports_use_configured_office_mirror_root(tmp_path: Path) -
         capture_output=True,
     )
     doctor = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "doctor"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "doctor"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
         capture_output=True,
     )
     pilot = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "pilot", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "pilot", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1723,7 +1723,7 @@ def test_package_cli_reports_use_configured_office_mirror_root(tmp_path: Path) -
         [
             sys.executable,
             "-m",
-            "vaultwright.cli",
+            "mirrorarc.cli",
             "--root",
             str(vault),
             "review",
@@ -1789,7 +1789,7 @@ def test_recovery_warns_for_profile_repo_notes_dir_without_manifest(tmp_path: Pa
     )
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "recovery", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "recovery", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,
@@ -1814,7 +1814,7 @@ def test_recovery_excludes_configured_office_mirror_root_from_source_evidence(tm
     generated.write_bytes(b"synthetic generated-root artifact")
 
     result = subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(vault), "recovery", "--json"],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(vault), "recovery", "--json"],
         cwd=ROOT,
         env=package_cli_env(),
         text=True,

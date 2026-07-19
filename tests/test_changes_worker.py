@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from vaultwright.changes import journal, worker
-from vaultwright.mirrors import office as office_sync
+from mirrorarc.changes import journal, worker
+from mirrorarc.mirrors import office as office_sync
 
 
 class TextConversion:

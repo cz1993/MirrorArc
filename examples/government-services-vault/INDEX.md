@@ -45,7 +45,7 @@ Each function gets a **hub note** (`type: moc`) as you populate it. Suggested st
   Originals stay source of truth, with lifecycle state tracked in `_meta/source-manifest.json` and
   `_meta/repo-manifest.json`, plus generated events in `_meta/sync-audit.jsonl`.
 - **Agent-readiness tasks** live in `_meta/agent-readiness-tasks.yml`; use them to compare raw
-  sources, plain markitdown dumps, and Vaultwright markdown on the same prompts.
+  sources, plain markitdown dumps, and MirrorArc markdown on the same prompts.
 - **Link over filing**, and **consolidate over creating** (see [[CLAUDE]] §4–5).
 
 ## Governance

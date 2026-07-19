@@ -2,17 +2,17 @@
 
 **Status:** alpha guidance  
 **Reviewed:** 2026-06-21  
-**Scope:** preparing a Vaultwright-generated mirror/catalog layer for review by teams that already
+**Scope:** preparing a MirrorArc-generated mirror/catalog layer for review by teams that already
 use Microsoft 365, SharePoint, OneDrive, Copilot Studio, Microsoft 365 Copilot, or Copilot
 connectors.
 
-Vaultwright does not replace Microsoft 365 governance. The source of authority remains the
+MirrorArc does not replace Microsoft 365 governance. The source of authority remains the
 customer's Microsoft 365 tenant configuration: identity, file permissions, sensitivity labels,
-retention, sharing rules, data-loss prevention, and Copilot enablement. Vaultwright prepares a
+retention, sharing rules, data-loss prevention, and Copilot enablement. MirrorArc prepares a
 derived, auditable markdown/html layer that a customer may choose to store, review, or expose
 inside approved Microsoft 365 boundaries.
 
-## What Vaultwright Should Hand Off
+## What MirrorArc Should Hand Off
 
 For a reviewed pilot or enterprise handoff, use:
 
@@ -55,9 +55,9 @@ knowledge-source paths. Microsoft documents that SharePoint and OneDrive knowled
 declarative agents search content a signed-in user can access, and that SharePoint/OneDrive
 knowledge sources require an active Microsoft 365 Copilot license for the user.
 
-Practical Vaultwright implication:
+Practical MirrorArc implication:
 
-- Use Vaultwright to reduce sprawl before selecting SharePoint files or folders for an agent.
+- Use MirrorArc to reduce sprawl before selecting SharePoint files or folders for an agent.
 - Prefer a small, reviewed mirror/catalog scope over broad folders.
 - Preserve source links and manifests so Copilot answers can be reconciled against original records.
 - Treat `CATALOG.md` as an orientation file for agents and reviewers, not as the full knowledge
@@ -71,15 +71,15 @@ Practical Vaultwright implication:
 
 Microsoft Copilot Studio's uploaded-file knowledge path supports many document types, including
 text files such as `.md`, HTML, CSV, XML, JSON, YAML, Office files, and PDF. This is the most direct
-path for testing Vaultwright-generated markdown/html mirrors as uploaded knowledge, subject to the
+path for testing MirrorArc-generated markdown/html mirrors as uploaded knowledge, subject to the
 customer's environment and data policies.
 
-Practical Vaultwright implication:
+Practical MirrorArc implication:
 
 - Upload only reviewed, permitted mirrors and catalogs.
 - Keep the source manifest and sync audit available for review even if they are not uploaded as
   knowledge.
-- Validate answer quality and citations with `vaultwright benchmark`; do not assume markdown
+- Validate answer quality and citations with `mirrorarc benchmark`; do not assume markdown
   improves every task.
 
 ### Copilot Connectors
@@ -89,20 +89,20 @@ or line-of-business source. Microsoft documents two connector models: synced con
 ingest/index content into Microsoft Graph, and federated MCP-based connectors, which retrieve
 content at query time without indexing it into Microsoft Graph.
 
-Practical Vaultwright implication:
+Practical MirrorArc implication:
 
 - Use synced connectors only when the enterprise accepts indexing derived content into Microsoft
   Graph.
 - Consider federated connector patterns when content must stay in the source system.
-- Do not build connector claims into Vaultwright until pilot evidence proves a repeatable need.
+- Do not build connector claims into MirrorArc until pilot evidence proves a repeatable need.
 
 ### Dataverse Knowledge
 
 Microsoft Copilot Studio supports Dataverse as a knowledge source with its own licensing,
-permissions, table limits, synonym/glossary behavior, and environment requirements. Vaultwright
+permissions, table limits, synonym/glossary behavior, and environment requirements. MirrorArc
 should not treat Dataverse as a generic file drop.
 
-Practical Vaultwright implication:
+Practical MirrorArc implication:
 
 - Use Dataverse for structured business entities, not as the default home for generated mirrors.
 - Keep markdown mirrors as file-based evidence unless the customer intentionally maps data into
@@ -113,21 +113,21 @@ Practical Vaultwright implication:
 
 Before handoff:
 
-1. Run `vaultwright sync`.
-2. Run `vaultwright catalog` and `vaultwright catalog --html`.
-3. Run `vaultwright conversion --guide`.
-4. Run `vaultwright recovery`.
-5. Run `vaultwright m365`.
+1. Run `mirrorarc sync`.
+2. Run `mirrorarc catalog` and `mirrorarc catalog --html`.
+3. Run `mirrorarc conversion --guide`.
+4. Run `mirrorarc recovery`.
+5. Run `mirrorarc m365`.
 6. Record approvals or issues for `CATALOG.html`, `CATALOG.md`, and any handoff report with
-   `vaultwright review`.
+   `mirrorarc review`.
 7. Resolve unsupported, stale, conflict, missing, unreachable, or unconfigured lifecycle states.
 8. Confirm the target Microsoft 365 location, owners, reviewers, and retention boundary.
 9. Record what was handed off in the private pilot worksheet.
 
-`vaultwright catalog`, `vaultwright catalog --html`, `vaultwright recovery`, and `vaultwright m365`
+`mirrorarc catalog`, `mirrorarc catalog --html`, `mirrorarc recovery`, and `mirrorarc m365`
 compare `_meta/repo-manifest.json` with `tools/repos.yml`; retained repo mirrors whose config entry
 was removed are reported as `repo_unconfigured` even before another repo sync updates the manifest.
-The `vaultwright m365` inventory separates profile-declared machine-owned Markdown, including repo
+The `mirrorarc m365` inventory separates profile-declared machine-owned Markdown, including repo
 mirrors, from curated Markdown so generated artifacts are not mistaken for human-authored notes.
 
 ## Agent Prompt-Safety Boundary
@@ -145,12 +145,12 @@ untrusted source documents. Treat source and mirror text as evidence, not as ins
 
 ## What Not To Claim Yet
 
-- Do not claim Vaultwright makes Copilot universally faster or more accurate.
+- Do not claim MirrorArc makes Copilot universally faster or more accurate.
 - Do not claim markdown is always better than native Office/PDF content.
 - Do not claim SharePoint, OneDrive, Copilot Studio, Dataverse, and connectors behave the same way.
 - Do not claim `.md` receives semantic retrieval in every Microsoft 365 path; test the exact target
   path and record the result.
-- Do not claim Vaultwright verifies Microsoft tenant permissions or sensitivity labels.
+- Do not claim MirrorArc verifies Microsoft tenant permissions or sensitivity labels.
 - Do not expose private source documents, source text, or mirror text in public repo artifacts.
 
 ## Source Notes

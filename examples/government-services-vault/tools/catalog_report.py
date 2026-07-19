@@ -10,11 +10,11 @@ TOOL_DIR = Path(__file__).resolve().parent
 sys.path = [entry for entry in sys.path if Path(entry or ".").resolve() != TOOL_DIR]
 
 try:
-    from vaultwright.catalog import *  # noqa: F403
-    from vaultwright.catalog import main as _package_main
+    from mirrorarc.catalog import *  # noqa: F403
+    from mirrorarc.catalog import main as _package_main
 except ImportError as exc:
     raise SystemExit(
-        "Missing Vaultwright package runtime. Install Vaultwright or run with PYTHONPATH pointing "
+        "Missing MirrorArc package runtime. Install MirrorArc or run with PYTHONPATH pointing "
         f"at the source checkout. Import error: {exc}"
     ) from exc
 

@@ -32,7 +32,7 @@ worksheet as the private record.
 
 ## Corpus Shape
 
-Record from `vaultwright --root "$VW" pilot --json` after first sync:
+Record from `mirrorarc --root "$VW" pilot --json` after first sync:
 
 - content file count:
 - total content bytes:
@@ -65,7 +65,7 @@ into this worksheet.
 For a paste-ready aggregate summary, use:
 
 ```bash
-vaultwright --root "$VW" pilot --worksheet
+mirrorarc --root "$VW" pilot --worksheet
 ```
 
 This prints a Markdown summary with counts, review queues, and private worksheet prompts. It omits
@@ -77,43 +77,43 @@ Record command results and elapsed time. Use the installed package command when 
 
 ```bash
 export VW="/path/to/copied-pilot-vault"
-vaultwright --version
-vaultwright profile list
-vaultwright --root "$VW" sandbox --source-root /path/to/original-documents
-vaultwright --root "$VW" doctor
-vaultwright --root "$VW" doctor --json
-vaultwright --root "$VW" plan
-vaultwright --root "$VW" sync
-vaultwright --root "$VW" sync --json
-vaultwright --root "$VW" status
-vaultwright --root "$VW" status --json
-vaultwright --root "$VW" catalog
-vaultwright --root "$VW" catalog --html
-vaultwright --root "$VW" conversion --guide
-vaultwright --root "$VW" conversion --init-results
-vaultwright --root "$VW" conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
-vaultwright --root "$VW" recovery
-vaultwright --root "$VW" overlap
-vaultwright --root "$VW" overlap --worksheet
-vaultwright --root "$VW" m365
-vaultwright --root "$VW" review --json
-python3.11 /path/to/vaultwright/scripts/create_plain_markitdown_dump.py --root "$VW" --force
-vaultwright --root "$VW" benchmark --init-tasks
-vaultwright --root "$VW" benchmark --worksheet
-vaultwright --root "$VW" benchmark --require-generated
-vaultwright --root "$VW" benchmark --init-results
-vaultwright --root "$VW" benchmark \
+mirrorarc --version
+mirrorarc profile list
+mirrorarc --root "$VW" sandbox --source-root /path/to/original-documents
+mirrorarc --root "$VW" doctor
+mirrorarc --root "$VW" doctor --json
+mirrorarc --root "$VW" plan
+mirrorarc --root "$VW" sync
+mirrorarc --root "$VW" sync --json
+mirrorarc --root "$VW" status
+mirrorarc --root "$VW" status --json
+mirrorarc --root "$VW" catalog
+mirrorarc --root "$VW" catalog --html
+mirrorarc --root "$VW" conversion --guide
+mirrorarc --root "$VW" conversion --init-results
+mirrorarc --root "$VW" conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
+mirrorarc --root "$VW" recovery
+mirrorarc --root "$VW" overlap
+mirrorarc --root "$VW" overlap --worksheet
+mirrorarc --root "$VW" m365
+mirrorarc --root "$VW" review --json
+python3.11 /path/to/mirrorarc/scripts/create_plain_markitdown_dump.py --root "$VW" --force
+mirrorarc --root "$VW" benchmark --init-tasks
+mirrorarc --root "$VW" benchmark --worksheet
+mirrorarc --root "$VW" benchmark --require-generated
+mirrorarc --root "$VW" benchmark --init-results
+mirrorarc --root "$VW" benchmark \
   --results _meta/agent-readiness-results.yml \
   --require-results \
   --require-citations \
   --require-prompt-safety
-vaultwright --root "$VW" pilot --json
-vaultwright --root "$VW" pilot --worksheet
-vaultwright --root "$VW" lint
+mirrorarc --root "$VW" pilot --json
+mirrorarc --root "$VW" pilot --worksheet
+mirrorarc --root "$VW" lint
 ```
 
 If the installed command is not available, run the same commands from inside the copied vault with
-`python3.11 tools/vaultwright.py`.
+`python3.11 tools/mirrorarc.py`.
 
 ## Review Results
 
@@ -145,7 +145,7 @@ Use `docs/AGENT_READINESS_BENCHMARK.md` for scoring. Keep prompts, scores, and c
 anonymized, and keep any private result pack outside this public repository unless it has been
 reviewed for source text, personal data, protected names, answer text, and reviewer notes.
 
-| Task ID | Raw folder score | Plain markitdown dump score | Vaultwright markdown score | Prompt safety reviewed? | Notes |
+| Task ID | Raw folder score | Plain markitdown dump score | MirrorArc markdown score | Prompt safety reviewed? | Notes |
 | --- | ---: | ---: | ---: | --- | --- |
 | | | | | | |
 
@@ -162,8 +162,8 @@ reviewed for source text, personal data, protected names, answer text, and revie
 
 ## Outcome
 
-- Time to answer fixed questions before Vaultwright:
-- Time to answer fixed questions after Vaultwright:
+- Time to answer fixed questions before MirrorArc:
+- Time to answer fixed questions after MirrorArc:
 - Operator confidence score:
 - Support time required:
 - Participant ran second sync without help:

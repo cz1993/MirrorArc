@@ -32,6 +32,8 @@ private/
 *.log
 
 # local scratch vaults
+/.mirrorarc/
+# Legacy local state during the MirrorArc rename transition.
 /.vaultwright/
 /.obsidian/
 /examples/local-*-vault/

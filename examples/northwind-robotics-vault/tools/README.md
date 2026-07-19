@@ -6,7 +6,7 @@ These keep your knowledge base current and healthy. See `../CLAUDE.md` §6 for t
 | --- | --- |
 | `sync_office_md.py` | markdown **mirror** under `_mirrors/` for every `.docx/.pptx/.xlsx` (Microsoft markitdown), refreshed on content change |
 | `sync_github_repos.py` | markdown **mirror** under `80_sources/repos/` for each repo in `repos.yml` (README + docs + metadata), refreshed on HEAD change |
-| `vaultwright.py` | thin operator wrapper: `plan`, `sync`, `status`, `catalog`, `conversion`, `m365`, `migration`, `overlap`, `pilot`, `recovery`, `sandbox`, `lint`, `benchmark`, `doctor`, and repo-root `init` |
+| `mirrorarc.py` | thin operator wrapper: `plan`, `sync`, `status`, `catalog`, `conversion`, `m365`, `migration`, `overlap`, `pilot`, `recovery`, `sandbox`, `lint`, `benchmark`, `doctor`, and repo-root `init` |
 | `lint_vault.py` | health check — frontmatter, broken wikilinks, orphans, overlap warnings, mirror gaps, configured repo mirror gaps, stale generated mirrors |
 | `overlap_report.py` | prints a read-only overlap-threshold calibration report without note bodies or shared terms |
 | `benchmark_tasks.py` | validates `_meta/agent-readiness-tasks.yml` task packs and optional aggregate result packs |
@@ -27,12 +27,12 @@ non-blocking warning rather than a lint failure. Malformed or contradictory doma
 still blocks lint because it is unsafe migration guidance, and profile-less legacy vaults still
 require the domain map. `lint_vault.py` also reads `_meta/lint-config.yml` for warning-level
 overlap thresholds. Overlap warnings include human-gated consolidation suggestions and prefer the
-note with more inbound links when that signal is available. Use `vaultwright overlap` in copied
+note with more inbound links when that signal is available. Use `mirrorarc overlap` in copied
 pilot vaults to see candidate counts across threshold bands before changing defaults. Keep the
 template defaults until real corpora show too many false positives or false negatives, then record
 any threshold changes in the private pilot worksheet.
-`tools/lint_vault.py` is a compatibility shim for the package-owned `vaultwright.lint` runtime.
-Run it from an environment where Vaultwright is installed, or from a source checkout with
+`tools/lint_vault.py` is a compatibility shim for the package-owned `mirrorarc.lint` runtime.
+Run it from an environment where MirrorArc is installed, or from a source checkout with
 `PYTHONPATH=src`.
 
 ## Install
@@ -47,35 +47,35 @@ python3.11 -m pip install -r tools/requirements.txt  # markitdown + pyyaml
 For the operator workflow, prefer:
 
 ```bash
-python3.11 tools/vaultwright.py plan
-python3.11 tools/vaultwright.py sync
-python3.11 tools/vaultwright.py sync --json
-python3.11 tools/vaultwright.py status
-python3.11 tools/vaultwright.py status --json
-python3.11 tools/vaultwright.py catalog
-python3.11 tools/vaultwright.py catalog --html
-python3.11 tools/vaultwright.py m365
-python3.11 tools/vaultwright.py review --json
-python3.11 tools/vaultwright.py overlap
-python3.11 tools/vaultwright.py overlap --worksheet
-python3.11 tools/vaultwright.py conversion --guide
-python3.11 tools/vaultwright.py conversion --init-results
-python3.11 tools/vaultwright.py conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
-python3.11 tools/vaultwright.py migration
-python3.11 tools/vaultwright.py migration --worksheet
-python3.11 tools/vaultwright.py migration --runbook
-python3.11 tools/vaultwright.py migration --normalize-frontmatter-domains
-python3.11 tools/vaultwright.py migration --normalize-frontmatter-domains --worksheet
-python3.11 tools/vaultwright.py migration --normalize-frontmatter-domains --write
-python3.11 tools/vaultwright.py pilot
-python3.11 tools/vaultwright.py recovery
-python3.11 tools/vaultwright.py recovery --worksheet
-python3.11 tools/vaultwright.py recovery --runbook
-python3.11 tools/vaultwright.py sandbox --source-root /path/to/original-documents
-python3.11 tools/vaultwright.py lint
-python3.11 tools/vaultwright.py benchmark
-python3.11 tools/vaultwright.py doctor
-python3.11 tools/vaultwright.py doctor --json
+python3.11 tools/mirrorarc.py plan
+python3.11 tools/mirrorarc.py sync
+python3.11 tools/mirrorarc.py sync --json
+python3.11 tools/mirrorarc.py status
+python3.11 tools/mirrorarc.py status --json
+python3.11 tools/mirrorarc.py catalog
+python3.11 tools/mirrorarc.py catalog --html
+python3.11 tools/mirrorarc.py m365
+python3.11 tools/mirrorarc.py review --json
+python3.11 tools/mirrorarc.py overlap
+python3.11 tools/mirrorarc.py overlap --worksheet
+python3.11 tools/mirrorarc.py conversion --guide
+python3.11 tools/mirrorarc.py conversion --init-results
+python3.11 tools/mirrorarc.py conversion --results _meta/conversion-quality-results.yml --require-reviewed # after filling scaffold
+python3.11 tools/mirrorarc.py migration
+python3.11 tools/mirrorarc.py migration --worksheet
+python3.11 tools/mirrorarc.py migration --runbook
+python3.11 tools/mirrorarc.py migration --normalize-frontmatter-domains
+python3.11 tools/mirrorarc.py migration --normalize-frontmatter-domains --worksheet
+python3.11 tools/mirrorarc.py migration --normalize-frontmatter-domains --write
+python3.11 tools/mirrorarc.py pilot
+python3.11 tools/mirrorarc.py recovery
+python3.11 tools/mirrorarc.py recovery --worksheet
+python3.11 tools/mirrorarc.py recovery --runbook
+python3.11 tools/mirrorarc.py sandbox --source-root /path/to/original-documents
+python3.11 tools/mirrorarc.py lint
+python3.11 tools/mirrorarc.py benchmark
+python3.11 tools/mirrorarc.py doctor
+python3.11 tools/mirrorarc.py doctor --json
 ```
 
 `doctor` is read-only. It checks required files and copied tools, Python dependencies, the active
@@ -134,10 +134,10 @@ command stores artifact path, artifact hash, reviewer, status, and a short metad
 without copying artifact bodies or source text:
 
 ```bash
-python3.11 tools/vaultwright.py review --artifact CATALOG.html --status approved --reviewer CodeX
-python3.11 tools/vaultwright.py review --artifact _mirrors/40_delivery/brief.md --status needs-work --reviewer Claude --note "Table spot-check needed"
-python3.11 tools/vaultwright.py review --json
-python3.11 tools/vaultwright.py review --check
+python3.11 tools/mirrorarc.py review --artifact CATALOG.html --status approved --reviewer CodeX
+python3.11 tools/mirrorarc.py review --artifact _mirrors/40_delivery/brief.md --status needs-work --reviewer Claude --note "Table spot-check needed"
+python3.11 tools/mirrorarc.py review --json
+python3.11 tools/mirrorarc.py review --check
 ```
 
 `review --check` fails unless every latest recorded artifact decision is `approved` and the current
@@ -191,11 +191,11 @@ states.
 `sandbox` is read-only. Run it from a duplicated pilot vault before the first sync:
 
 ```bash
-python3.11 tools/vaultwright.py sandbox --source-root /path/to/original-documents
-python3.11 tools/vaultwright.py sandbox --source-root /path/to/original-documents --json
+python3.11 tools/mirrorarc.py sandbox --source-root /path/to/original-documents
+python3.11 tools/mirrorarc.py sandbox --source-root /path/to/original-documents --json
 ```
 
-It checks required Vaultwright files/tools, verifies the copied vault is not the same path as the
+It checks required MirrorArc files/tools, verifies the copied vault is not the same path as the
 original source collection, counts Office/PDF source candidates, reports whether generated mirrors
 are isolated under the active Office mirror root, separates profile-declared machine-owned Markdown
 from curated Markdown counts, summarizes manifests/audit/recovery readiness, and checks basic git
@@ -212,11 +212,11 @@ python3.11 tools/sync_office_md.py --mirror-mode sibling # legacy sibling layout
 ```
 
 `tools/sync_office_md.py` is a compatibility shim for the package-owned
-`vaultwright.mirrors.office` runtime. Run it from an environment where Vaultwright is installed, or
+`mirrorarc.mirrors.office` runtime. Run it from an environment where MirrorArc is installed, or
 from a source checkout with `PYTHONPATH=src`.
 
 Edit the **original** Office file, never a generated mirror body. If a legacy mirror already has
-above-sentinel annotations, run `vaultwright migrate annotations --write` before refreshing it.
+above-sentinel annotations, run `mirrorarc migrate annotations --write` before refreshing it.
 Keep durable human notes in regular curated notes or `_meta/mirror-annotations/` sidecars.
 By default mirrors are written to `_mirrors/<canonical-source-path>.md`, so source folders stay
 clean even when old folder aliases are still present. Configure `_meta/mirror-config.yml` or pass
@@ -273,7 +273,7 @@ python3.11 tools/sync_github_repos.py --force     # rebuild even if unchanged
 ```
 
 `tools/sync_github_repos.py` is a compatibility shim for the package-owned
-`vaultwright.mirrors.github_repos` runtime. Run it from an environment where Vaultwright is
+`mirrorarc.mirrors.github_repos` runtime. Run it from an environment where MirrorArc is
 installed, or from a source checkout with `PYTHONPATH=src`.
 
 **Auth — read-only is enough, and never in the vault.** Either `gh auth login` (the script reads
@@ -321,8 +321,8 @@ the filesystem issue and rerun sync to recover.
 If `_meta/agent-readiness-tasks.yml` exists, validate it with:
 
 ```bash
-python3.11 tools/vaultwright.py benchmark
-python3.11 tools/vaultwright.py benchmark --require-generated  # after running sync
+python3.11 tools/mirrorarc.py benchmark
+python3.11 tools/mirrorarc.py benchmark --require-generated  # after running sync
 ```
 
 The first command allows generated mirror paths to be planned but not present yet. The
@@ -333,7 +333,7 @@ If a copied pilot vault has synced source manifests but no task pack yet, initia
 scaffold:
 
 ```bash
-python3.11 tools/vaultwright.py benchmark --init-tasks
+python3.11 tools/mirrorarc.py benchmark --init-tasks
 ```
 
 This writes `_meta/agent-readiness-tasks.yml` from manifest paths only. It does not read or copy
@@ -343,7 +343,7 @@ selected paths before scoring.
 After editing the task pack, print a private reviewer run sheet:
 
 ```bash
-python3.11 tools/vaultwright.py benchmark --worksheet
+python3.11 tools/mirrorarc.py benchmark --worksheet
 ```
 
 The worksheet includes prompts, rubric, evidence-reference counts, and per-mode scoring fields
@@ -353,21 +353,21 @@ If a private pilot records comparison scores in `_meta/agent-readiness-results.y
 aggregate results with:
 
 ```bash
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml --require-results
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml --require-citations
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml --require-prompt-safety
-python3.11 tools/vaultwright.py benchmark --results _meta/agent-readiness-results.yml --json
+python3.11 tools/mirrorarc.py benchmark --results _meta/agent-readiness-results.yml
+python3.11 tools/mirrorarc.py benchmark --results _meta/agent-readiness-results.yml --require-results
+python3.11 tools/mirrorarc.py benchmark --results _meta/agent-readiness-results.yml --require-citations
+python3.11 tools/mirrorarc.py benchmark --results _meta/agent-readiness-results.yml --require-prompt-safety
+python3.11 tools/mirrorarc.py benchmark --results _meta/agent-readiness-results.yml --json
 ```
 
 To avoid hand-building the private aggregate result file, initialize a fillable scaffold:
 
 ```bash
-python3.11 tools/vaultwright.py benchmark --init-results
+python3.11 tools/mirrorarc.py benchmark --init-results
 ```
 
 Result packs score each task across `raw_source_folder`, `plain_markitdown_dump`, and
-`vaultwright_markdown`. The report prints per-mode scores, correction counts, privacy/provenance
+`mirrorarc_markdown`. The report prints per-mode scores, correction counts, privacy/provenance
 violation counts, citation counts, uncited scored-result counts, and prompt-safety review/violation
 counts, but it does not print answer text or reviewer notes. Use `--require-citations` when scored
 pilot results must cite at least one declared source or generated mirror path. Use

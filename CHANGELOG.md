@@ -1,11 +1,17 @@
 # Changelog
 
-All notable changes to Vaultwright are documented here. Format loosely follows
+All notable changes to MirrorArc are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); Python package prereleases use PEP 440.
 
 ## [Unreleased]
 
 ### Changed
+- Renamed the project from Vaultwright to **MirrorArc**; the distribution, canonical Python namespace, CLI,
+  repository URLs, docs, templates, examples, benchmark mode, CI/release workflows, and local
+  derived-state path now use the MirrorArc identity.
+- Kept narrow technical-alpha compatibility for the previous console command, Python namespace,
+  environment variables, benchmark mode, and `.vaultwright/state.sqlite` journal path while all
+  new output and documentation use MirrorArc.
 - Marked dated whitepaper, progress-audit, and mega-prompt files as historical so the current
   Stage 3 validation gate remains the obvious execution authority.
 - Aligned the CodeX continuation prompt with the current Stage 3 external-validation gate so future
@@ -20,14 +26,14 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   visualization work in the controlling v1 docs.
 - Marked experimental report/scaffold command surfaces in CLI help while preserving compatibility
   commands.
-- Clarified the whitepaper's mirror-layer wording: Vaultwright mirrors are manifest-backed,
+- Clarified the whitepaper's mirror-layer wording: MirrorArc mirrors are manifest-backed,
   deterministic Markdown materializations with journaled incremental refresh, not simple Markdown
   conversion/export or literal WAL shipping.
 
 ### Added
 - Added `scripts/create_plain_markitdown_dump.py`, a private external-pilot helper that creates
   the required `plain_markitdown_dump` benchmark baseline outside the public source checkout.
-- Added a package-version CLI smoke check (`vaultwright --version`) and wired it into
+- Added a package-version CLI smoke check (`mirrorarc --version`) and wired it into
   package-first onboarding plus the external-pilot runbook.
 - Added the 2026-07-03 independent project review to `docs/revisions/` so the active Stage 3
   execution rationale is preserved with the repository history.
@@ -46,14 +52,14 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 - Added the first public synthetic agent-readiness benchmark result packet for the
   government-services example, plus an aggregate results write-up and scanner/test coverage that
   keeps private result packs blocked.
-- Added package-first `uvx`/`pipx` onboarding guidance and updated `vaultwright init` next-step
+- Added package-first `uvx`/`pipx` onboarding guidance and updated `mirrorarc init` next-step
   output to point beginners at the installed console command plus JSON pilot evidence checks.
-- Added structured top-level `--json` output for `vaultwright sync`, `vaultwright status`, and
-  `vaultwright doctor`, with CI/release smoke coverage for pilot-ready machine-readable evidence.
+- Added structured top-level `--json` output for `mirrorarc sync`, `mirrorarc status`, and
+  `mirrorarc doctor`, with CI/release smoke coverage for pilot-ready machine-readable evidence.
 - Added journal schema metadata migration for older local state and non-failing diagnostic status
   output for future local journal schemas.
 - Added doctor warnings for vaults located under cloud-synced or mounted/network-style storage.
-- Closed the Stage 2 V1-C3 official-profile gate: `vaultwright init --profile` now scaffolds
+- Closed the Stage 2 V1-C3 official-profile gate: `mirrorarc init --profile` now scaffolds
   `business-operations`, `research-learning`, `software-project`, and `blank` from the package,
   with non-business profile folders, generated scaffold docs, matching domain maps, and
   profile-declared note templates derived from the selected contract; tests now add a synthetic
@@ -61,8 +67,8 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 - Closed the Stage 1B V1-C10 safety gate in the controlling docs after the focused, affected,
   full-suite, packaging, lint, no-data, template-copy, shell syntax, diff, and residue gates passed
   for journaled changed-file materialization.
-- Added optional Stage 1B native watch capture with `vaultwright watch --native`, backed by the
-  `vaultwright[watch]` watchdog extra; native events are observed only under configured content
+- Added optional Stage 1B native watch capture with `mirrorarc watch --native`, backed by the
+  `mirrorarc[watch]` watchdog extra; native events are observed only under configured content
   roots, buffered, normalized through the existing feed filters, and flushed through journal replay.
 - Added deterministic Stage 1B journaled-materialization benchmark evidence with
   `scripts/benchmark_journaled_materialization.py`, proving known-path replay over 1,000 synthetic
@@ -75,16 +81,16 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 - Added Stage 1B deleted-source replay handling: manifest-backed `deleted` journal events now mark
   Office source records `source_missing`, retain generated mirrors for review, append audit
   evidence, and finish as applied work instead of generic review-required events.
-- Added Stage 1B watch startup orchestration with `vaultwright watch --once`, composing startup
+- Added Stage 1B watch startup orchestration with `mirrorarc watch --once`, composing startup
   reconciliation, feed-event queueing, and journal replay; optional native capture is now handled
-  by `vaultwright watch --native`.
-- Added Stage 1B changed-file sync orchestration with `vaultwright sync --changed`, composing
+  by `mirrorarc watch --native`.
+- Added Stage 1B changed-file sync orchestration with `mirrorarc sync --changed`, composing
   explicit reconciliation and journal replay while preserving the existing full-sync path as
-  `vaultwright sync` / `vaultwright sync --full`.
-- Added Stage 1B explicit reconciliation with `vaultwright reconcile`, queuing missed created,
+  `mirrorarc sync` / `mirrorarc sync --full`.
+- Added Stage 1B explicit reconciliation with `mirrorarc reconcile`, queuing missed created,
   modified, moved, deleted, and review-required candidate events from source/manifest state with
   metadata-first comparison and candidate-only hashing for safe move detection.
-- Added Stage 1B idempotent journal replay with `vaultwright journal replay`, recovering
+- Added Stage 1B idempotent journal replay with `mirrorarc journal replay`, recovering
   interrupted `processing` events under the workspace lease, explicitly retrying failed events
   only with `--retry-failed`, and exposing bounded/JSON replay output.
 - Added a Stage 1B lease-protected changed-source worker primitive that claims journal events,
@@ -103,7 +109,7 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   test feed, generated/local/operational path filtering, event coalescing before queueing, and a
   no-full-hash fast path when the cheap fingerprint is unchanged.
 - Added the first Stage 1B journal foundation: package-owned changed-file event/state modules,
-  local `.vaultwright/state.sqlite` initialization, `vaultwright journal status`, `.vaultwright/`
+  local `.mirrorarc/state.sqlite` initialization, `mirrorarc journal status`, `.mirrorarc/`
   ignore/no-data safeguards, and focused persistence tests without starting watcher delivery.
 - Closed the Stage 1A kernel/profile-convergence gate in the controlling docs, preserving the
   package-runtime/shim boundary and opening the Stage 1B journaled materialization lane.
@@ -120,20 +126,20 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 - Added an initial package-owned profile contract validator plus `_meta/profile.yml` for the
   current `business-operations` template, establishing the first Stage 1 profile-schema seam.
 - Added package-owned v1 profile contracts for `research-learning`, `software-project`, and
-  `blank`; `vaultwright profile list/show` now exposes all four official profile contracts.
+  `blank`; `mirrorarc profile list/show` now exposes all four official profile contracts.
 - Added a shared runtime profile helper for active content roots so lint, catalog, overlap
   calibration, and repo mirror output validation use the same profile-owned folder fallback.
 - Added shared runtime profile frontmatter-key ordering so Office and GitHub generated mirrors
   place profile-owned context fields consistently before managed source/repo metadata.
-- The installable `vaultwright` CLI now supports `init --profile business-operations`,
+- The installable `mirrorarc` CLI now supports `init --profile business-operations`,
   `profile list`, `profile show`, and `profile validate` against the package-owned profile
   contract.
-- `vaultwright lint` and `vaultwright catalog` now read `_meta/profile.yml` for profile-defined
+- `mirrorarc lint` and `mirrorarc catalog` now read `_meta/profile.yml` for profile-defined
   domains, note types, statuses, required properties, and canonical content folders. The migration
   report now uses profile-defined canonical domains while `_meta/domain-map.yml` remains the legacy
   alias compatibility layer.
-- The installable `vaultwright catalog` command now runs package-owned catalog code from
-  `src/vaultwright/`, while the vault-local `tools/catalog_report.py` remains available as a
+- The installable `mirrorarc catalog` command now runs package-owned catalog code from
+  `src/mirrorarc/`, while the vault-local `tools/catalog_report.py` remains available as a
   compatibility surface.
 - Added package-owned `profile diff` and read-only `profile migrate --plan` commands so profile
   version drift, missing profile files, and template drift can be reviewed before any write-mode
@@ -159,10 +165,10 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   validated folder plan.
 - Profile validation now rejects duplicate or nested domain folders, keeping profile-driven domain
   routing, migration, and mirror placement unambiguous.
-- `vaultwright overlap` now reads the active profile's domain folders when choosing curated notes
+- `mirrorarc overlap` now reads the active profile's domain folders when choosing curated notes
   for calibration, so profile-defined content roots participate without hard-coded business
   folders.
-- `vaultwright overlap` now also reads profile-defined context frontmatter fields when counting
+- `mirrorarc overlap` now also reads profile-defined context frontmatter fields when counting
   inbound wikilinks, so non-business profiles can use fields such as `research_project` without
   inheriting `account`/`client` assumptions.
 - Profile status definitions can now declare `attention: true` and `inactive: true`; generated
@@ -171,11 +177,11 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 - Profile note type definitions can now declare `machine_owned: true`; validation enforces boolean
   values, overlap excludes machine-owned artifacts, and migration frontmatter cleanup ignores them
   without relying only on hard-coded mirror type names.
-- `vaultwright catalog` now separates profile-defined machine-owned Markdown artifacts from curated
+- `mirrorarc catalog` now separates profile-defined machine-owned Markdown artifacts from curated
   Markdown/domain counts, while surfacing them as their own inventory metric.
-- `vaultwright m365` now separates profile-defined machine-owned Markdown artifacts, including
+- `mirrorarc m365` now separates profile-defined machine-owned Markdown artifacts, including
   repo mirrors, from curated Markdown counts in handoff inventory.
-- `vaultwright sandbox` now reports profile-defined machine-owned Markdown separately from curated
+- `mirrorarc sandbox` now reports profile-defined machine-owned Markdown separately from curated
   Markdown in copied-vault preflight inventory.
 - Profiles now own generated mirror status defaults with `policy_defaults.mirror_status` and
   `policy_defaults.repo_stub_status`; Office/repo sync, lint, and annotation migration use those
@@ -190,44 +196,44 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 - Catalog, Microsoft 365 handoff, sandbox, doctor, review-ledger classification, and migration
   guidance now classify generated source mirrors from the active Office mirror root instead of
   assuming `_mirrors/`.
-- `vaultwright migration --worksheet`, `--runbook`, and frontmatter-normalization worksheets now
+- `mirrorarc migration --worksheet`, `--runbook`, and frontmatter-normalization worksheets now
   print the active profile identity plus canonical domain folders, and direct unknown folder/domain
   decisions back to `_meta/profile.yml` while keeping `_meta/domain-map.yml` as the legacy alias
   layer.
 - Benchmark task-pack validation, result citation validation, and `benchmark --init-tasks`
   scaffolding now use the active Office mirror root for generated mirror evidence paths.
-- `vaultwright pilot` now excludes the active Office mirror root from workspace inventory, so
+- `mirrorarc pilot` now excludes the active Office mirror root from workspace inventory, so
   custom generated roots are not counted as operator content or source candidates.
-- `vaultwright recovery` now excludes the active Office mirror root from missing-manifest source
+- `mirrorarc recovery` now excludes the active Office mirror root from missing-manifest source
   evidence checks, so custom generated roots do not trigger false unsynced-source warnings.
 - Profile validation now rejects templates, views, skills, and benchmark task packs declared inside
   `policy_defaults.mirror_root`, keeping generated Office mirrors separate from profile artifacts.
 - Generated `Documents.base` review-attention filters now use only profile-declared
   `attention: true` status roles instead of inferring business-oriented status names.
-- `vaultwright doctor` now reports profile-declared generated view health through the profile view
+- `mirrorarc doctor` now reports profile-declared generated view health through the profile view
   planner, warning on missing or stale views without assuming every profile owns `Documents.base`.
-- `vaultwright doctor` now validates the active profile contract first and treats
+- `mirrorarc doctor` now validates the active profile contract first and treats
   `_meta/domain-map.yml` and `_meta/mirror-config.yml` as legacy alias/override files for
   profile-driven vaults, while preserving legacy required-file checks for profile-less vaults.
-- `vaultwright lint` now treats a missing `_meta/domain-map.yml` as a non-blocking legacy-alias
+- `mirrorarc lint` now treats a missing `_meta/domain-map.yml` as a non-blocking legacy-alias
   warning when a valid profile contract provides canonical domains, while profile-less legacy
   vaults still fail when the domain map is missing.
-- `vaultwright lint` now loads `_meta/profile.yml` through the package profile validator before
+- `mirrorarc lint` now loads `_meta/profile.yml` through the package profile validator before
   deriving allowed domains, note types, statuses, policy defaults, and content roots, so invalid
   profile contracts block lint before unsafe profile data can drive checks.
-- `vaultwright lint` now reuses the shared runtime profile context helpers directly for context
+- `mirrorarc lint` now reuses the shared runtime profile context helpers directly for context
   fields and aliases, preserving profile-less legacy fallback without local duplicate defaults.
-- `vaultwright lint` now reuses the shared runtime repo-notes directory helpers for repo-mirror
+- `mirrorarc lint` now reuses the shared runtime repo-notes directory helpers for repo-mirror
   path checks, so configured `tools/repos.yml` notes directories and profile defaults share one
   fallback path.
 - Shared runtime profile helpers now load `_meta/profile.yml` through the package profile
   validator before exposing domains, status roles, mirror defaults, repo context fields, or repo
   mirror folders to sync/report code; invalid contracts fall back to legacy defaults instead of
   partially trusted profile data, and GitHub repo sync reuses the shared helper path.
-- `vaultwright catalog` and `vaultwright migration` now load profile domain routing through the
+- `mirrorarc catalog` and `mirrorarc migration` now load profile domain routing through the
   package profile validator before reporting canonical profile folders, so invalid profile
   contracts surface as report errors instead of letting partial profile data drive routing.
-- `vaultwright benchmark` and the aggregate `vaultwright pilot` report now load profile-declared
+- `mirrorarc benchmark` and the aggregate `mirrorarc pilot` report now load profile-declared
   `benchmark_tasks` paths through the package profile validator, while explicit `--tasks` and the
   legacy `_meta/agent-readiness-tasks.yml` path remain supported.
 - Added package-owned `profile views --check` and `profile views --write` commands that generate
@@ -272,116 +278,116 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 - Vault-local catalog, conversion, migration, overlap, benchmark, and pilot tools now also delegate
   to the package runtime, leaving copied vault scripts as compatibility shims for package-owned
   behavior.
-- The vault-local `tools/vaultwright.py` operator wrapper now delegates to the package CLI while
+- The vault-local `tools/mirrorarc.py` operator wrapper now delegates to the package CLI while
   preserving the copied vault root as the default `--root`.
 - Added package-owned `migrate annotations --plan` and `migrate annotations --write` commands that
   move above-sentinel mirror notes and preserved frontmatter into `_meta/mirror-annotations/`
   sidecars keyed by `source_id` or `repo_id`, without editing original sources or generated mirrors.
 - Office and repo mirror sync now recognize matching annotation sidecars and reset regenerated
   mirrors to machine-owned headers instead of carrying migrated human annotations forward.
-- `vaultwright lint` now blocks generated source/repo mirrors that still contain above-sentinel
+- `mirrorarc lint` now blocks generated source/repo mirrors that still contain above-sentinel
   human annotations unless a matching `_meta/mirror-annotations/` sidecar exists.
 - Office and repo sync now stop preserving legacy above-sentinel annotations automatically: unmigrated
   annotations become force-blocking review work, and fresh mirrors use machine-owned headers without
   a curated `## Notes` region.
 - Office mirror planning, sync, and status behavior now lives in package-owned
-  `vaultwright.mirrors.office`; vault-local `tools/sync_office_md.py` is a compatibility shim copied
+  `mirrorarc.mirrors.office`; vault-local `tools/sync_office_md.py` is a compatibility shim copied
   through the package template and examples.
 - GitHub repo mirror planning, sync, and status behavior now lives in package-owned
-  `vaultwright.mirrors.github_repos`; vault-local `tools/sync_github_repos.py` is a compatibility
+  `mirrorarc.mirrors.github_repos`; vault-local `tools/sync_github_repos.py` is a compatibility
   shim copied through the package template and examples.
-- The installable `vaultwright plan`, `vaultwright sync`, and `vaultwright status` commands now
+- The installable `mirrorarc plan`, `mirrorarc sync`, and `mirrorarc status` commands now
   orchestrate the package-owned Office and repo sync modules directly, while the vault-local
-  `tools/vaultwright.py` wrapper remains available for compatibility.
-- The installable `vaultwright doctor` command now runs package-owned preflight checks from
-  `vaultwright.doctor`, including dependency, manifest, lifecycle-contract, recovery, review-ledger,
+  `tools/mirrorarc.py` wrapper remains available for compatibility.
+- The installable `mirrorarc doctor` command now runs package-owned preflight checks from
+  `mirrorarc.doctor`, including dependency, manifest, lifecycle-contract, recovery, review-ledger,
   Obsidian, backup, git, and GitHub auth posture checks.
-- Vault health checks now live in package-owned `vaultwright.lint`; vault-local
+- Vault health checks now live in package-owned `mirrorarc.lint`; vault-local
   `tools/lint_vault.py` is a compatibility shim copied through the package template and examples.
-- The installable `vaultwright conversion` command now runs package-owned `vaultwright.conversion`
+- The installable `mirrorarc conversion` command now runs package-owned `mirrorarc.conversion`
   code; vault-local `tools/conversion_report.py` remains available as a compatibility surface, and
   CI smoke tests cover package-level conversion JSON output.
-- The installable `vaultwright m365` command now runs package-owned `vaultwright.m365` code;
+- The installable `mirrorarc m365` command now runs package-owned `mirrorarc.m365` code;
   vault-local `tools/m365_report.py` remains available as a compatibility surface, and CI smoke
   tests cover package-level handoff JSON output.
-- The installable `vaultwright migration` command now runs package-owned `vaultwright.migration`
+- The installable `mirrorarc migration` command now runs package-owned `mirrorarc.migration`
   code; vault-local `tools/migration_report.py` remains available as a compatibility surface, and
   CI smoke tests cover package-level migration JSON output.
-- The installable `vaultwright overlap` command now runs package-owned `vaultwright.overlap` code;
+- The installable `mirrorarc overlap` command now runs package-owned `mirrorarc.overlap` code;
   vault-local `tools/overlap_report.py` remains available as a compatibility surface, and CI smoke
   tests cover package-level overlap JSON output.
-- The installable `vaultwright benchmark` command now runs package-owned `vaultwright.benchmark`
+- The installable `mirrorarc benchmark` command now runs package-owned `mirrorarc.benchmark`
   code; vault-local `tools/benchmark_tasks.py` remains available as a compatibility surface, and
   package tests cover task/result validation, private scaffolds, and worksheets without the
   vault-local wrapper.
-- The installable `vaultwright pilot` command now runs package-owned `vaultwright.pilot` code and
+- The installable `mirrorarc pilot` command now runs package-owned `mirrorarc.pilot` code and
   imports package-owned report modules for its aggregate evidence summaries; vault-local
   `tools/pilot_report.py` remains available as a compatibility surface.
-- The installable `vaultwright sandbox` command now runs package-owned `vaultwright.sandbox` code
+- The installable `mirrorarc sandbox` command now runs package-owned `mirrorarc.sandbox` code
   and imports package-owned recovery reporting for its copied-vault preflight; vault-local
   `tools/sandbox_report.py` remains available as a compatibility surface.
-- The installable `vaultwright recovery` command now runs package-owned `vaultwright.recovery`
+- The installable `mirrorarc recovery` command now runs package-owned `mirrorarc.recovery`
   code; vault-local `tools/recovery_report.py` remains available as a compatibility surface, and
   CI smoke tests cover package-level JSON and worksheet output.
-- The installable `vaultwright review` command now runs package-owned `vaultwright.review_ledger`
+- The installable `mirrorarc review` command now runs package-owned `mirrorarc.review_ledger`
   code; vault-local `tools/review_ledger.py` remains available as a compatibility surface, and CI
   smoke tests cover package-level record/check behavior.
-- Added `tools/catalog_report.py` and `vaultwright catalog`, which writes a generated
+- Added `tools/catalog_report.py` and `mirrorarc catalog`, which writes a generated
   source-path-only `CATALOG.md` inventory gateway with domain, format, lifecycle, mirror, repo,
   unmanaged-source, and legacy-folder summaries.
-- `vaultwright catalog --html` now writes the same path-and-metadata-only inventory as a static
+- `mirrorarc catalog --html` now writes the same path-and-metadata-only inventory as a static
   `CATALOG.html` gateway with aggregate charts for reviewers who prefer a browser surface.
-- `vaultwright catalog` now surfaces lifecycle contract provenance from source/repo manifests,
+- `mirrorarc catalog` now surfaces lifecycle contract provenance from source/repo manifests,
   showing which contract path and schema version govern manifest lifecycle states.
 - `_meta/mirror-config.yml` now supports `office_mirrors.include_pdf: true` so unattended syncs can
   refresh text-based PDF mirrors and keep PDF source records under lifecycle provenance coverage.
 - CI and release smoke checks now compile and exercise `catalog`, including packaged-template
   installation coverage and Markdown/HTML `catalog --check` freshness validation.
-- Added `docs/MICROSOFT_365_HANDOFF.md` and `vaultwright m365`, a read-only handoff readiness
+- Added `docs/MICROSOFT_365_HANDOFF.md` and `mirrorarc m365`, a read-only handoff readiness
   report for Microsoft 365, SharePoint, OneDrive, Copilot Studio, and connector review paths.
-- Updated the Microsoft 365 handoff and whitepaper guidance to treat Vaultwright as a Copilot
+- Updated the Microsoft 365 handoff and whitepaper guidance to treat MirrorArc as a Copilot
   supplement while warning that SharePoint/OneDrive, Copilot Studio uploads, Dataverse,
   connectors, and Retrieval API paths have different file-type and retrieval behavior.
 - Regenerated the private copied dogfood vault outside the repo with dedicated `_mirrors/`
   storage, `CATALOG.md`, `CATALOG.html`, and read-only conversion, migration, recovery, pilot, and
   Microsoft 365 review reports; no private source content was added to the repository.
-- Added `tools/review_ledger.py` and `vaultwright review`, a metadata-only review ledger that
+- Added `tools/review_ledger.py` and `mirrorarc review`, a metadata-only review ledger that
   records reviewer/status decisions against generated artifact hashes and reports stale approvals
   when reviewed artifacts change.
-- `vaultwright pilot` now summarizes review-ledger aggregate counts, including reviewed artifacts,
+- `mirrorarc pilot` now summarizes review-ledger aggregate counts, including reviewed artifacts,
   stale/missing reviews, and non-approved decisions, without exposing artifact paths or notes.
-- `vaultwright pilot` now also summarizes overlap-calibration aggregate counts and current
+- `mirrorarc pilot` now also summarizes overlap-calibration aggregate counts and current
   thresholds, without exposing note bodies, shared terms, source text, paths, or reviewer notes.
-- `vaultwright doctor` now reports review-ledger approval posture and warns on stale/missing or
+- `mirrorarc doctor` now reports review-ledger approval posture and warns on stale/missing or
   non-approved artifact reviews without printing artifact paths, reviewer names, or notes.
-- `vaultwright migration` now reports legacy or unknown note frontmatter domains using
+- `mirrorarc migration` now reports legacy or unknown note frontmatter domains using
   `_meta/domain-map.yml` aliases, giving operators a read-only cleanup queue before moving notes.
-- `vaultwright migration --worksheet` now prints a Markdown review checklist for legacy folder and
+- `mirrorarc migration --worksheet` now prints a Markdown review checklist for legacy folder and
   frontmatter-domain cleanup batches.
-- `vaultwright migration --normalize-frontmatter-domains` now previews known legacy frontmatter
+- `mirrorarc migration --normalize-frontmatter-domains` now previews known legacy frontmatter
   domain alias rewrites, and `--write` applies only those `domain` frontmatter changes without
   moving files, touching unknown domains, or editing generated mirrors.
-- `vaultwright migration --normalize-frontmatter-domains --worksheet` now prints a dry-run review
+- `mirrorarc migration --normalize-frontmatter-domains --worksheet` now prints a dry-run review
   checklist for planned frontmatter alias rewrites, skipped generated mirrors, and unknown domains
   before any write is approved.
 - CI and release smoke checks now exercise the normalizer worksheet through the packaged CLI.
-- `vaultwright migration --runbook` now prints a read-only legacy folder migration protocol with
+- `mirrorarc migration --runbook` now prints a read-only legacy folder migration protocol with
   preconditions, execution steps, stop conditions, and current alias/unknown cleanup queues.
 - CI and release smoke checks now exercise the migration runbook through the packaged CLI.
-- `vaultwright recovery --worksheet` now prints a read-only Markdown recovery checklist with
+- `mirrorarc recovery --worksheet` now prints a read-only Markdown recovery checklist with
   lifecycle actions, lifecycle-contract explanations/exit conditions, previous mirror context,
   bounded conflict summaries, and latest audit context.
-- `vaultwright recovery --runbook` now prints a read-only, state-grouped resolution protocol for
+- `mirrorarc recovery --runbook` now prints a read-only, state-grouped resolution protocol for
   missing sources, moved sources, unconfigured repo mirrors, manual generated-region edits,
   conflicts/errors, and interrupted write temp files.
 - CI and release smoke checks now exercise recovery worksheet and runbook output through the
   packaged CLI.
-- Added `tools/sandbox_report.py` and `vaultwright sandbox`, a read-only copied-vault preflight for
+- Added `tools/sandbox_report.py` and `mirrorarc sandbox`, a read-only copied-vault preflight for
   safe pilot workspaces that checks source-root separation, mirror isolation, manifest/recovery
   readiness, and backup posture without printing source paths or document text.
 - CI and release smoke checks now compile and exercise `sandbox`, including packaged-template
   installation coverage.
-- The installable `vaultwright` console entry point now exercises `sandbox` through the package
+- The installable `mirrorarc` console entry point now exercises `sandbox` through the package
   runtime while the vault-local wrapper remains available for compatibility.
 - Office sync now blocks ambiguous same-hash source moves as `conflict` when multiple missing
   manifest records could match one new source path.
@@ -389,26 +395,26 @@ All notable changes to Vaultwright are documented here. Format loosely follows
   source-path manifest records as `conflict` instead of choosing one source history silently.
 - Added `scripts/sync_template_copies.py` plus CI/release drift checks so the packaged template and
   example vault tool copies stay aligned with the canonical `template/` sources.
-- `vaultwright benchmark` now reports citation counts and supports `--require-citations` so scored
+- `mirrorarc benchmark` now reports citation counts and supports `--require-citations` so scored
   agent-readiness results can be gated on declared source or generated-mirror evidence.
-- `vaultwright benchmark` now tracks prompt-safety review and prompt-safety violations in private
+- `mirrorarc benchmark` now tracks prompt-safety review and prompt-safety violations in private
   result packs, with `--require-prompt-safety` for strict design-partner gates.
 - CI and release wheel smoke checks now exercise benchmark result validation with
   `--require-citations` and `--require-prompt-safety` through the packaged CLI.
-- `vaultwright benchmark --init-tasks` now writes a private task-pack scaffold from synced
+- `mirrorarc benchmark --init-tasks` now writes a private task-pack scaffold from synced
   source/mirror manifest metadata, giving copied pilot vaults a starting benchmark without reading
   or copying document bodies.
-- `vaultwright benchmark --init-results` now writes a private, fillable result-pack scaffold for
+- `mirrorarc benchmark --init-results` now writes a private, fillable result-pack scaffold for
   every task/mode pair, avoiding hand-built pilot result files while keeping answer text and
   reviewer notes out of aggregate benchmark data.
-- `vaultwright benchmark --worksheet` now prints a private Markdown run sheet from the task pack,
+- `mirrorarc benchmark --worksheet` now prints a private Markdown run sheet from the task pack,
   including prompts, rubric, evidence counts, and per-mode scoring fields without source paths,
   mirror paths, answers, or reviewer notes.
 - The no-data scanner now rejects private agent-readiness task packs unless they are approved
   public examples, preventing copied-vault benchmark prompts and path lists from entering the repo.
-- `vaultwright conversion --init-results` now creates private metadata-only conversion-quality
-  result scaffolds, `vaultwright conversion --results ... --require-reviewed` validates
-  reviewer-entered status/score/correction/issue-code aggregates, `vaultwright pilot` summarizes
+- `mirrorarc conversion --init-results` now creates private metadata-only conversion-quality
+  result scaffolds, `mirrorarc conversion --results ... --require-reviewed` validates
+  reviewer-entered status/score/correction/issue-code aggregates, `mirrorarc pilot` summarizes
   those aggregates, and the no-data scanner blocks conversion-quality result packs from the public
   repo.
 - Conversion review guides and scaffolds now print the allowed result-pack schema, and quickstart
@@ -423,17 +429,17 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 - Repo sync/status now marks previously synced repo mirrors as `repo_unconfigured` when their
   `tools/repos.yml` entry is removed, preserving mirrors until an operator restores config or
   deliberately retires the manifest record.
-- `vaultwright recovery` now compares `_meta/repo-manifest.json` with `tools/repos.yml` so removed
+- `mirrorarc recovery` now compares `_meta/repo-manifest.json` with `tools/repos.yml` so removed
   repo config entries are surfaced as `repo_unconfigured` before another repo sync rewrites the
   manifest.
-- `vaultwright catalog` and `vaultwright m365` now use the same repo config comparison, so
+- `mirrorarc catalog` and `mirrorarc m365` now use the same repo config comparison, so
   retained repo mirrors whose `tools/repos.yml` entry was removed appear as `repo_unconfigured` in
   inventory and handoff readiness reports before another repo sync runs.
-- `vaultwright lint` now blocks repo manifest records that are no longer governed by
+- `mirrorarc lint` now blocks repo manifest records that are no longer governed by
   `tools/repos.yml`, preventing clean-looking retained repo mirrors from passing release gates
   after their config entry is removed.
 - Added `_meta/lifecycle-states.yml` as the machine-readable Office/repo lifecycle contract, and
-  `vaultwright doctor` now validates that every state has entry conditions, explanations, permitted
+  `mirrorarc doctor` now validates that every state has entry conditions, explanations, permitted
   next actions, and exit conditions during preflight.
 - Office and repo sync plan/status guidance now reads `_meta/lifecycle-states.yml`, and generated
   source/repo manifest records plus sync audit events record the lifecycle contract path/schema
@@ -456,9 +462,9 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 - Lint now skips generated `_meta/*.md` reports and the generated `CATALOG.md` gateway for note
   frontmatter/orphan checks, keeping copied-vault review output focused on curated-note issues.
 - Lint now reports legacy frontmatter domain aliases with canonical recommendations, for example
-  `marketing -> market (20_market/)`, so copied-vault cleanup queues align with `vaultwright
+  `marketing -> market (20_market/)`, so copied-vault cleanup queues align with `mirrorarc
   migration`.
-- Added `tools/overlap_report.py` and `vaultwright overlap`, a read-only overlap-threshold
+- Added `tools/overlap_report.py` and `mirrorarc overlap`, a read-only overlap-threshold
   calibration report that summarizes candidate counts across threshold bands without printing note
   bodies, shared terms, source text, or reviewer notes.
 - CI and release smoke checks now exercise `overlap --json` and `overlap --worksheet` through the
@@ -467,11 +473,11 @@ All notable changes to Vaultwright are documented here. Format loosely follows
 ### Fixed
 - Office mirror planning now reports unsafe mirror-output errors against the active
   profile/configured mirror root instead of falling back to a legacy `_mirrors/` record path.
-- `vaultwright sandbox` no longer treats `_meta/domain-map.yml` and `_meta/mirror-config.yml` as
+- `mirrorarc sandbox` no longer treats `_meta/domain-map.yml` and `_meta/mirror-config.yml` as
   required files when a valid profile contract can provide canonical domains and mirror defaults.
 
 ### Known TODO before stable release hardening
-- Decide CLA vs DCO; secure the "Vaultwright" name; draft the commercial agreement.
+- Decide CLA vs DCO; secure the "MirrorArc" name; draft the commercial agreement.
 - Calibrate the default near-duplicate/overlap thresholds with design-partner corpora.
 
 ## [0.1.0a1] — 2026-06-20
@@ -492,17 +498,17 @@ Initial scaffold extracted and generalized from a real small-business vault.
 - Added `examples/government-services-vault/`, a public-service document showcase built from
   generated Office fixtures covering Canadian business-startup workflows: CRA business
   registration, GST/HST readiness, CRA account access, and funding/support discovery.
-- Added `docs/VAULTWRIGHT_WHITEPAPER.md`, a professional review whitepaper covering progress,
+- Added `docs/MIRRORARC_WHITEPAPER.md`, a professional review whitepaper covering progress,
   limitations, validation posture, dogfood results, and future roadmap.
-- Updated the whitepaper to frame Vaultwright's future direction as an agent-ready markdown
+- Updated the whitepaper to frame MirrorArc's future direction as an agent-ready markdown
   substrate, not only a human-managed knowledge-base workflow.
 - Added `docs/AGENT_READINESS_BENCHMARK.md` and aligned public docs around proving agent value
   against raw source folders and one-off document-chat outputs.
 - Added a source-linked government-services agent-readiness task pack under
   `examples/government-services-vault/_meta/agent-readiness-tasks.yml`.
-- Added `tools/benchmark_tasks.py` and `vaultwright benchmark` to validate agent-readiness task
+- Added `tools/benchmark_tasks.py` and `mirrorarc benchmark` to validate agent-readiness task
   packs before and after generated mirrors exist.
-- `vaultwright benchmark` now validates optional `_meta/agent-readiness-results.yml` result packs
+- `mirrorarc benchmark` now validates optional `_meta/agent-readiness-results.yml` result packs
   and reports aggregate per-mode scores, correction counts, and privacy/provenance violation
   counts without printing answer text or reviewer notes.
 - Vendored the full AGPL-3.0 license text into `LICENSE`, kept project-specific licensing notices
@@ -515,15 +521,15 @@ Initial scaffold extracted and generalized from a real small-business vault.
   paths, converter/config version, lifecycle state, warnings, and last successful sync.
 - Office and repo plan/status output now includes lifecycle next-action guidance for review,
   missing, moved, changed, unreachable, conflict, unsupported, and error states.
-- Added `tools/vaultwright.py`, a thin operator wrapper for `plan`, `sync`, `status`, `lint`, and
+- Added `tools/mirrorarc.py`, a thin operator wrapper for `plan`, `sync`, `status`, `lint`, and
   `doctor`, plus repo-root `init`.
-- Added `pyproject.toml` and the source-installable `vaultwright` console entry point; current
+- Added `pyproject.toml` and the source-installable `mirrorarc` console entry point; current
   command behavior has since converged into package-owned modules while vault-local tools remain
   compatibility shims.
-- Packaged the starter vault template under `src/vaultwright/template`, so `vaultwright init` can
-  scaffold from an installed wheel without a source checkout or `VAULTWRIGHT_REPO`.
+- Packaged the starter vault template under `src/mirrorarc/template`, so `mirrorarc init` can
+  scaffold from an installed wheel without a source checkout or `MIRRORARC_REPO`.
 - CI now builds a wheel, installs it into a clean environment, and smoke-tests packaged
-  `vaultwright init`, `doctor`, `plan`, `benchmark`, `conversion`, `migration`, `pilot`, and JSON
+  `mirrorarc init`, `doctor`, `plan`, `benchmark`, `conversion`, `migration`, `pilot`, and JSON
   `recovery` delegation.
 - Added a tag-driven GitHub Release workflow and `docs/RELEASE.md`; `v*` tags build artifacts,
   install-test the wheel, upload workflow artifacts, and create a draft prerelease for owner review
@@ -533,23 +539,23 @@ Initial scaffold extracted and generalized from a real small-business vault.
   `NOTICE` files, avoiding deprecated setuptools license-table and classifier warnings.
 - Updated GitHub Actions workflow dependencies to current majors for CI and release automation,
   removing the Node 20 runtime deprecation warning path.
-- `vaultwright doctor` now reports manifest lifecycle counts, sync audit presence, recovery action
+- `mirrorarc doctor` now reports manifest lifecycle counts, sync audit presence, recovery action
   counts, git backup posture, GitHub auth posture, optional Obsidian config/plugin posture, and
   `.gitignore` backup guard coverage as read-only preflight context.
-- Added `tools/recovery_report.py` and `vaultwright recovery`, a read-only recovery checklist for
+- Added `tools/recovery_report.py` and `mirrorarc recovery`, a read-only recovery checklist for
   non-clean source/repo manifest records and missing generated paths.
-- Added `tools/conversion_report.py` and `vaultwright conversion`, a read-only conversion
+- Added `tools/conversion_report.py` and `mirrorarc conversion`, a read-only conversion
   spot-check report that prioritizes manifest records by lifecycle state, warning/error metadata,
   source format, and source/mirror existence without claiming an automated quality score.
-- `vaultwright conversion --guide` now appends a manifest-aware operator checklist for conversion
+- `mirrorarc conversion --guide` now appends a manifest-aware operator checklist for conversion
   review, including priority handling, format-specific caveats, and sign-off criteria without
   printing source or mirror content.
-- Added `tools/migration_report.py` and `vaultwright migration`, a read-only report for legacy
+- Added `tools/migration_report.py` and `mirrorarc migration`, a read-only report for legacy
   alias folders and unknown top-level folders, including non-reserved hidden/underscore folders,
   before any manual migration.
-- Added `tools/pilot_report.py`, `vaultwright pilot`, and `docs/PILOT_WORKSHEET.md` for aggregate
+- Added `tools/pilot_report.py`, `mirrorarc pilot`, and `docs/PILOT_WORKSHEET.md` for aggregate
   design-partner evidence capture without printing source or mirror content.
-- Added `vaultwright pilot --worksheet`, a redacted Markdown summary mode for private pilot records
+- Added `mirrorarc pilot --worksheet`, a redacted Markdown summary mode for private pilot records
   that reports aggregate counts and review queues without source paths or document content.
 - Added `_meta/lint-config.yml` so overlap-warning thresholds can be tuned in copied pilot vaults
   without changing linter code.
@@ -661,7 +667,7 @@ Initial scaffold extracted and generalized from a real small-business vault.
   `repo_id` as a conflict instead of taking over the note.
 - The no-data scanner now allows generated `_meta/sync-audit.jsonl` files in temporary validation
   vaults while still scanning their text for secrets.
-- CI now smoke-tests the installed `vaultwright` console entry point and validates both example
+- CI now smoke-tests the installed `mirrorarc` console entry point and validates both example
   vaults after mirror regeneration.
 - Added a copied-vault recovery regression test covering mirror regeneration, source-byte
   preservation, `source_missing`, `manual_modification`, lint, and no-data scanning.

@@ -12,7 +12,7 @@ related: ["[[INDEX]]", "[[Acme Manufacturing]]", "[[Service Readiness Playbook]]
 
 # Northwind Robotics
 
-Northwind Robotics is a fictional systems integrator used to demonstrate Vaultwright. It designs
+Northwind Robotics is a fictional systems integrator used to demonstrate MirrorArc. It designs
 lightweight automation cells for small manufacturers and maintains service playbooks, account
 records, project notes, and financial snapshots in a linked markdown vault.
 

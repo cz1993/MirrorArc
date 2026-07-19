@@ -20,7 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e . pytest
       - name: Compile Python tools
-        run: python -m py_compile template/tools/lint_vault.py template/tools/sync_office_md.py template/tools/sync_github_repos.py template/tools/benchmark_tasks.py template/tools/catalog_report.py template/tools/conversion_report.py template/tools/m365_report.py template/tools/migration_report.py template/tools/overlap_report.py template/tools/pilot_report.py template/tools/recovery_report.py template/tools/review_ledger.py template/tools/sandbox_report.py template/tools/vaultwright.py src/vaultwright/annotation_migration.py src/vaultwright/benchmark.py src/vaultwright/catalog.py src/vaultwright/cli.py src/vaultwright/conversion.py src/vaultwright/doctor.py src/vaultwright/lint.py src/vaultwright/m365.py src/vaultwright/migration.py src/vaultwright/overlap.py src/vaultwright/pilot.py src/vaultwright/recovery.py src/vaultwright/review_ledger.py src/vaultwright/runtime_profile.py src/vaultwright/sandbox.py src/vaultwright/views.py src/vaultwright/mirrors/__init__.py src/vaultwright/mirrors/github_repos.py src/vaultwright/mirrors/office.py src/vaultwright/profile_migration.py src/vaultwright/__init__.py scripts/no_data_scan.py scripts/sync_template_copies.py
+        run: python -m py_compile template/tools/lint_vault.py template/tools/sync_office_md.py template/tools/sync_github_repos.py template/tools/benchmark_tasks.py template/tools/catalog_report.py template/tools/conversion_report.py template/tools/m365_report.py template/tools/migration_report.py template/tools/overlap_report.py template/tools/pilot_report.py template/tools/recovery_report.py template/tools/review_ledger.py template/tools/sandbox_report.py template/tools/mirrorarc.py src/mirrorarc/annotation_migration.py src/mirrorarc/benchmark.py src/mirrorarc/catalog.py src/mirrorarc/cli.py src/mirrorarc/conversion.py src/mirrorarc/doctor.py src/mirrorarc/lint.py src/mirrorarc/m365.py src/mirrorarc/migration.py src/mirrorarc/overlap.py src/mirrorarc/pilot.py src/mirrorarc/recovery.py src/mirrorarc/review_ledger.py src/mirrorarc/runtime_profile.py src/mirrorarc/sandbox.py src/mirrorarc/views.py src/mirrorarc/mirrors/__init__.py src/mirrorarc/mirrors/github_repos.py src/mirrorarc/mirrors/office.py src/mirrorarc/profile_migration.py src/mirrorarc/__init__.py src/vaultwright/__init__.py scripts/no_data_scan.py scripts/sync_template_copies.py
       - name: Shell syntax
         run: bash -n scripts/init.sh template/tools/sync_all.sh .githooks/pre-commit
       - name: Template copy drift check
@@ -29,40 +29,44 @@ jobs:
         run: pytest
       - name: Installed CLI smoke test
         run: |
-          vaultwright --help
+          mirrorarc --version
+          mirrorarc --help
+          vaultwright --version
           tmp_vault="$(mktemp -d)/vault"
-          VAULTWRIGHT_REPO="$PWD" vaultwright init "$tmp_vault"
-          vaultwright --root "$tmp_vault" profile diff 0.1.0
-          vaultwright --root "$tmp_vault" profile migrate --plan
-          vaultwright --root "$tmp_vault" profile migrate --write --json
-          vaultwright --root "$tmp_vault" profile views --check
-          vaultwright --root "$tmp_vault" migrate annotations --plan
-          vaultwright --root "$tmp_vault" doctor
-          vaultwright --root "$tmp_vault" doctor --json
-          vaultwright --root "$tmp_vault" lint
-          vaultwright --root "$tmp_vault" plan
-          vaultwright --root "$tmp_vault" sync
-          vaultwright --root "$tmp_vault" sync --json
-          vaultwright --root "$tmp_vault" status
-          vaultwright --root "$tmp_vault" status --json
-          vaultwright --root "$tmp_vault" conversion --json
-          vaultwright --root "$tmp_vault" migration --json
-          vaultwright --root "$tmp_vault" overlap --json
-          vaultwright --root "$tmp_vault" recovery --json
-          vaultwright --root "$tmp_vault" recovery --worksheet
-          vaultwright --root "$tmp_vault" m365 --json
-          vaultwright --root "$tmp_vault" catalog
-          vaultwright --root "$tmp_vault" review --artifact CATALOG.md --status approved --reviewer CI --json
-          vaultwright --root "$tmp_vault" review --check
+          MIRRORARC_REPO="$PWD" mirrorarc init "$tmp_vault"
+          mirrorarc --root "$tmp_vault" profile diff 0.1.0
+          mirrorarc --root "$tmp_vault" profile migrate --plan
+          mirrorarc --root "$tmp_vault" profile migrate --write --json
+          mirrorarc --root "$tmp_vault" profile views --check
+          mirrorarc --root "$tmp_vault" migrate annotations --plan
+          mirrorarc --root "$tmp_vault" doctor
+          mirrorarc --root "$tmp_vault" doctor --json
+          mirrorarc --root "$tmp_vault" lint
+          mirrorarc --root "$tmp_vault" plan
+          mirrorarc --root "$tmp_vault" sync
+          mirrorarc --root "$tmp_vault" sync --json
+          mirrorarc --root "$tmp_vault" status
+          mirrorarc --root "$tmp_vault" status --json
+          mirrorarc --root "$tmp_vault" conversion --json
+          mirrorarc --root "$tmp_vault" migration --json
+          mirrorarc --root "$tmp_vault" overlap --json
+          mirrorarc --root "$tmp_vault" recovery --json
+          mirrorarc --root "$tmp_vault" recovery --worksheet
+          mirrorarc --root "$tmp_vault" m365 --json
+          mirrorarc --root "$tmp_vault" catalog
+          mirrorarc --root "$tmp_vault" review --artifact CATALOG.md --status approved --reviewer CI --json
+          mirrorarc --root "$tmp_vault" review --check
       - name: Wheel CLI smoke test
         run: |
           tmp_build="$(mktemp -d)"
           python -m pip wheel . --no-deps -w "$tmp_build/wheelhouse"
           python -m venv "$tmp_build/venv"
-          "$tmp_build/venv/bin/python" -m pip install "$tmp_build"/wheelhouse/vaultwright-*.whl
+          "$tmp_build/venv/bin/python" -m pip install "$tmp_build"/wheelhouse/mirrorarc-*.whl
           tmp_vault="$tmp_build/vault"
           mkdir -p "$tmp_build/original-documents"
-          "$tmp_build/venv/bin/vaultwright" init "$tmp_vault"
+          "$tmp_build/venv/bin/mirrorarc" init "$tmp_vault"
+          "$tmp_build/venv/bin/vaultwright" --version
+          "$tmp_build/venv/bin/python" -c 'import mirrorarc, vaultwright; from vaultwright.cli import main; assert mirrorarc.__version__ == vaultwright.__version__'
           test -f "$tmp_vault/CLAUDE.md"
           test -f "$tmp_vault/tools/catalog_report.py"
           test -f "$tmp_vault/tools/conversion_report.py"
@@ -72,24 +76,24 @@ jobs:
           test -f "$tmp_vault/tools/recovery_report.py"
           test -f "$tmp_vault/tools/review_ledger.py"
           test -f "$tmp_vault/tools/sandbox_report.py"
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" profile diff 0.1.0
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" profile migrate --plan
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" profile migrate --write --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" profile views --check
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" migrate annotations --plan
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" doctor
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" doctor --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" plan
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" sync
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" sync --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" status
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" status --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" sandbox --source-root "$tmp_build/original-documents" --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" benchmark
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" catalog
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" catalog --check
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" catalog --html
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" catalog --html --check
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" profile diff 0.1.0
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" profile migrate --plan
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" profile migrate --write --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" profile views --check
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" migrate annotations --plan
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" doctor
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" doctor --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" plan
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" sync
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" sync --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" status
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" status --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" sandbox --source-root "$tmp_build/original-documents" --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" benchmark
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" catalog
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" catalog --check
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" catalog --html
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" catalog --html --check
           python -c 'import json, pathlib, sys; root = pathlib.Path(sys.argv[1]); (root / "40_delivery").mkdir(exist_ok=True); (root / "_mirrors" / "40_delivery").mkdir(parents=True, exist_ok=True); (root / "40_delivery" / "release-smoke.docx").write_bytes(b"synthetic release smoke source"); (root / "_mirrors" / "40_delivery" / "release-smoke.md").write_text("---\ntitle: Release Smoke\n---\n# Release Smoke\n", encoding="utf-8"); (root / "_meta" / "source-manifest.json").write_text(json.dumps({"version": 1, "records": [{"source_id": "release-smoke-source", "current_source_path": "40_delivery/release-smoke.docx", "mirror_path": "_mirrors/40_delivery/release-smoke.md", "source_format": "docx", "source_size": 30, "lifecycle_state": "clean", "warnings": [], "errors": []}]}), encoding="utf-8")' "$tmp_vault"
           python - "$tmp_vault" <<'PY'
           import pathlib
@@ -98,7 +102,7 @@ jobs:
           root = pathlib.Path(sys.argv[1])
           task_pack = """schema_version: 1
           corpus: ci-wheel-smoke
-          comparison_modes: [raw_source_folder, document_chat_transcript, vaultwright_markdown]
+          comparison_modes: [raw_source_folder, document_chat_transcript, mirrorarc_markdown]
           scoring:
             scale: 0-2
           tasks:
@@ -142,7 +146,7 @@ jobs:
           corpus: ci-wheel-smoke
           results:
             - task_id: smoke-answer
-              mode: vaultwright_markdown
+              mode: mirrorarc_markdown
               score: 2
               reviewer_corrections: 0
               cited_source_paths: [40_delivery/release-smoke.docx]
@@ -154,24 +158,24 @@ jobs:
           (root / "_meta" / "agent-readiness-tasks.yml").write_text(task_pack, encoding="utf-8")
           (root / "_meta" / "agent-readiness-results.yml").write_text(result_pack, encoding="utf-8")
           PY
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" benchmark --results _meta/agent-readiness-results.yml --require-citations --require-prompt-safety --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" conversion --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" conversion --init-results
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" benchmark --results _meta/agent-readiness-results.yml --require-citations --require-prompt-safety --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" conversion --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" conversion --init-results
           python -c 'import pathlib, sys; root = pathlib.Path(sys.argv[1]); (root / "_meta" / "conversion-quality-results.yml").write_text("schema_version: 1\ncorpus: ci-wheel-smoke\nreviews:\n- source_id: release-smoke-source\n  source_format: docx\n  priority: low\n  status: pass\n  score: 2\n  reviewer_corrections: 0\n  checked_source: true\n  checked_mirror: true\n  checked_links: true\n  issue_codes: []\n", encoding="utf-8")' "$tmp_vault"
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" conversion --results _meta/conversion-quality-results.yml --require-reviewed --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" overlap --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" overlap --worksheet
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" m365 --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" review --artifact CATALOG.html --status approved --reviewer CI --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" review --check
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" migration --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" migration --worksheet
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" migration --runbook
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" migration --normalize-frontmatter-domains --worksheet
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" pilot --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" pilot --worksheet
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" recovery --json
-          "$tmp_build/venv/bin/vaultwright" --root "$tmp_vault" recovery --worksheet
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" conversion --results _meta/conversion-quality-results.yml --require-reviewed --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" overlap --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" overlap --worksheet
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" m365 --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" review --artifact CATALOG.html --status approved --reviewer CI --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" review --check
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" migration --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" migration --worksheet
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" migration --runbook
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" migration --normalize-frontmatter-domains --worksheet
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" pilot --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" pilot --worksheet
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" recovery --json
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" recovery --worksheet
       - name: Template lint
         run: python template/tools/lint_vault.py
       - name: Regenerate example mirrors
@@ -180,16 +184,16 @@ jobs:
           for name in northwind-robotics-vault government-services-vault; do
             cp -R "examples/$name" "$tmp_example/"
             example="$tmp_example/$name"
-            python "$example/tools/vaultwright.py" plan
-            python "$example/tools/vaultwright.py" sync
-            python "$example/tools/vaultwright.py" status
-            echo "$example" >> /tmp/vaultwright-example-paths
+            python "$example/tools/mirrorarc.py" plan
+            python "$example/tools/mirrorarc.py" sync
+            python "$example/tools/mirrorarc.py" status
+            echo "$example" >> /tmp/mirrorarc-example-paths
           done
       - name: No-data scan after mirror generation
         run: |
           while IFS= read -r example; do
             find "$example" \( -name '*.md' -o -name '*.json' -o -name '*.jsonl' \) -type f -print0 | xargs -0 python scripts/no_data_scan.py --paths
-          done < /tmp/vaultwright-example-paths
+          done < /tmp/mirrorarc-example-paths
       - name: Example vault lint
         run: |
           while IFS= read -r example; do
@@ -197,4 +201,4 @@ jobs:
             printf '%s\n' "$output"
             grep -q "Orphan notes (no inbound links): 0" <<<"$output"
             grep -q "Potential duplicate/overlap notes: 0" <<<"$output"
-          done < /tmp/vaultwright-example-paths
+          done < /tmp/mirrorarc-example-paths

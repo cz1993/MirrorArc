@@ -8,7 +8,7 @@ import sys
 
 import pytest
 
-from vaultwright.changes import journal
+from mirrorarc.changes import journal
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,7 +20,7 @@ def run_cli(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     return subprocess.run(
-        [sys.executable, "-m", "vaultwright.cli", "--root", str(root), *args],
+        [sys.executable, "-m", "mirrorarc.cli", "--root", str(root), *args],
         cwd=ROOT,
         env=env,
         text=True,
@@ -33,21 +33,39 @@ def test_journal_status_reports_uninitialized_without_creating_state(tmp_path: P
     payload = journal.journal_status(tmp_path)
 
     assert payload["initialized"] is False
-    assert payload["state_path"] == ".vaultwright/state.sqlite"
+    assert payload["state_path"] == ".mirrorarc/state.sqlite"
     assert payload["last_event_sequence"] == 0
     assert payload["queued_count"] == 0
-    assert not (tmp_path / ".vaultwright").exists()
+    assert not (tmp_path / ".mirrorarc").exists()
 
 
 def test_journal_initializes_sqlite_state_in_derived_directory(tmp_path: Path) -> None:
     path = journal.initialize(tmp_path)
 
-    assert path == tmp_path / ".vaultwright" / "state.sqlite"
+    assert path == tmp_path / ".mirrorarc" / "state.sqlite"
     assert path.exists()
     payload = journal.journal_status(tmp_path)
     assert payload["initialized"] is True
     assert payload["schema_version"] == 1
     assert payload["last_reconciliation"] is None
+
+
+def test_journal_reuses_legacy_state_without_creating_a_second_database(tmp_path: Path) -> None:
+    journal.initialize(tmp_path)
+    (tmp_path / ".mirrorarc").rename(tmp_path / ".vaultwright")
+
+    payload = journal.journal_status(tmp_path)
+    sequence = journal.record_event(
+        tmp_path,
+        "created",
+        current_path="10_sources/source-001.docx",
+    )
+
+    assert payload["initialized"] is True
+    assert payload["state_path"] == ".vaultwright/state.sqlite"
+    assert sequence == 1
+    assert not (tmp_path / ".mirrorarc").exists()
+    assert (tmp_path / ".vaultwright" / "state.sqlite").exists()
 
 
 def test_journal_records_and_transitions_event_persistently(tmp_path: Path) -> None:
@@ -85,6 +103,8 @@ def test_journal_rejects_invalid_event_values_and_unsafe_paths(tmp_path: Path) -
     with pytest.raises(journal.JournalError, match="parent-directory"):
         journal.record_event(tmp_path, "modified", current_path="../source-001.docx")
     with pytest.raises(journal.JournalError, match="derived state"):
+        journal.record_event(tmp_path, "modified", current_path=".mirrorarc/state.sqlite")
+    with pytest.raises(journal.JournalError, match="derived state"):
         journal.record_event(tmp_path, "modified", current_path=".vaultwright/state.sqlite")
 
 
@@ -101,7 +121,7 @@ def test_journal_cli_status_json_reports_counts(tmp_path: Path) -> None:
     assert payload["queued_count"] == 1
     assert payload["failed_count"] == 1
     assert payload["last_event_sequence"] == 2
-    assert payload["state_path"] == ".vaultwright/state.sqlite"
+    assert payload["state_path"] == ".mirrorarc/state.sqlite"
 
 
 def test_journal_cli_status_init_creates_state(tmp_path: Path) -> None:
@@ -111,12 +131,12 @@ def test_journal_cli_status_init_creates_state(tmp_path: Path) -> None:
     payload = json.loads(result.stdout)
     assert payload["initialized"] is True
     assert payload["schema_version"] == 1
-    assert (tmp_path / ".vaultwright" / "state.sqlite").exists()
+    assert (tmp_path / ".mirrorarc" / "state.sqlite").exists()
 
 
 def test_journal_status_migrates_older_schema_metadata(tmp_path: Path) -> None:
     journal.initialize(tmp_path)
-    with sqlite3.connect(tmp_path / ".vaultwright" / "state.sqlite") as conn:
+    with sqlite3.connect(tmp_path / ".mirrorarc" / "state.sqlite") as conn:
         conn.execute("UPDATE journal_meta SET value = '0' WHERE key = 'schema_version'")
 
     payload = journal.journal_status(tmp_path)
@@ -128,7 +148,7 @@ def test_journal_status_migrates_older_schema_metadata(tmp_path: Path) -> None:
 
 def test_journal_status_reports_future_schema_without_hard_error(tmp_path: Path) -> None:
     journal.initialize(tmp_path)
-    with sqlite3.connect(tmp_path / ".vaultwright" / "state.sqlite") as conn:
+    with sqlite3.connect(tmp_path / ".mirrorarc" / "state.sqlite") as conn:
         conn.execute("UPDATE journal_meta SET value = '999' WHERE key = 'schema_version'")
 
     payload = journal.journal_status(tmp_path)
@@ -137,7 +157,7 @@ def test_journal_status_reports_future_schema_without_hard_error(tmp_path: Path)
     assert payload["initialized"] is True
     assert payload["schema_supported"] is False
     assert payload["schema_version"] == 999
-    assert "newer than this Vaultwright supports" in payload["warnings"][0]
+    assert "newer than this MirrorArc supports" in payload["warnings"][0]
     assert result.returncode == 0, result.stderr
     cli_payload = json.loads(result.stdout)
     assert cli_payload["schema_supported"] is False

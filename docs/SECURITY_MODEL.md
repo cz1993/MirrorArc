@@ -2,7 +2,7 @@
 
 ## Scope
 
-Vaultwright is a local/open-core document governance tool. It is not currently a hosted service and
+MirrorArc is a local/open-core document governance tool. It is not currently a hosted service and
 does not provide a complete enterprise security platform. This document defines the security model
 that must guide the pre-release implementation.
 
@@ -30,7 +30,7 @@ that must guide the pre-release implementation.
 
 ## Model-Provider Data Flow
 
-Vaultwright must document whether a workflow sends source or mirror content to a cloud model. The
+MirrorArc must document whether a workflow sends source or mirror content to a cloud model. The
 safe default for client work is:
 
 - do not send private source content to a model unless the operator explicitly chooses a provider
@@ -69,7 +69,7 @@ Source documents may contain:
 - secrets or PII;
 - misleading filenames or paths.
 
-Vaultwright must treat source text as untrusted input. Future AI workflows should separate "source
+MirrorArc must treat source text as untrusted input. Future AI workflows should separate "source
 content says" from "system instruction says" and should avoid executing embedded instructions.
 Generated catalogs and Microsoft 365/Copilot handoff reports now carry explicit prompt-safety
 guidance so reviewers and agents start from the same boundary:
@@ -94,8 +94,8 @@ delivery does not prove completeness; reconciliation remains mandatory.
 
 ## Plugin and Connector Policy
 
-- Obsidian community plugins are outside Vaultwright's trust boundary.
-- `vaultwright doctor` reports whether optional Obsidian config and community plugins are present,
+- Obsidian community plugins are outside MirrorArc's trust boundary.
+- `mirrorarc doctor` reports whether optional Obsidian config and community plugins are present,
   but operators still own plugin review and local application hardening.
 - GitHub tokens must come from environment, `gh`, or OS credential storage, not files in the vault.
 - Connectors should use read-only permissions where possible.
@@ -114,7 +114,7 @@ Operators need documented recovery procedures for:
 Current recovery guidance lives in `docs/RECOVERY.md`. The copied-vault regeneration path has
 regression coverage, but restore drills on pilot vaults are still required before recovery can be
 treated as an operational control.
-Run `vaultwright sandbox --source-root <original-source-root>` from copied pilot vaults before the
+Run `mirrorarc sandbox --source-root <original-source-root>` from copied pilot vaults before the
 first sync. The sandbox report is read-only and checks copy-boundary, mirror isolation,
 manifest/recovery readiness, and basic backup posture without printing source paths or document
 content.
@@ -123,7 +123,7 @@ content.
 
 - Conversion may omit layout, formulas, comments, scans, or hidden content.
 - Local machine compromise compromises local vaults.
-- Cloud sync tools may create conflict files or expose data outside Vaultwright's control.
+- Cloud sync tools may create conflict files or expose data outside MirrorArc's control.
 - AI providers may have data retention or training policies the user must evaluate.
 - Public examples do not prove security for private client records.
 

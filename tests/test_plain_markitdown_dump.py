@@ -55,8 +55,8 @@ def test_plain_markitdown_dump_creates_private_baseline_from_copied_vault(tmp_pa
     assert len(dumps) == 12
     sample = dumps[0].read_text(encoding="utf-8")
     assert "# Plain MarkItDown Dump" in sample
-    assert "No Vaultwright manifest identity" in sample
-    assert "VW-MESSY" in sample
+    assert "No MirrorArc manifest identity" in sample
+    assert "NW-MESSY" in sample
 
     summary = json.loads((vault / "_benchmark" / "plain_markitdown_dump-summary.json").read_text(encoding="utf-8"))
     assert summary["schema_version"] == 1
@@ -103,4 +103,4 @@ def test_plain_markitdown_dump_refuses_source_checkout_root() -> None:
     )
 
     assert result.returncode == 1
-    assert "refusing to write private benchmark output inside the Vaultwright source checkout" in result.stderr
+    assert "refusing to write private benchmark output inside the MirrorArc source checkout" in result.stderr

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from vaultwright.changes import native_watch
+from mirrorarc.changes import native_watch
 
 
 class FakeEvent:

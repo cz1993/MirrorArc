@@ -1,6 +1,6 @@
 schema_version: 1
 description: >
-  Vaultwright lifecycle state contract for generated Office/source mirrors and repo mirrors.
+  MirrorArc lifecycle state contract for generated Office/source mirrors and repo mirrors.
   Every state used in manifests or release guidance must have an entry condition, user-facing
   explanation, permitted next actions, and an exit condition.
 
@@ -17,7 +17,7 @@ office:
   planned:
     manifest_state: true
     entry_condition: A supported source has no current generated mirror or manifest-backed mirror record.
-    explanation: Vaultwright can create a generated mirror, but no mirror has been written yet.
+    explanation: MirrorArc can create a generated mirror, but no mirror has been written yet.
     permitted_next_actions:
       - Review the plan output.
       - Run sync to create the generated mirror.
@@ -35,7 +35,7 @@ office:
   source_moved:
     manifest_state: true
     entry_condition: A source with matching bytes is detected at a new path and the previous generated mirror path still needs review.
-    explanation: Vaultwright found a likely move but will not strand or duplicate generated mirrors automatically.
+    explanation: MirrorArc found a likely move but will not strand or duplicate generated mirrors automatically.
     permitted_next_actions:
       - Confirm the move is intentional.
       - Preserve, archive, or remove the old generated mirror after backup review.
@@ -62,7 +62,7 @@ office:
   unsupported:
     manifest_state: true
     entry_condition: The source format is not supported by the current converter path or was explicitly skipped as unsupported.
-    explanation: The original source remains inventoried, but Vaultwright did not create a reliable mirror.
+    explanation: The original source remains inventoried, but MirrorArc did not create a reliable mirror.
     permitted_next_actions:
       - Keep the original as source of truth.
       - Convert the file manually to a supported format if mirroring is required.
@@ -71,7 +71,7 @@ office:
   source_missing:
     manifest_state: true
     entry_condition: A manifest record exists, but the current source path is no longer present.
-    explanation: Vaultwright retains the mirror and manifest record for review instead of deleting evidence.
+    explanation: MirrorArc retains the mirror and manifest record for review instead of deleting evidence.
     permitted_next_actions:
       - Locate or restore the source.
       - Confirm whether the source was intentionally moved, archived, or deleted.
@@ -83,13 +83,13 @@ office:
     explanation: Human or external edits may exist inside machine-owned content.
     permitted_next_actions:
       - Inspect content below the generated sentinel.
-      - Preserve human edits in curated notes or run vaultwright migrate annotations --write before force regeneration.
+      - Preserve human edits in curated notes or run mirrorarc migrate annotations --write before force regeneration.
       - Rerun sync only after the review is complete.
     exit_condition: Human edits are preserved outside the generated mirror and sync regenerates the machine-owned region, or the mirror is intentionally retired.
   conflict:
     manifest_state: true
     entry_condition: Source, mirror, manifest, or routing evidence is ambiguous or unsafe to choose automatically.
-    explanation: Vaultwright cannot safely decide the correct source/mirror identity without an operator.
+    explanation: MirrorArc cannot safely decide the correct source/mirror identity without an operator.
     permitted_next_actions:
       - Read the conflict reason and candidate paths.
       - Resolve duplicate, ambiguous, or ownership conflicts manually.
@@ -136,7 +136,7 @@ repo:
   planned:
     manifest_state: true
     entry_condition: A configured repo has no current generated repo mirror note.
-    explanation: Vaultwright can create a repo mirror after plan review.
+    explanation: MirrorArc can create a repo mirror after plan review.
     permitted_next_actions:
       - Review the repo config and note target.
       - Run sync to create the repo mirror.
@@ -184,13 +184,13 @@ repo:
     explanation: Human or external edits may exist inside machine-owned repo mirror content.
     permitted_next_actions:
       - Inspect content below the generated sentinel.
-      - Preserve human edits in curated notes or run vaultwright migrate annotations --write before force regeneration.
+      - Preserve human edits in curated notes or run mirrorarc migrate annotations --write before force regeneration.
       - Rerun sync only after the review is complete.
     exit_condition: Human edits are preserved outside the generated mirror and sync regenerates the machine-owned region, or the mirror is retired.
   conflict:
     manifest_state: true
     entry_condition: Repo note ownership, repo identity, note target, or manifest evidence is ambiguous or unsafe to choose automatically.
-    explanation: Vaultwright cannot safely decide the correct repo/note identity without an operator.
+    explanation: MirrorArc cannot safely decide the correct repo/note identity without an operator.
     permitted_next_actions:
       - Read the conflict reason and affected note path.
       - Resolve ownership, duplicate target, or repo identity conflicts manually.

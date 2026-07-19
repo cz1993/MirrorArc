@@ -1,4 +1,4 @@
-# Vaultwright V1 Progress Audit — 2026-06-23 / 2026-06-24
+# MirrorArc V1 Progress Audit — 2026-06-23 / 2026-06-24
 
 > Historical Stage 1/2 audit. This file preserves implementation provenance, but it is
 > not the current next-execution authority. Current work is controlled by `docs/V1_FINISH_LINE.md`,
@@ -7,7 +7,7 @@
 > Stage 3 external validation now precedes adapter, index, Explorer, connector, visualization,
 > and richer profile-view work.
 
-This audit maps the current implementation to the canonical `docs/VAULTWRIGHT_WHITEPAPER.md`,
+This audit maps the current implementation to the canonical `docs/MIRRORARC_WHITEPAPER.md`,
 `docs/adr/0001-profile-driven-v1-architecture.md`,
 `docs/adr/0002-journaled-incremental-materialization.md`, and
 `docs/V1_FINISH_LINE.md`.
@@ -27,12 +27,12 @@ evidence remains preserved, but those lanes are paused behind Stage 1B in the ex
 ## 2026-06-25 Stage 1B Journal Foundation
 
 This checkpoint starts Stage 1B with the smallest V1-C10 foundation slice. Package-owned
-`vaultwright.changes.events` and `vaultwright.changes.journal` now define the local journal event
-vocabulary, create `.vaultwright/state.sqlite`, persist event state transitions, and expose
-read-only status payloads. The package CLI exposes `vaultwright journal status` with optional
+`mirrorarc.changes.events` and `mirrorarc.changes.journal` now define the local journal event
+vocabulary, create `.mirrorarc/state.sqlite`, persist event state transitions, and expose
+read-only status payloads. The package CLI exposes `mirrorarc journal status` with optional
 `--init` and `--json` flags. The root, template, packaged-template, and example `.gitignore` files
-ignore `.vaultwright/`, and the no-data scanner skips local derived state during ordinary scans
-while blocking force-staged `.vaultwright/` files.
+ignore `.mirrorarc/`, and the no-data scanner skips local derived state during ordinary scans
+while blocking force-staged `.mirrorarc/` files.
 
 This is intentionally not a watcher, reconciler, replay engine, changed-file sync path, or
 materialization worker. No Stage 2+ profile, Obsidian, index, Explorer, package-part diffing, cloud
@@ -45,10 +45,10 @@ becoming a retrieval index.
 ## 2026-06-25 Stage 1B Feed and Fingerprint Foundation
 
 This checkpoint adds the deterministic trigger-feed and fast-candidate-fingerprint layer for
-V1-C10 without adding a native watcher dependency. `vaultwright.changes.feed` defines a replaceable
+V1-C10 without adding a native watcher dependency. `mirrorarc.changes.feed` defines a replaceable
 feed interface, a static test feed, shared filtering for generated Office/repo mirrors, local
-`.vaultwright/` state, operational/template paths, Office lock files, and atomic-write temporary
-files, plus deterministic coalescing before journal queueing. `vaultwright.changes.fingerprint`
+`.mirrorarc/` state, operational/template paths, Office lock files, and atomic-write temporary
+files, plus deterministic coalescing before journal queueing. `mirrorarc.changes.fingerprint`
 records path, existence, file/symlink state, size, nanosecond mtime, and filesystem identity hint
 as a cheap token, and exposes a testable helper that does not call the full-hash function when the
 token is unchanged.
@@ -63,10 +63,10 @@ integration.
 ## 2026-06-25 Stage 1B Lease and Claim Foundation
 
 This checkpoint adds the journal worker-coordination layer needed before a changed-source worker can
-materialize events safely. `vaultwright.changes.journal` now supports workspace-scoped lease
+materialize events safely. `mirrorarc.changes.journal` now supports workspace-scoped lease
 acquisition and release, active-holder enforcement, stale-lease recovery, transactional event
 claiming, claimed-event finish checkpoints, failed-event retry, and recovery of events left in
-`processing` after an interrupted worker. `vaultwright journal status` now distinguishes active
+`processing` after an interrupted worker. `mirrorarc journal status` now distinguishes active
 locks from stale leases in human-readable output and JSON status.
 
 This is still not a materialization worker, replay command, reconciler, native watcher, or changed
@@ -79,7 +79,7 @@ lost.
 ## 2026-06-25 Stage 1B Source-Addressable Office Materialization Foundation
 
 This checkpoint adds the worker-facing Office materialization primitive without adding a worker,
-replay command, reconciler, native watcher, or changed sync command. `vaultwright.changes.materialize`
+replay command, reconciler, native watcher, or changed sync command. `mirrorarc.changes.materialize`
 accepts one vault-relative source path and delegates source identity, profile-aware domain routing,
 profile-defined mirror roots, lifecycle transitions, annotation policy, atomic writes,
 source-change-during-conversion checks, manifest updates, and audit events to the existing
@@ -94,7 +94,7 @@ profile-specific Office mirror roots are honored.
 ## 2026-06-25 Stage 1B File-Stability Foundation
 
 This checkpoint adds deterministic source-settling checks for changed-source candidates without
-adding a native watcher or real-time correctness dependency. `vaultwright.changes.stability` polls
+adding a native watcher or real-time correctness dependency. `mirrorarc.changes.stability` polls
 the existing metadata fingerprint until it remains unchanged for a configurable settle interval or
 until a bounded timeout expires. The helper accepts injectable fingerprint, clock, and sleeper
 functions so tests do not depend on OS notification timing or wall-clock sleeps.
@@ -108,7 +108,7 @@ pre-conversion stability gate needed before worker integration.
 ## 2026-06-25 Stage 1B Changed-Source Worker Foundation
 
 This checkpoint wires the first changed-source worker path without adding watcher delivery, replay
-CLI, reconciliation, changed sync, or benchmarks. `vaultwright.changes.worker` acquires the
+CLI, reconciliation, changed sync, or benchmarks. `mirrorarc.changes.worker` acquires the
 workspace lease, claims one queued/ready event transactionally, runs source-addressable Office
 materialization for current-path events, records materialized source ID/hash back onto the finished
 journal row, and finishes the event as `applied`, `review-required`, or `failed`.
@@ -123,12 +123,12 @@ and draining multiple ready events under one lease.
 
 This checkpoint adds the idempotent replay path for recoverable journal work without starting
 watcher delivery, reconciliation, changed sync, native watch capture, benchmarks, or broader
-delete/move handling. `vaultwright.changes.replay` acquires the workspace lease, recovers events
+delete/move handling. `mirrorarc.changes.replay` acquires the workspace lease, recovers events
 left in `processing`, optionally requeues failed events only when requested, and then drains
-claimable events through the existing `vaultwright.changes.worker` materialization path under that
+claimable events through the existing `mirrorarc.changes.worker` materialization path under that
 single lease.
 
-The package CLI exposes `vaultwright journal replay` with a process-scoped holder by default,
+The package CLI exposes `mirrorarc journal replay` with a process-scoped holder by default,
 optional `--holder`, `--retry-failed`, `--max-events`, `--lease-ttl-seconds`, and `--json`.
 Focused tests cover interrupted-worker replay, explicit failed-event retry, repeated idempotent
 replay, active-lease contention, argument validation, and JSON CLI output for a review-required
@@ -138,7 +138,7 @@ unsupported source.
 
 This checkpoint adds explicit source/manifest reconciliation without adding native watcher startup,
 changed sync, benchmark measurement, or broader delete/move lifecycle automation.
-`vaultwright.changes.reconcile` discovers current Office/PDF candidates through the existing
+`mirrorarc.changes.reconcile` discovers current Office/PDF candidates through the existing
 Office mirror scanner, compares current source metadata against `_meta/source-manifest.json`, and
 queues missed journal events for created, modified, moved, deleted, or ambiguous review-required
 candidate work. It records `last_reconciliation_at` in the local journal state and avoids queuing a
@@ -148,51 +148,51 @@ The reconciliation pass stays metadata-first. It does not full-hash unchanged or
 known paths; it hashes only suspicious new paths whose size matches missing manifest records so a
 same-hash move can preserve source identity in a `moved` event. Focused tests cover no-op
 reconciliation, missed create, missed metadata update, missing-source delete, candidate-only move
-hashing, duplicate unresolved-event suppression, and `vaultwright reconcile --json`.
+hashing, duplicate unresolved-event suppression, and `mirrorarc reconcile --json`.
 
 ## 2026-06-25 Stage 1B Changed Sync Foundation
 
 This checkpoint adds the first `sync --changed` command path without starting native filesystem
 watching, benchmark measurement, or broader delete/move lifecycle automation.
-`vaultwright.changes.changed_sync` composes explicit reconciliation and journal replay: it queues
+`mirrorarc.changes.changed_sync` composes explicit reconciliation and journal replay: it queues
 missed source/manifest events, then processes claimable journal work through the existing
-lease-protected worker and source-addressable materialization primitive. Plain `vaultwright sync`
-continues to run the existing full Office/repo sync path, and `vaultwright sync --full` names that
+lease-protected worker and source-addressable materialization primitive. Plain `mirrorarc sync`
+continues to run the existing full Office/repo sync path, and `mirrorarc sync --full` names that
 baseline/recovery path explicitly.
 
 Focused tests cover a changed-sync pass that reconciles, materializes one changed source, preserves
 source bytes, and updates the journal checkpoint; a second unchanged changed-sync pass that queues
-nothing and does not convert; `vaultwright sync --changed --json` on a review-required legacy
+nothing and does not convert; `mirrorarc sync --changed --json` on a review-required legacy
 source; and rejecting changed-sync-only JSON/options unless `--changed` is selected.
 
 ## 2026-06-25 Stage 1B Watch Startup Foundation
 
 This checkpoint adds deterministic watch startup orchestration without adding continuous native
 filesystem watching, benchmark measurement, or broader delete/move lifecycle automation.
-`vaultwright.changes.watch` runs one explicit watch cycle: optional startup reconciliation,
+`mirrorarc.changes.watch` runs one explicit watch cycle: optional startup reconciliation,
 normalized/coalesced feed-event queueing through the existing change-feed interface, and journal
 replay through the existing lease-protected worker and source-addressable materialization path.
-`vaultwright watch --once` exposes that one-cycle path; plain `vaultwright watch` exits with
+`mirrorarc watch --once` exposes that one-cycle path; plain `mirrorarc watch` exits with
 guidance instead of pretending continuous native delivery is implemented.
 
 Focused tests cover startup reconciliation that discovers and materializes a missed source, an
 injected static feed with repeated events and temporary Office lock-file filtering that produces
-one replayed conversion, `vaultwright watch --once --json` on a review-required legacy source, and
+one replayed conversion, `mirrorarc watch --once --json` on a review-required legacy source, and
 the guarded plain `watch` command message.
 
 ## 2026-06-25 Stage 1B Deleted Source Lifecycle Foundation
 
 This checkpoint adds manifest-backed deleted-source replay without adding continuous native
 filesystem watching, benchmark measurement, or broader move/recreate lifecycle automation.
-`vaultwright.changes.materialize.materialize_office_delete` applies one missing-source event using
+`mirrorarc.changes.materialize.materialize_office_delete` applies one missing-source event using
 the existing Office manifest semantics: it marks the matching record `source_missing`, retains the
 generated mirror for operator review, writes the source manifest, and appends audit evidence.
-`vaultwright.changes.worker` routes `deleted` journal events with a previous path through that
+`mirrorarc.changes.worker` routes `deleted` journal events with a previous path through that
 source-addressable delete primitive; deleted events without matching manifest evidence still
 require review.
 
 Focused tests cover the delete materializer, the lease-protected worker path, and
-`vaultwright sync --changed` after a previously synced source is removed. They verify that the
+`mirrorarc sync --changed` after a previously synced source is removed. They verify that the
 source manifest reaches `source_missing`, the retained mirror remains on disk, and the journal
 event finishes as applied work instead of generic review-required work.
 
@@ -205,7 +205,7 @@ work. That lets the safe move sequence complete in two changed-sync passes: firs
 old mirror exists, then create the new generated mirror with the same source ID after the operator
 removes or archives the old mirror.
 
-Focused tests cover that full move sequence through `vaultwright.changes.changed_sync`, including
+Focused tests cover that full move sequence through `mirrorarc.changes.changed_sync`, including
 stable source-ID preservation, previous-source-path history, old-mirror review blocking, and
 returning the manifest record to `clean` after the new mirror is generated. They also cover
 delete/recreate of the same source path returning the record from `source_missing` to `clean`.
@@ -228,16 +228,16 @@ structural pass conditions.
 ## 2026-06-26 Stage 1B Optional Native Watch Capture
 
 This checkpoint adds optional continuous native watch capture without changing default
-dependencies or starting Stage 2+ work. `vaultwright.changes.native_watch` maps watchdog file
+dependencies or starting Stage 2+ work. `mirrorarc.changes.native_watch` maps watchdog file
 events into advisory `ObservedChange` records, observes only existing profile/legacy content roots,
 ignores directories and outside paths, and buffers events behind a thread-safe handler.
-`vaultwright watch --native` starts the optional watchdog observer, flushes captured events through
+`mirrorarc watch --native` starts the optional watchdog observer, flushes captured events through
 the existing feed/coalescing/replay path, and supports bounded `--cycles` for controlled runs.
 
-The optional `vaultwright[watch]` extra supplies `watchdog`; default installs still use only the
+The optional `mirrorarc[watch]` extra supplies `watchdog`; default installs still use only the
 existing required dependency set. Focused tests cover content-root selection, event normalization,
 directory/outside-path rejection, `watch --once`, plain watch mode guidance, and actionable
-`vaultwright[watch]` install guidance when native capture is requested without the extra.
+`mirrorarc[watch]` install guidance when native capture is requested without the extra.
 
 ## 2026-06-26 Stage 1B Gate Closure
 
@@ -258,7 +258,7 @@ Gate validation passed after the optional native capture batch:
   check: OK.
 
 The first no-data scan during the packaging gate correctly caught generated
-`src/vaultwright.egg-info` residue from wheel building; the residue was removed and the final
+`src/mirrorarc.egg-info` residue from wheel building; the residue was removed and the final
 no-data and residue checks passed. No architectural conflict was found with journaled incremental
 materialization. Stage 2 profile work, Obsidian adapter work, index, Explorer, adapters, model
 enrichment, reports, and visualizations remain outside this completed goal.
@@ -269,15 +269,15 @@ This checkpoint closes the first Stage 1A evidence gap by inventorying the remai
 profile vocabulary across package code, copied-tool shims, templates, examples, and tests. The
 verification used targeted `rg` searches for legacy/default constants, business profile IDs,
 profile folder names, mirror roots, repo-note paths, context keys, status values, mirror note
-types, generated views, and benchmark task paths across `src/vaultwright`, `template`,
+types, generated views, and benchmark task paths across `src/mirrorarc`, `template`,
 `examples`, and `tests`.
 
 | Surface | Remaining occurrence class | Classification | Stage 1A disposition |
 | --- | --- | --- | --- |
-| Package runtime fallbacks: `src/vaultwright/runtime_profile.py`, `src/vaultwright/lint.py`, `src/vaultwright/mirrors/office.py`, `src/vaultwright/mirrors/github_repos.py`, and `src/vaultwright/profile_migration.py` | Legacy content roots, repo-note path, context keys/aliases, inactive statuses, generated mirror statuses, mirror mode/root, and profile-less lint defaults remain as fallback constants. | Legacy compatibility fallback | Allowed only when a profile/config is missing, invalid, or absent. New Stage 1B journal code must call the shared runtime profile helpers instead of copying these constants. |
+| Package runtime fallbacks: `src/mirrorarc/runtime_profile.py`, `src/mirrorarc/lint.py`, `src/mirrorarc/mirrors/office.py`, `src/mirrorarc/mirrors/github_repos.py`, and `src/mirrorarc/profile_migration.py` | Legacy content roots, repo-note path, context keys/aliases, inactive statuses, generated mirror statuses, mirror mode/root, and profile-less lint defaults remain as fallback constants. | Legacy compatibility fallback | Allowed only when a profile/config is missing, invalid, or absent. New Stage 1B journal code must call the shared runtime profile helpers instead of copying these constants. |
 | Package mirror/runtime identities: Office source mirror handling, GitHub repo mirror handling, annotation sidecars, generated sentinel checks, lifecycle state names, and managed metadata keys | `source-mirror`, `repo-mirror`, source/repo manifests, annotation sidecars, lifecycle event labels, and generated-mirror metadata remain named in package code. | Universal invariant | Keep as mirror-layer artifact semantics. If a future profile renames machine-owned note types, it must pass through the profile role helpers rather than changing journal authority rules. |
-| Package profile and adapter limits: `src/vaultwright/cli.py`, `src/vaultwright/profiles.py`, `src/vaultwright/views.py`, `src/vaultwright/benchmark.py`, `src/vaultwright/pilot.py`, and `src/vaultwright/sandbox.py` | Official profiles are scaffolded by package-owned init; `Documents.base` remains the only generated view renderer; `_meta/agent-readiness-tasks.yml` remains the default task-pack fallback. | Adapter capability and legacy compatibility fallback | Not a Stage 1A defect. Stage 2 now owns official profile fixtures; Stage 3 owns broader generated view support; benchmark defaults stay fallback behavior behind profile-declared task packs. |
-| Copied vault-local tools under `template/tools` and packaged copies under `src/vaultwright/template/tools` | Executable scripts import package modules and pass the copied vault root; profile vocabulary appears in README/operator examples and `repos.example.yml`. | Compatibility shim plus business profile data | Shim posture is acceptable. Implementation logic remains package-owned; the `business-operations` compatibility template remains the flagship copied template while package init can scaffold the other official profiles from contracts. |
+| Package profile and adapter limits: `src/mirrorarc/cli.py`, `src/mirrorarc/profiles.py`, `src/mirrorarc/views.py`, `src/mirrorarc/benchmark.py`, `src/mirrorarc/pilot.py`, and `src/mirrorarc/sandbox.py` | Official profiles are scaffolded by package-owned init; `Documents.base` remains the only generated view renderer; `_meta/agent-readiness-tasks.yml` remains the default task-pack fallback. | Adapter capability and legacy compatibility fallback | Not a Stage 1A defect. Stage 2 now owns official profile fixtures; Stage 3 owns broader generated view support; benchmark defaults stay fallback behavior behind profile-declared task packs. |
+| Copied vault-local tools under `template/tools` and packaged copies under `src/mirrorarc/template/tools` | Executable scripts import package modules and pass the copied vault root; profile vocabulary appears in README/operator examples and `repos.example.yml`. | Compatibility shim plus business profile data | Shim posture is acceptable. Implementation logic remains package-owned; the `business-operations` compatibility template remains the flagship copied template while package init can scaffold the other official profiles from contracts. |
 | Template, packaged template, built-in profiles, and example vaults | Business folders, statuses, context fields, mirror roots, repo-note paths, and generated views are present in `_meta/profile.yml`, template docs, synthetic example notes, and public-data example fixtures. | Business profile data and sample/test fixture | Allowed. These are profile/template facts, not kernel assumptions, and are covered by template-copy, example regeneration, lint, and no-data gates. |
 | Test suite | Hard-coded folders, statuses, context fields, mirror paths, repo-note paths, and generated view names appear throughout `tests/test_*`. | Test fixture and legacy compatibility coverage | Allowed when asserting the business profile, fallback compatibility, or mirror safety behavior. Add non-business profile fixtures in Stage 2 instead of weakening existing safety tests. |
 | Defects found in this batch | No package occurrence was verified as a Stage 1A-blocking defect during this inventory. | None | No code fix was required in this atomic batch. Future removals should target only non-universal runtime defects proven by this inventory or by new failing multi-profile tests. |
@@ -295,9 +295,9 @@ Obsidian, index, Explorer, or release-pilot work has resumed.
 
 | Gate item | Closure evidence |
 | --- | --- |
-| Package modules authoritative | `vaultwright` CLI commands dispatch to package-owned modules; copied `template/tools/*.py` and packaged template tool copies import package modules and pass the copied vault root as compatibility shims. |
+| Package modules authoritative | `mirrorarc` CLI commands dispatch to package-owned modules; copied `template/tools/*.py` and packaged template tool copies import package modules and pass the copied vault root as compatibility shims. |
 | Profile-derived runtime values | Lint, catalog, migration, Office sync, GitHub repo sync, benchmark, pilot, sandbox, recovery, Microsoft 365 handoff, review-ledger, generated views, and annotation migration use validated profile contracts or shared runtime profile helpers, with legacy fallbacks only for profile-less compatibility. |
-| Invalid profile data blocked | `src/vaultwright/profiles.py` validates schema version, safe identifiers, safe paths, folder plans, policy defaults, context aliases, source-authority defaults, and no-real-data defaults before runtime paths, sync, lint, reports, or migration use profile data. |
+| Invalid profile data blocked | `src/mirrorarc/profiles.py` validates schema version, safe identifiers, safe paths, folder plans, policy defaults, context aliases, source-authority defaults, and no-real-data defaults before runtime paths, sync, lint, reports, or migration use profile data. |
 | Legacy override posture clear | `_meta/domain-map.yml` and `_meta/mirror-config.yml` remain documented as legacy alias/config override layers; valid `_meta/profile.yml` is the canonical profile contract. |
 | Mirror and annotation safety | Fresh Office/repo mirrors are machine-owned, sync blocks unmigrated above-sentinel annotations, annotation sidecars preserve human notes, and lint blocks unmigrated mirror annotations. |
 | Remaining profile assumptions | The inventory above classifies remaining hard-coded vocabulary as universal mirror-layer invariant, business profile/template data, legacy compatibility fallback, or test fixture; no Stage 1A-blocking defect was verified. |
@@ -361,9 +361,9 @@ Local closure validation for this batch:
   - `scripts/no_data_scan.py`: OK.
   - `scripts/sync_template_copies.py --check`: clean.
   - `bash -n scripts/init.sh template/tools/sync_all.sh .githooks/pre-commit`: OK.
-  - fresh wheel install smoke ran copied `tools/vaultwright.py doctor` from another working
-    directory and copied `tools/vaultwright.py --root ... plan` against an initialized vault: OK.
-  - copied `tools/vaultwright.py` delegates to the package CLI while preserving its own vault as
+  - fresh wheel install smoke ran copied `tools/mirrorarc.py doctor` from another working
+    directory and copied `tools/mirrorarc.py --root ... plan` against an initialized vault: OK.
+  - copied `tools/mirrorarc.py` delegates to the package CLI while preserving its own vault as
     default `--root` when invoked from another working directory.
   - no `build/`, `dist/`, `.egg-info`, or `__pycache__` residue remains in the repo.
 - Local validation after folder-plan contract hardening:
@@ -879,12 +879,12 @@ the V1-C10 implementation and gate evidence above.
 
 | Requirement | Status |
 | --- | --- |
-| V1-C1 package-owned runtime | Closed for Stage 1A. Package CLI exists; `plan`, `sync`, `status`, `doctor`, `catalog`, `lint`, `conversion`, `m365`, `migration`, `overlap`, `benchmark`, `pilot`, `sandbox`, `recovery`, and `review` are package-owned; Office mirror planning/sync/status lives in `vaultwright.mirrors.office`; GitHub repo mirror planning/sync/status lives in `vaultwright.mirrors.github_repos`; copied sync, lint, catalog, conversion, m365, migration, overlap, benchmark, pilot, sandbox, recovery, review-ledger, and operator-wrapper scripts are compatibility shims. |
+| V1-C1 package-owned runtime | Closed for Stage 1A. Package CLI exists; `plan`, `sync`, `status`, `doctor`, `catalog`, `lint`, `conversion`, `m365`, `migration`, `overlap`, `benchmark`, `pilot`, `sandbox`, `recovery`, and `review` are package-owned; Office mirror planning/sync/status lives in `mirrorarc.mirrors.office`; GitHub repo mirror planning/sync/status lives in `mirrorarc.mirrors.github_repos`; copied sync, lint, catalog, conversion, m365, migration, overlap, benchmark, pilot, sandbox, recovery, review-ledger, and operator-wrapper scripts are compatibility shims. |
 | V1-C2 versioned profile contract | Closed for Stage 1A. Schema validation, schema documentation, read-only profile commands, conservative write-mode profile migration, profile-generated `Documents.base` check/write support, validator-backed catalog/migration domain routing, validator-backed benchmark/pilot task discovery, profile-driven migration domain routing, profile-owned Office mirror placement defaults, profile-first Office source-domain routing, profile-aware source/repo-mirror frontmatter ordering, profile/config-aware Office mirror report surfaces, profile-owned repo mirror defaults, profile-owned generated mirror status defaults, profile/config-aware repo mirror report surfaces, profile-derived repo context frontmatter, contract-owned context aliases in repo sync/lint/annotation migration without profile-ID inference, shared profile-derived frontmatter key ordering for generated Office/GitHub mirrors, profile-owned machine-owned note type roles in overlap/migration/review classification plus catalog, Microsoft 365, and sandbox inventory counts, profile-owned status roles without generated-Base name inference, profile-owned source-authority/no-real-data policy defaults, profile-declared generated-view doctor reporting, profile-contract-first doctor required-file posture, profile-contract-first lint domain-map posture, profile-validator-backed lint contract loading, validator-backed runtime profile helpers, shared active-content-root fallback across lint/catalog/overlap/repo mirror validation, lint, GitHub repo sync, and annotation migration shared profile helper usage without local repo-context fallback copies, profile-first migration runbook/worksheet guidance, safe profile vocabulary identifiers, schema-declared nested definition fields, schema-declared folder-plan and policy-default fields, safe disjoint frontmatter property validation, safe profile artifact paths, safe unique non-overlapping domain-folder validation, safe profile artifact/mirror-root separation, validated `folder_plan` paths/domains, safe profile repo-mirror folder defaults, safe profile benchmark-task paths, profile-aware migration mirror-root planning, profile-aware benchmark generated-mirror roots, profile-aware pilot workspace inventory, profile-aware recovery source-evidence preflight, profile-aware overlap content roots/context links/inactive statuses, profile-declared benchmark task discovery, and the classified profile-assumption inventory exist; remaining profile expansion belongs to later gated stages. |
-| V1-C3 official profiles | Closed for Stage 2. `business-operations`, `research-learning`, `software-project`, and `blank` validate, are exposed through `vaultwright profile list/show`, and initialize through package-owned `vaultwright init --profile <id>`; non-business profiles derive starter folders, generated scaffold docs, matching domain maps, and template selection from their profile contracts without inheriting business folders or note templates. Synthetic Office-source smoke fixtures now exercise lifecycle, sync, status, and lint behavior for each initialized profile without committing a real/private corpus. |
+| V1-C3 official profiles | Closed for Stage 2. `business-operations`, `research-learning`, `software-project`, and `blank` validate, are exposed through `mirrorarc profile list/show`, and initialize through package-owned `mirrorarc init --profile <id>`; non-business profiles derive starter folders, generated scaffold docs, matching domain maps, and template selection from their profile contracts without inheriting business folders or note templates. Synthetic Office-source smoke fixtures now exercise lifecycle, sync, status, and lint behavior for each initialized profile without committing a real/private corpus. |
 | V1-C4 safe migration path | Closed for Stage 1A. Reports, frontmatter-domain normalization, read-only plans, and conservative write-mode profile migration exist; migration reports now use profile-defined canonical domains with domain-map aliases, and profile migration creates directories from validated `folder_plan` records plus the target profile's Office mirror root without overwriting sources, mirrors, annotation sidecars, or drifted existing files. Broader workspace/profile migration coverage remains tied to later profile expansion. |
 | V1-C5 machine-owned mirrors | Stage 1 closed by this batch. Fresh mirrors are machine-owned, sync blocks unmigrated mirror annotations, sidecar-aware sync rewrites migrated mirrors as machine-owned, and lint blocks unmigrated annotations. |
-| V1-C10 journaled changed-file materialization | Closed for Stage 1B. Package-owned journal event/state modules, `.vaultwright/state.sqlite` initialization, `vaultwright journal status`, `.vaultwright/` ignore posture, no-data staged blocking, deterministic feed queueing, generated/local/operational/temp path filtering, repeated-event coalescing, cheap metadata fingerprints, no-full-hash-on-unchanged-fingerprint tests, workspace leases, stale-lease recovery, transactional event claims, claimed-event finish checkpoints, failed-event retry, interrupted-`processing` recovery, a source-addressable Office materialization primitive, deterministic file-stability settling, lease-protected current-path Office worker processing, manifest-backed deleted-event replay to `source_missing`, resolved `source_moved` replay after old-mirror cleanup, delete/recreate replay back to `clean`, idempotent `vaultwright journal replay`, explicit `vaultwright reconcile`, `vaultwright sync --changed`/`--full`, deterministic `vaultwright watch --once` startup/feed/replay orchestration, optional watchdog-backed `vaultwright watch --native` capture, synthetic benchmark evidence, and focused/affected/full safety gate evidence now exist. |
+| V1-C10 journaled changed-file materialization | Closed for Stage 1B. Package-owned journal event/state modules, `.mirrorarc/state.sqlite` initialization, `mirrorarc journal status`, `.mirrorarc/` ignore posture, no-data staged blocking, deterministic feed queueing, generated/local/operational/temp path filtering, repeated-event coalescing, cheap metadata fingerprints, no-full-hash-on-unchanged-fingerprint tests, workspace leases, stale-lease recovery, transactional event claims, claimed-event finish checkpoints, failed-event retry, interrupted-`processing` recovery, a source-addressable Office materialization primitive, deterministic file-stability settling, lease-protected current-path Office worker processing, manifest-backed deleted-event replay to `source_missing`, resolved `source_moved` replay after old-mirror cleanup, delete/recreate replay back to `clean`, idempotent `mirrorarc journal replay`, explicit `mirrorarc reconcile`, `mirrorarc sync --changed`/`--full`, deterministic `mirrorarc watch --once` startup/feed/replay orchestration, optional watchdog-backed `mirrorarc watch --native` capture, synthetic benchmark evidence, and focused/affected/full safety gate evidence now exist. |
 
 Stage 3 has one preparatory slice: package-owned `profile views --check/--write` generates the
 current profile's `Documents.base` without requiring Obsidian. Governance skills, Canvas outputs,
@@ -907,19 +907,19 @@ remain gated until the Obsidian/profile-view gate is intentionally reopened.
 ## Next Recommended Slice
 
 Stage 1A and Stage 1B are closed. The Stage 1B V1-C10 slices prove local derived state location,
-schema creation, basic status introspection, ignore/no-data posture for `.vaultwright/`, event
+schema creation, basic status introspection, ignore/no-data posture for `.mirrorarc/`, event
 state persistence, deterministic feed queueing, path filtering, event coalescing, and cheap
 fingerprint-based full-hash avoidance, plus lease-protected event claiming, stale-lock recovery,
 failed-event retry, interrupted-processing recovery, and source-addressable Office
 materialization through the existing mirror engine without starting profile/content expansion.
 Deterministic file-stability settling now exists for candidate
 materialization, the first lease-protected worker path now processes current-path Office events,
-and `vaultwright journal replay` now performs idempotent interrupted-work recovery plus explicit
-failed-event retry. Explicit `vaultwright reconcile` now queues missed source/manifest work with
+and `mirrorarc journal replay` now performs idempotent interrupted-work recovery plus explicit
+failed-event retry. Explicit `mirrorarc reconcile` now queues missed source/manifest work with
 metadata-first comparison and candidate-only hashing for same-hash move detection.
-`vaultwright sync --changed` now composes reconciliation and replay, while `vaultwright sync --full`
-names the full-sync recovery path explicitly. `vaultwright watch --once` now provides deterministic
-startup reconciliation/feed queueing/replay, and optional `vaultwright watch --native` provides
+`mirrorarc sync --changed` now composes reconciliation and replay, while `mirrorarc sync --full`
+names the full-sync recovery path explicitly. `mirrorarc watch --once` now provides deterministic
+startup reconciliation/feed queueing/replay, and optional `mirrorarc watch --native` provides
 watchdog-backed event capture over configured content roots. Synthetic benchmark evidence now
 proves known-path replay over 1,000 sources avoids whole-workspace discovery and untouched-source
 hashing. The current pursuing goal ends at this Stage 1B gate; future work should start a new

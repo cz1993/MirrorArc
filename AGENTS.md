@@ -1,12 +1,12 @@
-# AGENTS.md — rules for any agent working on the Vaultwright **codebase**
+# AGENTS.md — rules for any agent working on the MirrorArc **codebase**
 
-> This governs development of Vaultwright itself (CodeX, Claude, etc.). It is **not** the schema
+> This governs development of MirrorArc itself (CodeX, Claude, etc.). It is **not** the schema
 > for a user's vault — that lives in `template/CLAUDE.md`. Read `docs/CODEX_KICKOFF_PROMPT.md` for
 > the current mission, and `README.md` + `docs/` for context.
 
 ## What this repo is
 
-Vaultwright is the **tool + framework + methodology** for an AI-maintained, linked-markdown
+MirrorArc is the **tool + framework + methodology** for an AI-maintained, linked-markdown
 knowledge base. **This repo never contains a real knowledge base.** It contains code, docs,
 templates, tests, and *sample* data only.
 
@@ -33,7 +33,7 @@ templates, tests, and *sample* data only.
 
 ## Protect the differentiators
 
-Lead with these; they are why Vaultwright exists (see `docs/positioning.md`):
+Lead with these; they are why MirrorArc exists (see `docs/positioning.md`):
 the **mirror layer** (Office + GitHub → refreshed markdown mirrors), **governance**
 (PII/retention/secrets-out), **anti-proliferation** (consolidate > create), and **linking-first**
 retrieval. Do **not** drift back into "another generic LLM-wiki," and do **not** add a vector DB.

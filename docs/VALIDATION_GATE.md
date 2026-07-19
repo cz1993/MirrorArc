@@ -1,6 +1,6 @@
-# Vaultwright Validation Gate
+# MirrorArc Validation Gate
 
-This gate keeps Vaultwright from expanding past the core mirror/catalog workflow before there is
+This gate keeps MirrorArc from expanding past the core mirror/catalog workflow before there is
 evidence that the workflow is useful outside the maintainer's fixtures.
 
 It applies before Stage 4 adapter work, Stage 5 index/exploration work, Stage 6 Explorer work, and
@@ -11,10 +11,10 @@ protocol, but they do not complete this gate.
 
 | Evidence packet | Status | Gate value |
 | --- | --- | --- |
-| Government-services synthetic benchmark | Complete | Proves the three-condition benchmark packet can distinguish raw folders, a plain markitdown dump, and Vaultwright Markdown on a public synthetic corpus. |
+| Government-services synthetic benchmark | Complete | Proves the three-condition benchmark packet can distinguish raw folders, a plain markitdown dump, and MirrorArc Markdown on a public synthetic corpus. |
 | Messy 200-file synthetic benchmark | Complete | Proves the benchmark harness can generate and score a larger messy synthetic corpus without committing private run artifacts. |
 | Permission-cleared external corpus | Not started | Required before Stage 3 is complete. |
-| Independent design-partner return signal | Not started | Required before treating Vaultwright as self-serve software. |
+| Independent design-partner return signal | Not started | Required before treating MirrorArc as self-serve software. |
 
 See `docs/STAGE3_VALIDATION_STATUS.md` for the public-safe attempt ledger. The status ledger does
 not complete Stage 3 by itself; only protocol evidence from a permission-cleared external corpus
@@ -26,9 +26,9 @@ Every pilot benchmark must compare the same questions across:
 
 - `raw_source_folder`;
 - `plain_markitdown_dump`;
-- `vaultwright_markdown`.
+- `mirrorarc_markdown`.
 
-Vaultwright shows meaningful advantage only when it is no worse than `plain_markitdown_dump` on
+MirrorArc shows meaningful advantage only when it is no worse than `plain_markitdown_dump` on
 aggregate score and is better on at least two of these measures:
 
 - reviewer correction count;
@@ -53,7 +53,7 @@ The design-partner success metric is the second sync:
 4. The participant runs the second sync without hands-on help.
 5. The participant confirms the lifecycle/status output did not introduce unexpected regressions.
 
-If three design-partner attempts fail at the second-sync gate, treat Vaultwright as an
+If three design-partner attempts fail at the second-sync gate, treat MirrorArc as an
 operator-run service workflow before treating it as self-serve software. The product can still be
 valuable, but the next work should be packaging the service workflow, support protocol, and private
 handoff artifacts rather than broadening the public CLI.
@@ -88,18 +88,18 @@ permission-cleared public data. Store only aggregate public summaries here:
 Useful gate commands include:
 
 ```bash
-vaultwright --root "$VW" sandbox --source-root /path/to/original-copy-source
-vaultwright --root "$VW" sync --json
-vaultwright --root "$VW" status --json
-vaultwright --root "$VW" doctor --json
-vaultwright --root "$VW" catalog
-vaultwright --root "$VW" catalog --html
-vaultwright --root "$VW" conversion --guide
-vaultwright --root "$VW" recovery --worksheet
-python3.11 /path/to/vaultwright/scripts/create_plain_markitdown_dump.py --root "$VW" --force
-vaultwright --root "$VW" benchmark --results _meta/agent-readiness-results.yml --require-results --require-citations --require-prompt-safety
-vaultwright --root "$VW" pilot --json
-vaultwright --root "$VW" pilot --worksheet
+mirrorarc --root "$VW" sandbox --source-root /path/to/original-copy-source
+mirrorarc --root "$VW" sync --json
+mirrorarc --root "$VW" status --json
+mirrorarc --root "$VW" doctor --json
+mirrorarc --root "$VW" catalog
+mirrorarc --root "$VW" catalog --html
+mirrorarc --root "$VW" conversion --guide
+mirrorarc --root "$VW" recovery --worksheet
+python3.11 /path/to/mirrorarc/scripts/create_plain_markitdown_dump.py --root "$VW" --force
+mirrorarc --root "$VW" benchmark --results _meta/agent-readiness-results.yml --require-results --require-citations --require-prompt-safety
+mirrorarc --root "$VW" pilot --json
+mirrorarc --root "$VW" pilot --worksheet
 ```
 
 Full sync remains the recovery and verification path. Journaled changed-file materialization is
