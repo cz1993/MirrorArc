@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 from pathlib import Path
+import os
 import shutil
 import subprocess
 import sys
@@ -8,56 +9,38 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
-NORTHWIND_GENERATED = [
+EXAMPLE = ROOT / "examples" / "ontario-electricity-evidence-vault"
+OFFICE_SOURCE_EXTS = {".docx", ".pptx", ".xlsx", ".pdf"}
+DISALLOWED_DATA_EXTS = OFFICE_SOURCE_EXTS | {".csv"}
+EXPECTED_OFFICE_SOURCES = {
+    Path("50_analysis/workbooks/historical-demand-profile.xlsx"),
+    Path("90_operations/briefs/data-quality-incident-review.docx"),
+}
+EXPECTED_GENERATED = {
     Path("_meta/source-manifest.json"),
     Path("_meta/repo-manifest.json"),
     Path("_meta/sync-audit.jsonl"),
-    Path("_mirrors/30_customers/acme-manufacturing/2026-01-15_acme_discovery_brief.md"),
-    Path("_mirrors/60_finance/2026-01_pipeline_snapshot.md"),
-    Path("_mirrors/40_delivery/2026-q1_service_readiness_review.md"),
-    Path("80_sources/repos/fieldkit-control.md"),
-]
-NORTHWIND_RAW_FOLDER_MIRRORS = [
-    Path("30_customers/acme-manufacturing/2026-01-15_acme_discovery_brief.md"),
-    Path("60_finance/2026-01_pipeline_snapshot.md"),
-    Path("40_delivery/2026-q1_service_readiness_review.md"),
-]
-GOVERNMENT_GENERATED = [
-    Path("_meta/source-manifest.json"),
-    Path("_meta/sync-audit.jsonl"),
-    Path("_mirrors/40_delivery/business-registration/2026-06_cra_business_registration_path.md"),
-    Path("_mirrors/60_finance/gst-hst/2026-06_gst_hst_registration_readiness.md"),
-    Path("_mirrors/60_finance/2026-06_business_support_and_funding_tracker.md"),
-    Path("_mirrors/20_market/2026-06_canadian_business_startup_navigation_brief.md"),
-]
-GOVERNMENT_RAW_FOLDER_MIRRORS = [
-    Path("40_delivery/business-registration/2026-06_cra_business_registration_path.md"),
-    Path("60_finance/gst-hst/2026-06_gst_hst_registration_readiness.md"),
-    Path("60_finance/2026-06_business_support_and_funding_tracker.md"),
-    Path("20_market/2026-06_canadian_business_startup_navigation_brief.md"),
-]
-GOVERNMENT_BENCHMARK = Path("_meta/agent-readiness-tasks.yml")
-GOVERNMENT_PUBLIC_RESULTS = Path("_meta/public-agent-readiness-results.yml")
-OFFICE_SOURCE_EXTS = {".docx", ".pptx", ".xlsx", ".pdf"}
-BENCHMARK_FAMILIES = {"answer", "reconcile", "update", "audit", "consolidate"}
-COPIED_TOOL_FILES = [
-    "README.md",
-    "benchmark_tasks.py",
-    "catalog_report.py",
-    "conversion_report.py",
-    "lint_vault.py",
-    "m365_report.py",
-    "pilot_report.py",
-    "recovery_report.py",
-    "review_ledger.py",
-    "sandbox_report.py",
-    "repos.example.yml",
-    "requirements.txt",
-    "sync_all.sh",
-    "sync_github_repos.py",
-    "sync_office_md.py",
-    "mirrorarc.py",
-]
+    Path("20_sources/repos/ontario-electricity-evidence-pipeline.md"),
+    *(Path("_mirrors") / source.with_suffix(".md") for source in EXPECTED_OFFICE_SOURCES),
+}
+OGL_SOURCE_DIR = Path("20_sources/open-data/ontario-energy-report-2023")
+EXPECTED_OGL_CSVS = {
+    "exports-gwh.csv",
+    "generation-output-by-fuel-type-grid-connected-gwh.csv",
+    "generation-output-by-fuel-type-grid-connected-percent.csv",
+    "greenhouse-gas-emissions-ontario-electricity.csv",
+    "historical-annual-ontario-energy-demand-twh.csv",
+    "historical-monthly-generation-output-by-fuel-type-mwh.csv",
+    "historical-monthly-ontario-demand-peaks-minimums-mw.csv",
+    "imports-gwh.csv",
+    "ontario-demand-peaks-minimums-mw.csv",
+    "ontario-peak-demand-mw.csv",
+}
+COPIED_TOOL_FILES = {
+    path.relative_to(ROOT / "template" / "tools").as_posix()
+    for path in (ROOT / "template" / "tools").rglob("*")
+    if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
+}
 
 
 def source_payloads(vault: Path) -> dict[Path, bytes]:
@@ -73,403 +56,169 @@ def source_payloads(vault: Path) -> dict[Path, bytes]:
     return payloads
 
 
-def assert_source_payloads_unchanged(vault: Path, before: dict[Path, bytes]) -> None:
-    after = source_payloads(vault)
-    assert after.keys() == before.keys()
-    for rel, payload in before.items():
-        assert after[rel] == payload, rel
+def generated_payloads(vault: Path) -> dict[Path, bytes]:
+    return {
+        rel: (vault / rel).read_bytes()
+        for rel in EXPECTED_GENERATED
+        if rel.name != "sync-audit.jsonl"
+    }
 
 
-def stable_generated_payloads(vault: Path, generated_rels: list[Path]) -> dict[Path, bytes]:
-    payloads: dict[Path, bytes] = {}
-    for rel in generated_rels:
-        if rel.name == "sync-audit.jsonl":
-            continue
-        path = vault / rel
-        assert path.exists(), rel
-        payloads[rel] = path.read_bytes()
-    return payloads
-
-
-def assert_stable_generated_payloads_unchanged(vault: Path, before: dict[Path, bytes]) -> None:
-    for rel, payload in before.items():
-        assert (vault / rel).read_bytes() == payload, rel
-
-
-def assert_no_generated_residue(src: Path) -> None:
-    mirror_files = [
-        path.relative_to(src)
-        for path in (src / "_mirrors").rglob("*")
+def assert_no_generated_residue(vault: Path) -> None:
+    assert not [
+        path
+        for path in (vault / "_mirrors").rglob("*")
         if path.is_file() and path.name != ".gitkeep"
     ]
-    assert mirror_files == []
-
-    meta_generated = [
-        path.relative_to(src)
-        for path in (src / "_meta").glob("*")
+    assert not [
+        path
+        for path in (vault / "_meta").glob("*")
         if path.name.endswith("-manifest.json") or path.name == "sync-audit.jsonl"
     ]
-    assert meta_generated == []
-
-    repo_mirrors = [
-        path.relative_to(src)
-        for path in (src / "80_sources" / "repos").glob("*.md")
-    ]
-    assert repo_mirrors == []
-
-    sibling_mirrors = []
-    for source in src.rglob("*"):
-        if not source.is_file() or source.suffix.lower() not in OFFICE_SOURCE_EXTS:
-            continue
-        if "_mirrors" in source.parts or "tools" in source.parts:
-            continue
-        for mirror in (source.with_suffix(".md"), source.with_name(source.stem + ".mirror.md")):
-            if mirror.exists():
-                sibling_mirrors.append(mirror.relative_to(src))
-    sibling_mirrors.extend(
-        path.relative_to(src)
-        for path in src.rglob("*.mirror.md")
-        if "_mirrors" not in path.parts and "tools" not in path.parts
-    )
-    assert sibling_mirrors == []
+    assert not list((vault / "20_sources" / "repos").glob("*.md"))
 
 
-def test_northwind_example_source_tree_has_no_generated_residue() -> None:
-    src = ROOT / "examples/northwind-robotics-vault"
-    assert_no_generated_residue(src)
-    for rel in [*NORTHWIND_GENERATED, *NORTHWIND_RAW_FOLDER_MIRRORS]:
-        assert not (src / rel).exists()
-    log = (src / "log.md").read_text(encoding="utf-8")
-    assert "sync |" not in log
-
-
-def test_government_services_example_source_tree_has_no_generated_residue() -> None:
-    src = ROOT / "examples/government-services-vault"
-    assert_no_generated_residue(src)
-    for rel in [*GOVERNMENT_GENERATED, *GOVERNMENT_RAW_FOLDER_MIRRORS]:
-        assert not (src / rel).exists()
-    log = (src / "log.md").read_text(encoding="utf-8")
-    assert "sync |" not in log
-
-
-def test_example_vault_tool_copies_match_template() -> None:
-    for example in ("northwind-robotics-vault", "government-services-vault"):
-        tools = ROOT / "examples" / example / "tools"
-        for filename in COPIED_TOOL_FILES:
-            assert (tools / filename).read_bytes() == (ROOT / "template" / "tools" / filename).read_bytes(), (
-                example,
-                filename,
-            )
-
-
-def load_government_benchmark(vault: Path) -> dict:
-    data = yaml.safe_load((vault / GOVERNMENT_BENCHMARK).read_text(encoding="utf-8"))
-    assert isinstance(data, dict)
-    return data
-
-
-def test_government_services_agent_readiness_tasks_reference_committed_sources() -> None:
-    vault = ROOT / "examples/government-services-vault"
-    data = load_government_benchmark(vault)
-    assert data["schema_version"] == 1
-    assert data["corpus"] == "government-services-vault"
-    assert set(data["comparison_modes"]) == {
-        "raw_source_folder",
-        "plain_markitdown_dump",
-        "mirrorarc_markdown",
-    }
-    tasks = data["tasks"]
-    assert isinstance(tasks, list)
-    assert len(tasks) >= 5
-    families = {task["family"] for task in tasks}
-    assert BENCHMARK_FAMILIES.issubset(families)
-    assert families <= BENCHMARK_FAMILIES
-
-    generated = set(GOVERNMENT_GENERATED)
-    for task in tasks:
-        assert task["id"]
-        assert task["prompt"].endswith("?")
-        assert task["success_criteria"]
-        for rel in task.get("source_paths", []):
-            assert (vault / rel).exists(), rel
-            assert "_mirrors" not in Path(rel).parts
-        for rel in task.get("curated_paths", []):
-            path = vault / rel
-            assert path.exists(), rel
-            assert path.suffix == ".md"
-        for rel in task.get("generated_mirror_paths", []):
-            mirror = Path(rel)
-            assert mirror in generated, rel
-            assert not (vault / mirror).exists(), rel
-
-    benchmark = subprocess.run(
-        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "benchmark"],
-        cwd=vault,
-        text=True,
-        capture_output=True,
-    )
-    assert benchmark.returncode == 0, benchmark.stderr or benchmark.stdout
-    assert "benchmark_tasks: 6 tasks" in benchmark.stdout
-    assert "generated mirror not present yet" in benchmark.stdout
-
-    public_results = subprocess.run(
-        [
-            sys.executable,
-            str(vault / "tools" / "mirrorarc.py"),
-            "benchmark",
-            "--results",
-            GOVERNMENT_PUBLIC_RESULTS.as_posix(),
-            "--require-results",
-            "--require-citations",
-            "--require-prompt-safety",
-        ],
-        cwd=vault,
-        text=True,
-        capture_output=True,
-    )
-    assert public_results.returncode == 0, public_results.stderr or public_results.stdout
-    assert "benchmark_results: 18 results in _meta/public-agent-readiness-results.yml" in public_results.stdout
-    assert "raw_source_folder: results=6 score=5/12 avg=0.83 corrections=7" in public_results.stdout
-    assert "plain_markitdown_dump: results=6 score=6/12 avg=1.00 corrections=6" in public_results.stdout
-    assert "mirrorarc_markdown: results=6 score=12/12 avg=2.00 corrections=0" in public_results.stdout
-    assert "warning: benchmark results incomplete" not in public_results.stdout
-
-
-def assert_benchmark_generated_mirrors_exist(vault: Path) -> None:
-    data = load_government_benchmark(vault)
-    for task in data["tasks"]:
-        for rel in task.get("generated_mirror_paths", []):
-            assert (vault / rel).exists(), rel
-
-
-def run_example_regeneration(tmp_path: Path, name: str, generated_rels: list[Path], raw_folder_rels: list[Path]) -> str:
-    src = ROOT / f"examples/{name}"
-    vault = tmp_path / name
-    shutil.copytree(src, vault)
-    original_sources = source_payloads(vault)
-
-    generated = [vault / rel for rel in generated_rels]
-    for path in generated:
-        assert not path.exists()
-
-    cli_plan = subprocess.run(
-        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "plan"],
-        cwd=vault,
-        text=True,
-        capture_output=True,
-    )
-    assert cli_plan.returncode == 0, cli_plan.stderr or cli_plan.stdout
-    for path in generated:
-        assert not path.exists()
-    assert_source_payloads_unchanged(vault, original_sources)
-
-    plan = subprocess.run(
-        [sys.executable, str(vault / "tools" / "sync_office_md.py"), "--plan", "--quiet"],
-        cwd=vault,
-        text=True,
-        capture_output=True,
-    )
-    assert plan.returncode == 0, plan.stderr or plan.stdout
-    for path in generated:
-        assert not path.exists()
-    assert_source_payloads_unchanged(vault, original_sources)
-
-    for script in ("sync_office_md.py", "sync_github_repos.py"):
-        dry_run = subprocess.run(
-            [sys.executable, str(vault / "tools" / script), "--dry-run", "--quiet"],
-            cwd=vault,
-            text=True,
-            capture_output=True,
-        )
-        assert dry_run.returncode == 0, dry_run.stderr or dry_run.stdout
-        for path in generated:
-            assert not path.exists()
-        assert_source_payloads_unchanged(vault, original_sources)
-
-    lint_output = ""
-    for script in ("sync_office_md.py", "sync_github_repos.py", "lint_vault.py"):
-        result = subprocess.run(
-            [sys.executable, str(vault / "tools" / script), "--quiet"]
-            if script != "lint_vault.py"
-            else [sys.executable, str(vault / "tools" / script)],
-            cwd=vault,
-            text=True,
-            capture_output=True,
-        )
-        assert result.returncode == 0, result.stderr or result.stdout
-        if script == "lint_vault.py":
-            lint_output = result.stdout
-
-    status = subprocess.run(
-        [sys.executable, str(vault / "tools" / "sync_office_md.py"), "--status", "--quiet"],
-        cwd=vault,
-        text=True,
-        capture_output=True,
-    )
-    assert status.returncode == 0, status.stderr or status.stdout
-    assert "unchanged" in status.stdout
-    assert "clean=" in status.stdout
-
-    conversion = subprocess.run(
-        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "conversion"],
-        cwd=vault,
-        text=True,
-        capture_output=True,
-    )
-    assert conversion.returncode == 0, conversion.stderr or conversion.stdout
-    assert "conversion: read-only spot-check report; no files were changed" in conversion.stdout
-    assert "spot-check items" in conversion.stdout
-    assert_source_payloads_unchanged(vault, original_sources)
-
-    pilot = subprocess.run(
-        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "pilot"],
-        cwd=vault,
-        text=True,
-        capture_output=True,
-    )
-    assert pilot.returncode == 0, pilot.stderr or pilot.stdout
-    assert "pilot: read-only evidence report; no source content was printed" in pilot.stdout
-    assert "pilot: source manifest" in pilot.stdout
-    assert_source_payloads_unchanged(vault, original_sources)
-
-    for path in generated:
-        assert path.exists()
-    for rel in raw_folder_rels:
-        assert not (vault / rel).exists()
-    assert_source_payloads_unchanged(vault, original_sources)
-
-    stable_generated = stable_generated_payloads(vault, generated_rels)
-    second_sync = subprocess.run(
-        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "sync"],
-        cwd=vault,
-        text=True,
-        capture_output=True,
-    )
-    assert second_sync.returncode == 0, second_sync.stderr or second_sync.stdout
-    assert "unchanged" in second_sync.stdout
-    assert_stable_generated_payloads_unchanged(vault, stable_generated)
-    assert_source_payloads_unchanged(vault, original_sources)
-    return lint_output
-
-
-def assert_clean_lint(lint_output: str) -> None:
-    assert "Missing/invalid frontmatter: 0" in lint_output
-    assert "Invalid type: 0" in lint_output
-    assert "Invalid status: 0" in lint_output
-    assert "Invalid domain: 0" in lint_output
-    assert "Domain map errors: 0" in lint_output
-    assert "Mirror config errors: 0" in lint_output
-    assert "Repo config errors: 0" in lint_output
-    assert "Domain/folder mismatch: 0" in lint_output
-    assert "Context alias mismatch: 0" in lint_output
-    assert "Mirror layout errors: 0" in lint_output
-    assert "Non-lowercase markdown extension: 0" in lint_output
-    assert "Unresolved wikilinks: 0" in lint_output
-    assert "Orphan notes (no inbound links): 0" in lint_output
-    assert "Potential duplicate/overlap notes: 0" in lint_output
-    assert "Office files without a mirror: 0" in lint_output
-    assert "Configured repos without a mirror: 0" in lint_output
-
-
-def run_mirrorarc(vault: Path, command: str) -> subprocess.CompletedProcess[str]:
+def run_cli(vault: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
+    src_path = str(ROOT / "src")
+    env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
     return subprocess.run(
-        [sys.executable, str(vault / "tools" / "mirrorarc.py"), command],
+        [sys.executable, str(vault / "tools" / "mirrorarc.py"), *args],
         cwd=vault,
         text=True,
         capture_output=True,
+        env=env,
     )
 
 
-def test_northwind_example_mirrors_regenerate_from_sources(tmp_path: Path) -> None:
-    lint_output = run_example_regeneration(
-        tmp_path,
-        "northwind-robotics-vault",
-        NORTHWIND_GENERATED,
-        NORTHWIND_RAW_FOLDER_MIRRORS,
-    )
-    assert_clean_lint(lint_output)
+def test_flagship_example_source_tree_has_no_generated_residue() -> None:
+    assert_no_generated_residue(EXAMPLE)
+    assert all(not (EXAMPLE / rel).exists() for rel in EXPECTED_GENERATED)
+    assert "sync |" not in (EXAMPLE / "log.md").read_text(encoding="utf-8")
 
 
-def test_government_services_example_mirrors_regenerate_from_sources(tmp_path: Path) -> None:
-    vault = tmp_path / "government-services-vault"
-    lint_output = run_example_regeneration(
-        tmp_path,
-        "government-services-vault",
-        GOVERNMENT_GENERATED,
-        GOVERNMENT_RAW_FOLDER_MIRRORS,
-    )
-    assert_clean_lint(lint_output)
-    assert_benchmark_generated_mirrors_exist(vault)
-    benchmark = subprocess.run(
-        [sys.executable, str(vault / "tools" / "mirrorarc.py"), "benchmark", "--require-generated"],
-        cwd=vault,
-        text=True,
-        capture_output=True,
-    )
-    assert benchmark.returncode == 0, benchmark.stderr or benchmark.stdout
-    assert "benchmark_tasks: 6 tasks" in benchmark.stdout
-
-
-def test_northwind_recovery_gate_regenerates_and_flags_review_states(tmp_path: Path) -> None:
-    vault = tmp_path / "northwind-robotics-vault"
-    shutil.copytree(ROOT / "examples/northwind-robotics-vault", vault)
-    source_rels = [
-        Path("30_customers/acme-manufacturing/2026-01-15_acme_discovery_brief.docx"),
-        Path("60_finance/2026-01_pipeline_snapshot.xlsx"),
-        Path("40_delivery/2026-q1_service_readiness_review.pptx"),
-        Path("_fixtures/repos/fieldkit-control/README.md"),
+def test_flagship_example_is_a_substantial_data_product_workspace() -> None:
+    excluded_roots = {"tools", "_meta", "_templates", ".obsidian", "_mirrors"}
+    meaningful = [
+        path
+        for path in EXAMPLE.rglob("*")
+        if path.is_file()
+        and path.name != ".gitkeep"
+        and not excluded_roots.intersection(path.relative_to(EXAMPLE).parts)
     ]
-    source_bytes = {rel: (vault / rel).read_bytes() for rel in source_rels}
+    assert len(meaningful) >= 50
 
-    first_sync = run_mirrorarc(vault, "sync")
-    assert first_sync.returncode == 0, first_sync.stderr or first_sync.stdout
-    for rel in NORTHWIND_GENERATED:
-        assert (vault / rel).exists()
+    profile = yaml.safe_load((EXAMPLE / "_meta" / "profile.yml").read_text(encoding="utf-8"))
+    assert profile["id"] == "data-product"
+    assert set(profile["domains"]) == {
+        "inbox",
+        "context",
+        "sources",
+        "contracts",
+        "pipelines",
+        "analysis",
+        "models",
+        "outputs",
+        "governance",
+        "operations",
+    }
+    assert (EXAMPLE / "INDEX.md").is_file()
+    assert (EXAMPLE / "_meta" / "agent-rules.md").is_file()
 
-    shutil.rmtree(vault / "_mirrors")
-    for rel in NORTHWIND_GENERATED:
-        if rel.as_posix().startswith("80_sources/repos/"):
-            (vault / rel).unlink()
 
-    recovery_plan = run_mirrorarc(vault, "plan")
-    assert recovery_plan.returncode == 0, recovery_plan.stderr or recovery_plan.stdout
-    assert "create" in recovery_plan.stdout
-    recovery_sync = run_mirrorarc(vault, "sync")
-    assert recovery_sync.returncode == 0, recovery_sync.stderr or recovery_sync.stdout
-    recovery_status = run_mirrorarc(vault, "status")
-    assert recovery_status.returncode == 0, recovery_status.stderr or recovery_status.stdout
-    assert "clean=" in recovery_status.stdout
-    lint = run_mirrorarc(vault, "lint")
+def test_flagship_example_tool_copies_match_template() -> None:
+    for rel in COPIED_TOOL_FILES:
+        assert (EXAMPLE / "tools" / rel).read_bytes() == (ROOT / "template" / "tools" / rel).read_bytes(), rel
+
+
+def test_public_source_selection_and_boundary_are_explicit() -> None:
+    csvs = {path.name for path in (EXAMPLE / OGL_SOURCE_DIR).glob("*.csv")}
+    notes = {path.name for path in (EXAMPLE / OGL_SOURCE_DIR).glob("*-notes-en.txt")}
+    assert csvs == EXPECTED_OGL_CSVS
+    assert len(notes) == len(EXPECTED_OGL_CSVS)
+
+    source_readme = (EXAMPLE / OGL_SOURCE_DIR / "README.md").read_text(encoding="utf-8")
+    assert "Open Government Licence" in source_readme
+    assert "2df0e2aec3b4c11103ee2fe67dbdb4e7fb344f0d6228ccb378bcc036bb9e956a" in source_readme
+
+    reference_notes = list((EXAMPLE / "20_sources").glob("*.md"))
+    assert reference_notes
+    ieso_notes = [path for path in reference_notes if "ieso" in path.as_posix().lower() or "ieso.ca" in path.read_text(encoding="utf-8").lower()]
+    assert len(ieso_notes) >= 3
+    for path in ieso_notes:
+        text = path.read_text(encoding="utf-8")
+        assert "license: reference-only" in text
+        assert "https://www.ieso.ca/" in text
+        assert "metadata" in text.lower() or "reference" in text.lower()
+
+    ieso_binaries = [
+        path
+        for path in EXAMPLE.rglob("*")
+        if path.is_file() and "ieso" in path.name.lower() and path.suffix.lower() != ".md"
+    ]
+    assert ieso_binaries == []
+
+
+def test_all_committed_data_and_office_artifacts_are_provenanced() -> None:
+    provenance = (ROOT / "examples" / "DATA_PROVENANCE.md").read_text(encoding="utf-8")
+    committed = {
+        path.relative_to(ROOT).as_posix()
+        for path in EXAMPLE.rglob("*")
+        if path.is_file() and path.suffix.lower() in DISALLOWED_DATA_EXTS
+    }
+    expected = {f"`{rel}`" for rel in committed}
+    missing = sorted(path for path in expected if path not in provenance)
+    assert not missing
+    assert {path.relative_to(EXAMPLE) for path in EXAMPLE.rglob("*") if path.is_file() and path.suffix.lower() in OFFICE_SOURCE_EXTS} == EXPECTED_OFFICE_SOURCES
+
+
+def test_synthetic_repo_fixture_is_independent_and_green() -> None:
+    fixture = EXAMPLE / "_fixtures" / "repos" / "ontario-electricity-evidence-pipeline"
+    result = subprocess.run(
+        [sys.executable, "-m", "unittest", "discover", "-s", "tests"],
+        cwd=fixture,
+        text=True,
+        capture_output=True,
+        env={**os.environ, "PYTHONPATH": str(fixture / "src")},
+    )
+    assert result.returncode == 0, result.stderr or result.stdout
+    fixture_text = "\n".join(
+        path.read_text(encoding="utf-8", errors="ignore")
+        for path in fixture.rglob("*")
+        if path.is_file()
+    )
+    assert "synthetic" in fixture_text.lower()
+    assert "historical" in fixture_text.lower()
+    assert "forecast" not in fixture_text.lower()
+
+
+def test_flagship_example_regenerates_idempotently_without_mutating_sources(tmp_path: Path) -> None:
+    vault = tmp_path / "ontario-electricity-evidence-vault"
+    shutil.copytree(EXAMPLE, vault)
+    before_sources = source_payloads(vault)
+
+    plan = run_cli(vault, "plan")
+    assert plan.returncode == 0, plan.stderr or plan.stdout
+    assert_no_generated_residue(vault)
+
+    first = run_cli(vault, "sync")
+    assert first.returncode == 0, first.stderr or first.stdout
+    for rel in EXPECTED_GENERATED:
+        assert (vault / rel).is_file(), rel
+    assert source_payloads(vault) == before_sources
+    first_generated = generated_payloads(vault)
+
+    status = run_cli(vault, "status")
+    assert status.returncode == 0, status.stderr or status.stdout
+    lint = run_cli(vault, "lint")
     assert lint.returncode == 0, lint.stderr or lint.stdout
-    for rel in NORTHWIND_GENERATED:
-        assert (vault / rel).exists()
-    for rel, original in source_bytes.items():
-        assert (vault / rel).read_bytes() == original
 
-    scan_paths = [
-        str(path)
-        for path in vault.rglob("*")
-        if path.is_file() and path.suffix.lower() in {".md", ".json", ".jsonl"}
-    ]
-    scan = subprocess.run(
-        [sys.executable, str(ROOT / "scripts/no_data_scan.py"), "--paths", *scan_paths],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-    )
-    assert scan.returncode == 0, scan.stderr or scan.stdout
+    second = run_cli(vault, "sync")
+    assert second.returncode == 0, second.stderr or second.stdout
+    assert source_payloads(vault) == before_sources
+    assert generated_payloads(vault) == first_generated
 
-    removed_source = vault / "30_customers/acme-manufacturing/2026-01-15_acme_discovery_brief.docx"
-    removed_source.unlink()
-    missing_status = run_mirrorarc(vault, "status")
-    assert missing_status.returncode == 0, missing_status.stderr or missing_status.stdout
-    assert "source_missing" in missing_status.stdout
 
-    mirror = vault / "_mirrors/60_finance/2026-01_pipeline_snapshot.md"
-    mirror.write_text(
-        mirror.read_text(encoding="utf-8").replace("Extracted content", "Manually edited generated content"),
-        encoding="utf-8",
-    )
-    manual_status = run_mirrorarc(vault, "status")
-    assert manual_status.returncode == 0, manual_status.stderr or manual_status.stdout
-    assert "manual_modification" in manual_status.stdout
+def test_legacy_examples_are_gone() -> None:
+    assert not (ROOT / "examples" / "northwind-robotics-vault").exists()
+    assert not (ROOT / "examples" / "government-services-vault").exists()

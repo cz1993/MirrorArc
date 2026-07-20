@@ -1,43 +1,33 @@
-# Examples
+# Flagship Example: Ontario Electricity Evidence Workspace
 
-`government-services-vault/` is the primary public-document showcase. It uses generated Office
-fixtures based on familiar Canadian business-startup government topics: CRA business registration,
-GST/HST readiness, CRA account access, and funding/support discovery. It contains no real
-applicant, customer, company, or personal data.
+`ontario-electricity-evidence-vault/` is MirrorArc's single, end-to-end example. It is a clean-room
+data-product workspace built from public Ontario energy material, independently authored
+documentation, and clearly labelled synthetic fixtures. It contains more than 50 meaningful files
+across sources, contracts, pipelines, historical analysis, outputs, governance, operations, and a
+small local repository fixture.
 
-`northwind-robotics-vault/` remains a synthetic business fixture for repo-mirroring and
-small-business workflow regression tests. It is fictional and contains no real company, customer,
-personal, or proprietary data.
+The example demonstrates:
 
-Use it to inspect:
-- Dedicated Office source mirrors (`.docx`, `.xlsx`, `.pptx` -> `_mirrors/` markdown),
-  regenerated during validation.
-- Manifest-backed `tools/mirrorarc.py plan` / `status` behavior without committing generated
-  mirrors, manifests, or audit logs.
-- A synthetic local repo mirror under `80_sources/repos/`, regenerated from `tools/repos.yml`.
-- MOC/entity linking, frontmatter, and the Obsidian Bases index.
-- The function-based file plan (`10_governance`, `30_customers`, `40_delivery`, etc.).
-- Whether the resulting vault feels usable for a small-business operator, not just technically
-  valid.
+- OGL Ontario CSV source files with exact attribution and an archive checksum.
+- Metadata-only links to IESO reference pages; no IESO page body is copied.
+- Word, Excel, and repository source mirroring into traceable Markdown.
+- A synthetic local code repository mirrored into `20_sources/repos/`.
+- A relationship-rich documentation layer for humans and agents.
+- Historical completeness and reconciliation checks with explicit, inspectable rules.
 
-Every included or candidate external source is tracked in `DATA_PROVENANCE.md`.
+The committed snapshot is historical and educational. It is not a live view of Ontario's grid,
+does not emit alerts or forecasts, and is not affiliated with or endorsed by Ontario, the IESO,
+or the OEB.
 
-To regenerate mirrors locally:
+To exercise the example without committing generated state:
 
 ```bash
-cd northwind-robotics-vault
+cd examples/ontario-electricity-evidence-vault
 python3.11 tools/mirrorarc.py plan
 python3.11 tools/mirrorarc.py sync
 python3.11 tools/mirrorarc.py status
 python3.11 tools/mirrorarc.py lint
 ```
 
-For the public-service showcase:
-
-```bash
-cd government-services-vault
-python3.11 tools/mirrorarc.py plan
-python3.11 tools/mirrorarc.py sync
-python3.11 tools/mirrorarc.py status
-python3.11 tools/mirrorarc.py lint
-```
+Generated mirrors, manifests, and audit logs remain ignored. Exact source and licence
+classifications are recorded in `DATA_PROVENANCE.md`.

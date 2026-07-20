@@ -227,12 +227,12 @@ def test_materialize_office_source_honors_profile_mirror_root(tmp_path: Path) ->
     profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
     profile["policy_defaults"]["mirror_root"] = "_generated"
     profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
-    source = vault / "40_delivery" / "registration.docx"
+    source = vault / "70_outputs" / "registration.docx"
     source.write_bytes(b"synthetic source bytes")
 
     result = materialize_office_source(
         vault,
-        "40_delivery/registration.docx",
+        "70_outputs/registration.docx",
         converter=CountingConverter(),
         converter_name="test-converter",
         converter_version="test",
@@ -240,9 +240,9 @@ def test_materialize_office_source_honors_profile_mirror_root(tmp_path: Path) ->
     )
 
     assert result["status"] == "created"
-    assert result["record"]["mirror_path"] == "_generated/40_delivery/registration.md"
-    assert (vault / "_generated" / "40_delivery" / "registration.md").exists()
-    assert not (vault / "_mirrors" / "40_delivery" / "registration.md").exists()
+    assert result["record"]["mirror_path"] == "_generated/70_outputs/registration.md"
+    assert (vault / "_generated" / "70_outputs" / "registration.md").exists()
+    assert not (vault / "_mirrors" / "70_outputs" / "registration.md").exists()
 
 
 def test_materialize_office_source_rejects_unsafe_paths(tmp_path: Path) -> None:

@@ -913,11 +913,8 @@ wait for that evidence.
 ## References Reviewed
 
 - MirrorArc repository: https://github.com/cz1993/MirrorArc
-- MirrorArc June 23 strategic whitepaper: `docs/MIRRORARC_WHITEPAPER_2026-06-23.md`
-- MirrorArc v1 finish-line matrix: `docs/V1_FINISH_LINE.md`
-- ADR 0001 profile-driven v1 architecture: `docs/adr/0001-profile-driven-v1-architecture.md`
-- ADR 0002 journaled incremental materialization:
-  `docs/adr/0002-journaled-incremental-materialization.md`
+- MirrorArc product contract: `docs/PRODUCT.md`
+- MirrorArc sync specification: `docs/SYNC_SPEC.md`
 - MirrorArc profile schema: `docs/PROFILE_SCHEMA.md`
 - Obsidian Agent Skills: https://github.com/kepano/obsidian-skills
 - CodeGraph: https://github.com/colbymchenry/codegraph

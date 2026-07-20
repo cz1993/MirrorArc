@@ -96,7 +96,7 @@ In `_meta/conversion-quality-results.yml`, record only these metadata fields:
 Do not add notes, reviewer comments, source text, mirror text, prompts, answers, excerpts,
 protected identifiers, secrets, or personal data. The validator rejects common free-text fields.
 
-In `docs/PILOT_WORKSHEET.md` or a private engagement worksheet, record aggregate evidence only:
+In a private engagement worksheet, record aggregate evidence only:
 
 - high/medium/low conversion counts;
 - conversion-quality result records, reviewed count, average score, correction count, and issue-code

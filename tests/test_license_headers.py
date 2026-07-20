@@ -4,7 +4,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SPDX = "SPDX-License-Identifier: AGPL-3.0-or-later"
+AGPL_SPDX = "SPDX-License-Identifier: AGPL-3.0-or-later"
+MIT_SPDX = "SPDX-License-Identifier: MIT"
 
 
 def source_files() -> list[Path]:
@@ -28,7 +29,8 @@ def test_source_files_have_spdx_headers() -> None:
     missing: list[str] = []
     for path in source_files():
         lines = path.read_text(encoding="utf-8").splitlines()
-        if not any(SPDX in line for line in lines[:3]):
+        expected = MIT_SPDX if "_fixtures" in path.parts else AGPL_SPDX
+        if not any(expected in line for line in lines[:3]):
             missing.append(path.relative_to(ROOT).as_posix())
     assert not missing
 

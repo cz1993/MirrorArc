@@ -11,9 +11,8 @@ candidate sources are fingerprinted, hashed only when needed, materialized throu
 package-owned mirror logic, and reconciled against authoritative sources because watcher events are
 not authoritative.
 
-Journaled incremental materialization is tracked as V1-C10 in `docs/V1_FINISH_LINE.md` and
-specified by `docs/adr/0002-journaled-incremental-materialization.md`. The current runtime has the
-local journal/state foundation plus deterministic feed filtering, event coalescing, and cheap
+The current runtime has the local journal/state foundation plus deterministic feed filtering,
+event coalescing, and cheap
 metadata fingerprint primitives, plus lease-protected event claims and interrupted-worker recovery.
 It also has a source-addressable Office materialization primitive that processes one vault-relative
 source through the existing Office mirror engine instead of creating a second mirror writer, plus
@@ -24,8 +23,9 @@ reconciliation that queues missed source/manifest events with metadata-first com
 candidate-only hashing for safe move detection. `mirrorarc sync --changed` composes
 reconciliation and replay, while `mirrorarc sync` and `mirrorarc sync --full` preserve the full
 sync recovery path. `mirrorarc watch --once` runs the deterministic watch-start cycle: startup
-reconciliation, feed-event queueing, and journal replay. `docs/JOURNALED_MATERIALIZATION_BENCHMARK.md`
-records synthetic known-path replay evidence. `mirrorarc watch --native` provides optional
+reconciliation, feed-event queueing, and journal replay. Synthetic journal benchmarks are
+reproducible with `scripts/benchmark_journaled_materialization.py`; benchmark output is a local
+validation artifact, not committed product documentation. `mirrorarc watch --native` provides optional
 watchdog-backed native event capture through the same feed/replay boundary.
 
 ## Source Identity
@@ -122,11 +122,11 @@ Current implementation status:
   and `mirrorarc watch --native` flushes captured events through the same reconciliation, feed,
   coalescing, lease, replay, and source-addressable materialization path; the optional
   `mirrorarc[watch]` extra supplies the watchdog dependency without changing default installs;
-- implemented for Stage 1B benchmark evidence:
+- implemented for Stage 1B benchmark tooling:
   `scripts/benchmark_journaled_materialization.py` builds a temporary synthetic vault with 1,000
   source records, replays a known-path event batch with one save storm, one move, and one deletion,
   and records paths enumerated, source bodies read, bytes hashed, converter invocations, event
-  counts, elapsed time, and peak memory in `docs/JOURNALED_MATERIALIZATION_BENCHMARK.md`;
+  counts, elapsed time, and peak memory in a caller-selected local report;
 - implemented for repo mirrors: stable repo IDs, configured/resolved repo, note path, local-tree or
   remote HEAD hash, lifecycle state, warnings/errors, non-mutating plan/status reports, and
   generated-region manual-edit detection, plus contract-backed lifecycle next-action guidance in plan/status

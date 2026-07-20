@@ -1,0 +1,11 @@
+settings:
+  notes_dir: 20_sources/repos
+  default_status: active
+  include_readme: true
+  include_docs: true
+  max_doc_chars: 12000
+
+repos:
+  - repo: local/ontario-electricity-evidence-pipeline
+    local_path: _fixtures/repos/ontario-electricity-evidence-pipeline
+    note: ontario-electricity-evidence-pipeline.md

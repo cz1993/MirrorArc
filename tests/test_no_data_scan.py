@@ -2,6 +2,7 @@
 from pathlib import Path
 import subprocess
 import sys
+import zlib
 from zipfile import ZipFile
 
 
@@ -16,6 +17,40 @@ def run_scan(*paths: Path) -> subprocess.CompletedProcess[str]:
         text=True,
         capture_output=True,
     )
+
+
+def write_flate_pdf(path: Path, visible_text: bytes, *, filter_value: str = "/FlateDecode") -> None:
+    compressed = zlib.compress(visible_text)
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        (
+            b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R "
+            b"/Resources << /Font << /F1 5 0 R >> >> >>"
+        ),
+        (
+            f"<< /Length {len(compressed)} /Filter {filter_value} >>\n".encode()
+            + b"stream\n"
+            + compressed
+            + b"\nendstream"
+        ),
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    ]
+    pdf = bytearray(b"%PDF-1.4\n")
+    offsets = [0]
+    for index, body in enumerate(objects, 1):
+        offsets.append(len(pdf))
+        pdf.extend(f"{index} 0 obj\n".encode() + body + b"\nendobj\n")
+    xref_offset = len(pdf)
+    pdf.extend(f"xref\n0 {len(objects) + 1}\n".encode())
+    pdf.extend(b"0000000000 65535 f \n")
+    for offset in offsets[1:]:
+        pdf.extend(f"{offset:010d} 00000 n \n".encode())
+    pdf.extend(
+        f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\n"
+        f"startxref\n{xref_offset}\n%%EOF\n".encode()
+    )
+    path.write_bytes(pdf)
 
 
 def test_no_data_scan_passes_clean_file(tmp_path: Path) -> None:
@@ -102,15 +137,6 @@ def test_no_data_scan_flags_renamed_agent_readiness_result_pack_shape(tmp_path: 
     assert "benchmark result packs must stay out of the public repo" in result.stderr
 
 
-def test_no_data_scan_allows_public_agent_readiness_result_pack() -> None:
-    path = ROOT / "examples/government-services-vault/_meta/public-agent-readiness-results.yml"
-
-    result = run_scan(path)
-
-    assert result.returncode == 0, result.stderr
-    assert "OK" in result.stdout
-
-
 def test_no_data_scan_flags_conversion_quality_result_packs(tmp_path: Path) -> None:
     path = tmp_path / "vault" / "_meta" / "conversion-quality-results.yml"
     path.parent.mkdir(parents=True)
@@ -187,14 +213,6 @@ def test_no_data_scan_flags_renamed_agent_readiness_task_pack_shape(tmp_path: Pa
 
     assert result.returncode == 1
     assert "private benchmark task packs must stay out of the public repo" in result.stderr
-
-
-def test_no_data_scan_allows_public_government_agent_readiness_task_pack() -> None:
-    path = ROOT / "examples" / "government-services-vault" / "_meta" / "agent-readiness-tasks.yml"
-
-    result = run_scan(path)
-
-    assert result.returncode == 0, result.stderr
 
 
 def test_no_data_scan_allows_generated_sync_audit_but_scans_text(tmp_path: Path) -> None:
@@ -601,6 +619,100 @@ def test_no_data_scan_flags_payment_card_in_ooxml_custom_xml(tmp_path: Path) -> 
     assert "payment card" in result.stderr
 
 
+def test_no_data_scan_does_not_join_spreadsheet_measurements_into_payment_card(tmp_path: Path) -> None:
+    path = tmp_path / "measurements.xlsx"
+    worksheet = (
+        "<worksheet xmlns='http://schemas.openxmlformats.org/spreadsheetml/2006/main'>"
+        "<sheetData><row>"
+        "<c r='A1'><v>4111</v></c><c r='B1'><v>1111</v></c>"
+        "<c r='C1'><v>1111</v></c><c r='D1'><v>1111</v></c>"
+        "</row></sheetData></worksheet>"
+    )
+    with ZipFile(path, "w") as zf:
+        zf.writestr("xl/worksheets/sheet1.xml", worksheet)
+
+    result = run_scan(path)
+
+    assert "payment card" not in result.stderr
+
+
+def test_no_data_scan_flags_payment_card_in_provenance_allowlisted_pdf(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    (repo / "examples").mkdir()
+    (repo / "examples" / "DATA_PROVENANCE.md").write_text(
+        "# Data Provenance\n\n`synthetic.pdf`\n",
+        encoding="utf-8",
+    )
+    path = repo / "synthetic.pdf"
+    card = b"".join([b"4111", b"1111", b"1111", b"1111"])
+    path.write_bytes(b"%PDF-1.4\n" + card + b"\n%%EOF\n")
+
+    result = subprocess.run(
+        [sys.executable, str(SCAN), "--paths", "synthetic.pdf"],
+        cwd=repo,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 1
+    assert "payment card" in result.stderr
+
+
+def test_no_data_scan_flags_payment_card_in_flate_compressed_pdf_stream(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    (repo / "examples").mkdir()
+    (repo / "examples" / "DATA_PROVENANCE.md").write_text(
+        "# Data Provenance\n\n`synthetic.pdf`\n",
+        encoding="utf-8",
+    )
+    path = repo / "synthetic.pdf"
+    card = b" ".join([b"4111", b"1111", b"1111", b"1111"])
+    write_flate_pdf(
+        path,
+        b"BT /F1 12 Tf 72 720 Td (" + card + b") Tj ET",
+    )
+
+    result = subprocess.run(
+        [sys.executable, str(SCAN), "--paths", "synthetic.pdf"],
+        cwd=repo,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 1
+    assert "payment card" in result.stderr
+
+
+def test_no_data_scan_allows_clean_flate_compressed_pdf_stream(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    (repo / "examples").mkdir()
+    (repo / "examples" / "DATA_PROVENANCE.md").write_text(
+        "# Data Provenance\n\n`synthetic.pdf`\n",
+        encoding="utf-8",
+    )
+    path = repo / "synthetic.pdf"
+    write_flate_pdf(
+        path,
+        b"BT /F1 12 Tf 72 720 Td (Synthetic public evidence) Tj ET",
+        filter_value="[/FlateDecode]",
+    )
+
+    result = subprocess.run(
+        [sys.executable, str(SCAN), "--paths", "synthetic.pdf"],
+        cwd=repo,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+
 def test_no_data_scan_flags_unexpected_ooxml_app_metadata(tmp_path: Path) -> None:
     path = tmp_path / "brief.docx"
     app = (
@@ -763,7 +875,7 @@ def test_no_data_scan_blocks_staged_symlink_typechange(tmp_path: Path) -> None:
 
 
 def test_no_data_scan_allows_provenance_listed_example_office_files() -> None:
-    path = ROOT / "examples/northwind-robotics-vault/40_delivery/2026-q1_service_readiness_review.pptx"
+    path = ROOT / "examples/ontario-electricity-evidence-vault/50_analysis/workbooks/historical-demand-profile.xlsx"
 
     result = run_scan(path)
 

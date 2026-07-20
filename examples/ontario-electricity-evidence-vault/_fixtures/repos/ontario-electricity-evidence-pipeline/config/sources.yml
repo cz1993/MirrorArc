@@ -1,0 +1,8 @@
+schema_version: 1
+sources:
+  - id: ontario_energy_report_2023
+    license: Open Government Licence - Ontario
+    mode: committed_fixture
+  - id: ieso_data_directory
+    license: reference-only
+    mode: metadata_only

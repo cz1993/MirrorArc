@@ -1,0 +1,7 @@
+Notes :
+1. Data includes output of all transmission-connected generation facilities and embedded generators that are Market Participants. Data does not include output of embedded generators that are not registered as Market Participants.
+2. Oil facilities are included under the Gas category.
+3. Coal generation ceased production in Q1 2014.
+4. Transmission-connected solar began to be recorded in Q1 2015.
+5. Values may not add up to the total due to rounding.
+6. Related reports can be found at http://reports.ieso.ca/public/GenOutputbyFuelMonthly

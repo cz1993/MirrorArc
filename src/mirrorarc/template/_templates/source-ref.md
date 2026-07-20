@@ -2,23 +2,27 @@
 title: {{title}}
 type: source-ref
 status: active
-domain:
+domain: sources
 created: {{date}}
 updated: {{date}}
 owner: you
-source:
-source_format: pdf
+source_url:
+source_format:
+license:
 tags: []
 related: []
 ---
 
 # {{title}}
 
-> Companion note for a binary kept as the source of truth. Original filename in `source`.
+## Use boundary
 
-![[REPLACE-WITH-FILENAME.pdf]]
+State whether the source body may be copied, mirrored, quoted, or only referenced by metadata.
 
-## Summary
+## What it contributes
 
+## Verification
 
-## Key points
+- Last checked:
+- Authority:
+- Freshness or version:

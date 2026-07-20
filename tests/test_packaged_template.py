@@ -48,7 +48,7 @@ def test_packaged_template_matches_repository_template() -> None:
     assert "tools/recovery_report.py" in package_files
     assert "tools/review_ledger.py" in package_files
     assert "tools/sandbox_report.py" in package_files
-    assert "80_sources/repos/.gitkeep" in package_files
+    assert "20_sources/repos/.gitkeep" in package_files
 
 
 def test_package_owned_template_tools_are_shims() -> None:

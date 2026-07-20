@@ -121,7 +121,6 @@ folder_plan:
 templates:
   - _templates/base-note.md
   - _templates/decision-record.md
-  - _templates/guide.md
   - _templates/source-ref.md
 
 views: []

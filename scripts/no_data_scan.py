@@ -14,6 +14,7 @@ import os
 import re
 import subprocess
 import sys
+import zlib
 from pathlib import Path
 from zipfile import BadZipFile, ZipFile
 import xml.etree.ElementTree as ET
@@ -61,12 +62,8 @@ PRIVATE_CONVERSION_RESULT_FILENAMES = {
     "conversion-quality-results.yml",
     "conversion-quality-results.yaml",
 }
-PUBLIC_TASK_PACKS = {
-    "examples/government-services-vault/_meta/agent-readiness-tasks.yml",
-}
-PUBLIC_RESULT_PACKS = {
-    "examples/government-services-vault/_meta/public-agent-readiness-results.yml",
-}
+PUBLIC_TASK_PACKS: set[str] = set()
+PUBLIC_RESULT_PACKS: set[str] = set()
 YAML_SUFFIXES = {".yaml", ".yml"}
 
 DISALLOWED_DATA_EXTS = {
@@ -100,6 +97,22 @@ SECRET_PATTERNS = [
 ]
 
 OOXML_EXTS = {".docx", ".pptx", ".xlsx"}
+OPAQUE_BINARY_EXTS = {
+    ".7z",
+    ".db",
+    ".doc",
+    ".docx",
+    ".gz",
+    ".parquet",
+    ".pdf",
+    ".ppt",
+    ".pptx",
+    ".sqlite",
+    ".tar",
+    ".xls",
+    ".xlsx",
+    ".zip",
+}
 OOXML_TEXT_PART_SUFFIXES = (".xml", ".rels", ".txt", ".csv")
 OOXML_CONTENT_PART_PREFIXES = (
     "customxml/",
@@ -123,7 +136,6 @@ ALLOWED_OFFICE_METADATA = {
     "",
     "MirrorArc",
     "MirrorArc Example",
-    "Northwind Robotics",
 }
 IDENTITY_METADATA_FIELDS = {
     "category",
@@ -295,6 +307,117 @@ def scan_text_patterns(rel: str, text: str, *, include_payment_card: bool = True
     return findings
 
 
+def pdf_flate_streams(rel: str, raw: bytes) -> tuple[list[bytes], list[str]]:
+    """Return bounded, directly Flate-decoded PDF streams and fail-closed findings.
+
+    PDF text is commonly stored in zlib-compressed content streams, so scanning only the raw
+    container bytes misses text that a reader displays.  This intentionally handles the direct
+    ``/FlateDecode`` form without becoming a general PDF parser; multi-filter pipelines remain
+    outside this helper because applying their filters out of order would create false assurance.
+    """
+
+    streams: list[bytes] = []
+    findings: list[str] = []
+    stream_start = re.compile(rb"\bstream(?:\r\n|\n|\r)")
+    direct_flate = re.compile(
+        rb"/Filter\s*(?:/(?:FlateDecode|Fl)\b|\[\s*/(?:FlateDecode|Fl)\s*\])"
+    )
+
+    for match in stream_start.finditer(raw):
+        dictionary_start = raw.rfind(b"<<", max(0, match.start() - 8192), match.start())
+        if dictionary_start < 0:
+            continue
+        dictionary = raw[dictionary_start : match.start()]
+        if not direct_flate.search(dictionary):
+            continue
+
+        data_start = match.end()
+        length_match = re.search(rb"/Length\s+(\d+)\b", dictionary)
+        if length_match:
+            encoded_length = int(length_match.group(1))
+            encoded = raw[data_start : data_start + encoded_length]
+        else:
+            stream_end = raw.find(b"endstream", data_start)
+            if stream_end < 0:
+                findings.append(f"{rel}: unreadable Flate-compressed PDF stream")
+                continue
+            encoded = raw[data_start:stream_end].rstrip(b"\r\n")
+
+        try:
+            decoder = zlib.decompressobj()
+            decoded = decoder.decompress(encoded, MAX_FILE_BYTES + 1)
+            remaining = MAX_FILE_BYTES + 1 - len(decoded)
+            if remaining > 0:
+                decoded += decoder.flush(remaining)
+        except zlib.error:
+            findings.append(f"{rel}: unreadable Flate-compressed PDF stream")
+            continue
+        if len(decoded) > MAX_FILE_BYTES:
+            findings.append(f"{rel}: Flate-compressed PDF stream exceeds scan limit")
+            continue
+        if not decoder.eof:
+            findings.append(f"{rel}: unreadable Flate-compressed PDF stream")
+            continue
+        streams.append(decoded)
+
+    return streams, findings
+
+
+def scan_opaque_payment_cards(rel: str, raw: bytes) -> list[str]:
+    """Scan clear-text card candidates inside non-OOXML binary payloads.
+
+    Provenance establishes why a binary fixture may be committed; it must never disable the
+    zero-tolerance PII checks.  We therefore inspect printable byte runs even when the format is
+    otherwise opaque.  PDF cross-reference rows are structural counters rather than authored
+    text, so exclude their fixed-width shape to avoid accidental Luhn matches.
+    """
+
+    payloads = [raw]
+    findings: list[str] = []
+    is_pdf = Path(rel).suffix.lower() == ".pdf"
+    if is_pdf:
+        decoded_streams, decode_findings = pdf_flate_streams(rel, raw)
+        payloads.extend(decoded_streams)
+        findings.extend(decode_findings)
+
+    for payload in payloads:
+        text = payload.decode("latin-1", errors="ignore")
+        if is_pdf:
+            text = "\n".join(
+                line
+                for line in text.splitlines()
+                if not re.fullmatch(r"\s*\d{10}\s+\d{5}\s+[fn]\s*", line)
+            )
+        card_findings = [
+            finding
+            for finding in scan_text_patterns(rel, text)
+            if "payment card" in finding
+        ]
+        if card_findings:
+            findings.extend(card_findings)
+            break
+    return findings
+
+
+def ooxml_payment_card_text(part_name: str, root: ET.Element) -> str:
+    """Return user-authored OOXML text without joining spreadsheet numeric cells.
+
+    Worksheet XML stores ordinary measurements as adjacent numeric ``<v>`` values. Joining those
+    values with spaces can accidentally form a Luhn-valid 13-19 digit sequence. Text cells are
+    represented by ``<t>`` nodes (or shared strings, scanned in their own part), so restrict
+    worksheet payment-card checks to those nodes while keeping the broader scan for documents,
+    slides, comments, and custom XML.
+    """
+
+    if part_name.lower().startswith("xl/worksheets/"):
+        return " ".join(
+            node_text(node)
+            for node in root.iter()
+            if xml_local_name(node.tag).lower() == "t" and node_text(node)
+        )
+    return " ".join(root.itertext())
+
+
 def looks_like_agent_readiness_results(rel_path: Path, text: str) -> bool:
     if rel_path.suffix.lower() not in YAML_SUFFIXES or "_meta" not in rel_path.parts:
         return False
@@ -402,7 +525,11 @@ def scan_ooxml(rel: str, raw: bytes) -> list[str]:
         part_rel = f"{rel}:{part_name}"
         raw_text = xml.decode("utf-8", errors="ignore")
         content_part = is_ooxml_content_part(part_name) or part_name.lower().endswith(".rels")
-        findings.extend(scan_text_patterns(part_rel, raw_text, include_payment_card=content_part))
+        # Raw OOXML contains numeric IDs, dimensions, and GUIDs that can accidentally satisfy
+        # Luhn. Scan raw markup for explicit secret patterns, but only inspect visible text for
+        # payment-card-like numbers.
+        relationship_part = part_name.lower().endswith(".rels")
+        findings.extend(scan_text_patterns(part_rel, raw_text, include_payment_card=relationship_part))
         if part_name.lower().startswith("docprops/"):
             findings.extend(scan_docprops_metadata(rel, part_name, xml))
         try:
@@ -412,11 +539,18 @@ def scan_ooxml(rel: str, raw: bytes) -> list[str]:
                 for node in part_root.iter()
                 for value in node.attrib.values()
             )
-            text = " ".join([*part_root.itertext(), attr_text])
+            text = " ".join(part_root.itertext())
+            findings.extend(scan_text_patterns(part_rel, attr_text, include_payment_card=relationship_part))
         except ET.ParseError:
             text = raw_text
-        for finding in scan_text_patterns(part_rel, text, include_payment_card=content_part):
-            findings.append(finding)
+            payment_text = raw_text
+        else:
+            payment_text = ooxml_payment_card_text(part_name, part_root)
+        findings.extend(scan_text_patterns(part_rel, text, include_payment_card=False))
+        if content_part:
+            for finding in scan_text_patterns(part_rel, payment_text):
+                if "payment card" in finding:
+                    findings.append(finding)
     return findings
 
 
@@ -490,6 +624,9 @@ def scan_bytes(
     if suffix in OOXML_EXTS:
         findings.extend(scan_ooxml(rel, raw))
 
+    if suffix in OPAQUE_BINARY_EXTS and suffix not in OOXML_EXTS:
+        findings.extend(scan_opaque_payment_cards(rel, raw))
+
     if b"\0" in raw[:4096]:
         return findings
 
@@ -504,7 +641,13 @@ def scan_bytes(
         and not private_task_pack_name
     ):
         findings.append(f"{rel}: private benchmark task packs must stay out of the public repo")
-    findings.extend(scan_text_patterns(rel, text))
+    findings.extend(
+        scan_text_patterns(
+            rel,
+            text,
+            include_payment_card=suffix not in OPAQUE_BINARY_EXTS,
+        )
+    )
     return findings
 
 

@@ -10,14 +10,6 @@ ROOT = Path(__file__).resolve().parents[1]
 CI_WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 RELEASE_WORKFLOW = ROOT / ".github" / "workflows" / "release.yml"
 RELEASE_DOC = ROOT / "docs" / "RELEASE.md"
-KICKOFF_PROMPT = ROOT / "docs" / "CODEX_KICKOFF_PROMPT.md"
-FINISH_LINE = ROOT / "docs" / "V1_FINISH_LINE.md"
-HISTORICAL_PLANNING_DOCS = (
-    ROOT / "docs" / "MIRRORARC_WHITEPAPER_2026-06-23.md",
-    ROOT / "docs" / "revisions" / "MIRRORARC_WHITEPAPER_2026-06-24.md",
-    ROOT / "docs" / "MIRRORARC_CODEX_MEGA_PROMPT_2026-06-24.md",
-    ROOT / "docs" / "V1_PROGRESS_AUDIT_2026-06-23.md",
-)
 PYPROJECT = ROOT / "pyproject.toml"
 
 
@@ -29,48 +21,18 @@ def test_docs_pin_package_first_onboarding_commands() -> None:
         assert "Python 3.11+" in text
         assert (
             "uvx --from git+https://github.com/cz1993/MirrorArc.git mirrorarc init "
-            "--profile business-operations ~/my-business-vault"
+            "--profile data-product ~/my-data-product"
         ) in text
         assert (
             "pipx run --spec git+https://github.com/cz1993/MirrorArc.git mirrorarc init "
-            "--profile business-operations ~/my-business-vault"
+            "--profile data-product ~/my-data-product"
         ) in text
-        assert "uvx mirrorarc init --profile business-operations ~/my-business-vault" in text
-        assert "pipx run mirrorarc init --profile business-operations ~/my-business-vault" in text
+        assert "uvx mirrorarc init --profile data-product ~/my-data-product" in text
+        assert "pipx run mirrorarc init --profile data-product ~/my-data-product" in text
         assert "uv tool install git+https://github.com/cz1993/MirrorArc.git" in text
         assert "pipx install git+https://github.com/cz1993/MirrorArc.git" in text
         assert "mirrorarc --version" in text
         assert "git clone https://github.com/cz1993/MirrorArc.git mirrorarc" in text
-
-
-def test_kickoff_prompt_routes_future_work_to_stage3_validation() -> None:
-    text = KICKOFF_PROMPT.read_text(encoding="utf-8")
-
-    assert "Stage 0, Stage 1A, Stage 1B, and Stage 2 are closed." in text
-    assert "Stage 3 external validation is the next gate" in text
-    assert "docs/VALIDATION_GATE.md" in text
-    assert "docs/STAGE3_VALIDATION_STATUS.md" in text
-    assert "docs/DESIGN_PARTNER_RECRUITING.md" in text
-    assert "docs/FIRST_EXTERNAL_PILOT_RUNBOOK.md" in text
-    assert "Do not start Obsidian adapter, generated Canvas, evidence index, Explorer" in text
-    assert "Docling/email/connectors, visualization, or new report surfaces" in text
-    assert "Work Stage 1 package/profile convergence before adding broad examples" not in text
-    assert "The sample-data hunt (do this in goal-pursuing mode)" not in text
-
-
-def test_historical_planning_docs_are_marked_superseded() -> None:
-    finish_line = FINISH_LINE.read_text(encoding="utf-8")
-
-    assert "Current execution order is controlled by this matrix" in finish_line
-    assert "docs/VALIDATION_GATE.md" in finish_line
-    assert "Current progress and next execution order are summarized in" not in finish_line
-
-    for path in HISTORICAL_PLANNING_DOCS:
-        text = path.read_text(encoding="utf-8")
-        assert "Historical" in text
-        assert "not the current" in text
-        assert "Stage 3 external validation" in text
-        assert "docs/VALIDATION_GATE.md" in text
 
 
 def test_release_workflow_is_tag_only_and_draft_prerelease() -> None:
@@ -114,51 +76,6 @@ def test_cli_global_version_outputs_package_version() -> None:
 
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == f"mirrorarc {version}"
-
-
-def test_legacy_package_and_console_aliases_resolve_to_mirrorarc() -> None:
-    pyproject = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
-    scripts = pyproject["project"]["scripts"]
-    env = os.environ.copy()
-    src_path = str(ROOT / "src")
-    env["PYTHONPATH"] = src_path if not env.get("PYTHONPATH") else f"{src_path}{os.pathsep}{env['PYTHONPATH']}"
-
-    result = subprocess.run(
-        [
-            sys.executable,
-            "-c",
-            "from vaultwright import __version__; from vaultwright.cli import main; print(__version__, main.__module__)",
-        ],
-        cwd=ROOT,
-        env=env,
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-
-    assert scripts == {
-        "mirrorarc": "mirrorarc.cli:main",
-        "vaultwright": "mirrorarc.cli:main",
-    }
-    assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == f"{pyproject['project']['version']} vaultwright.cli"
-
-
-def test_external_pilot_docs_start_with_installed_command_smoke_check() -> None:
-    runbook = (ROOT / "docs" / "FIRST_EXTERNAL_PILOT_RUNBOOK.md").read_text(encoding="utf-8")
-    worksheet = (ROOT / "docs" / "PILOT_WORKSHEET.md").read_text(encoding="utf-8")
-
-    assert "## Operator Environment Smoke Test" in runbook
-    assert "command -v mirrorarc" in runbook
-    assert "mirrorarc --version" in runbook
-    assert "mirrorarc profile list" in runbook
-    assert "Do not spend participant time debugging Python packaging." in runbook
-    assert "mirrorarc --version" in worksheet
-    assert "mirrorarc profile list" in worksheet
-    assert 'Record from `mirrorarc --root "$VW" pilot --json` after first sync:' in worksheet
-    assert 'mirrorarc --root "$VW" pilot --worksheet' in worksheet
-    assert "python3.11 tools/mirrorarc.py pilot --json" not in worksheet
-    assert "python3.11 tools/mirrorarc.py pilot --worksheet" not in worksheet
 
 
 def test_workflows_use_current_action_majors() -> None:
@@ -368,12 +285,3 @@ def test_release_checklist_documents_owner_review_and_limitations() -> None:
     assert "conversion quality" in text
     assert "conversion-quality result packs" in text
     assert "external pilot evidence" in text
-
-
-def test_external_pilot_runbook_creates_plain_markitdown_baseline() -> None:
-    text = (ROOT / "docs" / "FIRST_EXTERNAL_PILOT_RUNBOOK.md").read_text(encoding="utf-8")
-
-    assert "scripts/create_plain_markitdown_dump.py" in text
-    assert "--root \"$VW\"" in text
-    assert "_benchmark/plain_markitdown_dump/" in text
-    assert "`plain_markitdown_dump` comparison mode" in text
