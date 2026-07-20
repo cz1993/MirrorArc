@@ -24,17 +24,27 @@ def test_pages_workflow_deploys_only_from_main_or_manual_dispatch() -> None:
     assert "name: github-pages" in text
 
 
-def test_pages_build_is_bounded_to_the_public_demo_and_scanned() -> None:
-    text = PAGES_BUILD.read_text(encoding="utf-8")
+def test_pages_deploy_path_enforces_repository_and_artifact_scans_in_order() -> None:
+    workflow = PAGES_WORKFLOW.read_text(encoding="utf-8")
+    build = PAGES_BUILD.read_text(encoding="utf-8")
 
-    assert "examples/ontario-electricity-evidence-vault" in text
-    assert "catalog --html --include-content" in text
-    assert "scripts/no_data_scan.py" in text
-    assert "tools/lint_vault.py" in text
-    assert '"document_content_included":true' in text
-    assert "Five-minute workspace tour" in text
-    assert '"$output_dir/index.html"' in text
-    assert '"$output_dir/.nojekyll"' in text
+    full_scan = "run: python scripts/no_data_scan.py"
+    install = "run: python -m pip install -e ."
+    build_demo = 'run: scripts/build_pages_demo.sh "$RUNNER_TEMP/site"'
+    assert full_scan in workflow
+    assert workflow.index(full_scan) < workflow.index(install) < workflow.index(build_demo)
+
+    assert "examples/ontario-electricity-evidence-vault" in build
+    assert "catalog --html --include-content" in build
+    assert 'scripts/no_data_scan.py" --paths "$demo_vault/CATALOG.html"' in build
+    assert build.index("catalog --html --include-content") < build.index(
+        'scripts/no_data_scan.py" --paths "$demo_vault/CATALOG.html"'
+    )
+    assert "tools/lint_vault.py" in build
+    assert '"document_content_included":true' in build
+    assert "Five-minute workspace tour" in build
+    assert '"$output_dir/index.html"' in build
+    assert '"$output_dir/.nojekyll"' in build
 
 
 def test_public_docs_link_to_the_hosted_demo_and_keep_private_vaults_local() -> None:

@@ -53,7 +53,8 @@ All notable changes to MirrorArc are documented here. Format loosely follows
 ### Added
 - Added a GitHub Pages deployment for the public Ontario Grid demo portal. The workflow rebuilds
   the example from a fresh temporary copy, embeds the tutorial and document views, and requires
-  vault lint plus the generated-artifact no-data scan before deployment.
+  the repository-wide provenance/no-data gate before installation plus vault lint and a second
+  generated-artifact scan before deployment.
 - Added `scripts/create_plain_markitdown_dump.py`, a private external-pilot helper that creates
   the required `plain_markitdown_dump` benchmark baseline outside the public source checkout.
 - Added reproducible reviewed-result generation for the messy synthetic benchmark corpus and

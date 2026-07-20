@@ -34,6 +34,8 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.11"
+      - name: Enforce repository no-data and provenance boundary
+        run: python scripts/no_data_scan.py
       - name: Install MirrorArc
         run: python -m pip install -e .
       - name: Build public Ontario Grid portal

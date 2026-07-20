@@ -56,8 +56,8 @@ forecasting, alerts, or an affiliated Ontario energy product.
 
 **[Launch the hosted demo](https://cz1993.github.io/MirrorArc/)** and start with the pinned
 `INDEX.md` five-minute tour. GitHub Pages rebuilds this content-enabled portal only from the
-provenance-documented public example and blocks deployment if the generated artifact fails the
-repository's no-data scan or vault lint.
+provenance-documented public example and blocks deployment unless both the repository-wide
+provenance/no-data gate and the generated-artifact scan pass alongside vault lint.
 
 ## Try the demo locally
 
