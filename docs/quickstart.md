@@ -4,8 +4,11 @@ Aimed at a technical founder/owner who knows git. ~15 minutes.
 
 ## Preview the flagship example first
 
-If you want to understand the product before creating a workspace, run the public Ontario Electricity
-example from a source checkout:
+Open the **[hosted Ontario Grid demo](https://cz1993.github.io/MirrorArc/)** and start with the
+pinned `INDEX.md` five-minute tour. It is generated from MirrorArc's provenance-documented public
+example and passes the repository no-data and vault-lint gates before deployment.
+
+To rebuild the same public Ontario Electricity example locally from a source checkout:
 
 ```bash
 python3.11 -m venv .venv
@@ -18,8 +21,9 @@ python -m http.server 8000 --directory examples/ontario-electricity-evidence-vau
 
 Open `http://127.0.0.1:8000/CATALOG.html`. The pinned `INDEX.md` is a five-minute beginner tour.
 Use the resizable catalog panel to browse full filenames, then compare **Relationship map**,
-**Document metadata**, and **Document view**. This content-enabled file is a local review artifact;
-do not publish it or treat it as the safe shareable catalog.
+**Document metadata**, and **Document view**. A content-enabled artifact from any private or
+proprietary vault must remain local. The hosted demo is a narrow public-corpus exception enforced
+by a dedicated build and no-data scan.
 
 ## Prerequisites
 

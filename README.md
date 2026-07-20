@@ -6,6 +6,8 @@
 
 **A governed documentation layer for both people and AI agents.**
 
+**[Open the live Ontario Grid demo portal →](https://cz1993.github.io/MirrorArc/)**
+
 MirrorArc is an open-source, local-first Python toolkit that turns changing Office files, PDFs,
 GitHub repositories, datasets, and Markdown notes into a source-backed knowledge workspace. It
 keeps original records authoritative, creates deterministic Markdown mirrors, connects evidence in
@@ -52,6 +54,11 @@ independently authored Word/Excel artifacts, and a synthetic repository fixture.
 The committed snapshot is an independently assembled educational corpus, not live grid data,
 forecasting, alerts, or an affiliated Ontario energy product.
 
+**[Launch the hosted demo](https://cz1993.github.io/MirrorArc/)** and start with the pinned
+`INDEX.md` five-minute tour. GitHub Pages rebuilds this content-enabled portal only from the
+provenance-documented public example and blocks deployment if the generated artifact fails the
+repository's no-data scan or vault lint.
+
 ## Try the demo locally
 
 ```bash
@@ -67,8 +74,9 @@ python -m http.server 8000 --directory examples/ontario-electricity-evidence-vau
 ```
 
 Open `http://127.0.0.1:8000/CATALOG.html`. Start with the pinned `INDEX.md`, then follow the
-five-minute tour. The `--include-content` output is for local review because it embeds bounded
-Markdown bodies; omit that flag for the safe metadata-only catalog.
+five-minute tour. The `--include-content` output embeds bounded Markdown bodies and must remain
+local for private or proprietary vaults. The hosted MirrorArc demo is a narrow exception: it is
+built only from the public example corpus and scanned again before every deployment.
 
 ## How it works
 
@@ -165,7 +173,9 @@ separate relationship-map, document-metadata, and rendered-document views, prese
 original-to-mirror lineage, and keeps local context-pack exports metadata-only. The safe default
 does not embed document bodies. Use `catalog --html --include-content` only for a local review copy;
 that opt-in mode embeds bounded Markdown and generated-mirror bodies, so the resulting HTML must be
-protected like the vault itself. Neither mode requires a server or creates an evidence index.
+protected like the vault itself. The public GitHub Pages demo is built from the explicitly public,
+provenance-documented example and passes the no-data gate before deployment. Neither mode requires
+an application server or creates an evidence index.
 
 Source checkout fallback:
 

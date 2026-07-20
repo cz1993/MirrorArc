@@ -89,6 +89,11 @@ only a display-oriented Markdown subset; it does not execute document-provided s
 macros, or links. Local context-pack downloads remain paths, lifecycle metadata, provenance, and
 relationships only in both modes.
 
+The hosted MirrorArc GitHub Pages portal is a narrow exception for the repository's public demo
+corpus. Its build is hard-coded to `examples/ontario-electricity-evidence-vault`, runs from a fresh
+temporary copy, and must pass vault lint plus the no-data scan after content embedding. This does
+not authorize publishing a content-enabled artifact from any private or proprietary vault.
+
 ## Journaled Incremental State
 
 Stage 1B introduces local derived journal state for changed-file materialization. The journal is
