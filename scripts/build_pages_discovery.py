@@ -24,9 +24,13 @@ FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n?", re.DOTALL)
 WIKI_LINK_RE = re.compile(r"\[\[([^\]|]+)(?:\|([^\]]+))?\]\]")
 MARKDOWN_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)\s]+)\)")
 SITE_TITLE = "MirrorArc Ontario Electricity Evidence Workspace"
+PROJECT_DESCRIPTION = (
+    "MirrorArc is an open-source, local-first Python toolkit for governed AI documentation, "
+    "source-preserving Markdown mirrors, knowledge graphs, provenance, and durable agent context."
+)
 SITE_DESCRIPTION = (
-    "Explore a public, source-backed Ontario electricity documentation workspace that connects "
-    "original records, generated Markdown mirrors, evidence, governance, and AI-agent context."
+    "Explore MirrorArc, an open-source AI documentation and knowledge graph toolkit, through a "
+    "public Ontario electricity workspace connecting sources, Markdown mirrors, and agent context."
 )
 REPOSITORY_URL = "https://github.com/cz1993/MirrorArc"
 
@@ -441,7 +445,7 @@ def _static_document_page(
             f'<script type="application/ld+json">{_json_for_script(structured)}</script>\n',
             f"<style>{STATIC_CSS}</style>\n</head>\n<body>\n",
             '<header><div class="topbar"><a class="brand" href="../../">MirrorArc</a><span class="spacer"></span><nav>',
-            '<a href="../">Documentation</a><a href="../../">Interactive portal</a>',
+            '<a href="../../project/">Project</a><a href="../">Documentation</a><a href="../../">Interactive portal</a>',
             f'<a href="{REPOSITORY_URL}">GitHub</a></nav></div></header>',
             '<main class="page"><p class="eyebrow">Public evidence document</p>',
             f"<h1>{escape(document.title)}</h1><p class=\"lede\">{escape(document.description)}</p>",
@@ -497,7 +501,7 @@ def _documents_index_page(documents: list[DiscoveryDocument], base_url: str) -> 
             f'<script type="application/ld+json">{_json_for_script(structured)}</script>\n',
             f"<style>{STATIC_CSS}</style>\n</head>\n<body>\n",
             '<header><div class="topbar"><a class="brand" href="../">MirrorArc</a><span class="spacer"></span><nav>',
-            '<a href="../">Interactive portal</a>',
+            '<a href="../project/">Project</a><a href="../">Interactive portal</a>',
             f'<a href="{REPOSITORY_URL}">GitHub</a></nav></div></header>',
             '<main class="page"><p class="eyebrow">Crawlable public corpus</p>',
             '<h1>Documentation index</h1>',
@@ -510,13 +514,74 @@ def _documents_index_page(documents: list[DiscoveryDocument], base_url: str) -> 
     )
 
 
+def _project_page(base_url: str) -> str:
+    canonical = urljoin(base_url, "project/")
+    title = "MirrorArc: Open-Source AI Documentation and Knowledge Graph Toolkit"
+    structured = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebPage",
+                "name": title,
+                "description": PROJECT_DESCRIPTION,
+                "url": canonical,
+                "isPartOf": {"@type": "WebSite", "name": "MirrorArc", "url": base_url},
+            },
+            {
+                "@type": "SoftwareSourceCode",
+                "name": "MirrorArc",
+                "description": PROJECT_DESCRIPTION,
+                "url": canonical,
+                "codeRepository": REPOSITORY_URL,
+                "programmingLanguage": "Python",
+                "runtimePlatform": "Python 3.11+",
+                "license": f"{REPOSITORY_URL}/blob/main/LICENSE",
+            },
+        ],
+    }
+    return "".join(
+        [
+            '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n',
+            '<meta name="viewport" content="width=device-width, initial-scale=1">\n',
+            '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'">\n',
+            _meta_tags(
+                title=title,
+                description=PROJECT_DESCRIPTION,
+                canonical=canonical,
+                page_type="website",
+            ),
+            f"<title>{escape(title)}</title>\n",
+            f'<script type="application/ld+json">{_json_for_script(structured)}</script>\n',
+            f"<style>{STATIC_CSS}</style>\n</head>\n<body>\n",
+            '<header><div class="topbar"><a class="brand" href="../">MirrorArc</a><span class="spacer"></span><nav>',
+            '<a href="../documents/">Documentation</a><a href="../">Interactive portal</a>',
+            f'<a href="{REPOSITORY_URL}">GitHub</a></nav></div></header>',
+            '<main class="page"><p class="eyebrow">Open-source project</p>',
+            '<h1>Documentation that people and AI agents can trust</h1>',
+            f'<p class="lede">{escape(PROJECT_DESCRIPTION)}</p>',
+            '<div class="actions">',
+            f'<a class="button" href="{REPOSITORY_URL}">View the GitHub repository</a>',
+            '<a class="button secondary" href="../">Explore the live demo</a></div>',
+            '<h2>What MirrorArc does</h2>',
+            '<p>MirrorArc turns changing Office files, PDFs, GitHub repositories, datasets, and Markdown notes into a linked, source-backed knowledge workspace. Originals stay authoritative while deterministic Markdown mirrors remain refreshable and inspectable.</p>',
+            '<h2>Why it is different</h2>',
+            '<ul><li><strong>Mirror layer:</strong> connects original records to generated Markdown without replacing the source.</li><li><strong>Governance:</strong> keeps provenance, licensing, retention, PII, and publication boundaries visible.</li><li><strong>Anti-proliferation:</strong> consolidates and updates documentation before creating more files.</li><li><strong>Agent-ready context:</strong> preserves durable, inspectable context without adding a vector database.</li></ul>',
+            '<h2>Get started</h2>',
+            '<pre><code>uvx --from git+https://github.com/cz1993/MirrorArc.git mirrorarc init --profile data-product ~/my-data-product</code></pre>',
+            f'<p>MirrorArc is licensed under <a href="{REPOSITORY_URL}/blob/main/LICENSE">AGPL-3.0</a>. Read the source, installation guide, templates, tests, and roadmap in the <a href="{REPOSITORY_URL}">public GitHub repository</a>.</p>',
+            '<footer>MirrorArc is an independent open-source project maintained by cz1993.</footer>',
+            '</main>\n</body>\n</html>\n',
+        ]
+    )
+
+
 def _homepage(
     catalog_html: str,
     index_document: DiscoveryDocument,
     aliases: dict[str, DiscoveryDocument],
     base_url: str,
 ) -> str:
-    title = "MirrorArc: AI-Ready Documentation | Ontario Electricity Demo"
+    title = "MirrorArc: Open-Source AI Documentation | Ontario Grid Demo"
     structured = {
         "@context": "https://schema.org",
         "@graph": [
@@ -573,6 +638,7 @@ def _homepage(
             '<div class="doc-meta"><span class="status-pill">public example</span><span class="status-pill">crawlable HTML</span></div>',
             '<div class="doc-actions">',
             f'<a class="primary-button teal" href="{escape(urljoin(base_url, "documents/"), quote=True)}">Browse documentation</a>',
+            f'<a class="secondary-button" href="{escape(urljoin(base_url, "project/"), quote=True)}">About MirrorArc</a>',
             f'<a class="secondary-button" href="{escape(urljoin(base_url, "INDEX.md"), quote=True)}">Read Markdown</a>',
             "</div><div class=\"markdown-body\">",
             body,
@@ -615,9 +681,16 @@ def build_discovery_site(
         _documents_index_page(documents, base_url),
         encoding="utf-8",
     )
+    project_dir = output_dir / "project"
+    project_dir.mkdir(parents=True, exist_ok=True)
+    (project_dir / "index.html").write_text(_project_page(base_url), encoding="utf-8")
 
     catalog_records: list[dict[str, Any]] = []
-    sitemap_records = [(base_url, _date_text(index_document.metadata.get("updated"))), (urljoin(base_url, "documents/"), "")]
+    sitemap_records = [
+        (base_url, _date_text(index_document.metadata.get("updated"))),
+        (urljoin(base_url, "project/"), ""),
+        (urljoin(base_url, "documents/"), ""),
+    ]
     for document in documents:
         destination = documents_dir / document.slug
         destination.mkdir(parents=True, exist_ok=True)
@@ -664,6 +737,7 @@ def build_discovery_site(
         "MirrorArc is a local-first, governed documentation layer for humans and AI agents. This hosted surface contains only the provenance-documented public Ontario electricity example.\n\n",
         "## Start here\n\n",
         f"- [Interactive portal]({base_url}): relationship map, document view, metadata, and context packs\n",
+        f"- [Project overview]({urljoin(base_url, 'project/')}): purpose, differentiators, installation, and source repository\n",
         f"- [Beginner tutorial]({urljoin(base_url, 'INDEX.md')}): raw Markdown entry point\n",
         f"- [Crawlable documentation index]({urljoin(base_url, 'documents/')}): semantic HTML pages\n",
         f"- [Agent-readable catalog]({urljoin(base_url, 'catalog.json')}): document metadata and canonical URLs\n",
@@ -681,6 +755,7 @@ def build_discovery_site(
                 "name": SITE_TITLE,
                 "description": SITE_DESCRIPTION,
                 "homepage": base_url,
+                "project_url": urljoin(base_url, "project/"),
                 "repository": REPOSITORY_URL,
                 "document_count": len(catalog_records),
                 "documents": catalog_records,

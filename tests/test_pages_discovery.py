@@ -1,8 +1,19 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
+import importlib.util
 import json
 from pathlib import Path
+import sys
 
-from scripts.build_pages_discovery import build_discovery_site
+
+DISCOVERY_SCRIPT = Path(__file__).parents[1] / "scripts" / "build_pages_discovery.py"
+DISCOVERY_SPEC = importlib.util.spec_from_file_location(
+    "mirrorarc_build_pages_discovery", DISCOVERY_SCRIPT
+)
+assert DISCOVERY_SPEC is not None and DISCOVERY_SPEC.loader is not None
+DISCOVERY_MODULE = importlib.util.module_from_spec(DISCOVERY_SPEC)
+sys.modules[DISCOVERY_SPEC.name] = DISCOVERY_MODULE
+DISCOVERY_SPEC.loader.exec_module(DISCOVERY_MODULE)
+build_discovery_site = DISCOVERY_MODULE.build_discovery_site
 
 
 BASE_URL = "https://cz1993.github.io/MirrorArc/"
@@ -75,8 +86,9 @@ def test_build_discovery_site_prerenders_index_and_crawlable_documents(tmp_path:
 
     result = build_discovery_site(catalog, output, base_url=BASE_URL)
 
-    assert result == {"documents": 2, "sitemap_urls": 4, "homepage": BASE_URL}
+    assert result == {"documents": 2, "sitemap_urls": 5, "homepage": BASE_URL}
     homepage = (output / "index.html").read_text(encoding="utf-8")
+    project_page = (output / "project" / "index.html").read_text(encoding="utf-8")
     evidence_page = (
         output / "documents" / "10-context-evidence-layers-and-trust" / "index.html"
     ).read_text(encoding="utf-8")
@@ -86,6 +98,7 @@ def test_build_discovery_site_prerenders_index_and_crawlable_documents(tmp_path:
     assert '<script type="application/ld+json">' in homepage
     assert 'data-prerendered="INDEX.md"' in homepage
     assert "This public workspace connects source records" in homepage
+    assert f'href="{BASE_URL}project/"' in homepage
     assert (
         f'href="{BASE_URL}documents/10-context-evidence-layers-and-trust/"' in homepage
     )
@@ -94,6 +107,10 @@ def test_build_discovery_site_prerenders_index_and_crawlable_documents(tmp_path:
     assert "<script>alert('not executable')</script>" not in evidence_page
     assert "&lt;script&gt;alert(&#x27;not executable&#x27;)&lt;/script&gt;" in evidence_page
     assert '<link rel="alternate" type="text/markdown"' in evidence_page
+    assert "Open-Source AI Documentation and Knowledge Graph Toolkit" in project_page
+    assert '"@type":"SoftwareSourceCode"' in project_page
+    assert '"codeRepository":"https://github.com/cz1993/MirrorArc"' in project_page
+    assert 'href="https://github.com/cz1993/MirrorArc"' in project_page
 
 
 def test_build_discovery_site_writes_robot_sitemap_llms_and_catalog_surfaces(tmp_path: Path) -> None:
@@ -112,12 +129,15 @@ def test_build_discovery_site_writes_robot_sitemap_llms_and_catalog_surfaces(tmp
     assert "User-agent: *\nAllow: /" in robots
     assert f"Sitemap: {BASE_URL}sitemap.xml" in robots
     assert f"<loc>{BASE_URL}</loc>" in sitemap
+    assert f"<loc>{BASE_URL}project/</loc>" in sitemap
     assert f"<loc>{BASE_URL}documents/</loc>" in sitemap
-    assert sitemap.count("<url>") == 4
+    assert sitemap.count("<url>") == 5
     assert "# MirrorArc" in llms
     assert "## Public documents" in llms
+    assert f"[Project overview]({BASE_URL}project/)" in llms
     assert f"{BASE_URL}documents/10-context-evidence-layers-and-trust/index.md" in llms
     assert agent_catalog["document_count"] == 2
+    assert agent_catalog["project_url"] == f"{BASE_URL}project/"
     assert agent_catalog["documents"][0]["path"] == "INDEX.md"
     assert "2 public Markdown records" in docs_index
 

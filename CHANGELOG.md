@@ -55,6 +55,8 @@ All notable changes to MirrorArc are documented here. Format loosely follows
   `INDEX.md` content, per-document semantic HTML and raw Markdown, canonical/social metadata,
   structured data, `robots.txt`, `sitemap.xml`, `llms.txt`, and an agent-readable catalog. The
   complete generated site remains inside the public-corpus no-data gate.
+- Added a semantic project overview that describes MirrorArc itself and links its canonical public
+  GitHub repository through visible navigation, metadata, and `SoftwareSourceCode` structured data.
 - Added a GitHub Pages deployment for the public Ontario Grid demo portal. The workflow rebuilds
   the example from a fresh temporary copy, embeds the tutorial and document views, and requires
   the repository-wide provenance/no-data gate before installation plus vault lint and a second
