@@ -59,6 +59,14 @@ forecasting, alerts, or an affiliated Ontario energy product.
 provenance-documented public example and blocks deployment unless both the repository-wide
 provenance/no-data gate and the generated-artifact scan pass alongside vault lint.
 
+The hosted demo is progressively discoverable: its initial HTML contains the rendered beginner
+tour, while [`documents/`](https://cz1993.github.io/MirrorArc/documents/) provides one semantic,
+no-JavaScript page per public record. Search and agent discovery surfaces include
+[`sitemap.xml`](https://cz1993.github.io/MirrorArc/sitemap.xml),
+[`robots.txt`](https://cz1993.github.io/MirrorArc/robots.txt),
+[`llms.txt`](https://cz1993.github.io/MirrorArc/llms.txt), raw public Markdown, and a metadata-only
+[`catalog.json`](https://cz1993.github.io/MirrorArc/catalog.json).
+
 ## Try the demo locally
 
 ```bash
