@@ -41,10 +41,20 @@ def test_pages_deploy_path_enforces_repository_and_artifact_scans_in_order() -> 
         'scripts/no_data_scan.py" --paths "$demo_vault/CATALOG.html"'
     )
     assert "tools/lint_vault.py" in build
+    assert 'scripts/build_pages_discovery.py"' in build
+    assert 'find "$output_dir" -type f -print0' in build
+    assert 'xargs -0 "$python_bin" "$repo_root/scripts/no_data_scan.py" --paths' in build
+    assert build.index('scripts/build_pages_discovery.py"') < build.index(
+        'find "$output_dir" -type f -print0'
+    )
     assert '"document_content_included":true' in build
     assert "Five-minute workspace tour" in build
-    assert '"$output_dir/index.html"' in build
-    assert '"$output_dir/.nojekyll"' in build
+    assert 'data-prerendered="INDEX.md"' in build
+    assert '"$output_dir/project/index.html"' in build
+    assert '"@type":"SoftwareSourceCode"' in build
+    assert '"codeRepository":"https://github.com/cz1993/MirrorArc"' in build
+    assert '"$output_dir/sitemap.xml"' in build
+    assert '"$output_dir/llms.txt"' in build
 
 
 def test_public_docs_link_to_the_hosted_demo_and_keep_private_vaults_local() -> None:

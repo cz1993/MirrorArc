@@ -37,7 +37,19 @@ grep -q '"document_content_included":true' "$demo_vault/CATALOG.html"
 grep -q 'Five-minute workspace tour' "$demo_vault/CATALOG.html"
 
 mkdir -p "$output_dir"
-cp "$demo_vault/CATALOG.html" "$output_dir/index.html"
-: > "$output_dir/.nojekyll"
+"$python_bin" "$repo_root/scripts/build_pages_discovery.py" \
+  "$demo_vault/CATALOG.html" \
+  "$output_dir" \
+  --base-url "https://cz1993.github.io/MirrorArc/"
 
-echo "pages demo: wrote $output_dir/index.html"
+find "$output_dir" -type f -print0 | xargs -0 "$python_bin" "$repo_root/scripts/no_data_scan.py" --paths
+
+grep -q 'data-prerendered="INDEX.md"' "$output_dir/index.html"
+grep -q '<link rel="canonical" href="https://cz1993.github.io/MirrorArc/">' "$output_dir/index.html"
+grep -q '"@type":"SoftwareSourceCode"' "$output_dir/project/index.html"
+grep -q '"codeRepository":"https://github.com/cz1993/MirrorArc"' "$output_dir/project/index.html"
+grep -q 'https://cz1993.github.io/MirrorArc/documents/' "$output_dir/sitemap.xml"
+grep -q 'https://cz1993.github.io/MirrorArc/project/' "$output_dir/sitemap.xml"
+grep -q '# MirrorArc' "$output_dir/llms.txt"
+
+echo "pages demo: wrote crawlable site to $output_dir"

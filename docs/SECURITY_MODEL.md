@@ -95,6 +95,12 @@ temporary copy, and must pass the full repository provenance/no-data gate before
 then vault lint plus a second no-data scan after content embedding. This does not authorize
 publishing a content-enabled artifact from any private or proprietary vault.
 
+For crawler and agent access, the same hosted build materializes the public `INDEX.md` in the
+initial HTML and generates static HTML/Markdown document pages, `sitemap.xml`, `robots.txt`,
+`llms.txt`, and a metadata-only JSON catalog. These files are derived only from the already
+approved content-enabled public catalog, and the entire generated site is scanned again before
+deployment. This discovery layer is not available automatically for local or private vaults.
+
 ## Journaled Incremental State
 
 Stage 1B introduces local derived journal state for changed-file materialization. The journal is

@@ -7,6 +7,7 @@ on:
       - ".github/workflows/pages.yml"
       - "scripts/build_pages_demo.sh"
       - "scripts/no_data_scan.py"
+      - "scripts/build_pages_discovery.py"
       - "examples/ontario-electricity-evidence-vault/**"
       - "src/mirrorarc/**"
       - "pyproject.toml"

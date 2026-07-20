@@ -40,8 +40,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/cz1993/MirrorArc"
-Documentation = "https://github.com/cz1993/MirrorArc#readme"
+Homepage = "https://cz1993.github.io/MirrorArc/"
+Documentation = "https://cz1993.github.io/MirrorArc/documents/"
 Issues = "https://github.com/cz1993/MirrorArc/issues"
 Source = "https://github.com/cz1993/MirrorArc"
 

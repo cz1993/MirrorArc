@@ -6,7 +6,13 @@ Aimed at a technical founder/owner who knows git. ~15 minutes.
 
 Open the **[hosted Ontario Grid demo](https://cz1993.github.io/MirrorArc/)** and start with the
 pinned `INDEX.md` five-minute tour. It is generated from MirrorArc's provenance-documented public
-example and passes the repository no-data and vault-lint gates before deployment.
+example and passes the repository no-data and vault-lint gates before deployment. The hosted build
+also publishes a [crawlable project overview](https://cz1993.github.io/MirrorArc/project/) that
+identifies the canonical GitHub source, plus a
+[crawlable documentation index](https://cz1993.github.io/MirrorArc/documents/),
+[sitemap](https://cz1993.github.io/MirrorArc/sitemap.xml), and
+[agent discovery file](https://cz1993.github.io/MirrorArc/llms.txt); the local catalog command does
+not publish or expose a private vault.
 
 To rebuild the same public Ontario Electricity example locally from a source checkout:
 
