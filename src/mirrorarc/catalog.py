@@ -495,6 +495,12 @@ def build_report(root: Path) -> tuple[dict[str, Any], list[str], list[str]]:
     configured_ids, config_warnings = configured_repo_ids(root)
     source_items = source_catalog_items(source_records, aliases)
     repo_items = repo_catalog_items(repo_records, aliases, configured_ids)
+    repo_note_paths = {item["note"] for item in repo_items if item.get("note")}
+    machine_owned_items = [
+        item
+        for item in inventory["machine_owned_items"]
+        if item.get("path") not in repo_note_paths
+    ]
     mirrored_sources = {item["source"] for item in source_items if item["source"]}
     unmanaged_sources = [
         rel for rel in inventory["source_candidates"]
@@ -552,7 +558,7 @@ def build_report(root: Path) -> tuple[dict[str, Any], list[str], list[str]]:
         "source_items": source_items,
         "repo_items": repo_items,
         "curated_items": inventory["curated_items"],
-        "machine_owned_items": inventory["machine_owned_items"],
+        "machine_owned_items": machine_owned_items,
         "unmanaged_sources": unmanaged_sources,
         "legacy_folders": inventory["legacy_folders"],
         "canonical_folders": inventory["canonical_folders"],

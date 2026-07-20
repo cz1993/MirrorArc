@@ -3378,6 +3378,9 @@ def test_catalog_and_m365_surface_unconfigured_repo_mirror_before_resync(tmp_pat
     assert repo_item["lifecycle_contract"] == "_meta/lifecycle-states.yml"
     assert repo_item["lifecycle_contract_schema_version"] == "1"
     assert repo_item["warnings"] == 1
+    assert repo_item["note"] not in {
+        item["path"] for item in catalog_report["machine_owned_items"]
+    }
     assert catalog_md.returncode == 0, catalog_md.stderr or catalog_md.stdout
     assert "## Repo Lifecycle States" in catalog_md.stdout
     assert "## Lifecycle Contract Provenance" in catalog_md.stdout
@@ -3392,6 +3395,7 @@ def test_catalog_and_m365_surface_unconfigured_repo_mirror_before_resync(tmp_pat
     assert "_meta/lifecycle-states.yml" in catalog_html.stdout
     assert "repo_unconfigured" in catalog_html.stdout
     assert '"manifest_state":"clean"' in catalog_html.stdout
+    assert catalog_html.stdout.count("20_sources/repos/fixture.md") == 1
     assert "Synthetic repo docs" not in catalog_html.stdout
 
     assert m365.returncode == 0, m365.stderr or m365.stdout

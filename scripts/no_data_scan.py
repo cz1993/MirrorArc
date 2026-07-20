@@ -14,6 +14,7 @@ import os
 import re
 import subprocess
 import sys
+import zlib
 from pathlib import Path
 from zipfile import BadZipFile, ZipFile
 import xml.etree.ElementTree as ET
@@ -306,6 +307,62 @@ def scan_text_patterns(rel: str, text: str, *, include_payment_card: bool = True
     return findings
 
 
+def pdf_flate_streams(rel: str, raw: bytes) -> tuple[list[bytes], list[str]]:
+    """Return bounded, directly Flate-decoded PDF streams and fail-closed findings.
+
+    PDF text is commonly stored in zlib-compressed content streams, so scanning only the raw
+    container bytes misses text that a reader displays.  This intentionally handles the direct
+    ``/FlateDecode`` form without becoming a general PDF parser; multi-filter pipelines remain
+    outside this helper because applying their filters out of order would create false assurance.
+    """
+
+    streams: list[bytes] = []
+    findings: list[str] = []
+    stream_start = re.compile(rb"\bstream(?:\r\n|\n|\r)")
+    direct_flate = re.compile(
+        rb"/Filter\s*(?:/(?:FlateDecode|Fl)\b|\[\s*/(?:FlateDecode|Fl)\s*\])"
+    )
+
+    for match in stream_start.finditer(raw):
+        dictionary_start = raw.rfind(b"<<", max(0, match.start() - 8192), match.start())
+        if dictionary_start < 0:
+            continue
+        dictionary = raw[dictionary_start : match.start()]
+        if not direct_flate.search(dictionary):
+            continue
+
+        data_start = match.end()
+        length_match = re.search(rb"/Length\s+(\d+)\b", dictionary)
+        if length_match:
+            encoded_length = int(length_match.group(1))
+            encoded = raw[data_start : data_start + encoded_length]
+        else:
+            stream_end = raw.find(b"endstream", data_start)
+            if stream_end < 0:
+                findings.append(f"{rel}: unreadable Flate-compressed PDF stream")
+                continue
+            encoded = raw[data_start:stream_end].rstrip(b"\r\n")
+
+        try:
+            decoder = zlib.decompressobj()
+            decoded = decoder.decompress(encoded, MAX_FILE_BYTES + 1)
+            remaining = MAX_FILE_BYTES + 1 - len(decoded)
+            if remaining > 0:
+                decoded += decoder.flush(remaining)
+        except zlib.error:
+            findings.append(f"{rel}: unreadable Flate-compressed PDF stream")
+            continue
+        if len(decoded) > MAX_FILE_BYTES:
+            findings.append(f"{rel}: Flate-compressed PDF stream exceeds scan limit")
+            continue
+        if not decoder.eof:
+            findings.append(f"{rel}: unreadable Flate-compressed PDF stream")
+            continue
+        streams.append(decoded)
+
+    return streams, findings
+
+
 def scan_opaque_payment_cards(rel: str, raw: bytes) -> list[str]:
     """Scan clear-text card candidates inside non-OOXML binary payloads.
 
@@ -315,18 +372,31 @@ def scan_opaque_payment_cards(rel: str, raw: bytes) -> list[str]:
     text, so exclude their fixed-width shape to avoid accidental Luhn matches.
     """
 
-    text = raw.decode("latin-1", errors="ignore")
-    if Path(rel).suffix.lower() == ".pdf":
-        text = "\n".join(
-            line
-            for line in text.splitlines()
-            if not re.fullmatch(r"\s*\d{10}\s+\d{5}\s+[fn]\s*", line)
-        )
-    return [
-        finding
-        for finding in scan_text_patterns(rel, text)
-        if "payment card" in finding
-    ]
+    payloads = [raw]
+    findings: list[str] = []
+    is_pdf = Path(rel).suffix.lower() == ".pdf"
+    if is_pdf:
+        decoded_streams, decode_findings = pdf_flate_streams(rel, raw)
+        payloads.extend(decoded_streams)
+        findings.extend(decode_findings)
+
+    for payload in payloads:
+        text = payload.decode("latin-1", errors="ignore")
+        if is_pdf:
+            text = "\n".join(
+                line
+                for line in text.splitlines()
+                if not re.fullmatch(r"\s*\d{10}\s+\d{5}\s+[fn]\s*", line)
+            )
+        card_findings = [
+            finding
+            for finding in scan_text_patterns(rel, text)
+            if "payment card" in finding
+        ]
+        if card_findings:
+            findings.extend(card_findings)
+            break
+    return findings
 
 
 def ooxml_payment_card_text(part_name: str, root: ET.Element) -> str:

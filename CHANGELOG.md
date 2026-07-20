@@ -22,7 +22,8 @@ All notable changes to MirrorArc are documented here. Format loosely follows
   inspector, and local metadata-only context-pack exports without adding a server or evidence index.
 - Reworked the graph as an adaptive layered layout with separated orthogonal routing lanes, fixed
   card ports, focus-only relationship labels, hover emphasis, and responsive inspector behavior to
-  prevent node, line, and label collisions.
+  prevent node, line, and label collisions, while repository mirrors are deduplicated from generic
+  machine-owned nodes so each artifact keeps one complete lineage path.
 - Made the catalog panel mouse- and keyboard-resizable, replaced single-line filename truncation
   with readable wrapping and full-title affordances, and pinned `INDEX.md` above domain collections
   as a dedicated beginner guide. Reworked the default and Ontario Electricity indexes into five-minute
@@ -31,8 +32,9 @@ All notable changes to MirrorArc are documented here. Format loosely follows
   metadata-only, while `--include-content` creates a local-review HTML copy containing bounded,
   safely rendered Markdown and generated-mirror bodies. Original records remain authoritative and
   context-pack downloads remain metadata-only in both modes.
-- Restored payment-card detection for provenance-listed PDFs and other non-OOXML binary payloads;
-  provenance permits a fixture format but no longer weakens the zero-tolerance PII checks.
+- Restored payment-card detection for provenance-listed PDFs, including directly Flate-compressed
+  content streams, and other non-OOXML binary payloads; provenance permits a fixture format but no
+  longer weakens the zero-tolerance PII checks.
 - Renamed the project from Vaultwright to **MirrorArc**; the distribution, canonical Python namespace, CLI,
   repository URLs, docs, templates, examples, benchmark mode, CI/release workflows, and local
   derived-state path now use the MirrorArc identity.
