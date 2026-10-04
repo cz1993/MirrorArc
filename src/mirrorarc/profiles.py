@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -31,7 +31,14 @@ REQUIRED_FIELDS = {
     "benchmark_tasks",
     "policy_defaults",
 }
-OPTIONAL_FIELDS = {"description"}
+OPTIONAL_FIELDS = {
+    "context_defaults",
+    "description",
+    "knowledge_lenses",
+    "markdown_categories",
+    "relationship_types",
+    "review_policy",
+}
 LIST_FIELDS = {
     "required_properties",
     "optional_properties",
@@ -44,8 +51,8 @@ LIST_FIELDS = {
 MAPPING_FIELDS = {"domains", "note_types", "statuses", "policy_defaults"}
 FORBIDDEN_PROFILE_PATH_PARTS = {".git", ".githooks", ".github", "node_modules"}
 DOMAIN_DEFINITION_FIELDS = {"folder", "purpose"}
-NOTE_TYPE_DEFINITION_FIELDS = {"purpose", "machine_owned"}
-NOTE_TYPE_BOOLEAN_FIELDS = {"machine_owned"}
+NOTE_TYPE_DEFINITION_FIELDS = {"purpose", "machine_owned", "legacy_derivative", "markdown_category"}
+NOTE_TYPE_BOOLEAN_FIELDS = {"machine_owned", "legacy_derivative"}
 STATUS_DEFINITION_FIELDS = {"purpose", "attention", "inactive"}
 STATUS_BOOLEAN_FIELDS = {"attention", "inactive"}
 FOLDER_PLAN_FIELDS = {"path", "domain"}
@@ -58,12 +65,33 @@ POLICY_DEFAULT_FIELDS = {
     "mirror_mode",
     "mirror_root",
     "mirror_status",
+    "native_source_mode",
     "original_sources_authoritative",
     "real_data_in_repo",
     "repo_notes_dir",
     "repo_stub_status",
 }
 MIRROR_MODES = {"dedicated", "sibling"}
+NATIVE_SOURCE_MODES = {"direct", "isolated_projection", "immutable_projection"}
+MARKDOWN_CATEGORY_KEYS = {
+    "index", "authoritative_markdown_source", "l1_projection", "l2_generated_view",
+    "l2_reviewed_view", "operational_control",
+}
+RELATIONSHIP_TYPE_KEYS = {
+    "MIRRORS", "DERIVED_FROM", "IN_DOMAIN", "HAS_LIFECYCLE", "IN_PROFILE",
+    "DEPENDS_ON", "REVIEW_DEPENDS_ON", "IN_CONTEXT", "MENTIONS", "SAME_ENTITY",
+    "SUPPORTS", "CONTRADICTS", "SUPERSEDES", "GOVERNS", "INVALIDATES",
+}
+LENS_REQUIRED_FIELDS = {
+    "purpose", "audience", "source_query", "relationship_types", "output_sections",
+    "max_tokens", "persistence", "citation_required",
+}
+LENS_OPTIONAL_FIELDS = {"refresh", "model_assisted", "max_sources", "citation_style"}
+REVIEW_POLICY_FIELDS = {
+    "semantic_proposals_require_review", "preserve_reviewed_views", "automatic_promotion",
+}
+CONTEXT_DEFAULT_FIELDS = {"max_tokens", "max_files", "max_excerpt_chars", "allowed_modes"}
+CONTEXT_MODES = {"metadata", "dynamic", "frozen"}
 FORBIDDEN_MIRROR_ROOT_PARTS = {
     ".git",
     ".githooks",
@@ -128,6 +156,11 @@ class ProfileContract:
     benchmark_tasks: list[Any]
     policy_defaults: dict[str, Any]
     description: str = ""
+    markdown_categories: dict[str, Any] = field(default_factory=dict)
+    relationship_types: dict[str, Any] = field(default_factory=dict)
+    knowledge_lenses: dict[str, Any] = field(default_factory=dict)
+    review_policy: dict[str, Any] = field(default_factory=dict)
+    context_defaults: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_mapping(cls, data: dict[str, Any]) -> "ProfileContract":
@@ -149,6 +182,11 @@ class ProfileContract:
             benchmark_tasks=list(data["benchmark_tasks"]),
             policy_defaults=dict(data["policy_defaults"]),
             description=str(data.get("description", "")),
+            markdown_categories=dict(data.get("markdown_categories", {})),
+            relationship_types=dict(data.get("relationship_types", {})),
+            knowledge_lenses=dict(data.get("knowledge_lenses", {})),
+            review_policy=dict(data.get("review_policy", {})),
+            context_defaults=dict(data.get("context_defaults", {})),
         )
 
     def as_dict(self) -> dict[str, Any]:
@@ -165,6 +203,8 @@ class ProfileContract:
             "statuses": len(self.statuses),
             "templates": len(self.templates),
             "views": len(self.views),
+            "relationship_types": len(self.relationship_types),
+            "knowledge_lenses": len(self.knowledge_lenses),
         }
 
 
@@ -193,6 +233,93 @@ def validate_frontmatter_key(value: Any, field: str) -> str:
     if not FRONTMATTER_KEY_RE.fullmatch(text):
         raise ProfileValidationError(f"{field} must be a lowercase frontmatter key")
     return text
+
+
+def validate_knowledge_projection_fields(data: dict[str, Any]) -> None:
+    categories = data.get("markdown_categories", {})
+    for category, definition in categories.items():
+        if category not in MARKDOWN_CATEGORY_KEYS:
+            raise ProfileValidationError(f"unsupported markdown_categories key: {category}")
+        if not isinstance(definition, dict) or not isinstance(definition.get("persistence"), str):
+            raise ProfileValidationError(f"markdown_categories.{category}.persistence is required")
+
+    relationship_types = data.get("relationship_types", {})
+    for relationship_type, definition in relationship_types.items():
+        if relationship_type not in RELATIONSHIP_TYPE_KEYS:
+            raise ProfileValidationError(f"unsupported relationship_types key: {relationship_type}")
+        if not isinstance(definition, dict):
+            raise ProfileValidationError(f"relationship_types.{relationship_type} must be a mapping")
+        for field_name in ("deterministic", "review_required"):
+            if not isinstance(definition.get(field_name), bool):
+                raise ProfileValidationError(f"relationship_types.{relationship_type}.{field_name} must be true or false")
+
+    lenses = data.get("knowledge_lenses", {})
+    for lens_id, definition in lenses.items():
+        validate_profile_key(lens_id, "knowledge_lenses key")
+        if not isinstance(definition, dict):
+            raise ProfileValidationError(f"knowledge_lenses.{lens_id} must be a mapping")
+        unknown = sorted(set(definition) - LENS_REQUIRED_FIELDS - LENS_OPTIONAL_FIELDS)
+        missing = sorted(LENS_REQUIRED_FIELDS - set(definition))
+        if unknown:
+            raise ProfileValidationError(f"knowledge_lenses.{lens_id} has unknown fields: {', '.join(unknown)}")
+        if missing:
+            raise ProfileValidationError(f"knowledge_lenses.{lens_id} missing fields: {', '.join(missing)}")
+        for field_name in ("purpose", "audience", "persistence"):
+            validate_string(definition.get(field_name), f"knowledge_lenses.{lens_id}.{field_name}")
+        if definition["persistence"] == "reviewed":
+            raise ProfileValidationError(f"knowledge_lenses.{lens_id} cannot automatically persist as reviewed")
+        if not isinstance(definition.get("source_query"), dict):
+            raise ProfileValidationError(f"knowledge_lenses.{lens_id}.source_query must be a mapping")
+        priority_paths = definition["source_query"].get("priority_paths", [])
+        if not isinstance(priority_paths, list) or any(not isinstance(item, str) or not item.strip() for item in priority_paths):
+            raise ProfileValidationError(
+                f"knowledge_lenses.{lens_id}.source_query.priority_paths must be a list of non-empty strings"
+            )
+        for field_name in ("relationship_types", "output_sections"):
+            value = definition.get(field_name)
+            if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+                raise ProfileValidationError(f"knowledge_lenses.{lens_id}.{field_name} must be a list of strings")
+        invalid_types = sorted(set(definition["relationship_types"]) - set(relationship_types))
+        if invalid_types:
+            raise ProfileValidationError(
+                f"knowledge_lenses.{lens_id}.relationship_types are undeclared: {', '.join(invalid_types)}"
+            )
+        if not isinstance(definition.get("max_tokens"), int) or definition["max_tokens"] < 100:
+            raise ProfileValidationError(f"knowledge_lenses.{lens_id}.max_tokens must be an integer >= 100")
+        if not isinstance(definition.get("citation_required"), bool):
+            raise ProfileValidationError(f"knowledge_lenses.{lens_id}.citation_required must be true or false")
+
+    review_policy = data.get("review_policy", {})
+    unknown_policy = sorted(set(review_policy) - REVIEW_POLICY_FIELDS)
+    if unknown_policy:
+        raise ProfileValidationError(f"review_policy has unknown fields: {', '.join(unknown_policy)}")
+    for field_name, value in review_policy.items():
+        if not isinstance(value, bool):
+            raise ProfileValidationError(f"review_policy.{field_name} must be true or false")
+    if review_policy.get("automatic_promotion") is True:
+        raise ProfileValidationError("review_policy.automatic_promotion must be false")
+
+    context_defaults = data.get("context_defaults", {})
+    if not isinstance(context_defaults, dict):
+        raise ProfileValidationError("context_defaults must be a mapping")
+    unknown_context = sorted(set(context_defaults) - CONTEXT_DEFAULT_FIELDS)
+    if unknown_context:
+        raise ProfileValidationError(f"context_defaults has unknown fields: {', '.join(unknown_context)}")
+    if context_defaults:
+        missing_context = sorted(CONTEXT_DEFAULT_FIELDS - set(context_defaults))
+        if missing_context:
+            raise ProfileValidationError(f"context_defaults missing fields: {', '.join(missing_context)}")
+        for field_name in ("max_tokens", "max_files", "max_excerpt_chars"):
+            if not isinstance(context_defaults.get(field_name), int) or context_defaults[field_name] <= 0:
+                raise ProfileValidationError(f"context_defaults.{field_name} must be a positive integer")
+        modes = context_defaults.get("allowed_modes")
+        if not isinstance(modes, list) or not modes or any(not isinstance(mode, str) for mode in modes):
+            raise ProfileValidationError("context_defaults.allowed_modes must be a non-empty list of strings")
+        invalid_modes = sorted(set(modes) - CONTEXT_MODES)
+        if invalid_modes:
+            raise ProfileValidationError(
+                f"context_defaults.allowed_modes are unsupported: {', '.join(invalid_modes)}"
+            )
 
 
 def validate_profile_path(value: Any, field: str) -> PurePosixPath:
@@ -354,6 +481,18 @@ def validate_profile_mapping(data: Any) -> None:
         if not isinstance(data.get(field), dict):
             raise ProfileValidationError(f"{field} must be a mapping")
 
+    for field in (
+        "markdown_categories",
+        "relationship_types",
+        "knowledge_lenses",
+        "review_policy",
+        "context_defaults",
+    ):
+        if field in data and not isinstance(data[field], dict):
+            raise ProfileValidationError(f"{field} must be a mapping")
+
+    validate_knowledge_projection_fields(data)
+
     for field in LIST_FIELDS:
         if not isinstance(data.get(field), list):
             raise ProfileValidationError(f"{field} must be a list")
@@ -410,6 +549,8 @@ def validate_profile_mapping(data: Any) -> None:
         for field in NOTE_TYPE_BOOLEAN_FIELDS:
             if field in definition and not isinstance(definition[field], bool):
                 raise ProfileValidationError(f"note_types.{note_type_name}.{field} must be true or false")
+        if "markdown_category" in definition:
+            validate_string(definition["markdown_category"], f"note_types.{note_type_name}.markdown_category")
 
     for status, definition in data["statuses"].items():
         status_name = validate_profile_key(status, "status key")
@@ -451,6 +592,14 @@ def validate_profile_mapping(data: Any) -> None:
         validate_string(mirror_mode, "policy_defaults.mirror_mode")
         if str(mirror_mode).strip() not in MIRROR_MODES:
             raise ProfileValidationError("policy_defaults.mirror_mode must be one of: dedicated, sibling")
+
+    if "native_source_mode" in data["policy_defaults"]:
+        native_source_mode = data["policy_defaults"]["native_source_mode"]
+        validate_string(native_source_mode, "policy_defaults.native_source_mode")
+        if str(native_source_mode).strip() not in NATIVE_SOURCE_MODES:
+            raise ProfileValidationError(
+                "policy_defaults.native_source_mode must be one of: direct, isolated_projection, immutable_projection"
+            )
 
     mirror_root: PurePosixPath | None = None
     if "mirror_root" in data["policy_defaults"]:

@@ -25,7 +25,11 @@ Replace these notes with profile-appropriate retention rules before production u
 | --- | --- |
 | Source files | Keep originals in the authoritative source system. |
 | Generated mirrors | Regenerate from source evidence when stale. |
-| Curated notes | Archive when superseded or no longer useful. |
+| Authoritative Markdown records | Retain and dispose under the source policy. |
+| L1 projections | Rebuildable; retain while their source lifecycle or audit policy requires. |
+| L2 generated views | Ephemeral/cache by default; remove when superseded or expired. |
+| L2 reviewed views | Preserve reviewed versions; mark stale and retain per review policy. |
+| Relationship/context state | Derived and rebuildable, but associations and frozen content inherit source sensitivity. |
 | Scratch work | Keep outside committed history and prune regularly. |
 
 ## Archival Process

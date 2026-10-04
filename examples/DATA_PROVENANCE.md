@@ -6,7 +6,14 @@ fixtures. It was assembled independently from the official sources listed below 
 company data, personal data, secrets, credentials, forward-looking model output, or live operating
 data.
 
-Licence and source boundaries were reviewed on 2026-07-19.
+Licence and source boundaries were reviewed on 2026-07-19 and rechecked against live source
+metadata on 2026-07-21. The committed snapshot did not change during the later review.
+
+The machine-readable companion is
+`examples/ontario-electricity-evidence-vault/_meta/acquisition-manifest.json`. It records exact
+URLs, retrieval dates, licences, attribution, redistribution disposition, original format,
+SHA-256 and hash basis for 23 committed permissive/synthetic items, plus 12 current research
+references. Research records with unclear item-level reuse rights remain metadata-only.
 
 ## Public OGL Ontario Source Package
 
@@ -45,6 +52,12 @@ asset is copied. Those notes use `license: reference-only`.
 The OEB open-data page is treated the same way unless a specific resource supplies a compatible
 licence. A public URL is not, by itself, permission to redistribute its content.
 
+The 2026-07-21 research pass also checked current Ontario/OEB catalogue pages, IESO public-report
+series, the Canada Energy Regulator Ontario profile, Statistics Canada electricity tables, City
+of Toronto open-data context, Electricity Canada, the Canadian Climate Institute, and an open
+electricity-code repository. The acquisition manifest records each URL and disposition. This
+broader research set is discovery evidence, not a grant to copy third-party bodies.
+
 ## Independently Authored Office And PDF Artifacts
 
 These files were created specifically for this repository. Facts drawn from the OGL source files
@@ -62,6 +75,14 @@ MirrorArc example content and is covered by this repository's licence.
 | --- | --- | --- |
 | `examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/` | Synthetic, independently authored fixture licensed under its included MIT License. | Exercises local repository mirroring, contracts, source loading, and historical-data validation. |
 | `examples/ontario-electricity-evidence-vault/tools/repos.yml` | MirrorArc example configuration. | Points only to the local synthetic fixture. |
+
+## Local Stress Corpus
+
+`scripts/build_ontario_stress_corpus.py` builds an operator-controlled disposable copy from a
+saved IESO Data Directory HTML snapshot. It creates at least 220 independently authored,
+metadata-only source records across the live report series; it never downloads report bodies.
+The resulting acquisition manifest and lifecycle evidence stay outside Git. The script also
+records a controlling instruction boundary because linked external content is untrusted.
 
 ## Generated Locally, Never Committed As Sources
 

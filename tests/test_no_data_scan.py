@@ -388,6 +388,29 @@ def test_no_data_scan_default_skips_ignored_mirrorarc_state(tmp_path: Path) -> N
     assert "OK" in result.stdout
 
 
+def test_no_data_scan_skips_ignored_codegraph_cache_but_blocks_it_if_staged(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    (repo / ".gitignore").write_text(".codegraph/\n", encoding="utf-8")
+    state = repo / ".codegraph" / "codegraph.db"
+    state.parent.mkdir()
+    state.write_bytes(b"SQLite format 3\0synthetic provider cache")
+
+    ignored = subprocess.run(
+        [sys.executable, str(SCAN)], cwd=repo, text=True, capture_output=True
+    )
+    assert ignored.returncode == 0, ignored.stderr
+
+    subprocess.run(["git", "add", "-f", ".codegraph/codegraph.db"], cwd=repo, check=True)
+    staged = subprocess.run(
+        [sys.executable, str(SCAN), "--staged"], cwd=repo, text=True, capture_output=True
+    )
+    assert staged.returncode == 1
+    assert ".codegraph/codegraph.db" in staged.stderr
+    assert "local derived state must not be committed" in staged.stderr
+
+
 def test_no_data_scan_default_skips_ignored_legacy_state(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()

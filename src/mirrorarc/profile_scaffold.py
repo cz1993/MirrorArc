@@ -135,10 +135,12 @@ def render_profile_agent_rules(profile: ProfileContract) -> str:
         "## Layers\n\n"
         "| Layer | Authority | Rule |\n"
         "| --- | --- | --- |\n"
-        "| Sources | Authoritative originals | Read source files and repositories; do not edit them through generated mirrors. |\n"
-        "| Mirrors | Machine-generated | Refresh from source evidence; keep human notes in curated files or annotation sidecars. |\n"
-        "| Curated knowledge | Human-governed | Summarize, connect, and cite source-backed material. |\n"
-        "| Profile | Versioned contract | Domains, note types, statuses, folders, and policy defaults come from `_meta/profile.yml`. |\n\n"
+        "| L0 sources | Authoritative originals | Read source files and repositories; do not edit them through projections. |\n"
+        "| L1 projections | Machine-generated | Keep exactly one specular readable projection per opaque source and refresh it deterministically. |\n"
+        "| Relationships | Governed derived state | Store typed, evidenced connections in the ledger rather than new Markdown notes. |\n"
+        "| L2 views | Generated or reviewed | Render many-to-few lenses; persist only by explicit pin or named review. |\n"
+        "| Context | Task-scoped | Keep metadata, dynamic, and frozen modes distinct and within profile budgets. |\n"
+        "| Profile | Versioned contract | Domains, artifact vocabulary, lenses, review rules, and budgets come from `_meta/profile.yml`. |\n\n"
         "## Profile Folder Plan\n\n"
         f"{domains}\n\n"
         "## Frontmatter\n\n"
@@ -150,11 +152,11 @@ def render_profile_agent_rules(profile: ProfileContract) -> str:
         f"- Office and optional PDF mirrors live under `{mirror_root}/` unless `_meta/mirror-config.yml` overrides the root.\n"
         f"- Repository mirrors live under `{repo_notes_dir}/` unless `tools/repos.yml` declares a different `settings.notes_dir`.\n"
         "- Original source files and repositories remain authoritative.\n"
-        "- Generated mirror bodies are machine-owned; preserve human context in curated notes or `_meta/mirror-annotations/`.\n\n"
+        "- Generated L1 bodies are machine-owned; preserve commentary in `_meta/mirror-annotations/` and synthesis in governed L2 views.\n\n"
         "## Agent Workflow\n\n"
-        "1. Start from `INDEX.md`, then follow links to source-backed notes and mirrors.\n"
-        "2. Search for an existing note before creating a new one.\n"
-        "3. Link related notes with wikilinks and keep frontmatter aligned with `_meta/profile.yml`.\n"
+        "1. Start from `INDEX.md`, then follow source identities, projections, and ledger relationships.\n"
+        "2. Search for existing authority and views before creating anything.\n"
+        "3. Record relationships in the ledger and keep frontmatter aligned with `_meta/profile.yml`.\n"
         "4. Run `python3.11 tools/mirrorarc.py lint` before treating the vault as clean.\n\n"
         "## Guardrails\n\n"
         "- Never store secrets, credentials, tokens, or real private data in this scaffold.\n"
@@ -182,23 +184,24 @@ def render_profile_index(profile: ProfileContract) -> str:
         + "2. **Register evidence before interpreting it.** Add originals or source references under a source domain; MirrorArc keeps them authoritative.\n"
         + "3. **Generate the mirror layer.** Run `mirrorarc plan`, review the proposed actions, then run `mirrorarc sync`.\n"
         + "4. **Open the portal.** Run `mirrorarc catalog --html --include-content`, then compare Document view, Document metadata, and Relationship map.\n"
-        + "5. **Build knowledge with restraint.** Update and link existing notes before creating new ones; cite authoritative evidence.\n\n"
+        + "5. **Build knowledge with restraint.** Record relationships as data and render a small number of governed L2 views; cite authoritative evidence.\n\n"
         + f"This workspace is governed by the `{profile.id}` profile in `_meta/profile.yml`. "
         + "The operating rules live in [[_meta/agent-rules|agent rules]], and the one-screen reference lives in\n"
         + "[[_meta/conventions|conventions]].\n\n"
         + "## What MirrorArc Protects\n\n"
         + "- Original files and repositories remain the source of truth.\n"
         + "- Generated mirrors are derived, refreshable, searchable, and agent-readable.\n"
-        + "- Curated notes connect evidence, findings, decisions, and operating guidance.\n"
+        + "- Relationships connect evidence; L2 views provide bounded many-to-few interpretation.\n"
         + "- Provenance, lifecycle state, retention, and secrets-out rules stay visible.\n"
-        + "- Consolidation is preferred over uncontrolled documentation growth.\n\n"
+        + "- Anti-proliferation is enforced: consolidate sources and views instead of multiplying derivatives.\n\n"
         + "## Starter Domains\n\n"
         + f"{domains}\n\n"
         + "## How This Knowledge Base Works\n\n"
         + "- Source files and repositories remain authoritative.\n"
         + "- Generated mirrors make sources searchable and reviewable without replacing originals.\n"
-        + "- Curated notes summarize, connect, and cite source-backed evidence.\n"
-        + "- The profile contract defines domains, note types, statuses, templates, and generated views.\n\n"
+        + "- Typed relationships stay in the local ledger with evidence and review state.\n"
+        + "- Profile-owned L2 lenses synthesize many sources and remain ephemeral unless pinned or reviewed.\n"
+        + "- The profile contract defines domains, artifact types, statuses, templates, lenses, and context budgets.\n\n"
         + "## Governance\n\n"
         + "[[_meta/agent-rules|agent rules]] - [[RETENTION]] (retention guidance) -\n"
         + "[[_meta/conventions|conventions]] - `log.md`\n"
@@ -229,13 +232,15 @@ def render_profile_retention(profile: ProfileContract) -> str:
             | --- | --- |
             | Source files | Keep originals in the authoritative source system. |
             | Generated mirrors | Regenerate from source evidence when stale. |
-            | Curated notes | Archive when superseded or no longer useful. |
+            | Authoritative Markdown records | Retain and dispose under the source policy. |
+            | L2 generated views | Ephemeral/cache by default; remove when superseded or expired. |
+            | L2 reviewed views | Preserve reviewed versions; mark stale and retain per review policy. |
             | Scratch work | Keep outside committed history and prune regularly. |
 
             ## Archival Process
 
             1. Confirm the material is no longer active.
-            2. Move retained curated material under `_archive/` when appropriate.
+            2. Move retained authoritative material under `_archive/` only under its source policy.
             3. Set frontmatter `status: {archive_status}` when the profile supports that state.
             4. Do not delete source evidence without explicit human approval.
 

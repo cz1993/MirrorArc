@@ -1,8 +1,44 @@
 schema_version: 1
 id: business-operations
 name: Business Operations
-profile_version: 0.1.0
-description: Compatibility profile for existing business-operations vaults.
+profile_version: 0.2.0
+description: Compatibility knowledge-projection profile for business-operations vaults.
+
+markdown_categories:
+  index: {persistence: manual}
+  authoritative_markdown_source: {persistence: authoritative}
+  l1_projection: {persistence: rebuildable}
+  l2_generated_view: {persistence: ephemeral}
+  l2_reviewed_view: {persistence: governed}
+  operational_control: {persistence: required}
+relationship_types:
+  MIRRORS: {deterministic: true, review_required: false}
+  DERIVED_FROM: {deterministic: true, review_required: false}
+  IN_DOMAIN: {deterministic: true, review_required: false}
+  HAS_LIFECYCLE: {deterministic: true, review_required: false}
+  IN_PROFILE: {deterministic: true, review_required: false}
+  DEPENDS_ON: {deterministic: true, review_required: false}
+  REVIEW_DEPENDS_ON: {deterministic: true, review_required: false}
+  IN_CONTEXT: {deterministic: true, review_required: false}
+  MENTIONS: {deterministic: false, review_required: true}
+  SAME_ENTITY: {deterministic: false, review_required: true}
+  SUPPORTS: {deterministic: false, review_required: true}
+  CONTRADICTS: {deterministic: false, review_required: true}
+  SUPERSEDES: {deterministic: false, review_required: true}
+  GOVERNS: {deterministic: false, review_required: true}
+  INVALIDATES: {deterministic: true, review_required: false}
+knowledge_lenses:
+  orientation:
+    purpose: Orient an operator to current governed business evidence.
+    audience: workspace reviewer
+    source_query: {}
+    relationship_types: [MIRRORS, IN_DOMAIN, GOVERNS]
+    output_sections: [scope, evidence, controls, review-work]
+    max_tokens: 1600
+    persistence: ephemeral
+    citation_required: true
+review_policy: {semantic_proposals_require_review: true, preserve_reviewed_views: true, automatic_promotion: false}
+context_defaults: {max_tokens: 4000, max_files: 20, max_excerpt_chars: 6000, allowed_modes: [metadata, dynamic, frozen]}
 
 domains:
   intake:
@@ -35,11 +71,27 @@ domains:
 
 note_types:
   moc:
-    purpose: Hub note that links a knowledge cluster.
+    purpose: Legacy curated derivative retained only for migration classification.
+    legacy_derivative: true
+    markdown_category: legacy_curated_derivative
   entity:
-    purpose: Stable page for a recurring person, organization, program, product, or other noun.
+    purpose: Legacy curated derivative retained only for migration classification.
+    legacy_derivative: true
+    markdown_category: legacy_curated_derivative
   note:
-    purpose: General curated knowledge note.
+    purpose: Legacy curated derivative retained only for migration classification.
+    legacy_derivative: true
+    markdown_category: legacy_curated_derivative
+  authoritative-record:
+    purpose: Deliberately authored Markdown source.
+    markdown_category: authoritative_markdown_source
+  knowledge-view:
+    purpose: Governed L2 knowledge-view output.
+    machine_owned: true
+    markdown_category: l2_generated_view
+  operational-control:
+    purpose: Runtime, governance, profile, or operator control.
+    markdown_category: operational_control
   guide:
     purpose: How-to or runbook.
   policy:
@@ -49,11 +101,14 @@ note_types:
   source-mirror:
     purpose: Machine-generated mirror of a binary/source file.
     machine_owned: true
+    markdown_category: l1_projection
   source-ref:
     purpose: Human-readable companion for a non-mirrored source.
+    markdown_category: authoritative_markdown_source
   repo-mirror:
     purpose: Machine-generated mirror of a configured repository.
     machine_owned: true
+    markdown_category: l1_projection
 
 statuses:
   draft:
@@ -80,7 +135,7 @@ statuses:
     inactive: true
 
 required_properties: [title, type, status, domain, created, updated]
-optional_properties: [owner, tags, related, account, client, program, vendor]
+optional_properties: [owner, tags, related, markdown_category, authority, account, client, program, vendor]
 
 folder_plan:
   - path: 00_inbox
@@ -116,6 +171,7 @@ benchmark_tasks: []
 policy_defaults:
   mirror_mode: dedicated
   mirror_root: _mirrors
+  native_source_mode: direct
   mirror_status: active
   repo_stub_status: draft
   repo_notes_dir: 80_sources/repos

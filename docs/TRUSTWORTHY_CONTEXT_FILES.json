@@ -1,0 +1,1631 @@
+{
+  "base_head": "15ce475a5077ce9d048a3f38a9a832a08976ffd9",
+  "baseline_capture": "/var/folders/nf/bttgh08105s1k2b70m_gf04c0000gn/T/mirrorarc-trustworthy-dii2bgio",
+  "branch": "codex/knowledge-projection",
+  "deleted_paths": [
+    "examples/ontario-electricity-evidence-vault/10_context/Evidence layers and trust.md",
+    "examples/ontario-electricity-evidence-vault/10_context/Ontario Electricity Evidence Workspace overview.md",
+    "examples/ontario-electricity-evidence-vault/10_context/Ontario electricity glossary.md",
+    "examples/ontario-electricity-evidence-vault/10_context/Questions this workspace answers.md",
+    "examples/ontario-electricity-evidence-vault/20_sources/Public source register.md",
+    "examples/ontario-electricity-evidence-vault/70_outputs/Stakeholder brief index.md"
+  ],
+  "excluded_self_reference": [
+    "docs/TRUSTWORTHY_CONTEXT_FILES.json",
+    "docs/TRUSTWORTHY_CONTEXT_HANDOFF.md"
+  ],
+  "fingerprinted_file_count": 416,
+  "full_tree_files": {
+    ".gitattributes": "016f2582f1ff414825140ed1f2b3a52110acacac6e352d9431cde978041e07c1",
+    ".githooks/pre-commit": "f4b1ca58f9c005e7005b99cdbe4ad10718622065ccb69903cbde216a023214aa",
+    ".github/workflows/ci.yml": "7289f8ebff18c1e0759116721beab9171591794f35da4a329e96a09cefbfe555",
+    ".github/workflows/pages.yml": "ce13d6a7a947ba7eedcf7d7ccac7b0a2a3f4f37f98ed92fdb1cfe821ccad661f",
+    ".github/workflows/release.yml": "020338969bb13fb14c73d1297e14ffcf7c9efb79555f36d019112045bf05dbda",
+    ".gitignore": "6a73fbfb2fa3c88229c9f59dfb5fb728d8b5df9d06f874f610af75a6c9df6a81",
+    "AGENTS.md": "41855f346aa54b14b70a1b67abe3133aec8e151d671d2aa504fe5206c8c25cf7",
+    "CHANGELOG.md": "b99e88246065dfde4aa516b77ce7ff33998bb2792bf988cc4ed77728ba987ed1",
+    "CONTRIBUTING.md": "c74f60171c8a0d24947e329b960b5afac2c3f00fb2db6b45277bc71c864f69f2",
+    "LICENSE": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+    "LICENSING.md": "18f56aa0181f599a8c63b0151cafeb0ce091debba8a9e63eb1804b0ac3296b87",
+    "MANIFEST.in": "8e36249330582e56fab502ed963e780707570f2129d13552572f1ef6c3da081a",
+    "NOTICE": "1efc58d226b269cf28c40b36e84a385fb413985c5af2d6f8787ae32306a618e2",
+    "README.md": "fefca55f2c81c6c0080fc003d0f40ef81637784ffee2081843f3bcb70ac0c33d",
+    "TRADEMARK.md": "aee8d5f2848a82297414d5973a9aa9db39f7f12538c26654f6636cd119f308eb",
+    "cli/README.md": "6e57685cbb5b9dc1516a637e0a4fb87aba67c1abc47a10d19711d4c40b8078c6",
+    "docs/AGENT_READINESS_BENCHMARK.md": "9b9a16e7a4ace7ce54573fa978c2cac7b42762ff1081438911d4e99863a6fee3",
+    "docs/CODE_INTELLIGENCE_EXECUTION_PLAN.md": "7dbda046ad6dbcb6cb68501c1cd1af34d45599fed9b183563b2daf31af5b5824",
+    "docs/CONVERSION_REVIEW_GUIDE.md": "2490dcc0b72d6f20efee1802b75364f545752b8397b7f977daa7d3c27c7b7453",
+    "docs/MICROSOFT_365_HANDOFF.md": "a02e07b2103dcd20f0dbb9e7e6eca366cba99e577d998cfea3ae569cb9e7eccd",
+    "docs/MIRRORARC_WHITEPAPER.md": "35675479f8e206c8a27917dbc81d46d07928f836a319adfe7d5427e2c4c0ab4a",
+    "docs/PRODUCT.md": "4145550594e1f534d23fd240e66913aa567ed99c82fbe31ee3724aac28103c21",
+    "docs/PRODUCT_IMPLEMENTATION_PLAN.md": "916335c6fe95da7a733921c37fab42b60895d38f2a1cfe3e82e86017c707db4c",
+    "docs/PROFILE_SCHEMA.md": "d41e1e6e9526f9e105437b61d8db7cca3101f7aec918514f5a5d37b50710a756",
+    "docs/RECOVERY.md": "59b505f83e6b5968f4ed901df6ffc72c261dceb17f12f53542da959e4c03f9e6",
+    "docs/RELEASE.md": "be51593a7a53a6cf089f90ad88b4b2d55e34c7c36f48ef710e46a2f2b10159c4",
+    "docs/SECURITY_MODEL.md": "cbcbc2e74c73d1b509770336ff7fb9ed01803627673dbaf4bec59e5eb0705739",
+    "docs/SYNC_SPEC.md": "6e3ece2a37fd8e24f88a168683b86218258c971a4b4bf476e7cfebb6a8f5f5c2",
+    "docs/TRUSTWORTHY_CONTEXT_CONSTRAINTS.txt": "9aec044f3d7f853174d59a78580ff8175eac225a21401f630f843748b61568b2",
+    "docs/TRUSTWORTHY_CONTEXT_EXECUTION_PLAN.md": "b57a1092dab5b57d6f97cd9985bc99d6c88af9322f86ec5af9be9e1d1a7d2981",
+    "docs/TRUSTWORTHY_CONTEXT_EXPERIMENTS.md": "2336bc061e46d383c1d1de805f4b188d48a6d85e64fedf711b1add379057dc4e",
+    "docs/TRUSTWORTHY_CONTEXT_RESULTS.md": "7cd37a0ee19ad8ec03d0c5a6038b77270a0554883da2312741aa1950774f8a8f",
+    "docs/TRUSTWORTHY_CONTEXT_REVIEW.md": "4c449f6e2e23f16703dc68dea3064fd4e5ae87cc10d20edb3a22aa3d977b5aa0",
+    "docs/assets/mirrorarc-document-metadata.jpg": "def3a306c58e297efdc3cb42a277a90224ef97499f3e137d603bac87248d9d0f",
+    "docs/assets/mirrorarc-index-tutorial.jpg": "c4e2f952310cebb4ed05a64a301d1e05d0840272a1a539918dbff9c7f911de37",
+    "docs/assets/mirrorarc-relationship-map.jpg": "4fe1a3ecf4706e52755fc904f211a7daa0657c5201a8a5a2a2c8153a7dcc8511",
+    "docs/information-architecture.md": "516e39cd46ef35d71b29229d8242f668abdcb208ccc805c22cb458e94e0bbe1f",
+    "docs/methodology.md": "ce2c85d2e54c0d84370f1734e090e6e33c0de39802be1b703bb7b2238e9a74d0",
+    "docs/positioning.md": "6ae90163b6ea7c3773978c785a6a7426b98470919aca09a46d35473604b8b0d2",
+    "docs/prompts/CODE_INTELLIGENCE_EXECUTION_KICKOFF.md": "e2a46793770a2edbd774736b5b97641147093eee9f6258f64f64cbd8fb32e285",
+    "docs/prompts/KNOWLEDGE_PROJECTION_KICKOFF.md": "389f8f1af7b08d03265d5473359173378aa9aabe94c5022d0b57955da02b495f",
+    "docs/prompts/TRUSTWORTHY_CONTEXT_EXECUTION_KICKOFF.md": "7c7c882437955dd880884ed56746e4f7073321591b87755ce564ffa85e4b7f08",
+    "docs/quickstart.md": "a95daa5d0a07d45565ad48c15d7dc0ab6fc2abfe47d5d03e9992aa979e0c9522",
+    "examples/DATA_PROVENANCE.md": "8fff10f70c0dfccf0b10fffcca2398ffe8af3533078c51f2253b917da1a8753e",
+    "examples/README.md": "1b54e110c3ad1b094095da7d71035d7b294ac6f076792073ded4731d7b43b466",
+    "examples/ontario-electricity-evidence-vault/.gitignore": "963f5b2f004ccfe6472e42fc95c428e3887a5f4ea66bcb50cf56310eedc1e3b3",
+    "examples/ontario-electricity-evidence-vault/.obsidian/app.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "examples/ontario-electricity-evidence-vault/.obsidian/appearance.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "examples/ontario-electricity-evidence-vault/.obsidian/core-plugins.json": "763cf20a921fd9955735b278006820b90b207b2fc04d9e79ca648279c7c14276",
+    "examples/ontario-electricity-evidence-vault/.obsidian/graph.json": "969396aec27e51d0dfe2d0f03f137c00bc49c376cb9cf8c0ad776bff4b1b9d2c",
+    "examples/ontario-electricity-evidence-vault/00_inbox/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/10_context/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/10_context/Demo walkthrough.md": "83033145aa2b5b8ccb35a64ade5f04afbc4bfc562d91738a3c8807821b1c03da",
+    "examples/ontario-electricity-evidence-vault/20_sources/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/20_sources/IESO Data Directory.md": "e4cbc7e1369c6917aab8f098fa1e00c5c01d39bea4dc0838a0cf64225c09c159",
+    "examples/ontario-electricity-evidence-vault/20_sources/IESO Year in Review.md": "7a3d97db0ee977678ac74dab91d9b2cab9ccb6e16329cd85c6f859ad660a0b20",
+    "examples/ontario-electricity-evidence-vault/20_sources/IESO zonal map reference.md": "0b6c0596fee4dc4eba969a86e96ff9f6a97c45e31183733090a0e2de8d469728",
+    "examples/ontario-electricity-evidence-vault/20_sources/OEB open data directory.md": "62f9ea28acc6d235214282afa02a6441d501399ce153a4f58b1742048452954b",
+    "examples/ontario-electricity-evidence-vault/20_sources/Ontario Energy Report 2023 supporting data.md": "e385a95b7b1ea2eba953d7d52dbbc629fa2505baa001a3ce6a48e17c11238cff",
+    "examples/ontario-electricity-evidence-vault/20_sources/Source freshness policy.md": "37497aef471562ed6f204860785e96e99baee61f3a96bc7f109d4f0f0d13a0fe",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/README.md": "19c2acf736ef8e2586e58a42e1f7de53f0becc4628b3b1b37d8c99190e917094",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/exports-gwh-notes-en.txt": "ff107b966d0d68af062a349e04305b9f4a7fdd4548e8ca55945caa3f69d49283",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/exports-gwh.csv": "8785f3005c7db134bf8429770e83fe380c5006c189f9ee489e5c818f19b8c9e4",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/generation-output-by-fuel-type-grid-connected-gwh-notes-en.txt": "8d82ed8d84f157227fb17565aa5bd03aaea585dd3cefaae84310be8428755de4",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/generation-output-by-fuel-type-grid-connected-gwh.csv": "ed65603dc313ad0cc2c9602741e3deed62f184da36cf8d91b66f0e9a2e1150f8",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/generation-output-by-fuel-type-grid-connected-percent-notes-en.txt": "2d345be2b523f657a85944dafb99726c042cb432a2095c92102bff74e6035717",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/generation-output-by-fuel-type-grid-connected-percent.csv": "b24f0f770533b382b6e59ee0339ea4642473a66406d3175c2b3823a4c14072f3",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/greenhouse-gas-emissions-ontario-electricity-notes-en.txt": "396ed9f2e77d91c2d95ff1b2adcc70a4b74791cfbc09ebf37e506061decdcb96",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/greenhouse-gas-emissions-ontario-electricity.csv": "76b0129ed7be7076d2ddef2bb93651dc88a11c2e2a92db3e83ba9e5e42b65475",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/historical-annual-ontario-energy-demand-twh-notes-en.txt": "a902e345a72d9eafbc509ecac5624a152caebcf5da8a6e86ba8b107f0e567259",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/historical-annual-ontario-energy-demand-twh.csv": "7da6ddee2bc53ddffdcf16257bc6074161d79b9c0057be957cf04637dae36b56",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/historical-monthly-generation-output-by-fuel-type-mwh-notes-en.txt": "8d82ed8d84f157227fb17565aa5bd03aaea585dd3cefaae84310be8428755de4",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/historical-monthly-generation-output-by-fuel-type-mwh.csv": "4947e0ed6d50ab2f6ba436cf8f21fa69e3965200a27841147eb270fb6790abc0",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/historical-monthly-ontario-demand-peaks-minimums-mw-notes-en.txt": "a902e345a72d9eafbc509ecac5624a152caebcf5da8a6e86ba8b107f0e567259",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/historical-monthly-ontario-demand-peaks-minimums-mw.csv": "f7945a7f869f48369fa90109bb136941f98eb84fb125442c05550feb08e90d67",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/imports-gwh-notes-en.txt": "ff107b966d0d68af062a349e04305b9f4a7fdd4548e8ca55945caa3f69d49283",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/imports-gwh.csv": "0c9a1eb980d6e0d5a872c5d348f19921033f648d4bd3b681c56745a80b1166dd",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/ontario-demand-peaks-minimums-mw-notes-en.txt": "4a88e821358b5e34c6541b9b071c9219d82dd9dd60fcac27170384b13547cf84",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/ontario-demand-peaks-minimums-mw.csv": "43ce0deec545bdb30464fc168a0f04aa2e1922b754b900cea9faba3a3ceff453",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/ontario-peak-demand-mw-notes-en.txt": "a902e345a72d9eafbc509ecac5624a152caebcf5da8a6e86ba8b107f0e567259",
+    "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/ontario-peak-demand-mw.csv": "cc0bc2903d449b9164dfb0972f96d4e7fe11fe60ce77ffb4e837e4ba0e8645cc",
+    "examples/ontario-electricity-evidence-vault/20_sources/repos/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/30_data-contracts/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/30_data-contracts/Annual demand contract.md": "0bbc91b939600988f6646a14b14b17f2ad46c7674ff6837abf8e33ca2cf1cfbe",
+    "examples/ontario-electricity-evidence-vault/30_data-contracts/Evidence API contract.md": "66853c536d12049a16119f0df80d54627e8c83e21cea2b0925c5a11cf83126c8",
+    "examples/ontario-electricity-evidence-vault/30_data-contracts/Generation output contract.md": "e6a6c5a3dda9c27e42a47188cafb486ef2b5b45571bf2e2e0dbd212f3f4784ff",
+    "examples/ontario-electricity-evidence-vault/30_data-contracts/Intertie flow contract.md": "db35880347d71b1a741e323288227a6d240b5ee637dbf63561b1afcab1f2f3f1",
+    "examples/ontario-electricity-evidence-vault/30_data-contracts/Monthly demand range contract.md": "3583bb143875b796eaf572219d08a050e90213253d6f03d21318c21e4efb15a5",
+    "examples/ontario-electricity-evidence-vault/40_pipelines/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/40_pipelines/Artifact mirroring pipeline.md": "cbb808f349babfcfbae767fb9f5b45cce25502d424521959978eb3b5ab40c023",
+    "examples/ontario-electricity-evidence-vault/40_pipelines/Evidence lineage map.md": "60ac6dfc69f47405aa2c6fd3525afecd9a79a1ec1400f3bbbbb2fa9dd14adb53",
+    "examples/ontario-electricity-evidence-vault/40_pipelines/Normalization pipeline.md": "fb8cf17612f8689d4174d59d33fb233282396b9e982fd407464782165d773a27",
+    "examples/ontario-electricity-evidence-vault/40_pipelines/Public data ingestion pipeline.md": "3cdc0fd9d43523ce68e3af171594733bb178dae1498a0b5aa2d4dd90f0b92b36",
+    "examples/ontario-electricity-evidence-vault/40_pipelines/Quality gate pipeline.md": "38bc041b506a6fe6091e318efada175ba7f8b8137d1158189a47a675640a3db2",
+    "examples/ontario-electricity-evidence-vault/50_analysis/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/50_analysis/2023 annual demand finding.md": "a4f1c319f3e5a5a63711f4e48fa69c3105e8fdbf7c0cb16c567558278bb84927",
+    "examples/ontario-electricity-evidence-vault/50_analysis/2023 generation mix finding.md": "a080cd611d022875a17b3162a0359b891ea0a726c0b8c3977934d20af670a775",
+    "examples/ontario-electricity-evidence-vault/50_analysis/2023 intertie flow finding.md": "76bc77ed3ae59cb59ead94798472b6ffeafe99a1696ef29f42e4813757090bec",
+    "examples/ontario-electricity-evidence-vault/50_analysis/2023 peak demand finding.md": "138e5fa6d7ac818293d559e74bd3fa6ccd23756a838ac4a4c756c4425c9e3b30",
+    "examples/ontario-electricity-evidence-vault/50_analysis/Cross-source evidence synthesis.md": "1ceb0c5a3a04b1daeda87b6568e31c18dff7e2d544169ac1c2aacb2be6803331",
+    "examples/ontario-electricity-evidence-vault/50_analysis/workbooks/historical-demand-profile.xlsx": "497b6410f3cc05918606409431d24d38e981f5b3217b2dec367859b9643dbd59",
+    "examples/ontario-electricity-evidence-vault/60_models/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/70_outputs/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/70_outputs/Output relationship map.md": "5bc7a5698f1cba56ba4fcd4251421b6de6c6559cdcd4e42c5a94c210e6056fa3",
+    "examples/ontario-electricity-evidence-vault/80_governance/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/80_governance/Decision - use a clean-room public corpus.md": "7dd5e409a584aafcdf1a2b361dbc8098dc4a7b1ce7ae0c5b2e8f7243cebd9d66",
+    "examples/ontario-electricity-evidence-vault/80_governance/Evidence controls.md": "14cf2b344443da27055e7b6f755621e96f4db1e2a71175850785b2dbc56867d3",
+    "examples/ontario-electricity-evidence-vault/80_governance/Evidence workspace risk register.md": "aedce9715033a3c5fe2ed1d5e275c53c416d902ba93c45877cb41e3c3ba8ecac",
+    "examples/ontario-electricity-evidence-vault/80_governance/IESO reference-only boundary.md": "3bea711189dc740cdf7aa3a0f17e7811cb4b04f8ff8623ade3d8de6ef709cbd0",
+    "examples/ontario-electricity-evidence-vault/80_governance/Open data license register.md": "1a1beb38006507d834926a00fa3abdcb8edf4c2cef2addc24add0bd9856b7580",
+    "examples/ontario-electricity-evidence-vault/80_governance/Retention and refresh policy.md": "fb20b3626f5108c3dda205293a62614b72b68516c4ef7d5d078fc70249075c2d",
+    "examples/ontario-electricity-evidence-vault/90_operations/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/90_operations/Data quality investigation runbook.md": "d2bb6e36dd631ee938fa90afe99871a476a315283029f88d423d886e8202bc9f",
+    "examples/ontario-electricity-evidence-vault/90_operations/Example release checklist.md": "7e7b65f7641556005ec15508d73ee5bbe274d36a567c5fac346d8f732e24c86d",
+    "examples/ontario-electricity-evidence-vault/90_operations/Freshness dashboard specification.md": "fe992a0d781e04c46aafe28531eee97916987088b9cbeacbe6544f18066bdd8a",
+    "examples/ontario-electricity-evidence-vault/90_operations/Illustrative stale-source incident.md": "e2b5a9ba4d1aa89b6924a892f48742d39cfa27b1076f6dfb2f91a911281b46f1",
+    "examples/ontario-electricity-evidence-vault/90_operations/Refresh public sources runbook.md": "0cf68e3b907a5e10f384ce3ef10eeda84835194e42b0f3c58bd56f198aba7169",
+    "examples/ontario-electricity-evidence-vault/90_operations/Source outage runbook.md": "24c2e5e4183570ff78ec21654f80f271c8ce6cbeb7ae2784a348324d9d5d6f05",
+    "examples/ontario-electricity-evidence-vault/90_operations/briefs/data-quality-incident-review.docx": "f38e531f154a05519ebe462ff9af2258f23fb7c56588787f70e4477fe27a0d20",
+    "examples/ontario-electricity-evidence-vault/AGENTS.md": "32aa08c1e2d8b293dc09ffeec1bdf7b5f65ec46838362afa845a206e505ca99c",
+    "examples/ontario-electricity-evidence-vault/CLAUDE.md": "55d191203bea23ae6f258a8822b9ca271bc85e2eef9ca350b01a09207e699ab9",
+    "examples/ontario-electricity-evidence-vault/Documents.base": "ca0fd8f65e1c59fe66497b72500b6afa400d31df601412dfeecc95dfed08e58a",
+    "examples/ontario-electricity-evidence-vault/INDEX.md": "f26a21c10df4c906c36313f1a5f8950f25acaa5c4a71200b415fd787e94182a5",
+    "examples/ontario-electricity-evidence-vault/RETENTION.md": "72fdb6e4c16a9e6105f409a24ff1af94e7f52b33d85c93acc4f0ad6998ebed7a",
+    "examples/ontario-electricity-evidence-vault/_archive/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/LICENSE": "15d51f57e586aeb71ab2edd11b3d6915d068dcf4f3e387adf08733201fcb2d98",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/README.md": "10f97c2b20eb54c2ea3df8f054e9b2a1c75778566d88d81b7695b7a9786b5562",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/config/quality-gates.yml": "64fd8f714b23c9e46122bf18c507fc930f4a407891653041735c5f8afde06c1c",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/config/sources.yml": "a54e429389ef1a7c4fb45959438bb4ee982402f20c7dce95da81ff0be3c7d06b",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/docs/architecture.md": "008ba525f928e5e7dec8be1fa3ef94c6d761b67b08ab135c54ce74ca08dc12e9",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/docs/historical-validation.md": "1c595403f036f54ff82003e45c6df741a43dd37278d0eb3d750bbe91ad4d10c1",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/docs/source-boundaries.md": "6a607365dbe978405114fcc5f632752ea319df1e4996485b4e1ca689029043ab",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/pyproject.toml": "0e4c71c3291041370aca87befae54c21cb055c7991740f4126fd91aabd64b02c",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/scripts/check_fixture.py": "c9f36ae541aa703b8a94b70a177259ebf8007ee99c3ef5f925a6c06ef5e69dd3",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/src/grid_evidence/__init__.py": "69f23d63a2c448814f8f962c8c931c762bee53108895b788d493a3cf8b1a1447",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/src/grid_evidence/contracts.py": "ac5a09b53dc0fefa7f7fb1666ea2662cae1202d2fa76a45a24827cbdd21e8eb1",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/src/grid_evidence/load.py": "07581cfd0800608c174b70abc19d131a785aeadf0918e778a44dbca33072e0d9",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/src/grid_evidence/quality.py": "4899ef6daf22fcb048a806ced772ef1272cec0fc2f5b617a89b3bb7346118c24",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/src/grid_evidence/summary.py": "6df46ad531eaac8474eff5d348e316c2f02e59c7b4cb527e52a2938af2bc166e",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/tests/test_quality.py": "1ae07ff20895f963c7f84decf0109b627e4c2320100cf93305e67daa7d4ed53d",
+    "examples/ontario-electricity-evidence-vault/_fixtures/repos/ontario-electricity-evidence-pipeline/tests/test_summary.py": "0e3a19a0a94b876f766c7ad62594a8b90652fa6cd0fb46dd57e0b08e59fd3f9a",
+    "examples/ontario-electricity-evidence-vault/_meta/acquisition-manifest.json": "0da5906f8491095fbccbc33a7d9536b9e3ec74c83766c343d808b1c652cdf910",
+    "examples/ontario-electricity-evidence-vault/_meta/agent-rules.md": "7e6b41ffbd9cd4e0777cee2bcf3a0af3dacf4540821034fa5776eb1c5778f231",
+    "examples/ontario-electricity-evidence-vault/_meta/conventions.md": "4ee044a503ae2e8dfcfaefded135514c0b081b353c469cf0b0808833a808f1bf",
+    "examples/ontario-electricity-evidence-vault/_meta/domain-map.yml": "c59d4f16bc873ee11451f8977fe8de06e8f91e805d5288d7cfc3e9e16b4acb99",
+    "examples/ontario-electricity-evidence-vault/_meta/knowledge-views/reviewed/view_a81f3973de5885a05ea45da94822.md": "57ef529402635a5b93735c1fefb19dd85149d4c3441a3d83b5c20be62043ccb3",
+    "examples/ontario-electricity-evidence-vault/_meta/knowledge-views/reviewed/view_f085427fd55094d9ce5f21c916c8.md": "58363a8cd2843a5156c3459397af2c276b6b586eec6c6e35a4cd819b38f06ea5",
+    "examples/ontario-electricity-evidence-vault/_meta/legacy-markdown-migration.json": "210c65dde8ba72ec52922a59c6e605177ff4de2eb2889adec4bbf0a14920b041",
+    "examples/ontario-electricity-evidence-vault/_meta/lifecycle-states.yml": "128603f74ae43521095cb8cf4ca41eb258c69013c5b3d77c68b547844db154bc",
+    "examples/ontario-electricity-evidence-vault/_meta/lint-config.yml": "1a5bb727fa2004ec2c1ac70ce09e5073b6e5c38231b566f7c543fa438199bbb5",
+    "examples/ontario-electricity-evidence-vault/_meta/mirror-config.yml": "1aa77ff7999afee5a48cf4fe5d05b7ad09e1c3edc64accd462c5a7f9e55cea57",
+    "examples/ontario-electricity-evidence-vault/_meta/profile.yml": "c9d3cf88883a0d1a0a52aefed88b9a874ff27af286549df3ffabdf91734c920c",
+    "examples/ontario-electricity-evidence-vault/_mirrors/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "examples/ontario-electricity-evidence-vault/_templates/base-note.md": "58033fc7cad40ec07325b092fb6b9928a326ff583d1341bbb338a37e2e5942a6",
+    "examples/ontario-electricity-evidence-vault/_templates/data-contract.md": "f62df5df3f80bf53b46840aeb0bf55861873896dbdd5a3899c54d94f76d51ab9",
+    "examples/ontario-electricity-evidence-vault/_templates/dataset.md": "d7f19c342539d098ad11e1eb893ce5b3fe3ca5fed5f9b220083328be44cdc007",
+    "examples/ontario-electricity-evidence-vault/_templates/decision-record.md": "d2ab8f33acf2ad8c55a91e4235ae07ba551a4fdfe8f54028e19cc627d7ed4e7f",
+    "examples/ontario-electricity-evidence-vault/_templates/evaluation.md": "60de98bd3454fb13c6456457b941c6c580e3e4e15af4d05b00eb621320e65af9",
+    "examples/ontario-electricity-evidence-vault/_templates/model.md": "f443caedcc78255f274333cb9101642f7c02529606867dc5acb91a0f64c52641",
+    "examples/ontario-electricity-evidence-vault/_templates/pipeline.md": "80d6a8619c1d117ad4d185ad6d206ff8472598c7d61cf50563eebcb3f463a971",
+    "examples/ontario-electricity-evidence-vault/_templates/runbook.md": "5e7ca09293b13a959715cea0142609bd4c1cfefb2d7002022d62e1851e5833ee",
+    "examples/ontario-electricity-evidence-vault/_templates/source-ref.md": "edb7f036d8f095663dd1e6178e35a2d42a9079e1152b0dc020ebbe2f5dd28de9",
+    "examples/ontario-electricity-evidence-vault/log.md": "3b15c64d3dfe3136752f5897716ca49ee310c6bb006bcdeee14d8f8a06a60048",
+    "examples/ontario-electricity-evidence-vault/tools/README.md": "acac7d443021ed3e0731c88d346b3a9ae21e888cd602783f8d7ee11c81684a1f",
+    "examples/ontario-electricity-evidence-vault/tools/benchmark_tasks.py": "b5ff3677643dfb1855a04db87c1b5a0f11772b0cc023e962ed0899fb7689c073",
+    "examples/ontario-electricity-evidence-vault/tools/catalog_report.py": "5e72408b875fdf3eacc881cc4ceadf32e49cf18f82c9e3761df020ded48a2d35",
+    "examples/ontario-electricity-evidence-vault/tools/conversion_report.py": "95e33e6eafff01c2a8d3d202f2a5bac74b04c60be7367f0650829840cc18ded1",
+    "examples/ontario-electricity-evidence-vault/tools/lint_vault.py": "227d5c38456fee75875a7605848a13664f5a0dba9269a0b7eda07c2fd71274fb",
+    "examples/ontario-electricity-evidence-vault/tools/m365_report.py": "d2c64956b296fbb88913cc3b2058d86f917de2a4278870cecbca937107985a11",
+    "examples/ontario-electricity-evidence-vault/tools/migration_report.py": "2d0a971ace14c3bc7d2b12ebc210534154854bc14ed35469bcbe00a44fe93148",
+    "examples/ontario-electricity-evidence-vault/tools/mirrorarc.py": "b9a5d6daeb309c2f483634448c87f990f6b8b2a1bec038b5839c4b3004ecf444",
+    "examples/ontario-electricity-evidence-vault/tools/overlap_report.py": "e9cd807626efbae77b05491c24e9d25434d73cdb93e4d48820e3b331a0b41a1e",
+    "examples/ontario-electricity-evidence-vault/tools/pilot_report.py": "f7d77f5627b9e983cab7fd43601dff7e55fff8ef30329db5436ad4b745ced617",
+    "examples/ontario-electricity-evidence-vault/tools/recovery_report.py": "5cb7c1c3fd0dd0627b99fc3690b69a2a36baebf138417b2c0829e6a605234b94",
+    "examples/ontario-electricity-evidence-vault/tools/repos.example.yml": "b2fef4ba0cff49ead565dcbbdcee7580604d5ecbf70a0c31b79e938d3e2d84b7",
+    "examples/ontario-electricity-evidence-vault/tools/repos.yml": "ca3c6a5fc54edd5de91c875bfd2fd79d5e0d6602af2d1be7d4d0a1b3adec2371",
+    "examples/ontario-electricity-evidence-vault/tools/requirements.txt": "65267734097479f0d8e98d2207fefc325949cc1ec6ef189df88ec9e8b85b6234",
+    "examples/ontario-electricity-evidence-vault/tools/review_ledger.py": "cf53d10722c653592779b0157030acadaa6575cc8c20fac4b160194a0813e1bf",
+    "examples/ontario-electricity-evidence-vault/tools/sandbox_report.py": "f6d167742e2ad1edd989a8c667fb9c405603489337ae0d841d42fcfb0e8a0621",
+    "examples/ontario-electricity-evidence-vault/tools/sync_all.sh": "4a87216ee0027ce34481b70eaa044a351fbbde027cbd3d4aa69944de986c596d",
+    "examples/ontario-electricity-evidence-vault/tools/sync_github_repos.py": "9df9e6596f40cec30697d288cf281575b5aeb1d3e98d90887825826d5a1ebe96",
+    "examples/ontario-electricity-evidence-vault/tools/sync_office_md.py": "b70cb0c4bbfb9a8471692ff44f37f81d25ff485385dcc93aa4ab5b3fc41485f9",
+    "pyproject.toml": "87d2c4bb8c04327ef944336fb41833ca1c56c50501f9591165173af4cd96e0eb",
+    "scripts/benchmark_journaled_materialization.py": "f8ae1ae1fd55c0bc2a59059df8a13050503687aaf83ed0cb6986164659fa7100",
+    "scripts/build_ontario_stress_corpus.py": "da609551d96b0ea47b6b113fc49c60de2ce1e7560682d3b21ef1c8960302e381",
+    "scripts/build_pages_demo.sh": "f701f682d7d1a78e4f5702f031b6fe60f609430040ccfcf2eb4e4b0b177c44aa",
+    "scripts/build_pages_discovery.py": "e5e12d0ccec8775eb3af5bc953e7222e1b309b8f8f42f26e27db3b803db073fa",
+    "scripts/create_plain_markitdown_dump.py": "b0a7a882fdc85aac69b90fbe19ff657805c48225a301da53efb453e8a7f5b6e6",
+    "scripts/generate_messy_benchmark_corpus.py": "80a155050adc0b0e159ed2db104cc04981f40f51343b64c6b196fe2ef491b667",
+    "scripts/init.sh": "e061f5449e13357aa8c12cc66378da161314ae600cc823af2d17af95a9595619",
+    "scripts/no_data_scan.py": "7829d315136d302f215003ad95f2bec77a90fbd058e180814fd5b5d3d58bb465",
+    "scripts/sync_template_copies.py": "3d9ccc9c440516bbf419129e5c7c2f8e977febd9e98e8de54ae10861316a8574",
+    "scripts/validate_trustworthy_context.py": "1467901e4bf9f18cc2464b1ce167b5c5819492ff39b2a147db642fd15dbb91a1",
+    "src/mirrorarc/__init__.py": "3222f845ac7b30d4ca022df93401458dea9a2144611157f759cb4b00fceb02a3",
+    "src/mirrorarc/annotation_migration.py": "34631f459daf3e0ef5d8d6cd36a62f6dd0f59e168f5a274e99975c37aa08b1f0",
+    "src/mirrorarc/benchmark.py": "e0a948d9a6922961d1bb9b53bc6f68fdca9381df6ebfe120d9012213c483d0b4",
+    "src/mirrorarc/builtin_profiles/blank.yml": "f818ab7e25c16a6875360bd5e60d70e2574b989ad8768980037660292a9aa1e6",
+    "src/mirrorarc/builtin_profiles/business-operations.yml": "2662519b1766ac54fe0f34746a70c2b2da2c31ee630c4de3c189344af998d24f",
+    "src/mirrorarc/builtin_profiles/research-learning.yml": "996d772e58f186315725294a84b7dcf9020dd07ac2eef0e217a50ec02cd74eae",
+    "src/mirrorarc/builtin_profiles/software-project.yml": "5e68aecb6c580cfd0f300713d141b66ffe8acd061d52a0506010d47f50c039cf",
+    "src/mirrorarc/catalog.py": "ea35b10fdc5d69509678f83e94bb5a448bde8d428b9c70436c51b2535d93d38c",
+    "src/mirrorarc/catalog_explorer.py": "97766d7f39b129b80620c4077046ab16029afb592b095e8305a2129c56a331ed",
+    "src/mirrorarc/changes/__init__.py": "845f8ca657a18d020ecb7eaa4d4c84a98f4fac3fc2b0e39ce36329b654d30fac",
+    "src/mirrorarc/changes/changed_sync.py": "9578ae4af83d45fa161acefa32d215efbf6793e66fb18d4a4db8f244ccbcb059",
+    "src/mirrorarc/changes/events.py": "5c1805493e1a48f575b4c6adc2418fb782b33315334debb5caffffb7b7dfc033",
+    "src/mirrorarc/changes/feed.py": "4abb9ce6199ac343fb1a9227c236985c301e72ce7493ecc2cbbc557cb3f954f3",
+    "src/mirrorarc/changes/fingerprint.py": "b88e497b315721cd6d5c6a5c9ce7f0b5568ac46d4df18683abefe34c0ff8cccc",
+    "src/mirrorarc/changes/journal.py": "9b498d329cc7aa5fb94d7ec500ad90f6e04f1f5bbe318e47d57a537a8de835eb",
+    "src/mirrorarc/changes/materialize.py": "8723c6f1f69fecc55893c13c4e6a2c3b16286c50620beed445595a443d67e7a7",
+    "src/mirrorarc/changes/native_watch.py": "352dea7c3e89dc55d70cb70975d6e4736d8251f81c45788b8b56d1addeaf4796",
+    "src/mirrorarc/changes/reconcile.py": "014633ab45c32a83cdbf4e700326b513b970e38d66556636162a883aeffa6522",
+    "src/mirrorarc/changes/replay.py": "4a8bd0b2024c675df8588116e017519fb1c4c66a0809fe9eafd6a9e7f9a7f84a",
+    "src/mirrorarc/changes/stability.py": "3e89912058622c8575a1fee8e5601b506e8342c05ac5b672b08bf3df3f933f38",
+    "src/mirrorarc/changes/watch.py": "b8b5d8f8ab5a23c8369322f6df63ddeeb69fd56d8fb3ea0b511225dad826050b",
+    "src/mirrorarc/changes/worker.py": "37d96862c16c9f5a7090bed864ebefdc1e8da514bc53c8ad2bfdae7359f5631e",
+    "src/mirrorarc/cli.py": "d8855704de67ac68e8848a0ad3550d0d5354c5c9dd8315e00efa3066bd4c9420",
+    "src/mirrorarc/code_intelligence/__init__.py": "4e490db8ad606c1eea87f1cf6ad3ccb011233965b03dad520e540bde399362ca",
+    "src/mirrorarc/code_intelligence/adapter.py": "94b486ba28f20e8e14b0e46544174a5c7556a71b4344eab4890820076849ea2c",
+    "src/mirrorarc/code_intelligence/context.py": "77e0843b08115eab99ff304f827ca221f21637d0c2ccc4683cb9f3c4464e22d6",
+    "src/mirrorarc/code_intelligence/service.py": "dc7e0977ed870320058169af6cf2758464664eafb53b10dc075fec7fec5e1733",
+    "src/mirrorarc/context_assembly/__init__.py": "16fb5254669331da51028b4c253469c7ad8de2d65622847cc3bb1348378bbea6",
+    "src/mirrorarc/context_assembly/builder.py": "b7f7d0fd63e2910b8bc2151fd71464c620240ae40b2181a75bb9223b081e09bf",
+    "src/mirrorarc/context_assembly/export.py": "1f6f6a8d6706641e51cca019b4c03b56b540a7d43bda736e49e774f70a75c9e5",
+    "src/mirrorarc/context_assembly/retrieval.py": "0e54327cd39d46c52328e42224f4e5a052cbac575b065b1b3538a4de0d797a24",
+    "src/mirrorarc/context_assembly/store.py": "3260edddfd3576854c83d6090801de74aea51c68778837e84740c7ea64b67de1",
+    "src/mirrorarc/conversion.py": "3ccdd9d670dfc9fbea4165aad7b45b3f138f7df37742e0017b5c74cbedf286b1",
+    "src/mirrorarc/doctor.py": "4fbd3131e1a174b5c038c9682351a1ed53fb279dc98ac60a57b1c0fb9e0da61e",
+    "src/mirrorarc/knowledge_inventory.py": "f80a3693a695750f56e10763e5021a216e5757fb082a9ca8416c40d7b243e545",
+    "src/mirrorarc/knowledge_views/__init__.py": "65bbe6dd634090d97cae604b66c8516e7f523ce3fed2458399792fa107b62247",
+    "src/mirrorarc/knowledge_views/definitions.py": "9e26f321331b2c4d4ce0452f212ed7ca56ea32da00313ea9ec1f4fa79898423b",
+    "src/mirrorarc/knowledge_views/lifecycle.py": "7965e0fc47b2f6ba7fbfafdb503df3bf05556f1ab54bd7e9359b37e631b8c642",
+    "src/mirrorarc/knowledge_views/render.py": "7eb1714c294f058f34bc96be11ba0fdd409f9b63a11f140de98396c27fc89925",
+    "src/mirrorarc/knowledge_views/store.py": "fd3aa08b02b20ad17f6f5e2f1e528a0e692b94d3075e90202512e76c650f630a",
+    "src/mirrorarc/lint.py": "03ea0236b173eea5606774bada10f8f0d4ffb425658b0c51059b13574ff349a2",
+    "src/mirrorarc/m365.py": "8f8322d0aef0a77bfe94dd7947b27d7213c0957a0e8992890b5b630eac9020d1",
+    "src/mirrorarc/migration.py": "bbd7d002416fd76e7be2d90000951940ead62d3144c0c92165988272c741dc6f",
+    "src/mirrorarc/mirrors/__init__.py": "dcbba2f39c0610bd75dc1067d5ba680adcc9b7001a26fee7525a73251d8aa5a9",
+    "src/mirrorarc/mirrors/github_repos.py": "5247bd6c5311dd61b40f5eda5f203590f159dd9bf2e5f78adfb30c36af3c565a",
+    "src/mirrorarc/mirrors/office.py": "5ae5c44b7c508d581905087cf567776d3b95501f4cc82f3e002876029a4cae4e",
+    "src/mirrorarc/overlap.py": "0fec80e214fbc27629c4422abf8cd1630a06dc45cc229ea168b7a021dfc185ac",
+    "src/mirrorarc/pilot.py": "01eb6ecc3b27e13c46446ec82437a0621e5b65a9c961aa2d32ecf8a7d7b87100",
+    "src/mirrorarc/profile_migration.py": "db62a33248b40ae15c867778bdc2b7d79f4c7b9478b4f986879fcf9ac6c8f860",
+    "src/mirrorarc/profile_scaffold.py": "d991b6fa211749aa4061570afe3790dc3b06e51b9cfa30114f6d7aa1dad74fb7",
+    "src/mirrorarc/profiles.py": "b00b9c5cb096cc769ab46d5fcb8d053eaddd82db216cbd790af81782e43652be",
+    "src/mirrorarc/recovery.py": "80af9cc6a06d121b07bb22444c7eb9ff16fb706e9bd71ffe5500b05ac4094da0",
+    "src/mirrorarc/relationships/__init__.py": "0619cca6c9fef2697761e1ea399a78a21775fa12601b0bb4ef9fd4942faae04d",
+    "src/mirrorarc/relationships/deterministic.py": "a3fb395a87accb85e3a72ed6ddc0993c2b755009f14e3b1835c987720494131a",
+    "src/mirrorarc/relationships/invalidation.py": "a1fcc529b98d8a61f97eff7719216185b514846d8dc98971bfa0d1a682fa68d2",
+    "src/mirrorarc/relationships/model.py": "25dbb7d9ef3e2a75cafd86b073fbbf4380b69763a1aa7ab3145f8137a8f77455",
+    "src/mirrorarc/relationships/proposals.py": "df9754bdcbf21d9272fa9220c6e1a3c3391d8cc2e47ba6abbfcc0aab0b1c11fe",
+    "src/mirrorarc/relationships/store.py": "5346d054bc7b85f20e81a9ac577cf0c3092a91feaf9eb59c4bc165c5b7a610fb",
+    "src/mirrorarc/review_ledger.py": "9d151bd59429d2d4c696c755a8b9af5af326c6eb5f8c10f3fba2137eb418b812",
+    "src/mirrorarc/runtime_profile.py": "8a0b30cd24ed53b49cbac499666567a560f8143bd8234a7d689250a712e263d3",
+    "src/mirrorarc/sandbox.py": "4239486b802447ecccf5678e17094f78713950c8000d120572d243d5e2fa4972",
+    "src/mirrorarc/template/.gitignore": "594d2b37b4756865dee5b30d73637a11560a1f2092b98c9fac21bbb745fcd122",
+    "src/mirrorarc/template/00_inbox/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/10_context/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/20_sources/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/20_sources/repos/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/30_data-contracts/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/40_pipelines/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/50_analysis/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/60_models/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/70_outputs/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/80_governance/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/90_operations/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/AGENTS.md": "32aa08c1e2d8b293dc09ffeec1bdf7b5f65ec46838362afa845a206e505ca99c",
+    "src/mirrorarc/template/CLAUDE.md": "55d191203bea23ae6f258a8822b9ca271bc85e2eef9ca350b01a09207e699ab9",
+    "src/mirrorarc/template/Documents.base": "ca0fd8f65e1c59fe66497b72500b6afa400d31df601412dfeecc95dfed08e58a",
+    "src/mirrorarc/template/INDEX.md": "a718d0361fec0c927f19e2bb3887fda9ba0fde2e31640c04939ec748b5a553df",
+    "src/mirrorarc/template/RETENTION.md": "5ec553743fd91b53c628270c7ae61f23ffa6622d58d9ea0ffcacce58f793c050",
+    "src/mirrorarc/template/_archive/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/mirrorarc/template/_meta/agent-rules.md": "eb38306697b8fad1d2980bbdc87087a9adf3c83c30f2ad99c2e11ab6fba0f964",
+    "src/mirrorarc/template/_meta/conventions.md": "658e62c43f7ae2655c90be114c470bab29ebb213b64718459201d1b27e1b4a5b",
+    "src/mirrorarc/template/_meta/domain-map.yml": "ab3956e65b80ae7f2dc0d011423a7694d6e86890baeef039e1efe2548dfd2433",
+    "src/mirrorarc/template/_meta/lifecycle-states.yml": "128603f74ae43521095cb8cf4ca41eb258c69013c5b3d77c68b547844db154bc",
+    "src/mirrorarc/template/_meta/lint-config.yml": "1a5bb727fa2004ec2c1ac70ce09e5073b6e5c38231b566f7c543fa438199bbb5",
+    "src/mirrorarc/template/_meta/mirror-config.yml": "1aa77ff7999afee5a48cf4fe5d05b7ad09e1c3edc64accd462c5a7f9e55cea57",
+    "src/mirrorarc/template/_meta/profile.yml": "c9d3cf88883a0d1a0a52aefed88b9a874ff27af286549df3ffabdf91734c920c",
+    "src/mirrorarc/template/_mirrors/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "src/mirrorarc/template/_templates/base-note.md": "412c323dc7f8473ccd1521119087b2f74801769aac01d4bbc5f1d5034173b46b",
+    "src/mirrorarc/template/_templates/data-contract.md": "35ec140ad0e7ea85ec2d9955446a4be2e4ac120d7c8a5f09745d4669b3946b0c",
+    "src/mirrorarc/template/_templates/dataset.md": "36cb65fdc7b5ce1483106c88b55e22d19ce972f3d89c3e35c30e2794af4cf191",
+    "src/mirrorarc/template/_templates/decision-record.md": "0d8f5788dd36d163068e49c86fbc66112b47ced8fcec06dffc9ee2d6be816691",
+    "src/mirrorarc/template/_templates/evaluation.md": "f09b5f69dabafdbba50fd830f7815a0c9dfee5b13a2ddd67ea5cac3dfe31727f",
+    "src/mirrorarc/template/_templates/model.md": "6df0449b99cab688ef8ffaacbfae0da9a3c2e98ff40dedfdd3fff0d4bf82824b",
+    "src/mirrorarc/template/_templates/pipeline.md": "2e0a91b6abd502904177ba3be3b07d7d0a3eaec0b8cc850d3948eecb1a3c9b19",
+    "src/mirrorarc/template/_templates/runbook.md": "ba09d02aface0de68ca9edc2a1813cb0492bdfab087d4ff5bfd5e86150a2dcff",
+    "src/mirrorarc/template/_templates/source-ref.md": "b3bcafff3bf53a060331d8210aba5a1e84d8ea6abb730aeaea6527e296f92e7b",
+    "src/mirrorarc/template/log.md": "3b15c64d3dfe3136752f5897716ca49ee310c6bb006bcdeee14d8f8a06a60048",
+    "src/mirrorarc/template/tools/README.md": "acac7d443021ed3e0731c88d346b3a9ae21e888cd602783f8d7ee11c81684a1f",
+    "src/mirrorarc/template/tools/benchmark_tasks.py": "b5ff3677643dfb1855a04db87c1b5a0f11772b0cc023e962ed0899fb7689c073",
+    "src/mirrorarc/template/tools/catalog_report.py": "5e72408b875fdf3eacc881cc4ceadf32e49cf18f82c9e3761df020ded48a2d35",
+    "src/mirrorarc/template/tools/conversion_report.py": "95e33e6eafff01c2a8d3d202f2a5bac74b04c60be7367f0650829840cc18ded1",
+    "src/mirrorarc/template/tools/lint_vault.py": "227d5c38456fee75875a7605848a13664f5a0dba9269a0b7eda07c2fd71274fb",
+    "src/mirrorarc/template/tools/m365_report.py": "d2c64956b296fbb88913cc3b2058d86f917de2a4278870cecbca937107985a11",
+    "src/mirrorarc/template/tools/migration_report.py": "2d0a971ace14c3bc7d2b12ebc210534154854bc14ed35469bcbe00a44fe93148",
+    "src/mirrorarc/template/tools/mirrorarc.py": "b9a5d6daeb309c2f483634448c87f990f6b8b2a1bec038b5839c4b3004ecf444",
+    "src/mirrorarc/template/tools/overlap_report.py": "e9cd807626efbae77b05491c24e9d25434d73cdb93e4d48820e3b331a0b41a1e",
+    "src/mirrorarc/template/tools/pilot_report.py": "f7d77f5627b9e983cab7fd43601dff7e55fff8ef30329db5436ad4b745ced617",
+    "src/mirrorarc/template/tools/recovery_report.py": "5cb7c1c3fd0dd0627b99fc3690b69a2a36baebf138417b2c0829e6a605234b94",
+    "src/mirrorarc/template/tools/repos.example.yml": "b2fef4ba0cff49ead565dcbbdcee7580604d5ecbf70a0c31b79e938d3e2d84b7",
+    "src/mirrorarc/template/tools/requirements.txt": "65267734097479f0d8e98d2207fefc325949cc1ec6ef189df88ec9e8b85b6234",
+    "src/mirrorarc/template/tools/review_ledger.py": "cf53d10722c653592779b0157030acadaa6575cc8c20fac4b160194a0813e1bf",
+    "src/mirrorarc/template/tools/sandbox_report.py": "f6d167742e2ad1edd989a8c667fb9c405603489337ae0d841d42fcfb0e8a0621",
+    "src/mirrorarc/template/tools/sync_all.sh": "4a87216ee0027ce34481b70eaa044a351fbbde027cbd3d4aa69944de986c596d",
+    "src/mirrorarc/template/tools/sync_github_repos.py": "9df9e6596f40cec30697d288cf281575b5aeb1d3e98d90887825826d5a1ebe96",
+    "src/mirrorarc/template/tools/sync_office_md.py": "b70cb0c4bbfb9a8471692ff44f37f81d25ff485385dcc93aa4ab5b3fc41485f9",
+    "src/mirrorarc/views.py": "2d3c91b3665ca6c019edd72530596253dc2c345365d4e09ca319ecf61ae9da04",
+    "template/.gitignore": "594d2b37b4756865dee5b30d73637a11560a1f2092b98c9fac21bbb745fcd122",
+    "template/00_inbox/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/10_context/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/20_sources/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/20_sources/repos/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/30_data-contracts/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/40_pipelines/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/50_analysis/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/60_models/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/70_outputs/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/80_governance/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/90_operations/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/AGENTS.md": "32aa08c1e2d8b293dc09ffeec1bdf7b5f65ec46838362afa845a206e505ca99c",
+    "template/CLAUDE.md": "55d191203bea23ae6f258a8822b9ca271bc85e2eef9ca350b01a09207e699ab9",
+    "template/Documents.base": "ca0fd8f65e1c59fe66497b72500b6afa400d31df601412dfeecc95dfed08e58a",
+    "template/INDEX.md": "a718d0361fec0c927f19e2bb3887fda9ba0fde2e31640c04939ec748b5a553df",
+    "template/RETENTION.md": "5ec553743fd91b53c628270c7ae61f23ffa6622d58d9ea0ffcacce58f793c050",
+    "template/_archive/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template/_meta/agent-rules.md": "eb38306697b8fad1d2980bbdc87087a9adf3c83c30f2ad99c2e11ab6fba0f964",
+    "template/_meta/conventions.md": "658e62c43f7ae2655c90be114c470bab29ebb213b64718459201d1b27e1b4a5b",
+    "template/_meta/domain-map.yml": "ab3956e65b80ae7f2dc0d011423a7694d6e86890baeef039e1efe2548dfd2433",
+    "template/_meta/lifecycle-states.yml": "128603f74ae43521095cb8cf4ca41eb258c69013c5b3d77c68b547844db154bc",
+    "template/_meta/lint-config.yml": "1a5bb727fa2004ec2c1ac70ce09e5073b6e5c38231b566f7c543fa438199bbb5",
+    "template/_meta/mirror-config.yml": "1aa77ff7999afee5a48cf4fe5d05b7ad09e1c3edc64accd462c5a7f9e55cea57",
+    "template/_meta/profile.yml": "c9d3cf88883a0d1a0a52aefed88b9a874ff27af286549df3ffabdf91734c920c",
+    "template/_mirrors/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "template/_templates/base-note.md": "412c323dc7f8473ccd1521119087b2f74801769aac01d4bbc5f1d5034173b46b",
+    "template/_templates/data-contract.md": "35ec140ad0e7ea85ec2d9955446a4be2e4ac120d7c8a5f09745d4669b3946b0c",
+    "template/_templates/dataset.md": "36cb65fdc7b5ce1483106c88b55e22d19ce972f3d89c3e35c30e2794af4cf191",
+    "template/_templates/decision-record.md": "0d8f5788dd36d163068e49c86fbc66112b47ced8fcec06dffc9ee2d6be816691",
+    "template/_templates/evaluation.md": "f09b5f69dabafdbba50fd830f7815a0c9dfee5b13a2ddd67ea5cac3dfe31727f",
+    "template/_templates/model.md": "6df0449b99cab688ef8ffaacbfae0da9a3c2e98ff40dedfdd3fff0d4bf82824b",
+    "template/_templates/pipeline.md": "2e0a91b6abd502904177ba3be3b07d7d0a3eaec0b8cc850d3948eecb1a3c9b19",
+    "template/_templates/runbook.md": "ba09d02aface0de68ca9edc2a1813cb0492bdfab087d4ff5bfd5e86150a2dcff",
+    "template/_templates/source-ref.md": "b3bcafff3bf53a060331d8210aba5a1e84d8ea6abb730aeaea6527e296f92e7b",
+    "template/log.md": "3b15c64d3dfe3136752f5897716ca49ee310c6bb006bcdeee14d8f8a06a60048",
+    "template/tools/README.md": "acac7d443021ed3e0731c88d346b3a9ae21e888cd602783f8d7ee11c81684a1f",
+    "template/tools/benchmark_tasks.py": "b5ff3677643dfb1855a04db87c1b5a0f11772b0cc023e962ed0899fb7689c073",
+    "template/tools/catalog_report.py": "5e72408b875fdf3eacc881cc4ceadf32e49cf18f82c9e3761df020ded48a2d35",
+    "template/tools/conversion_report.py": "95e33e6eafff01c2a8d3d202f2a5bac74b04c60be7367f0650829840cc18ded1",
+    "template/tools/lint_vault.py": "227d5c38456fee75875a7605848a13664f5a0dba9269a0b7eda07c2fd71274fb",
+    "template/tools/m365_report.py": "d2c64956b296fbb88913cc3b2058d86f917de2a4278870cecbca937107985a11",
+    "template/tools/migration_report.py": "2d0a971ace14c3bc7d2b12ebc210534154854bc14ed35469bcbe00a44fe93148",
+    "template/tools/mirrorarc.py": "b9a5d6daeb309c2f483634448c87f990f6b8b2a1bec038b5839c4b3004ecf444",
+    "template/tools/overlap_report.py": "e9cd807626efbae77b05491c24e9d25434d73cdb93e4d48820e3b331a0b41a1e",
+    "template/tools/pilot_report.py": "f7d77f5627b9e983cab7fd43601dff7e55fff8ef30329db5436ad4b745ced617",
+    "template/tools/recovery_report.py": "5cb7c1c3fd0dd0627b99fc3690b69a2a36baebf138417b2c0829e6a605234b94",
+    "template/tools/repos.example.yml": "b2fef4ba0cff49ead565dcbbdcee7580604d5ecbf70a0c31b79e938d3e2d84b7",
+    "template/tools/requirements.txt": "65267734097479f0d8e98d2207fefc325949cc1ec6ef189df88ec9e8b85b6234",
+    "template/tools/review_ledger.py": "cf53d10722c653592779b0157030acadaa6575cc8c20fac4b160194a0813e1bf",
+    "template/tools/sandbox_report.py": "f6d167742e2ad1edd989a8c667fb9c405603489337ae0d841d42fcfb0e8a0621",
+    "template/tools/sync_all.sh": "4a87216ee0027ce34481b70eaa044a351fbbde027cbd3d4aa69944de986c596d",
+    "template/tools/sync_github_repos.py": "9df9e6596f40cec30697d288cf281575b5aeb1d3e98d90887825826d5a1ebe96",
+    "template/tools/sync_office_md.py": "b70cb0c4bbfb9a8471692ff44f37f81d25ff485385dcc93aa4ab5b3fc41485f9",
+    "tests/fixtures/codegraph_v1_5_0/affected-summary.json": "a07078e33dd75b3126e5d7e4e7b57b5a0cecd3c91e448ce3124cc7971b2d4ffe",
+    "tests/fixtures/codegraph_v1_5_0/callees-demand-change.json": "37a60ffd40cae908abc8d44fa5538e9e31a5e7e912c1494be26380bdf4ca908d",
+    "tests/fixtures/codegraph_v1_5_0/callers-demand-change.json": "94ae27388bf969341ace31a5fed031547566fe7aa2d7a766b3515e6e6750bb09",
+    "tests/fixtures/codegraph_v1_5_0/files.json": "14b2858a117befc49591cb6f9c5c655ff03b70b7e7b6789e9d49a9426cebc1e5",
+    "tests/fixtures/codegraph_v1_5_0/impact-demand-change.json": "96315ca0d3e8254068143b5594bdab172d473e1d44e714c8cbbc955bdd5902a9",
+    "tests/fixtures/codegraph_v1_5_0/query-demand-change.json": "cd90e3a329200350313b1c84cc4d6bd42163415b791290a3cd067eeab26fec4f",
+    "tests/fixtures/codegraph_v1_5_0/query-summary.json": "3495ccdbeca627101e3009715e6e3d303b09465d6397fec9664c6d859e7fff49",
+    "tests/fixtures/codegraph_v1_5_0/status-current.json": "d6e6e802d7cd18aabf65271e68af2de136e90d6eb9807302f72d37145a3121fc",
+    "tests/fixtures/codegraph_v1_5_0/status-stale.json": "222144a22f946fd813a4e10ec966d384562c433863b0045046e49e7046b40d49",
+    "tests/fixtures/trustworthy_context/mixed/access.md": "914d37081652f046531351e18c080136a7c7011d96423d20cd7d157adc603897",
+    "tests/fixtures/trustworthy_context/mixed/attack.md": "861d2338016fe8dc7f46dad88f4d9f28d9cc838d907ff22b387532cef1637d9e",
+    "tests/fixtures/trustworthy_context/mixed/capacity.md": "fecb2ead669201980d697f86663325ee7c369f52bec976a72b84653976ed2032",
+    "tests/fixtures/trustworthy_context/mixed/procedure.md": "84c60344b1df20a543a7a17fc7df0b21f3c08e6d86006f93397aa903b10e638e",
+    "tests/fixtures/trustworthy_context/pack.json": "ad9602e93d66e352b955a9ac2e4f3811d59dfa25ab80d89430a098f01e03839b",
+    "tests/fixtures/trustworthy_context/revised/policy-v1.md": "c2ea7064162f063dcf2c1442913bb2ccb09df563ec04b9373c4d777b18967738",
+    "tests/fixtures/trustworthy_context/revised/policy-v2.md": "32e51f098313ac2dda4d14a9607be975c9930812306c98dde19cd79620c90e8e",
+    "tests/fixtures/trustworthy_context/revised/revision-log.md": "2688ed78e9d06f5813b3b03e1d62d34365637e88d9dac06b83755315c5d37901",
+    "tests/test_annotation_migration.py": "50df06e1cf6ed590485913bc5e8dfc83da44a2f6de2c2893ef25c92728288104",
+    "tests/test_changes_changed_sync.py": "25fb429a8d093d125713cc9ae19190dcf4f9d52fd9bd54c2db21468ab6022df4",
+    "tests/test_changes_feed.py": "539ee2aef5e2e1d9cea2e63900437a10d744764a6451c1a2feac9375a34fb35b",
+    "tests/test_changes_materialize.py": "86bbb7beade6cdd64ae539fea1e2f8aa40bc1be1e9ee55367d22b4c6013325d5",
+    "tests/test_changes_native_watch.py": "4098f95b2a62115a91a91f7da4297982fda15f985ecda86d0254ed698ba1dc84",
+    "tests/test_changes_reconcile.py": "cb9cb867799db9236da0fb4acc827358f7ffff997983bfc2ac0dbd74006cdc2a",
+    "tests/test_changes_replay.py": "48b6d52d21747c629daf22ab24dbc2ca91b0a70a291845ee826797f58fa4e47a",
+    "tests/test_changes_stability.py": "e97afce4d7ac8caa32cd5a696f93faf90b3a4a1e44d8ac0706a6460624fcd1b7",
+    "tests/test_changes_watch.py": "b36c0287e3631e464209a120d8b04aba561d1025715c097034a1102e17b4494c",
+    "tests/test_changes_worker.py": "59e964309fe5b192a2548f3a78f82afba40ef3ac75ee402e10bf67aec29d57ed",
+    "tests/test_code_intelligence.py": "823635883486e42f6f42566b68293aa5bd83a991c6afd27c10b48d3ede30812f",
+    "tests/test_context_assembly.py": "01fbdb62b726362ed92d2ecb74bb840f12df555a482243afd3d74c74d725db68",
+    "tests/test_examples.py": "860f62faa5f01f6c7c14e973dafbfc776feae2d9e4ebc59ed9ccf320e812a1f6",
+    "tests/test_journal.py": "3dc3cee5d0a7743a5d95d3130d18f53155362332835299cf18d72c88e7b79e55",
+    "tests/test_journaled_materialization_benchmark.py": "4308e1d2d1607518a167583ecf04b2daf6dd5da758b733650bce0d5ede3388c4",
+    "tests/test_knowledge_inventory.py": "7aa4992e60a426f97b801d87e76e0f0a10d7649e89f59de851bb51eea170d43b",
+    "tests/test_knowledge_views.py": "001c77fe4aef8db6d1443e86820e395d682868588dcf62295b89cd88d45cb64f",
+    "tests/test_license_headers.py": "f679b5d2e4efc83fe3c1ae30c8681d18cab947def00407411bd6af971a71b211",
+    "tests/test_lifecycle_contract.py": "82abfc04eb3676ee523887b0e3d7a55bb19564236af984889a02066a2d2964d2",
+    "tests/test_lint_vault.py": "08139a9578a642d0cca72a6370c07ee6e31c1edbcdaa064ebfb53c7ee0da05a2",
+    "tests/test_messy_benchmark_corpus.py": "176ef53c78b0c331522e0b18e487cbce19f253ffdfc1393358698907e55244ee",
+    "tests/test_migration_markdown.py": "0d4a33280c78bb6fa412ebf523d937692a62c452efde921b228527073afc8252",
+    "tests/test_no_data_scan.py": "3caedef3235e00f2d114631add5868413fe96249623f4be7687a1dc7767795e0",
+    "tests/test_ontario_stress_corpus.py": "53efbcfb194683b9a18d7761b8216d21a75ee4cad73df25b98bc4b6d365e25ba",
+    "tests/test_packaged_template.py": "76d2924625cc7074bb3f80bffec7181be08d7e02280179d6ec0c60616d84bfd2",
+    "tests/test_pages_discovery.py": "7fc244c85bfedf29488bb13b9b83cc887365df2e726a45d53b9e444e91596156",
+    "tests/test_pages_workflow.py": "207020f6f89b238719579d6f6e508df990958a9883199b89216601eb5608be8d",
+    "tests/test_plain_markitdown_dump.py": "50564ad1b77ce4cb5432089834477ede5dc38ba90d4c1a0e8610571a3f46aa8b",
+    "tests/test_profile_contract.py": "3e6be4515541356365ff6297d24c01e6d013acf678ef1ab034cc5cf6462c6708",
+    "tests/test_profile_driven_reports.py": "833a79fb12a64a4eaaf649dfc25b6ff8be80e7cd7e0c1b2890e1bd7a070ca281",
+    "tests/test_relationship_invalidation.py": "951048b9f68b37b739dafacccb05277ff366bf99e7f5912fa56b1f7c4fbd66df",
+    "tests/test_relationships.py": "20e7a5fa9500ff197d87e96dc6c77432ca2c6a8bf2a433169eebb882881ce9dc",
+    "tests/test_release_workflow.py": "d1ac1ad532189bc7ba1423adf0b1bedae0bd07b36e3df5ede292a54a9748bcc1",
+    "tests/test_sync_behaviour.py": "a82f1c74cb322bc58222163dc86c47b3ebac1ae41fba24daea5825479c9d8054",
+    "tests/test_template_copy_sync.py": "ee533bde2e0ecfbe39ad20d24c08210f7105200c76ce1b3f074d8b80a6d59f94",
+    "tests/test_trustworthy_context.py": "8d4e34d37c0b564c62af680e027a4a5da6daa4ef74cbfc1a955a54116497e85f"
+  },
+  "intended_shipping_files": [
+    {
+      "baseline_sha256": "7289f8ebff18c1e0759116721beab9171591794f35da4a329e96a09cefbfe555",
+      "git_state": "tracked-modified",
+      "path": ".github/workflows/ci.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "7289f8ebff18c1e0759116721beab9171591794f35da4a329e96a09cefbfe555"
+    },
+    {
+      "baseline_sha256": "020338969bb13fb14c73d1297e14ffcf7c9efb79555f36d019112045bf05dbda",
+      "git_state": "tracked-modified",
+      "path": ".github/workflows/release.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "020338969bb13fb14c73d1297e14ffcf7c9efb79555f36d019112045bf05dbda"
+    },
+    {
+      "baseline_sha256": "6a73fbfb2fa3c88229c9f59dfb5fb728d8b5df9d06f874f610af75a6c9df6a81",
+      "git_state": "tracked-modified",
+      "path": ".gitignore",
+      "session_change": "preserved-baseline",
+      "sha256": "6a73fbfb2fa3c88229c9f59dfb5fb728d8b5df9d06f874f610af75a6c9df6a81"
+    },
+    {
+      "baseline_sha256": "41855f346aa54b14b70a1b67abe3133aec8e151d671d2aa504fe5206c8c25cf7",
+      "git_state": "tracked-modified",
+      "path": "AGENTS.md",
+      "session_change": "preserved-baseline",
+      "sha256": "41855f346aa54b14b70a1b67abe3133aec8e151d671d2aa504fe5206c8c25cf7"
+    },
+    {
+      "baseline_sha256": "d48f9b085ec73b72dc11bc47d0c5096d27c2f286caf2abdf823b530a1a2261a0",
+      "git_state": "tracked-modified",
+      "path": "CHANGELOG.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "b99e88246065dfde4aa516b77ce7ff33998bb2792bf988cc4ed77728ba987ed1"
+    },
+    {
+      "baseline_sha256": "6ed25e62c564e8c86ce3700f7aa19091a8de7d0bbbd07b76c333cd628a2337c8",
+      "git_state": "tracked-modified",
+      "path": "README.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "fefca55f2c81c6c0080fc003d0f40ef81637784ffee2081843f3bcb70ac0c33d"
+    },
+    {
+      "baseline_sha256": "1260a3a6137557d871382eb47978b32407490eb3e31a2ef8c0396cf47aca290b",
+      "git_state": "tracked-modified",
+      "path": "docs/AGENT_READINESS_BENCHMARK.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "9b9a16e7a4ace7ce54573fa978c2cac7b42762ff1081438911d4e99863a6fee3"
+    },
+    {
+      "baseline_sha256": "7dbda046ad6dbcb6cb68501c1cd1af34d45599fed9b183563b2daf31af5b5824",
+      "git_state": "untracked",
+      "path": "docs/CODE_INTELLIGENCE_EXECUTION_PLAN.md",
+      "session_change": "preserved-baseline",
+      "sha256": "7dbda046ad6dbcb6cb68501c1cd1af34d45599fed9b183563b2daf31af5b5824"
+    },
+    {
+      "baseline_sha256": "2490dcc0b72d6f20efee1802b75364f545752b8397b7f977daa7d3c27c7b7453",
+      "git_state": "tracked-modified",
+      "path": "docs/CONVERSION_REVIEW_GUIDE.md",
+      "session_change": "preserved-baseline",
+      "sha256": "2490dcc0b72d6f20efee1802b75364f545752b8397b7f977daa7d3c27c7b7453"
+    },
+    {
+      "baseline_sha256": "cf2d1866b129105159e2c4cf91e8cb8c3152451fae62648c9ba63cccd791cc2e",
+      "git_state": "tracked-modified",
+      "path": "docs/MIRRORARC_WHITEPAPER.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "35675479f8e206c8a27917dbc81d46d07928f836a319adfe7d5427e2c4c0ab4a"
+    },
+    {
+      "baseline_sha256": "c2ed57440dd3de7c107ae4a47f93d3edb985219e5ed31664b944ce50049cdefd",
+      "git_state": "tracked-modified",
+      "path": "docs/PRODUCT.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "4145550594e1f534d23fd240e66913aa567ed99c82fbe31ee3724aac28103c21"
+    },
+    {
+      "baseline_sha256": "916335c6fe95da7a733921c37fab42b60895d38f2a1cfe3e82e86017c707db4c",
+      "git_state": "untracked",
+      "path": "docs/PRODUCT_IMPLEMENTATION_PLAN.md",
+      "session_change": "preserved-baseline",
+      "sha256": "916335c6fe95da7a733921c37fab42b60895d38f2a1cfe3e82e86017c707db4c"
+    },
+    {
+      "baseline_sha256": "b9008bf54e6a8dc57d92a8de8ad2a187993ad9baf661e9871a4ddb2503f0530b",
+      "git_state": "tracked-modified",
+      "path": "docs/PROFILE_SCHEMA.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "d41e1e6e9526f9e105437b61d8db7cca3101f7aec918514f5a5d37b50710a756"
+    },
+    {
+      "baseline_sha256": "b2e5768fc627fa2c130a9c73422b3e319d649a43df8542180f8303bfc0ea868f",
+      "git_state": "tracked-modified",
+      "path": "docs/RECOVERY.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "59b505f83e6b5968f4ed901df6ffc72c261dceb17f12f53542da959e4c03f9e6"
+    },
+    {
+      "baseline_sha256": "30a28d8f6f08fbb65e3736c8f2c2b3335d4fb4160ba88cc4efdd13d898320ad3",
+      "git_state": "tracked-modified",
+      "path": "docs/SECURITY_MODEL.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "cbcbc2e74c73d1b509770336ff7fb9ed01803627673dbaf4bec59e5eb0705739"
+    },
+    {
+      "baseline_sha256": "6e3ece2a37fd8e24f88a168683b86218258c971a4b4bf476e7cfebb6a8f5f5c2",
+      "git_state": "tracked-modified",
+      "path": "docs/SYNC_SPEC.md",
+      "session_change": "preserved-baseline",
+      "sha256": "6e3ece2a37fd8e24f88a168683b86218258c971a4b4bf476e7cfebb6a8f5f5c2"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "docs/TRUSTWORTHY_CONTEXT_CONSTRAINTS.txt",
+      "session_change": "added",
+      "sha256": "9aec044f3d7f853174d59a78580ff8175eac225a21401f630f843748b61568b2"
+    },
+    {
+      "baseline_sha256": "a6240f2ad57fca4e989bbcf3630d4e397e3420102767eb9dde3809a629c50138",
+      "git_state": "untracked",
+      "path": "docs/TRUSTWORTHY_CONTEXT_EXECUTION_PLAN.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "b57a1092dab5b57d6f97cd9985bc99d6c88af9322f86ec5af9be9e1d1a7d2981"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "docs/TRUSTWORTHY_CONTEXT_EXPERIMENTS.md",
+      "session_change": "added",
+      "sha256": "2336bc061e46d383c1d1de805f4b188d48a6d85e64fedf711b1add379057dc4e"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "docs/TRUSTWORTHY_CONTEXT_RESULTS.md",
+      "session_change": "added",
+      "sha256": "7cd37a0ee19ad8ec03d0c5a6038b77270a0554883da2312741aa1950774f8a8f"
+    },
+    {
+      "baseline_sha256": "4c449f6e2e23f16703dc68dea3064fd4e5ae87cc10d20edb3a22aa3d977b5aa0",
+      "git_state": "untracked",
+      "path": "docs/TRUSTWORTHY_CONTEXT_REVIEW.md",
+      "session_change": "preserved-baseline",
+      "sha256": "4c449f6e2e23f16703dc68dea3064fd4e5ae87cc10d20edb3a22aa3d977b5aa0"
+    },
+    {
+      "baseline_sha256": "516e39cd46ef35d71b29229d8242f668abdcb208ccc805c22cb458e94e0bbe1f",
+      "git_state": "tracked-modified",
+      "path": "docs/information-architecture.md",
+      "session_change": "preserved-baseline",
+      "sha256": "516e39cd46ef35d71b29229d8242f668abdcb208ccc805c22cb458e94e0bbe1f"
+    },
+    {
+      "baseline_sha256": "ce2c85d2e54c0d84370f1734e090e6e33c0de39802be1b703bb7b2238e9a74d0",
+      "git_state": "tracked-modified",
+      "path": "docs/methodology.md",
+      "session_change": "preserved-baseline",
+      "sha256": "ce2c85d2e54c0d84370f1734e090e6e33c0de39802be1b703bb7b2238e9a74d0"
+    },
+    {
+      "baseline_sha256": "6ae90163b6ea7c3773978c785a6a7426b98470919aca09a46d35473604b8b0d2",
+      "git_state": "tracked-modified",
+      "path": "docs/positioning.md",
+      "session_change": "preserved-baseline",
+      "sha256": "6ae90163b6ea7c3773978c785a6a7426b98470919aca09a46d35473604b8b0d2"
+    },
+    {
+      "baseline_sha256": "e2a46793770a2edbd774736b5b97641147093eee9f6258f64f64cbd8fb32e285",
+      "git_state": "untracked",
+      "path": "docs/prompts/CODE_INTELLIGENCE_EXECUTION_KICKOFF.md",
+      "session_change": "preserved-baseline",
+      "sha256": "e2a46793770a2edbd774736b5b97641147093eee9f6258f64f64cbd8fb32e285"
+    },
+    {
+      "baseline_sha256": "389f8f1af7b08d03265d5473359173378aa9aabe94c5022d0b57955da02b495f",
+      "git_state": "untracked",
+      "path": "docs/prompts/KNOWLEDGE_PROJECTION_KICKOFF.md",
+      "session_change": "preserved-baseline",
+      "sha256": "389f8f1af7b08d03265d5473359173378aa9aabe94c5022d0b57955da02b495f"
+    },
+    {
+      "baseline_sha256": "7c7c882437955dd880884ed56746e4f7073321591b87755ce564ffa85e4b7f08",
+      "git_state": "untracked",
+      "path": "docs/prompts/TRUSTWORTHY_CONTEXT_EXECUTION_KICKOFF.md",
+      "session_change": "preserved-baseline",
+      "sha256": "7c7c882437955dd880884ed56746e4f7073321591b87755ce564ffa85e4b7f08"
+    },
+    {
+      "baseline_sha256": "9c7e4542ac9dfcd5c7b93d7d064ffd7ef8d3768eb1e3be3f01cd51d7133b3944",
+      "git_state": "tracked-modified",
+      "path": "docs/quickstart.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "a95daa5d0a07d45565ad48c15d7dc0ab6fc2abfe47d5d03e9992aa979e0c9522"
+    },
+    {
+      "baseline_sha256": "8fff10f70c0dfccf0b10fffcca2398ffe8af3533078c51f2253b917da1a8753e",
+      "git_state": "tracked-modified",
+      "path": "examples/DATA_PROVENANCE.md",
+      "session_change": "preserved-baseline",
+      "sha256": "8fff10f70c0dfccf0b10fffcca2398ffe8af3533078c51f2253b917da1a8753e"
+    },
+    {
+      "baseline_sha256": "963f5b2f004ccfe6472e42fc95c428e3887a5f4ea66bcb50cf56310eedc1e3b3",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/.gitignore",
+      "session_change": "preserved-baseline",
+      "sha256": "963f5b2f004ccfe6472e42fc95c428e3887a5f4ea66bcb50cf56310eedc1e3b3"
+    },
+    {
+      "baseline_sha256": "136768cb1d6516e64169efd25e52617befe0abb6af5f452e75a894bf90c03e7f",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/10_context/Demo walkthrough.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "83033145aa2b5b8ccb35a64ade5f04afbc4bfc562d91738a3c8807821b1c03da"
+    },
+    {
+      "baseline_sha256": "e4cbc7e1369c6917aab8f098fa1e00c5c01d39bea4dc0838a0cf64225c09c159",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/20_sources/IESO Data Directory.md",
+      "session_change": "preserved-baseline",
+      "sha256": "e4cbc7e1369c6917aab8f098fa1e00c5c01d39bea4dc0838a0cf64225c09c159"
+    },
+    {
+      "baseline_sha256": "7a3d97db0ee977678ac74dab91d9b2cab9ccb6e16329cd85c6f859ad660a0b20",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/20_sources/IESO Year in Review.md",
+      "session_change": "preserved-baseline",
+      "sha256": "7a3d97db0ee977678ac74dab91d9b2cab9ccb6e16329cd85c6f859ad660a0b20"
+    },
+    {
+      "baseline_sha256": "0b6c0596fee4dc4eba969a86e96ff9f6a97c45e31183733090a0e2de8d469728",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/20_sources/IESO zonal map reference.md",
+      "session_change": "preserved-baseline",
+      "sha256": "0b6c0596fee4dc4eba969a86e96ff9f6a97c45e31183733090a0e2de8d469728"
+    },
+    {
+      "baseline_sha256": "62f9ea28acc6d235214282afa02a6441d501399ce153a4f58b1742048452954b",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/20_sources/OEB open data directory.md",
+      "session_change": "preserved-baseline",
+      "sha256": "62f9ea28acc6d235214282afa02a6441d501399ce153a4f58b1742048452954b"
+    },
+    {
+      "baseline_sha256": "e385a95b7b1ea2eba953d7d52dbbc629fa2505baa001a3ce6a48e17c11238cff",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/20_sources/Ontario Energy Report 2023 supporting data.md",
+      "session_change": "preserved-baseline",
+      "sha256": "e385a95b7b1ea2eba953d7d52dbbc629fa2505baa001a3ce6a48e17c11238cff"
+    },
+    {
+      "baseline_sha256": "19c2acf736ef8e2586e58a42e1f7de53f0becc4628b3b1b37d8c99190e917094",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/20_sources/open-data/ontario-energy-report-2023/README.md",
+      "session_change": "preserved-baseline",
+      "sha256": "19c2acf736ef8e2586e58a42e1f7de53f0becc4628b3b1b37d8c99190e917094"
+    },
+    {
+      "baseline_sha256": "cbb808f349babfcfbae767fb9f5b45cce25502d424521959978eb3b5ab40c023",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/40_pipelines/Artifact mirroring pipeline.md",
+      "session_change": "preserved-baseline",
+      "sha256": "cbb808f349babfcfbae767fb9f5b45cce25502d424521959978eb3b5ab40c023"
+    },
+    {
+      "baseline_sha256": "5bc7a5698f1cba56ba4fcd4251421b6de6c6559cdcd4e42c5a94c210e6056fa3",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/70_outputs/Output relationship map.md",
+      "session_change": "preserved-baseline",
+      "sha256": "5bc7a5698f1cba56ba4fcd4251421b6de6c6559cdcd4e42c5a94c210e6056fa3"
+    },
+    {
+      "baseline_sha256": "7dd5e409a584aafcdf1a2b361dbc8098dc4a7b1ce7ae0c5b2e8f7243cebd9d66",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/80_governance/Decision - use a clean-room public corpus.md",
+      "session_change": "preserved-baseline",
+      "sha256": "7dd5e409a584aafcdf1a2b361dbc8098dc4a7b1ce7ae0c5b2e8f7243cebd9d66"
+    },
+    {
+      "baseline_sha256": "1a1beb38006507d834926a00fa3abdcb8edf4c2cef2addc24add0bd9856b7580",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/80_governance/Open data license register.md",
+      "session_change": "preserved-baseline",
+      "sha256": "1a1beb38006507d834926a00fa3abdcb8edf4c2cef2addc24add0bd9856b7580"
+    },
+    {
+      "baseline_sha256": "7e7b65f7641556005ec15508d73ee5bbe274d36a567c5fac346d8f732e24c86d",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/90_operations/Example release checklist.md",
+      "session_change": "preserved-baseline",
+      "sha256": "7e7b65f7641556005ec15508d73ee5bbe274d36a567c5fac346d8f732e24c86d"
+    },
+    {
+      "baseline_sha256": "fe992a0d781e04c46aafe28531eee97916987088b9cbeacbe6544f18066bdd8a",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/90_operations/Freshness dashboard specification.md",
+      "session_change": "preserved-baseline",
+      "sha256": "fe992a0d781e04c46aafe28531eee97916987088b9cbeacbe6544f18066bdd8a"
+    },
+    {
+      "baseline_sha256": "55d191203bea23ae6f258a8822b9ca271bc85e2eef9ca350b01a09207e699ab9",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/CLAUDE.md",
+      "session_change": "preserved-baseline",
+      "sha256": "55d191203bea23ae6f258a8822b9ca271bc85e2eef9ca350b01a09207e699ab9"
+    },
+    {
+      "baseline_sha256": "f26a21c10df4c906c36313f1a5f8950f25acaa5c4a71200b415fd787e94182a5",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/INDEX.md",
+      "session_change": "preserved-baseline",
+      "sha256": "f26a21c10df4c906c36313f1a5f8950f25acaa5c4a71200b415fd787e94182a5"
+    },
+    {
+      "baseline_sha256": "72fdb6e4c16a9e6105f409a24ff1af94e7f52b33d85c93acc4f0ad6998ebed7a",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/RETENTION.md",
+      "session_change": "preserved-baseline",
+      "sha256": "72fdb6e4c16a9e6105f409a24ff1af94e7f52b33d85c93acc4f0ad6998ebed7a"
+    },
+    {
+      "baseline_sha256": "0da5906f8491095fbccbc33a7d9536b9e3ec74c83766c343d808b1c652cdf910",
+      "git_state": "untracked",
+      "path": "examples/ontario-electricity-evidence-vault/_meta/acquisition-manifest.json",
+      "session_change": "preserved-baseline",
+      "sha256": "0da5906f8491095fbccbc33a7d9536b9e3ec74c83766c343d808b1c652cdf910"
+    },
+    {
+      "baseline_sha256": "7e6b41ffbd9cd4e0777cee2bcf3a0af3dacf4540821034fa5776eb1c5778f231",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/_meta/agent-rules.md",
+      "session_change": "preserved-baseline",
+      "sha256": "7e6b41ffbd9cd4e0777cee2bcf3a0af3dacf4540821034fa5776eb1c5778f231"
+    },
+    {
+      "baseline_sha256": "57ef529402635a5b93735c1fefb19dd85149d4c3441a3d83b5c20be62043ccb3",
+      "git_state": "untracked",
+      "path": "examples/ontario-electricity-evidence-vault/_meta/knowledge-views/reviewed/view_a81f3973de5885a05ea45da94822.md",
+      "session_change": "preserved-baseline",
+      "sha256": "57ef529402635a5b93735c1fefb19dd85149d4c3441a3d83b5c20be62043ccb3"
+    },
+    {
+      "baseline_sha256": "58363a8cd2843a5156c3459397af2c276b6b586eec6c6e35a4cd819b38f06ea5",
+      "git_state": "untracked",
+      "path": "examples/ontario-electricity-evidence-vault/_meta/knowledge-views/reviewed/view_f085427fd55094d9ce5f21c916c8.md",
+      "session_change": "preserved-baseline",
+      "sha256": "58363a8cd2843a5156c3459397af2c276b6b586eec6c6e35a4cd819b38f06ea5"
+    },
+    {
+      "baseline_sha256": "210c65dde8ba72ec52922a59c6e605177ff4de2eb2889adec4bbf0a14920b041",
+      "git_state": "untracked",
+      "path": "examples/ontario-electricity-evidence-vault/_meta/legacy-markdown-migration.json",
+      "session_change": "preserved-baseline",
+      "sha256": "210c65dde8ba72ec52922a59c6e605177ff4de2eb2889adec4bbf0a14920b041"
+    },
+    {
+      "baseline_sha256": "128603f74ae43521095cb8cf4ca41eb258c69013c5b3d77c68b547844db154bc",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/_meta/lifecycle-states.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "128603f74ae43521095cb8cf4ca41eb258c69013c5b3d77c68b547844db154bc"
+    },
+    {
+      "baseline_sha256": "c9d3cf88883a0d1a0a52aefed88b9a874ff27af286549df3ffabdf91734c920c",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/_meta/profile.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "c9d3cf88883a0d1a0a52aefed88b9a874ff27af286549df3ffabdf91734c920c"
+    },
+    {
+      "baseline_sha256": "acac7d443021ed3e0731c88d346b3a9ae21e888cd602783f8d7ee11c81684a1f",
+      "git_state": "tracked-modified",
+      "path": "examples/ontario-electricity-evidence-vault/tools/README.md",
+      "session_change": "preserved-baseline",
+      "sha256": "acac7d443021ed3e0731c88d346b3a9ae21e888cd602783f8d7ee11c81684a1f"
+    },
+    {
+      "baseline_sha256": "da609551d96b0ea47b6b113fc49c60de2ce1e7560682d3b21ef1c8960302e381",
+      "git_state": "untracked",
+      "path": "scripts/build_ontario_stress_corpus.py",
+      "session_change": "preserved-baseline",
+      "sha256": "da609551d96b0ea47b6b113fc49c60de2ce1e7560682d3b21ef1c8960302e381"
+    },
+    {
+      "baseline_sha256": "7829d315136d302f215003ad95f2bec77a90fbd058e180814fd5b5d3d58bb465",
+      "git_state": "tracked-modified",
+      "path": "scripts/no_data_scan.py",
+      "session_change": "preserved-baseline",
+      "sha256": "7829d315136d302f215003ad95f2bec77a90fbd058e180814fd5b5d3d58bb465"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "scripts/validate_trustworthy_context.py",
+      "session_change": "added",
+      "sha256": "1467901e4bf9f18cc2464b1ce167b5c5819492ff39b2a147db642fd15dbb91a1"
+    },
+    {
+      "baseline_sha256": "34631f459daf3e0ef5d8d6cd36a62f6dd0f59e168f5a274e99975c37aa08b1f0",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/annotation_migration.py",
+      "session_change": "preserved-baseline",
+      "sha256": "34631f459daf3e0ef5d8d6cd36a62f6dd0f59e168f5a274e99975c37aa08b1f0"
+    },
+    {
+      "baseline_sha256": "568acd18aaf3c4f37dd5f9a15cfb8c6cfd1fd9a75734b69952ec1be922dd62be",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/benchmark.py",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "e0a948d9a6922961d1bb9b53bc6f68fdca9381df6ebfe120d9012213c483d0b4"
+    },
+    {
+      "baseline_sha256": "f818ab7e25c16a6875360bd5e60d70e2574b989ad8768980037660292a9aa1e6",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/builtin_profiles/blank.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "f818ab7e25c16a6875360bd5e60d70e2574b989ad8768980037660292a9aa1e6"
+    },
+    {
+      "baseline_sha256": "2662519b1766ac54fe0f34746a70c2b2da2c31ee630c4de3c189344af998d24f",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/builtin_profiles/business-operations.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "2662519b1766ac54fe0f34746a70c2b2da2c31ee630c4de3c189344af998d24f"
+    },
+    {
+      "baseline_sha256": "996d772e58f186315725294a84b7dcf9020dd07ac2eef0e217a50ec02cd74eae",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/builtin_profiles/research-learning.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "996d772e58f186315725294a84b7dcf9020dd07ac2eef0e217a50ec02cd74eae"
+    },
+    {
+      "baseline_sha256": "5e68aecb6c580cfd0f300713d141b66ffe8acd061d52a0506010d47f50c039cf",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/builtin_profiles/software-project.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "5e68aecb6c580cfd0f300713d141b66ffe8acd061d52a0506010d47f50c039cf"
+    },
+    {
+      "baseline_sha256": "73ddfeffb9659952f6a79922db3322712bfa83d64e12f8a748d9b9e8df84f988",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/catalog.py",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "ea35b10fdc5d69509678f83e94bb5a448bde8d428b9c70436c51b2535d93d38c"
+    },
+    {
+      "baseline_sha256": "06c72597e4a2a02cbb0617cac9005d9d62c827eac5f6dfe79b562379b1788ea2",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/catalog_explorer.py",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "97766d7f39b129b80620c4077046ab16029afb592b095e8305a2129c56a331ed"
+    },
+    {
+      "baseline_sha256": "8723c6f1f69fecc55893c13c4e6a2c3b16286c50620beed445595a443d67e7a7",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/changes/materialize.py",
+      "session_change": "preserved-baseline",
+      "sha256": "8723c6f1f69fecc55893c13c4e6a2c3b16286c50620beed445595a443d67e7a7"
+    },
+    {
+      "baseline_sha256": "014633ab45c32a83cdbf4e700326b513b970e38d66556636162a883aeffa6522",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/changes/reconcile.py",
+      "session_change": "preserved-baseline",
+      "sha256": "014633ab45c32a83cdbf4e700326b513b970e38d66556636162a883aeffa6522"
+    },
+    {
+      "baseline_sha256": "37d96862c16c9f5a7090bed864ebefdc1e8da514bc53c8ad2bfdae7359f5631e",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/changes/worker.py",
+      "session_change": "preserved-baseline",
+      "sha256": "37d96862c16c9f5a7090bed864ebefdc1e8da514bc53c8ad2bfdae7359f5631e"
+    },
+    {
+      "baseline_sha256": "d8c76cb479e7df041cbfc0febbee307f372521ab6055b181742d6862a14038cf",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/cli.py",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "d8855704de67ac68e8848a0ad3550d0d5354c5c9dd8315e00efa3066bd4c9420"
+    },
+    {
+      "baseline_sha256": "4e490db8ad606c1eea87f1cf6ad3ccb011233965b03dad520e540bde399362ca",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/code_intelligence/__init__.py",
+      "session_change": "preserved-baseline",
+      "sha256": "4e490db8ad606c1eea87f1cf6ad3ccb011233965b03dad520e540bde399362ca"
+    },
+    {
+      "baseline_sha256": "a8b6fc5555ef61be37f8d681ebca46e18fa6264e734f83fb3952d91c07fd6a99",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/code_intelligence/adapter.py",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "94b486ba28f20e8e14b0e46544174a5c7556a71b4344eab4890820076849ea2c"
+    },
+    {
+      "baseline_sha256": "a14ade9bfac4df58f359076fe92379804ff27903aec9876e052f5b22ad7404e8",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/code_intelligence/context.py",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "77e0843b08115eab99ff304f827ca221f21637d0c2ccc4683cb9f3c4464e22d6"
+    },
+    {
+      "baseline_sha256": "37969bd5837a13859b74b9fb8254d281aae57fef1f359385a1680e4784b06890",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/code_intelligence/service.py",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "dc7e0977ed870320058169af6cf2758464664eafb53b10dc075fec7fec5e1733"
+    },
+    {
+      "baseline_sha256": "16fb5254669331da51028b4c253469c7ad8de2d65622847cc3bb1348378bbea6",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/context_assembly/__init__.py",
+      "session_change": "preserved-baseline",
+      "sha256": "16fb5254669331da51028b4c253469c7ad8de2d65622847cc3bb1348378bbea6"
+    },
+    {
+      "baseline_sha256": "93ad8e84adac1be3277f6a22a3e5a52afae635fc0dab38fc440ef381c1574d30",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/context_assembly/builder.py",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "b7f7d0fd63e2910b8bc2151fd71464c620240ae40b2181a75bb9223b081e09bf"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "src/mirrorarc/context_assembly/export.py",
+      "session_change": "added",
+      "sha256": "1f6f6a8d6706641e51cca019b4c03b56b540a7d43bda736e49e774f70a75c9e5"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "src/mirrorarc/context_assembly/retrieval.py",
+      "session_change": "added",
+      "sha256": "0e54327cd39d46c52328e42224f4e5a052cbac575b065b1b3538a4de0d797a24"
+    },
+    {
+      "baseline_sha256": "3260edddfd3576854c83d6090801de74aea51c68778837e84740c7ea64b67de1",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/context_assembly/store.py",
+      "session_change": "preserved-baseline",
+      "sha256": "3260edddfd3576854c83d6090801de74aea51c68778837e84740c7ea64b67de1"
+    },
+    {
+      "baseline_sha256": "3ccdd9d670dfc9fbea4165aad7b45b3f138f7df37742e0017b5c74cbedf286b1",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/conversion.py",
+      "session_change": "preserved-baseline",
+      "sha256": "3ccdd9d670dfc9fbea4165aad7b45b3f138f7df37742e0017b5c74cbedf286b1"
+    },
+    {
+      "baseline_sha256": "4fbd3131e1a174b5c038c9682351a1ed53fb279dc98ac60a57b1c0fb9e0da61e",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/doctor.py",
+      "session_change": "preserved-baseline",
+      "sha256": "4fbd3131e1a174b5c038c9682351a1ed53fb279dc98ac60a57b1c0fb9e0da61e"
+    },
+    {
+      "baseline_sha256": "f80a3693a695750f56e10763e5021a216e5757fb082a9ca8416c40d7b243e545",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/knowledge_inventory.py",
+      "session_change": "preserved-baseline",
+      "sha256": "f80a3693a695750f56e10763e5021a216e5757fb082a9ca8416c40d7b243e545"
+    },
+    {
+      "baseline_sha256": "65bbe6dd634090d97cae604b66c8516e7f523ce3fed2458399792fa107b62247",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/knowledge_views/__init__.py",
+      "session_change": "preserved-baseline",
+      "sha256": "65bbe6dd634090d97cae604b66c8516e7f523ce3fed2458399792fa107b62247"
+    },
+    {
+      "baseline_sha256": "9e26f321331b2c4d4ce0452f212ed7ca56ea32da00313ea9ec1f4fa79898423b",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/knowledge_views/definitions.py",
+      "session_change": "preserved-baseline",
+      "sha256": "9e26f321331b2c4d4ce0452f212ed7ca56ea32da00313ea9ec1f4fa79898423b"
+    },
+    {
+      "baseline_sha256": "7965e0fc47b2f6ba7fbfafdb503df3bf05556f1ab54bd7e9359b37e631b8c642",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/knowledge_views/lifecycle.py",
+      "session_change": "preserved-baseline",
+      "sha256": "7965e0fc47b2f6ba7fbfafdb503df3bf05556f1ab54bd7e9359b37e631b8c642"
+    },
+    {
+      "baseline_sha256": "7eb1714c294f058f34bc96be11ba0fdd409f9b63a11f140de98396c27fc89925",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/knowledge_views/render.py",
+      "session_change": "preserved-baseline",
+      "sha256": "7eb1714c294f058f34bc96be11ba0fdd409f9b63a11f140de98396c27fc89925"
+    },
+    {
+      "baseline_sha256": "fd3aa08b02b20ad17f6f5e2f1e528a0e692b94d3075e90202512e76c650f630a",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/knowledge_views/store.py",
+      "session_change": "preserved-baseline",
+      "sha256": "fd3aa08b02b20ad17f6f5e2f1e528a0e692b94d3075e90202512e76c650f630a"
+    },
+    {
+      "baseline_sha256": "03ea0236b173eea5606774bada10f8f0d4ffb425658b0c51059b13574ff349a2",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/lint.py",
+      "session_change": "preserved-baseline",
+      "sha256": "03ea0236b173eea5606774bada10f8f0d4ffb425658b0c51059b13574ff349a2"
+    },
+    {
+      "baseline_sha256": "bbd7d002416fd76e7be2d90000951940ead62d3144c0c92165988272c741dc6f",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/migration.py",
+      "session_change": "preserved-baseline",
+      "sha256": "bbd7d002416fd76e7be2d90000951940ead62d3144c0c92165988272c741dc6f"
+    },
+    {
+      "baseline_sha256": "5247bd6c5311dd61b40f5eda5f203590f159dd9bf2e5f78adfb30c36af3c565a",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/mirrors/github_repos.py",
+      "session_change": "preserved-baseline",
+      "sha256": "5247bd6c5311dd61b40f5eda5f203590f159dd9bf2e5f78adfb30c36af3c565a"
+    },
+    {
+      "baseline_sha256": "5ae5c44b7c508d581905087cf567776d3b95501f4cc82f3e002876029a4cae4e",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/mirrors/office.py",
+      "session_change": "preserved-baseline",
+      "sha256": "5ae5c44b7c508d581905087cf567776d3b95501f4cc82f3e002876029a4cae4e"
+    },
+    {
+      "baseline_sha256": "0fec80e214fbc27629c4422abf8cd1630a06dc45cc229ea168b7a021dfc185ac",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/overlap.py",
+      "session_change": "preserved-baseline",
+      "sha256": "0fec80e214fbc27629c4422abf8cd1630a06dc45cc229ea168b7a021dfc185ac"
+    },
+    {
+      "baseline_sha256": "d991b6fa211749aa4061570afe3790dc3b06e51b9cfa30114f6d7aa1dad74fb7",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/profile_scaffold.py",
+      "session_change": "preserved-baseline",
+      "sha256": "d991b6fa211749aa4061570afe3790dc3b06e51b9cfa30114f6d7aa1dad74fb7"
+    },
+    {
+      "baseline_sha256": "b00b9c5cb096cc769ab46d5fcb8d053eaddd82db216cbd790af81782e43652be",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/profiles.py",
+      "session_change": "preserved-baseline",
+      "sha256": "b00b9c5cb096cc769ab46d5fcb8d053eaddd82db216cbd790af81782e43652be"
+    },
+    {
+      "baseline_sha256": "80af9cc6a06d121b07bb22444c7eb9ff16fb706e9bd71ffe5500b05ac4094da0",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/recovery.py",
+      "session_change": "preserved-baseline",
+      "sha256": "80af9cc6a06d121b07bb22444c7eb9ff16fb706e9bd71ffe5500b05ac4094da0"
+    },
+    {
+      "baseline_sha256": "0619cca6c9fef2697761e1ea399a78a21775fa12601b0bb4ef9fd4942faae04d",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/relationships/__init__.py",
+      "session_change": "preserved-baseline",
+      "sha256": "0619cca6c9fef2697761e1ea399a78a21775fa12601b0bb4ef9fd4942faae04d"
+    },
+    {
+      "baseline_sha256": "5845804bf1ab346a2eb8474487108466f43d21fff518a47b290f98c6140f662b",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/relationships/deterministic.py",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "a3fb395a87accb85e3a72ed6ddc0993c2b755009f14e3b1835c987720494131a"
+    },
+    {
+      "baseline_sha256": "a1fcc529b98d8a61f97eff7719216185b514846d8dc98971bfa0d1a682fa68d2",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/relationships/invalidation.py",
+      "session_change": "preserved-baseline",
+      "sha256": "a1fcc529b98d8a61f97eff7719216185b514846d8dc98971bfa0d1a682fa68d2"
+    },
+    {
+      "baseline_sha256": "25dbb7d9ef3e2a75cafd86b073fbbf4380b69763a1aa7ab3145f8137a8f77455",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/relationships/model.py",
+      "session_change": "preserved-baseline",
+      "sha256": "25dbb7d9ef3e2a75cafd86b073fbbf4380b69763a1aa7ab3145f8137a8f77455"
+    },
+    {
+      "baseline_sha256": "df9754bdcbf21d9272fa9220c6e1a3c3391d8cc2e47ba6abbfcc0aab0b1c11fe",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/relationships/proposals.py",
+      "session_change": "preserved-baseline",
+      "sha256": "df9754bdcbf21d9272fa9220c6e1a3c3391d8cc2e47ba6abbfcc0aab0b1c11fe"
+    },
+    {
+      "baseline_sha256": "5346d054bc7b85f20e81a9ac577cf0c3092a91feaf9eb59c4bc165c5b7a610fb",
+      "git_state": "untracked",
+      "path": "src/mirrorarc/relationships/store.py",
+      "session_change": "preserved-baseline",
+      "sha256": "5346d054bc7b85f20e81a9ac577cf0c3092a91feaf9eb59c4bc165c5b7a610fb"
+    },
+    {
+      "baseline_sha256": "594d2b37b4756865dee5b30d73637a11560a1f2092b98c9fac21bbb745fcd122",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/.gitignore",
+      "session_change": "preserved-baseline",
+      "sha256": "594d2b37b4756865dee5b30d73637a11560a1f2092b98c9fac21bbb745fcd122"
+    },
+    {
+      "baseline_sha256": "55d191203bea23ae6f258a8822b9ca271bc85e2eef9ca350b01a09207e699ab9",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/CLAUDE.md",
+      "session_change": "preserved-baseline",
+      "sha256": "55d191203bea23ae6f258a8822b9ca271bc85e2eef9ca350b01a09207e699ab9"
+    },
+    {
+      "baseline_sha256": "ab63f3abe32cca7c42ef93e6db2cab487ab74cb2761e9a2ca76766aab1e5cde4",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/INDEX.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "a718d0361fec0c927f19e2bb3887fda9ba0fde2e31640c04939ec748b5a553df"
+    },
+    {
+      "baseline_sha256": "5ec553743fd91b53c628270c7ae61f23ffa6622d58d9ea0ffcacce58f793c050",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/RETENTION.md",
+      "session_change": "preserved-baseline",
+      "sha256": "5ec553743fd91b53c628270c7ae61f23ffa6622d58d9ea0ffcacce58f793c050"
+    },
+    {
+      "baseline_sha256": "eb38306697b8fad1d2980bbdc87087a9adf3c83c30f2ad99c2e11ab6fba0f964",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_meta/agent-rules.md",
+      "session_change": "preserved-baseline",
+      "sha256": "eb38306697b8fad1d2980bbdc87087a9adf3c83c30f2ad99c2e11ab6fba0f964"
+    },
+    {
+      "baseline_sha256": "658e62c43f7ae2655c90be114c470bab29ebb213b64718459201d1b27e1b4a5b",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_meta/conventions.md",
+      "session_change": "preserved-baseline",
+      "sha256": "658e62c43f7ae2655c90be114c470bab29ebb213b64718459201d1b27e1b4a5b"
+    },
+    {
+      "baseline_sha256": "ab3956e65b80ae7f2dc0d011423a7694d6e86890baeef039e1efe2548dfd2433",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_meta/domain-map.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "ab3956e65b80ae7f2dc0d011423a7694d6e86890baeef039e1efe2548dfd2433"
+    },
+    {
+      "baseline_sha256": "128603f74ae43521095cb8cf4ca41eb258c69013c5b3d77c68b547844db154bc",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_meta/lifecycle-states.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "128603f74ae43521095cb8cf4ca41eb258c69013c5b3d77c68b547844db154bc"
+    },
+    {
+      "baseline_sha256": "c9d3cf88883a0d1a0a52aefed88b9a874ff27af286549df3ffabdf91734c920c",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_meta/profile.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "c9d3cf88883a0d1a0a52aefed88b9a874ff27af286549df3ffabdf91734c920c"
+    },
+    {
+      "baseline_sha256": "412c323dc7f8473ccd1521119087b2f74801769aac01d4bbc5f1d5034173b46b",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_templates/base-note.md",
+      "session_change": "preserved-baseline",
+      "sha256": "412c323dc7f8473ccd1521119087b2f74801769aac01d4bbc5f1d5034173b46b"
+    },
+    {
+      "baseline_sha256": "35ec140ad0e7ea85ec2d9955446a4be2e4ac120d7c8a5f09745d4669b3946b0c",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_templates/data-contract.md",
+      "session_change": "preserved-baseline",
+      "sha256": "35ec140ad0e7ea85ec2d9955446a4be2e4ac120d7c8a5f09745d4669b3946b0c"
+    },
+    {
+      "baseline_sha256": "36cb65fdc7b5ce1483106c88b55e22d19ce972f3d89c3e35c30e2794af4cf191",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_templates/dataset.md",
+      "session_change": "preserved-baseline",
+      "sha256": "36cb65fdc7b5ce1483106c88b55e22d19ce972f3d89c3e35c30e2794af4cf191"
+    },
+    {
+      "baseline_sha256": "0d8f5788dd36d163068e49c86fbc66112b47ced8fcec06dffc9ee2d6be816691",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_templates/decision-record.md",
+      "session_change": "preserved-baseline",
+      "sha256": "0d8f5788dd36d163068e49c86fbc66112b47ced8fcec06dffc9ee2d6be816691"
+    },
+    {
+      "baseline_sha256": "f09b5f69dabafdbba50fd830f7815a0c9dfee5b13a2ddd67ea5cac3dfe31727f",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_templates/evaluation.md",
+      "session_change": "preserved-baseline",
+      "sha256": "f09b5f69dabafdbba50fd830f7815a0c9dfee5b13a2ddd67ea5cac3dfe31727f"
+    },
+    {
+      "baseline_sha256": "6df0449b99cab688ef8ffaacbfae0da9a3c2e98ff40dedfdd3fff0d4bf82824b",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_templates/model.md",
+      "session_change": "preserved-baseline",
+      "sha256": "6df0449b99cab688ef8ffaacbfae0da9a3c2e98ff40dedfdd3fff0d4bf82824b"
+    },
+    {
+      "baseline_sha256": "2e0a91b6abd502904177ba3be3b07d7d0a3eaec0b8cc850d3948eecb1a3c9b19",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_templates/pipeline.md",
+      "session_change": "preserved-baseline",
+      "sha256": "2e0a91b6abd502904177ba3be3b07d7d0a3eaec0b8cc850d3948eecb1a3c9b19"
+    },
+    {
+      "baseline_sha256": "ba09d02aface0de68ca9edc2a1813cb0492bdfab087d4ff5bfd5e86150a2dcff",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_templates/runbook.md",
+      "session_change": "preserved-baseline",
+      "sha256": "ba09d02aface0de68ca9edc2a1813cb0492bdfab087d4ff5bfd5e86150a2dcff"
+    },
+    {
+      "baseline_sha256": "b3bcafff3bf53a060331d8210aba5a1e84d8ea6abb730aeaea6527e296f92e7b",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/_templates/source-ref.md",
+      "session_change": "preserved-baseline",
+      "sha256": "b3bcafff3bf53a060331d8210aba5a1e84d8ea6abb730aeaea6527e296f92e7b"
+    },
+    {
+      "baseline_sha256": "acac7d443021ed3e0731c88d346b3a9ae21e888cd602783f8d7ee11c81684a1f",
+      "git_state": "tracked-modified",
+      "path": "src/mirrorarc/template/tools/README.md",
+      "session_change": "preserved-baseline",
+      "sha256": "acac7d443021ed3e0731c88d346b3a9ae21e888cd602783f8d7ee11c81684a1f"
+    },
+    {
+      "baseline_sha256": "594d2b37b4756865dee5b30d73637a11560a1f2092b98c9fac21bbb745fcd122",
+      "git_state": "tracked-modified",
+      "path": "template/.gitignore",
+      "session_change": "preserved-baseline",
+      "sha256": "594d2b37b4756865dee5b30d73637a11560a1f2092b98c9fac21bbb745fcd122"
+    },
+    {
+      "baseline_sha256": "55d191203bea23ae6f258a8822b9ca271bc85e2eef9ca350b01a09207e699ab9",
+      "git_state": "tracked-modified",
+      "path": "template/CLAUDE.md",
+      "session_change": "preserved-baseline",
+      "sha256": "55d191203bea23ae6f258a8822b9ca271bc85e2eef9ca350b01a09207e699ab9"
+    },
+    {
+      "baseline_sha256": "ab63f3abe32cca7c42ef93e6db2cab487ab74cb2761e9a2ca76766aab1e5cde4",
+      "git_state": "tracked-modified",
+      "path": "template/INDEX.md",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "a718d0361fec0c927f19e2bb3887fda9ba0fde2e31640c04939ec748b5a553df"
+    },
+    {
+      "baseline_sha256": "5ec553743fd91b53c628270c7ae61f23ffa6622d58d9ea0ffcacce58f793c050",
+      "git_state": "tracked-modified",
+      "path": "template/RETENTION.md",
+      "session_change": "preserved-baseline",
+      "sha256": "5ec553743fd91b53c628270c7ae61f23ffa6622d58d9ea0ffcacce58f793c050"
+    },
+    {
+      "baseline_sha256": "eb38306697b8fad1d2980bbdc87087a9adf3c83c30f2ad99c2e11ab6fba0f964",
+      "git_state": "tracked-modified",
+      "path": "template/_meta/agent-rules.md",
+      "session_change": "preserved-baseline",
+      "sha256": "eb38306697b8fad1d2980bbdc87087a9adf3c83c30f2ad99c2e11ab6fba0f964"
+    },
+    {
+      "baseline_sha256": "658e62c43f7ae2655c90be114c470bab29ebb213b64718459201d1b27e1b4a5b",
+      "git_state": "tracked-modified",
+      "path": "template/_meta/conventions.md",
+      "session_change": "preserved-baseline",
+      "sha256": "658e62c43f7ae2655c90be114c470bab29ebb213b64718459201d1b27e1b4a5b"
+    },
+    {
+      "baseline_sha256": "ab3956e65b80ae7f2dc0d011423a7694d6e86890baeef039e1efe2548dfd2433",
+      "git_state": "tracked-modified",
+      "path": "template/_meta/domain-map.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "ab3956e65b80ae7f2dc0d011423a7694d6e86890baeef039e1efe2548dfd2433"
+    },
+    {
+      "baseline_sha256": "128603f74ae43521095cb8cf4ca41eb258c69013c5b3d77c68b547844db154bc",
+      "git_state": "tracked-modified",
+      "path": "template/_meta/lifecycle-states.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "128603f74ae43521095cb8cf4ca41eb258c69013c5b3d77c68b547844db154bc"
+    },
+    {
+      "baseline_sha256": "c9d3cf88883a0d1a0a52aefed88b9a874ff27af286549df3ffabdf91734c920c",
+      "git_state": "tracked-modified",
+      "path": "template/_meta/profile.yml",
+      "session_change": "preserved-baseline",
+      "sha256": "c9d3cf88883a0d1a0a52aefed88b9a874ff27af286549df3ffabdf91734c920c"
+    },
+    {
+      "baseline_sha256": "412c323dc7f8473ccd1521119087b2f74801769aac01d4bbc5f1d5034173b46b",
+      "git_state": "tracked-modified",
+      "path": "template/_templates/base-note.md",
+      "session_change": "preserved-baseline",
+      "sha256": "412c323dc7f8473ccd1521119087b2f74801769aac01d4bbc5f1d5034173b46b"
+    },
+    {
+      "baseline_sha256": "35ec140ad0e7ea85ec2d9955446a4be2e4ac120d7c8a5f09745d4669b3946b0c",
+      "git_state": "tracked-modified",
+      "path": "template/_templates/data-contract.md",
+      "session_change": "preserved-baseline",
+      "sha256": "35ec140ad0e7ea85ec2d9955446a4be2e4ac120d7c8a5f09745d4669b3946b0c"
+    },
+    {
+      "baseline_sha256": "36cb65fdc7b5ce1483106c88b55e22d19ce972f3d89c3e35c30e2794af4cf191",
+      "git_state": "tracked-modified",
+      "path": "template/_templates/dataset.md",
+      "session_change": "preserved-baseline",
+      "sha256": "36cb65fdc7b5ce1483106c88b55e22d19ce972f3d89c3e35c30e2794af4cf191"
+    },
+    {
+      "baseline_sha256": "0d8f5788dd36d163068e49c86fbc66112b47ced8fcec06dffc9ee2d6be816691",
+      "git_state": "tracked-modified",
+      "path": "template/_templates/decision-record.md",
+      "session_change": "preserved-baseline",
+      "sha256": "0d8f5788dd36d163068e49c86fbc66112b47ced8fcec06dffc9ee2d6be816691"
+    },
+    {
+      "baseline_sha256": "f09b5f69dabafdbba50fd830f7815a0c9dfee5b13a2ddd67ea5cac3dfe31727f",
+      "git_state": "tracked-modified",
+      "path": "template/_templates/evaluation.md",
+      "session_change": "preserved-baseline",
+      "sha256": "f09b5f69dabafdbba50fd830f7815a0c9dfee5b13a2ddd67ea5cac3dfe31727f"
+    },
+    {
+      "baseline_sha256": "6df0449b99cab688ef8ffaacbfae0da9a3c2e98ff40dedfdd3fff0d4bf82824b",
+      "git_state": "tracked-modified",
+      "path": "template/_templates/model.md",
+      "session_change": "preserved-baseline",
+      "sha256": "6df0449b99cab688ef8ffaacbfae0da9a3c2e98ff40dedfdd3fff0d4bf82824b"
+    },
+    {
+      "baseline_sha256": "2e0a91b6abd502904177ba3be3b07d7d0a3eaec0b8cc850d3948eecb1a3c9b19",
+      "git_state": "tracked-modified",
+      "path": "template/_templates/pipeline.md",
+      "session_change": "preserved-baseline",
+      "sha256": "2e0a91b6abd502904177ba3be3b07d7d0a3eaec0b8cc850d3948eecb1a3c9b19"
+    },
+    {
+      "baseline_sha256": "ba09d02aface0de68ca9edc2a1813cb0492bdfab087d4ff5bfd5e86150a2dcff",
+      "git_state": "tracked-modified",
+      "path": "template/_templates/runbook.md",
+      "session_change": "preserved-baseline",
+      "sha256": "ba09d02aface0de68ca9edc2a1813cb0492bdfab087d4ff5bfd5e86150a2dcff"
+    },
+    {
+      "baseline_sha256": "b3bcafff3bf53a060331d8210aba5a1e84d8ea6abb730aeaea6527e296f92e7b",
+      "git_state": "tracked-modified",
+      "path": "template/_templates/source-ref.md",
+      "session_change": "preserved-baseline",
+      "sha256": "b3bcafff3bf53a060331d8210aba5a1e84d8ea6abb730aeaea6527e296f92e7b"
+    },
+    {
+      "baseline_sha256": "acac7d443021ed3e0731c88d346b3a9ae21e888cd602783f8d7ee11c81684a1f",
+      "git_state": "tracked-modified",
+      "path": "template/tools/README.md",
+      "session_change": "preserved-baseline",
+      "sha256": "acac7d443021ed3e0731c88d346b3a9ae21e888cd602783f8d7ee11c81684a1f"
+    },
+    {
+      "baseline_sha256": "a07078e33dd75b3126e5d7e4e7b57b5a0cecd3c91e448ce3124cc7971b2d4ffe",
+      "git_state": "untracked",
+      "path": "tests/fixtures/codegraph_v1_5_0/affected-summary.json",
+      "session_change": "preserved-baseline",
+      "sha256": "a07078e33dd75b3126e5d7e4e7b57b5a0cecd3c91e448ce3124cc7971b2d4ffe"
+    },
+    {
+      "baseline_sha256": "37a60ffd40cae908abc8d44fa5538e9e31a5e7e912c1494be26380bdf4ca908d",
+      "git_state": "untracked",
+      "path": "tests/fixtures/codegraph_v1_5_0/callees-demand-change.json",
+      "session_change": "preserved-baseline",
+      "sha256": "37a60ffd40cae908abc8d44fa5538e9e31a5e7e912c1494be26380bdf4ca908d"
+    },
+    {
+      "baseline_sha256": "94ae27388bf969341ace31a5fed031547566fe7aa2d7a766b3515e6e6750bb09",
+      "git_state": "untracked",
+      "path": "tests/fixtures/codegraph_v1_5_0/callers-demand-change.json",
+      "session_change": "preserved-baseline",
+      "sha256": "94ae27388bf969341ace31a5fed031547566fe7aa2d7a766b3515e6e6750bb09"
+    },
+    {
+      "baseline_sha256": "14b2858a117befc49591cb6f9c5c655ff03b70b7e7b6789e9d49a9426cebc1e5",
+      "git_state": "untracked",
+      "path": "tests/fixtures/codegraph_v1_5_0/files.json",
+      "session_change": "preserved-baseline",
+      "sha256": "14b2858a117befc49591cb6f9c5c655ff03b70b7e7b6789e9d49a9426cebc1e5"
+    },
+    {
+      "baseline_sha256": "96315ca0d3e8254068143b5594bdab172d473e1d44e714c8cbbc955bdd5902a9",
+      "git_state": "untracked",
+      "path": "tests/fixtures/codegraph_v1_5_0/impact-demand-change.json",
+      "session_change": "preserved-baseline",
+      "sha256": "96315ca0d3e8254068143b5594bdab172d473e1d44e714c8cbbc955bdd5902a9"
+    },
+    {
+      "baseline_sha256": "cd90e3a329200350313b1c84cc4d6bd42163415b791290a3cd067eeab26fec4f",
+      "git_state": "untracked",
+      "path": "tests/fixtures/codegraph_v1_5_0/query-demand-change.json",
+      "session_change": "preserved-baseline",
+      "sha256": "cd90e3a329200350313b1c84cc4d6bd42163415b791290a3cd067eeab26fec4f"
+    },
+    {
+      "baseline_sha256": "3495ccdbeca627101e3009715e6e3d303b09465d6397fec9664c6d859e7fff49",
+      "git_state": "untracked",
+      "path": "tests/fixtures/codegraph_v1_5_0/query-summary.json",
+      "session_change": "preserved-baseline",
+      "sha256": "3495ccdbeca627101e3009715e6e3d303b09465d6397fec9664c6d859e7fff49"
+    },
+    {
+      "baseline_sha256": "d6e6e802d7cd18aabf65271e68af2de136e90d6eb9807302f72d37145a3121fc",
+      "git_state": "untracked",
+      "path": "tests/fixtures/codegraph_v1_5_0/status-current.json",
+      "session_change": "preserved-baseline",
+      "sha256": "d6e6e802d7cd18aabf65271e68af2de136e90d6eb9807302f72d37145a3121fc"
+    },
+    {
+      "baseline_sha256": "222144a22f946fd813a4e10ec966d384562c433863b0045046e49e7046b40d49",
+      "git_state": "untracked",
+      "path": "tests/fixtures/codegraph_v1_5_0/status-stale.json",
+      "session_change": "preserved-baseline",
+      "sha256": "222144a22f946fd813a4e10ec966d384562c433863b0045046e49e7046b40d49"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "tests/fixtures/trustworthy_context/mixed/access.md",
+      "session_change": "added",
+      "sha256": "914d37081652f046531351e18c080136a7c7011d96423d20cd7d157adc603897"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "tests/fixtures/trustworthy_context/mixed/attack.md",
+      "session_change": "added",
+      "sha256": "861d2338016fe8dc7f46dad88f4d9f28d9cc838d907ff22b387532cef1637d9e"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "tests/fixtures/trustworthy_context/mixed/capacity.md",
+      "session_change": "added",
+      "sha256": "fecb2ead669201980d697f86663325ee7c369f52bec976a72b84653976ed2032"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "tests/fixtures/trustworthy_context/mixed/procedure.md",
+      "session_change": "added",
+      "sha256": "84c60344b1df20a543a7a17fc7df0b21f3c08e6d86006f93397aa903b10e638e"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "tests/fixtures/trustworthy_context/pack.json",
+      "session_change": "added",
+      "sha256": "ad9602e93d66e352b955a9ac2e4f3811d59dfa25ab80d89430a098f01e03839b"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "tests/fixtures/trustworthy_context/revised/policy-v1.md",
+      "session_change": "added",
+      "sha256": "c2ea7064162f063dcf2c1442913bb2ccb09df563ec04b9373c4d777b18967738"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "tests/fixtures/trustworthy_context/revised/policy-v2.md",
+      "session_change": "added",
+      "sha256": "32e51f098313ac2dda4d14a9607be975c9930812306c98dde19cd79620c90e8e"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "tests/fixtures/trustworthy_context/revised/revision-log.md",
+      "session_change": "added",
+      "sha256": "2688ed78e9d06f5813b3b03e1d62d34365637e88d9dac06b83755315c5d37901"
+    },
+    {
+      "baseline_sha256": "823635883486e42f6f42566b68293aa5bd83a991c6afd27c10b48d3ede30812f",
+      "git_state": "untracked",
+      "path": "tests/test_code_intelligence.py",
+      "session_change": "preserved-baseline",
+      "sha256": "823635883486e42f6f42566b68293aa5bd83a991c6afd27c10b48d3ede30812f"
+    },
+    {
+      "baseline_sha256": "fb4f5e121da9f8a8504c70100cc5555ad7b37016495f4670269a37307c104961",
+      "git_state": "untracked",
+      "path": "tests/test_context_assembly.py",
+      "session_change": "modified-existing-dirty-or-tracked-file",
+      "sha256": "01fbdb62b726362ed92d2ecb74bb840f12df555a482243afd3d74c74d725db68"
+    },
+    {
+      "baseline_sha256": "860f62faa5f01f6c7c14e973dafbfc776feae2d9e4ebc59ed9ccf320e812a1f6",
+      "git_state": "tracked-modified",
+      "path": "tests/test_examples.py",
+      "session_change": "preserved-baseline",
+      "sha256": "860f62faa5f01f6c7c14e973dafbfc776feae2d9e4ebc59ed9ccf320e812a1f6"
+    },
+    {
+      "baseline_sha256": "7aa4992e60a426f97b801d87e76e0f0a10d7649e89f59de851bb51eea170d43b",
+      "git_state": "untracked",
+      "path": "tests/test_knowledge_inventory.py",
+      "session_change": "preserved-baseline",
+      "sha256": "7aa4992e60a426f97b801d87e76e0f0a10d7649e89f59de851bb51eea170d43b"
+    },
+    {
+      "baseline_sha256": "001c77fe4aef8db6d1443e86820e395d682868588dcf62295b89cd88d45cb64f",
+      "git_state": "untracked",
+      "path": "tests/test_knowledge_views.py",
+      "session_change": "preserved-baseline",
+      "sha256": "001c77fe4aef8db6d1443e86820e395d682868588dcf62295b89cd88d45cb64f"
+    },
+    {
+      "baseline_sha256": "0d4a33280c78bb6fa412ebf523d937692a62c452efde921b228527073afc8252",
+      "git_state": "untracked",
+      "path": "tests/test_migration_markdown.py",
+      "session_change": "preserved-baseline",
+      "sha256": "0d4a33280c78bb6fa412ebf523d937692a62c452efde921b228527073afc8252"
+    },
+    {
+      "baseline_sha256": "3caedef3235e00f2d114631add5868413fe96249623f4be7687a1dc7767795e0",
+      "git_state": "tracked-modified",
+      "path": "tests/test_no_data_scan.py",
+      "session_change": "preserved-baseline",
+      "sha256": "3caedef3235e00f2d114631add5868413fe96249623f4be7687a1dc7767795e0"
+    },
+    {
+      "baseline_sha256": "53efbcfb194683b9a18d7761b8216d21a75ee4cad73df25b98bc4b6d365e25ba",
+      "git_state": "untracked",
+      "path": "tests/test_ontario_stress_corpus.py",
+      "session_change": "preserved-baseline",
+      "sha256": "53efbcfb194683b9a18d7761b8216d21a75ee4cad73df25b98bc4b6d365e25ba"
+    },
+    {
+      "baseline_sha256": "3e6be4515541356365ff6297d24c01e6d013acf678ef1ab034cc5cf6462c6708",
+      "git_state": "tracked-modified",
+      "path": "tests/test_profile_contract.py",
+      "session_change": "preserved-baseline",
+      "sha256": "3e6be4515541356365ff6297d24c01e6d013acf678ef1ab034cc5cf6462c6708"
+    },
+    {
+      "baseline_sha256": "833a79fb12a64a4eaaf649dfc25b6ff8be80e7cd7e0c1b2890e1bd7a070ca281",
+      "git_state": "tracked-modified",
+      "path": "tests/test_profile_driven_reports.py",
+      "session_change": "preserved-baseline",
+      "sha256": "833a79fb12a64a4eaaf649dfc25b6ff8be80e7cd7e0c1b2890e1bd7a070ca281"
+    },
+    {
+      "baseline_sha256": "951048b9f68b37b739dafacccb05277ff366bf99e7f5912fa56b1f7c4fbd66df",
+      "git_state": "untracked",
+      "path": "tests/test_relationship_invalidation.py",
+      "session_change": "preserved-baseline",
+      "sha256": "951048b9f68b37b739dafacccb05277ff366bf99e7f5912fa56b1f7c4fbd66df"
+    },
+    {
+      "baseline_sha256": "20e7a5fa9500ff197d87e96dc6c77432ca2c6a8bf2a433169eebb882881ce9dc",
+      "git_state": "untracked",
+      "path": "tests/test_relationships.py",
+      "session_change": "preserved-baseline",
+      "sha256": "20e7a5fa9500ff197d87e96dc6c77432ca2c6a8bf2a433169eebb882881ce9dc"
+    },
+    {
+      "baseline_sha256": "d1ac1ad532189bc7ba1423adf0b1bedae0bd07b36e3df5ede292a54a9748bcc1",
+      "git_state": "tracked-modified",
+      "path": "tests/test_release_workflow.py",
+      "session_change": "preserved-baseline",
+      "sha256": "d1ac1ad532189bc7ba1423adf0b1bedae0bd07b36e3df5ede292a54a9748bcc1"
+    },
+    {
+      "baseline_sha256": "a82f1c74cb322bc58222163dc86c47b3ebac1ae41fba24daea5825479c9d8054",
+      "git_state": "tracked-modified",
+      "path": "tests/test_sync_behaviour.py",
+      "session_change": "preserved-baseline",
+      "sha256": "a82f1c74cb322bc58222163dc86c47b3ebac1ae41fba24daea5825479c9d8054"
+    },
+    {
+      "baseline_sha256": null,
+      "git_state": "untracked",
+      "path": "tests/test_trustworthy_context.py",
+      "session_change": "added",
+      "sha256": "8d4e34d37c0b564c62af680e027a4a5da6daa4ef74cbfc1a955a54116497e85f"
+    }
+  ],
+  "schema_version": 1,
+  "tree_fingerprint_method": "sha256 UTF-8 canonical sorted compact JSON of files map and deleted_paths; tracked and nonignored untracked regular files excluding self references",
+  "tree_sha256": "15a37c5dc4f978ef5db77a1bfaeb44ff54e04533cac14d42513546d790f512e0"
+}

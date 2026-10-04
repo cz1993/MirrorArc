@@ -18,6 +18,7 @@ except ImportError:
     sys.exit("pip install pyyaml")
 
 from mirrorarc.profiles import ProfileValidationError, load_profile
+from mirrorarc.knowledge_inventory import build_inventory as build_knowledge_inventory
 from mirrorarc.runtime_profile import (
     profile_repo_notes_dir as runtime_profile_repo_notes_dir,
     profile_content_roots,
@@ -63,11 +64,11 @@ OVERLAP_TITLE_THRESHOLD = 0.82
 CURRENT_SOURCE_STATES = {"clean", "reviewed", "regenerated"}
 CURRENT_REPO_STATES = {"clean", "reviewed", "regenerated"}
 SOURCE_MANAGED_KEYS = {
-    "type", "source_id", "source", "source_manifest", "source_format", "source_modified",
+    "type", "markdown_category", "authority", "source_id", "projection_id", "source", "source_manifest", "source_format", "source_modified",
     "synced", "source_sha256", "converter", "converter_version", "updated",
 }
 REPO_MANAGED_KEYS = {
-    "type", "repo_id", "repo_manifest", "repo", "repo_url", "default_branch", "last_commit",
+    "type", "markdown_category", "authority", "repo_id", "projection_id", "repo_manifest", "repo", "repo_url", "default_branch", "last_commit",
     "last_commit_date", "open_issues", "synced", "updated",
 }
 DEFAULT_ANNOTATION_FRONTMATTER_KEYS = {"title", "domain", "owner", "created", "updated"}
@@ -408,6 +409,9 @@ def load_manifest_records(rel: str, id_key: str) -> tuple[dict[str, dict], list[
         if not record_id:
             errors.append((f"{rel}:records[{index}]", f"missing {id_key}"))
             continue
+        if record_id in out:
+            errors.append((f"{rel}:records[{index}]", f"duplicate {id_key}: {record_id}"))
+            continue
         out[record_id] = record
     return out, errors
 
@@ -580,6 +584,25 @@ def main(root: Path | None = None) -> int:
     SOURCE_MANIFEST_RECORDS, source_manifest_errors = load_manifest_records(SOURCE_MANIFEST_REL, "source_id")
     REPO_MANIFEST_RECORDS, repo_manifest_errors = load_manifest_records(REPO_MANIFEST_REL, "repo_id")
     manifest_errors = source_manifest_errors + repo_manifest_errors
+    try:
+        knowledge_inventory = build_knowledge_inventory(ROOT)
+        projection_errors = [("knowledge-inventory", message) for message in knowledge_inventory["errors"]]
+        unexplained_markdown = [
+            (str(item["path"]), f"unexplained user-facing Markdown via {item['classification_rule']}")
+            for item in knowledge_inventory["markdown"]["items"]
+            if item.get("category") == "unknown"
+        ]
+        legacy_derivatives = [
+            (str(item["path"]), "legacy curated derivative requires reviewed migration disposition")
+            for item in knowledge_inventory["markdown"]["items"]
+            if item.get("category") == "legacy_curated_derivative"
+        ]
+    except Exception as exc:
+        knowledge_inventory = {"summary": {}}
+        projection_errors = [("knowledge-inventory", f"inventory failed: {exc.__class__.__name__}: {exc}")]
+        unexplained_markdown = []
+        legacy_derivatives = []
+    manifest_errors += projection_errors
     MIRROR_ROOT = MIRROR_CONFIG["root"] if isinstance(MIRROR_CONFIG["root"], Path) else Path(DEFAULT_MIRROR_ROOT)
     overlap_min_tokens = int(LINT_CONFIG["overlap_min_tokens"])
     overlap_content_threshold = float(LINT_CONFIG["overlap_content_threshold"])
@@ -740,6 +763,7 @@ def main(root: Path | None = None) -> int:
             or stripped == "> Curate notes below; everything under the line refreshes on sync."
             or stripped == "> This mirror is machine-owned; do not edit it directly."
             or stripped == "> This mirror is machine-owned; keep durable human notes in curated notes or annotation sidecars."
+            or stripped == "> This L1 projection is machine-owned; use annotation sidecars for commentary and governed L2 views for synthesis."
         )
 
     def preserved_body_has_annotation(body: str) -> bool:
@@ -1107,6 +1131,18 @@ def main(root: Path | None = None) -> int:
             print(f"  … +{len(items)-limit} more")
 
     print(f"# lint_vault — {len(md_notes)} notes, {len(all_files)} files total")
+    inventory_summary = knowledge_inventory.get("summary", {})
+    if inventory_summary:
+        print(
+            "knowledge inventory: "
+            f"sources={inventory_summary.get('authoritative_source_records', 0)}, "
+            f"opaque={inventory_summary.get('opaque_sources_requiring_l1', 0)}, "
+            f"L1={inventory_summary.get('active_l1_projections', 0)}, "
+            f"L2-generated={inventory_summary.get('l2_generated_views', 0)}, "
+            f"L2-reviewed={inventory_summary.get('l2_reviewed_views', 0)}, "
+            f"L2-stale={inventory_summary.get('l2_stale_views', 0)}, "
+            f"unexplained={inventory_summary.get('unexplained_markdown', 0)}"
+        )
     section("Missing/invalid frontmatter", missing_fm)
     section("Invalid type", bad_type)
     section("Invalid status", bad_status)
@@ -1118,6 +1154,8 @@ def main(root: Path | None = None) -> int:
     section("Lint config errors", lint_config_errors)
     section("Repo config errors", repo_config_errors)
     section("Manifest errors", manifest_errors)
+    section("Unexplained user-facing Markdown", unexplained_markdown)
+    section("Legacy curated derivatives", legacy_derivatives)
     section("Domain/folder mismatch", bad_domain_folder)
     section("Context alias mismatch", bad_context_alias)
     section("Mirror layout errors", bad_mirror_layout)
@@ -1135,6 +1173,7 @@ def main(root: Path | None = None) -> int:
         missing_fm or bad_type or bad_status or bad_domain or profile_errors or domain_map_errors or mirror_config_errors
         or lint_config_errors
         or repo_config_errors or manifest_errors or bad_domain_folder or bad_context_alias or bad_mirror_layout
+        or unexplained_markdown
         or mirror_annotations_need_migration or stale_office_mirrors or stale_repo_mirrors
         or markdown_case or mirror_gap or repo_mirror_gap or repo_unconfigured
     )

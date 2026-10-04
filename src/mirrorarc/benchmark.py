@@ -437,7 +437,7 @@ def task_scaffold_data(source_pairs: list[dict[str, str]], curated_paths: list[s
             ],
         ),
         "update": (
-            "If one selected source changes, which generated mirrors or curated notes should be reviewed?",
+            "If one selected source changes, which L1 projections, relationships, reviewed views, or frozen contexts should be reviewed?",
             [
                 *common_criteria,
                 "does not recommend editing original source files or generated mirror regions directly",
@@ -967,6 +967,76 @@ def validate_result_pack(
     return summary, errors, warnings
 
 
+def run_compact_pack(pack_path: Path, *, task_retrieval: bool = False) -> dict:
+    """Run deterministic selection measurements; never invent model evaluations."""
+    import hashlib
+    import shutil
+    import tempfile
+    import time
+
+    from mirrorarc.context_assembly.builder import build_context, freeze_context
+    from mirrorarc.relationships.deterministic import refresh
+
+    pack_path = pack_path.resolve()
+    pack = json.loads(pack_path.read_text(encoding='utf-8'))
+    if pack.get('schema_version') != 1 or len(pack.get('tasks', [])) != 12:
+        raise ValueError('compact benchmark requires the versioned 12-task manifest')
+    sources = {}
+    for spec in pack['sources']:
+        raw = (pack_path.parent / spec['file']).read_bytes()
+        if hashlib.sha256(raw).hexdigest() != spec['sha256']:
+            raise ValueError(f"benchmark source revision mismatch: {spec['id']}")
+        sources[spec['id']] = (spec, raw.decode('utf-8'))
+    results = []
+    with tempfile.TemporaryDirectory(prefix='mirrorarc-context-benchmark-') as temporary:
+        for collection in sorted({s['collection'] for s, _ in sources.values()}):
+            vault = Path(temporary) / collection
+            shutil.copytree(Path(__file__).parent / 'template', vault)
+            path_ids = {}
+            for index, (source_id, (spec, body)) in enumerate(sorted(sources.items())):
+                if spec['collection'] != collection:
+                    continue
+                name = f"evidence-{index}.md"
+                path = vault / '20_sources' / name
+                path.write_text('---\ntitle: Synthetic evidence\ntype: authoritative-record\nstatus: active\ndomain: sources\n'
+                                "created: '2026-09-18'\nupdated: '2026-09-18'\n"
+                                'markdown_category: authoritative_markdown_source\nauthority: authoritative\n'
+                                'sensitivity: public\nredistribution: public\n---\n\n' + body, encoding='utf-8')
+                path_ids[path.relative_to(vault).as_posix()] = source_id
+            refresh(vault)
+            for task in pack['tasks']:
+                if task['collection'] != collection:
+                    continue
+                started = time.perf_counter()
+                options = {'query': task['query']} if task_retrieval else {}
+                manifest = build_context(vault, 'orientation', mode='metadata', max_files=pack['controls']['max_files'], **options)
+                selected = [path_ids[item['source_path']] for item in manifest['items'][:pack['controls']['max_files']]]
+                frozen = freeze_context(vault, lens_id='orientation', max_files=pack['controls']['max_files'], **options)
+                included = [path_ids[item['source_path']] for item in frozen['document']['items']]
+                expected = set(task['expected_sources'])
+                hits = expected.intersection(included)
+                results.append({
+                    'task_id': task['id'], 'split': task['split'], 'family': task['family'],
+                    'mode': 'mirrorarc_markdown', 'measurement': 'deterministic-retrieval-only',
+                    'selected_sources': selected, 'included_sources': included,
+                    'expected_sources': sorted(expected),
+                    'evidence_coverage': len(hits) / len(expected) if expected else None,
+                    'empty_selection_when_insufficient': not selected if not expected else None,
+                    'export_bytes': frozen['document']['budgets']['serialized_bytes'],
+                    'estimated_tokens': frozen['document']['budgets']['estimated_tokens'],
+                    'latency_seconds': round(time.perf_counter() - started, 6),
+                    'model_correctness_score': None, 'citation_accuracy': None,
+                    'stale_evidence_use': None, 'model_abstention': None,
+                    'privacy_or_prompt_safety_failures': None, 'human_corrections': None,
+                    'raw_and_plain_source_order_baseline': sorted(source_id for source_id, (spec, _) in sources.items() if spec['collection'] == collection)[:pack['controls']['max_files']],
+                })
+    return {'schema_version': 1, 'benchmark_id': pack['id'],
+            'pack_sha256': hashlib.sha256(pack_path.read_bytes()).hexdigest(),
+            'retrieval': 'task-query' if task_retrieval else 'existing-source-order',
+            'deterministic_status': 'passed', 'empirical_model_evaluation': 'pending endpoint/data/spend approval',
+            'controls': pack['controls'], 'results': sorted(results, key=lambda r: r['task_id'])}
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Validate a MirrorArc agent-readiness benchmark task pack.")
     parser.add_argument(
@@ -1023,12 +1093,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="Fail benchmark results with missing prompt-safety review or recorded prompt-safety violations.",
     )
     parser.add_argument("--json", action="store_true", help="Print machine-readable summary JSON.")
+    parser.add_argument("--compact-pack", type=Path)
+    parser.add_argument("--task-retrieval", action="store_true")
     return parser
 
 
 def main(argv: list[str] | None = None, root: Path | None = None) -> int:
     configure_root(root)
     args = build_parser().parse_args(argv)
+    if args.compact_pack:
+        try:
+            report = run_compact_pack(args.compact_pack, task_retrieval=args.task_retrieval)
+        except (ValueError, OSError) as exc:
+            print(f"benchmark: {exc}", file=sys.stderr)
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.force and not (args.init_tasks or args.init_results):
         print("benchmark_tasks: --force is only valid with --init-tasks or --init-results", file=sys.stderr)
         return 1

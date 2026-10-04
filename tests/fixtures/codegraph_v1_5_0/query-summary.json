@@ -1,0 +1,4 @@
+[
+  {"node":{"id":"file:src/grid_evidence/summary.py","kind":"file","name":"summary.py","qualifiedName":"src/grid_evidence/summary.py","filePath":"src/grid_evidence/summary.py","language":"python","startLine":1,"endLine":18},"score":47.5},
+  {"node":{"id":"method:test-demand-change","kind":"method","name":"test_demand_change","qualifiedName":"SummaryTests::test_demand_change","filePath":"tests/test_summary.py","language":"python","startLine":9,"endLine":11,"signature":"(self) -> None"},"score":11.0}
+]

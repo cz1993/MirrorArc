@@ -73,7 +73,7 @@ def assert_no_generated_residue(vault: Path) -> None:
     assert not [
         path
         for path in (vault / "_meta").glob("*")
-        if path.name.endswith("-manifest.json") or path.name == "sync-audit.jsonl"
+        if path.name in {"source-manifest.json", "repo-manifest.json", "sync-audit.jsonl"}
     ]
     assert not list((vault / "20_sources" / "repos").glob("*.md"))
 

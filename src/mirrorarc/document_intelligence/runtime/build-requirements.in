@@ -1,0 +1,2 @@
+# Build backend for the pinned, locally patched optional PageIndex distribution.
+poetry-core==2.5.0

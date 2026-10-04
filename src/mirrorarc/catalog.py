@@ -6,10 +6,17 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sqlite3
+import shlex
 import sys
 from collections import Counter
 from pathlib import Path
 from typing import Any
+
+from mirrorarc.code_intelligence.service import (
+    CodeIntelligenceError,
+    catalog_report as code_intelligence_catalog_report,
+)
 
 try:
     import yaml
@@ -17,6 +24,7 @@ except ImportError:
     sys.exit("Missing dependency: pip install pyyaml")
 
 from mirrorarc.catalog_explorer import render_catalog_explorer
+from mirrorarc.changes import journal
 from mirrorarc.profiles import ProfileValidationError, load_profile
 from mirrorarc.runtime_profile import (
     configured_office_mirror_root,
@@ -487,6 +495,103 @@ def repo_catalog_items(
     return items
 
 
+def knowledge_projection_report(root: Path) -> dict[str, Any]:
+    """Read the shared local derived model without creating or migrating state."""
+    database = journal.state_db_path(root)
+    empty = {
+        "schema_version": 1,
+        "artifacts": [],
+        "relationships": [],
+        "views": [],
+        "context_definitions": [],
+        "context_packs": [],
+    }
+    if not database.is_file():
+        return empty
+    try:
+        conn = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
+        conn.row_factory = sqlite3.Row
+    except sqlite3.Error:
+        return empty
+    try:
+        tables = {str(row[0]) for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        if "artifacts" not in tables or "relationships" not in tables:
+            return empty
+        artifacts = [dict(row) for row in conn.execute("SELECT * FROM artifacts ORDER BY artifact_id")]
+        relationships = [dict(row) for row in conn.execute("SELECT * FROM relationships ORDER BY relationship_id")]
+        evidence = [dict(row) for row in conn.execute(
+            "SELECT * FROM evidence_anchors ORDER BY evidence_id"
+        )] if "evidence_anchors" in tables else []
+        reviews = [dict(row) for row in conn.execute(
+            "SELECT * FROM relationship_reviews ORDER BY review_id"
+        )] if "relationship_reviews" in tables else []
+        views = [dict(row) for row in conn.execute(
+            "SELECT * FROM knowledge_views ORDER BY lens_id,version DESC"
+        )] if "knowledge_views" in tables else []
+        definitions = [dict(row) for row in conn.execute(
+            "SELECT * FROM context_definitions ORDER BY name,definition_id"
+        )] if "context_definitions" in tables else []
+        packs = [dict(row) for row in conn.execute(
+            "SELECT * FROM context_packs ORDER BY created_at,context_id"
+        )] if "context_packs" in tables else []
+    except sqlite3.Error:
+        return empty
+    finally:
+        conn.close()
+    if packs:
+        # Reuse the public status calculation; a stored creation-time "current"
+        # flag is not evidence that a frozen repository pack is still current.
+        from mirrorarc.context_assembly.store import ContextStore
+        current_packs = {item["context_id"]: item for item in ContextStore(root).status()["packs"]}
+        for pack in packs:
+            current = current_packs.get(pack["context_id"], {})
+            for key in ("freshness_state", "stale_reason", "newer_versions"):
+                if key in current:
+                    pack[key] = current[key]
+    for artifact in artifacts:
+        try:
+            artifact["metadata"] = json.loads(artifact.pop("metadata_json", "{}"))
+        except json.JSONDecodeError:
+            artifact["metadata"] = {}
+        artifact.pop("created_at", None)
+        artifact.pop("updated_at", None)
+    for anchor in evidence:
+        anchor.pop("excerpt", None)
+    for relationship in relationships:
+        relationship["evidence"] = [item for item in evidence if item["relationship_id"] == relationship["relationship_id"]]
+        relationship["reviews"] = [item for item in reviews if item["relationship_id"] == relationship["relationship_id"]]
+        relationship.pop("created_at", None)
+        relationship.pop("updated_at", None)
+    for view in views:
+        try:
+            view["citations"] = json.loads(view.pop("citations_json", "[]"))
+        except json.JSONDecodeError:
+            view["citations"] = []
+    for definition in definitions:
+        for field in ("selection_json", "budgets_json", "permitted_types_json"):
+            try:
+                definition[field.removesuffix("_json")] = json.loads(definition.pop(field, "{}"))
+            except json.JSONDecodeError:
+                definition[field.removesuffix("_json")] = {}
+    for definition in definitions:
+        definition["resolve_command"] = shlex.join(["mirrorarc", "--root", ".", "context", "resolve", definition["definition_id"], "--json"])
+        definition["freeze_command"] = shlex.join(["mirrorarc", "--root", ".", "context", "freeze", f"--definition={definition['definition_id']}"])
+    for pack in packs:
+        for field in ("omissions_json", "warnings_json"):
+            try:
+                pack[field.removesuffix("_json")] = json.loads(pack.pop(field, "[]"))
+            except json.JSONDecodeError:
+                pack[field.removesuffix("_json")] = []
+    return {
+        "schema_version": 1,
+        "artifacts": artifacts,
+        "relationships": relationships,
+        "views": views,
+        "context_definitions": definitions,
+        "context_packs": packs,
+    }
+
+
 def build_report(root: Path) -> tuple[dict[str, Any], list[str], list[str]]:
     domains, aliases, content_roots, domain_warnings, domain_errors = load_domains(root)
     inventory = workspace_inventory(root, aliases, content_roots)
@@ -506,6 +611,22 @@ def build_report(root: Path) -> tuple[dict[str, Any], list[str], list[str]]:
         rel for rel in inventory["source_candidates"]
         if rel not in mirrored_sources
     ]
+    projection = knowledge_projection_report(root)
+    from mirrorarc.document_intelligence.service import catalog_report as document_intelligence_catalog_report
+    document_intelligence = document_intelligence_catalog_report(root)
+    code_warnings: list[str] = []
+    try:
+        code_intelligence = code_intelligence_catalog_report(root)
+    except CodeIntelligenceError as exc:
+        code_intelligence = {
+            "schema_version": 1,
+            "content_included": False,
+            "repositories": [],
+            "summary": {"repositories": 0, "current": 0, "attention": 1},
+            "policy": "Metadata-only. Source bodies and code excerpts are excluded.",
+            "error": {"kind": exc.kind, "message": str(exc)},
+        }
+        code_warnings.append(f"Repository intelligence: {exc}")
 
     states = Counter(item["state"] for item in source_items)
     repo_states = Counter(item["state"] for item in repo_items)
@@ -546,6 +667,12 @@ def build_report(root: Path) -> tuple[dict[str, Any], list[str], list[str]]:
             "curated_markdown": inventory["curated_markdown"],
             "machine_owned_markdown": inventory["machine_owned_markdown"],
             "legacy_top_level_folders": len(inventory["legacy_folders"]),
+            "relationship_artifacts": len(projection["artifacts"]),
+            "relationships": len(projection["relationships"]),
+            "knowledge_views": len(projection["views"]),
+            "context_definitions": len(projection["context_definitions"]),
+            "context_packs": len(projection["context_packs"]),
+            "code_analyses": code_intelligence["summary"]["current"],
         },
         "states": dict(sorted(states.items())),
         "repo_states": dict(sorted(repo_states.items())),
@@ -565,8 +692,11 @@ def build_report(root: Path) -> tuple[dict[str, Any], list[str], list[str]]:
         "extensions": inventory["extensions"],
         "top_level_counts": inventory["top_level_counts"],
         "prompt_safety": PROMPT_SAFETY_GUIDANCE,
+        "knowledge_projection": projection,
+        "code_intelligence": code_intelligence,
+        "document_intelligence": document_intelligence,
     }
-    warnings = domain_warnings + source_warnings + repo_warnings + config_warnings
+    warnings = domain_warnings + source_warnings + repo_warnings + config_warnings + code_warnings
     if repo_records and configured_ids is not None and not (root / REPO_CONFIG).exists():
         warnings.append(f"{REPO_CONFIG.as_posix()} not found; manifest-backed repo mirrors need config review.")
     errors = domain_errors + source_errors + repo_errors
@@ -586,6 +716,11 @@ def html_document_content(root: Path, report: dict[str, Any]) -> dict[str, dict[
     for item in report.get("repo_items", []):
         if isinstance(item, dict):
             candidates.add(str(item.get("note") or ""))
+    projection = report.get("knowledge_projection", {})
+    if isinstance(projection, dict):
+        for item in projection.get("artifacts", []):
+            if isinstance(item, dict) and str(item.get("artifact_kind", "")) == "knowledge-view":
+                candidates.add(str(item.get("path") or ""))
 
     root_resolved = root.resolve()
     total = 0
@@ -849,10 +984,17 @@ def main(argv: list[str] | None = None, *, root: Path | None = None) -> int:
     vault_root = (root or DEFAULT_ROOT).expanduser().resolve()
     report, warnings, errors = build_report(vault_root)
     if args.include_content:
+        from mirrorarc.document_intelligence.service import catalog_report as document_intelligence_catalog_report
+        try:
+            code_intelligence = code_intelligence_catalog_report(vault_root, include_excerpts=True)
+        except CodeIntelligenceError:
+            code_intelligence = report.get("code_intelligence", {})
         report = {
             **report,
             "document_content": html_document_content(vault_root, report),
             "document_content_included": True,
+            "document_intelligence": document_intelligence_catalog_report(vault_root, include_content=True),
+            "code_intelligence": code_intelligence,
         }
     if args.json:
         print(json.dumps({"report": report, "warnings": warnings, "errors": errors}, indent=2, sort_keys=True))

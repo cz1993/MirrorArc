@@ -27,7 +27,7 @@ weeks. Notable neighbors (stars approximate, mid-2026):
 Not found in any surveyed competitor:
 
 1. **Governed document-to-markdown lifecycle** — original files remain authoritative while
-   generated mirrors, curated notes, schema, provenance, and safety checks stay inspectable.
+   L1 projections, relationships, governed L2 views, schema, provenance, and safety checks stay inspectable.
 2. **The mirror layer** — hash-refreshed markdown mirrors of **Office files *and* GitHub repos**,
    editable-original-stays-source-of-truth, with curated/auto separation under `_mirrors/`.
 3. **Agent-ready substrate** — generated markdown gives coding agents plain-text, linkable,

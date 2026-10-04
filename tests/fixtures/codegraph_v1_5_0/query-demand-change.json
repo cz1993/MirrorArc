@@ -1,0 +1,3 @@
+[
+  {"node":{"id":"function:demand-change","kind":"function","name":"demand_change","qualifiedName":"demand_change","filePath":"src/grid_evidence/summary.py","language":"python","startLine":8,"endLine":11,"signature":"(rows: list[AnnualDemand]) -> float"},"score":98.2}
+]

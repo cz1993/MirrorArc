@@ -32,7 +32,7 @@ SKIP_DIRS = {
     "venv",
 }
 
-LOCAL_DERIVED_STATE_DIRS = {".mirrorarc", ".vaultwright"}
+LOCAL_DERIVED_STATE_DIRS = {".codegraph", ".mirrorarc", ".vaultwright"}
 
 HIGH_RISK_NAME_PATTERNS = [
     re.compile(p, re.IGNORECASE)

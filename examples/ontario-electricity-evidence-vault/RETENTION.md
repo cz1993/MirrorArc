@@ -25,13 +25,15 @@ Replace these notes with profile-appropriate retention rules before production u
 | --- | --- |
 | Source files | Keep originals in the authoritative source system. |
 | Generated mirrors | Regenerate from source evidence when stale. |
-| Curated notes | Archive when superseded or no longer useful. |
+| Authoritative Markdown records | Retain and dispose under the source policy. |
+| L2 generated views | Ephemeral/cache by default; remove when superseded or expired. |
+| L2 reviewed views | Preserve reviewed versions; mark stale and retain per review policy. |
 | Scratch work | Keep outside committed history and prune regularly. |
 
 ## Archival Process
 
 1. Confirm the material is no longer active.
-2. Move retained curated material under `_archive/` when appropriate.
+2. Move retained authoritative material under `_archive/` only under its source policy.
 3. Set frontmatter `status: archived` when the profile supports that state.
 4. Do not delete source evidence without explicit human approval.
 

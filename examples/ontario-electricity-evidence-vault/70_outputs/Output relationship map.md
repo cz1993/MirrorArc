@@ -7,7 +7,7 @@ created: 2026-07-19
 updated: 2026-07-19
 owner: MirrorArc Example
 tags: [outputs, lineage]
-related: ["[[Stakeholder brief index]]", "[[Evidence lineage map]]", "[[Artifact mirroring pipeline]]"]
+related: ["[[INDEX]]", "[[Evidence lineage map]]", "[[Artifact mirroring pipeline]]"]
 ---
 
 # Output relationship map

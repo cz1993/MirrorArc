@@ -220,7 +220,8 @@ from a source checkout with `PYTHONPATH=src`.
 
 Edit the **original** Office file, never a generated mirror body. If a legacy mirror already has
 above-sentinel annotations, run `mirrorarc migrate annotations --write` before refreshing it.
-Keep durable human notes in regular curated notes or `_meta/mirror-annotations/` sidecars.
+Keep deliberate human authority in declared source records. Use `_meta/mirror-annotations/`
+sidecars only as a legacy-preservation boundary before reviewed migration.
 By default mirrors are written to `_mirrors/<canonical-source-path>.md`, so source folders stay
 clean even when old folder aliases are still present. Configure `_meta/mirror-config.yml` or pass
 `--mirror-mode sibling` only for legacy vaults.

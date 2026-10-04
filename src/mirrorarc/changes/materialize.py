@@ -40,10 +40,12 @@ def _source_record_for_path(manifest: dict, source_path: str, source_id: str = "
 def _public_record(record: dict[str, Any]) -> dict[str, Any]:
     return {
         "source_id": str(record.get("source_id", "") or ""),
+        "projection_id": str(record.get("projection_id", "") or ""),
         "current_source_path": str(record.get("current_source_path", "") or ""),
         "mirror_path": str(record.get("mirror_path", "") or ""),
         "source_format": str(record.get("source_format", "") or ""),
         "source_sha256": str(record.get("source_sha256", "") or ""),
+        "generated_region_sha256": str(record.get("generated_region_sha256", "") or ""),
         "lifecycle_state": str(record.get("lifecycle_state", "") or ""),
         "warnings": list(record.get("warnings", []) or []),
         "errors": list(record.get("errors", []) or []),

@@ -78,7 +78,7 @@ mirrorarc init --profile research-learning ~/my-research-vault
 mirrorarc init --profile software-project ~/my-software-vault
 mirrorarc init --profile blank ~/my-blank-vault
 mirrorarc --root ~/my-data-product profile validate
-mirrorarc --root ~/my-data-product profile diff 0.1.0
+mirrorarc --root ~/my-data-product profile diff 0.2.0
 mirrorarc --root ~/my-data-product profile migrate --plan
 mirrorarc --root ~/my-data-product profile migrate --write
 mirrorarc --root ~/my-data-product profile views --check
@@ -98,7 +98,8 @@ Profile schema reference: [`PROFILE_SCHEMA.md`](PROFILE_SCHEMA.md).
 and **Graph** (Settings → Core plugins). Open `Documents.base` to see the auto-generated index.
 
 Obsidian is useful for people, but it is not the correctness boundary. The key artifact is the
-filesystem of markdown mirrors, manifests, and curated notes that your agent can inspect directly.
+filesystem of authoritative records, L1 projections, manifests, evidenced relationships, governed
+views, and context definitions that your agent can inspect directly.
 
 ## 3. Point your agent at it
 
@@ -116,6 +117,7 @@ gh auth login                                        # read-only is enough (or e
 mirrorarc --root ~/my-data-product doctor        # check dependencies and vault structure
 mirrorarc --root ~/my-data-product sandbox --source-root /path/to/original-documents # copied-vault preflight
 mirrorarc --root ~/my-data-product plan          # inspect source inventory and proposed mirrors
+mirrorarc --root ~/my-data-product inventory     # verify source/L1/L2 counts and projection ownership
 mirrorarc --root ~/my-data-product sync          # mirrors -> _mirrors/ and profile repo_notes_dir
 mirrorarc --root ~/my-data-product sync --json   # machine-readable sync evidence
 mirrorarc --root ~/my-data-product status        # review manifest-backed lifecycle state
@@ -133,14 +135,60 @@ mirrorarc --root ~/my-data-product conversion --results _meta/conversion-quality
 mirrorarc --root ~/my-data-product migration     # dry-run report for legacy/unknown folders
 mirrorarc --root ~/my-data-product migration --worksheet # Markdown cleanup checklist
 mirrorarc --root ~/my-data-product migration --runbook # legacy folder move protocol
+mirrorarc --root ~/my-data-product migration --json # includes complete Markdown category inventory
+mirrorarc --root ~/my-data-product migration --apply-markdown-review review.json --backup-dir /safe/backup --write
 mirrorarc --root ~/my-data-product migration --normalize-frontmatter-domains --worksheet # domain cleanup checklist
 mirrorarc --root ~/my-data-product recovery --worksheet # manifest recovery checklist
 mirrorarc --root ~/my-data-product pilot         # aggregate pilot evidence, no source content
 mirrorarc --root ~/my-data-product pilot --worksheet # redacted Markdown private-pilot summary
 mirrorarc --root ~/my-data-product benchmark     # validate benchmark tasks, if configured
+mirrorarc --root ~/my-data-product relationships refresh # deterministic relationship ledger
+mirrorarc --root ~/my-data-product relationships status  # evidence/review/invalidation counts
+mirrorarc --root ~/my-data-product relationships export --current # metadata-only current graph
+mirrorarc --root ~/my-data-product relationships propose --help   # evidence-backed semantic proposal
+mirrorarc --root ~/my-data-product relationships review --help    # named accept/reject decision
+mirrorarc --root ~/my-data-product view list             # configured L2 lenses and states
+mirrorarc --root ~/my-data-product view render orientation # ephemeral many-to-few view
+mirrorarc --root ~/my-data-product view status             # generated/reviewed/stale counts
+mirrorarc --root ~/my-data-product view review <view-id> --reviewer <name> # preserve reviewed output
+mirrorarc --root ~/my-data-product context build --lens orientation --mode metadata # body-free selection manifest
+mirrorarc --root ~/my-data-product context build --lens orientation --mode dynamic  # saved live definition
+mirrorarc --root ~/my-data-product context resolve <definition-id>                  # current selection
+mirrorarc --root ~/my-data-product context freeze --definition <definition-id>      # immutable offline pack
+mirrorarc --root ~/my-data-product context status <context-id>                      # newer-version warning
+
+# Optional repository intelligence (after configuring and syncing tools/repos.yml)
+mirrorarc --root ~/my-data-product code doctor
+mirrorarc --root ~/my-data-product code analyze --repo <repo-id>
+mirrorarc --root ~/my-data-product catalog --html
 
 mirrorarc --root ~/my-data-product lint          # health check
 ```
+
+### Optional repository intelligence
+
+`code doctor` either prints `Ready`, one pinned setup command, or one exact problem. MirrorArc does
+not install the helper for you. The supported standalone helper is CodeGraph v1.5.0:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/colbymchenry/codegraph/v1.5.0/install.sh \
+  | CODEGRAPH_VERSION=v1.5.0 sh
+mirrorarc --root ~/my-data-product code doctor
+mirrorarc --root ~/my-data-product code analyze --repo <repo-id> --symbol <symbol> --context frozen
+mirrorarc --root ~/my-data-product code status --repo <repo-id>
+```
+
+| Result | Meaning | Next step |
+| --- | --- | --- |
+| `Setup needed` | The optional helper is missing. | Run the displayed pinned install command, then retry `code doctor`. |
+| `Attention` | Version, repository identity, path, or sync is not ready. | Follow the exact command printed by the doctor. |
+| `stale` | The repository commit or local tree changed. | Re-run `code analyze`; the old result remains historical. |
+| `failed` | Refresh failed and the last valid result was retained. | Fix the reported local issue, then re-run `code analyze`. |
+
+Use `--changed-path <path>` for a controlled local change or `--base <ref>` for a configured local
+Git repository. Affected tests are candidates, never a substitute for the repository's normal test
+gate. Default Catalog HTML contains hashes, paths, and lines but no code bodies; protect
+`--include-content` output like the vault.
 
 ## 5. Keep it fresh (unattended)
 
@@ -156,15 +204,16 @@ in `_meta/mirror-config.yml`; `sync_all.sh` will honor that setting.
 
 ## Daily use
 
-- **New document?** Drop the original in the right folder and ask the agent to *ingest* it — it
-  will mirror binaries under `_mirrors/`, create or **extend** a note, link it from the relevant
-  hub/entity, and log it.
-- **A question?** Ask the agent; it reads `INDEX.md` / the MOCs first and answers with citations.
+- **New document?** Add the original to a declared source/domain root, review `plan`, then sync its
+  L1 projection and refresh deterministic relationships. Persist interpretation only when a
+  configured L2 pin/review or explicit authoritative promotion requires it.
+- **A question?** Ask the agent to resolve a configured view or dynamic/frozen context definition
+  and answer with source-backed citations.
 - **Need a non-Obsidian gateway?** Regenerate `CATALOG.md` with
   `mirrorarc --root ~/my-data-product catalog`, or `CATALOG.html` with
   `mirrorarc --root ~/my-data-product catalog --html`; both default to paths, mirrors, lifecycle
   states, and inventory metadata without copying document bodies. The HTML gateway opens on
-  `INDEX.md`, separates its relationship, metadata, and document views, and keeps Markdown/JSON
+  `INDEX.md`, separates its relationship, metadata, document, and repository Code views, and keeps Markdown/JSON
   context-pack downloads metadata-only. For local body review, add `--include-content`; protect the
   resulting HTML like the vault because it embeds bounded Markdown and generated-mirror content.
 - **Reviewed an artifact?** Record the decision with
@@ -172,8 +221,8 @@ in `_meta/mirror-config.yml`; `sync_all.sh` will honor that setting.
   The ledger stores hashes and short metadata notes only, then reports approvals as stale if the
   reviewed artifact changes.
 - **Housekeeping?** Ask it to *lint* — or just run `mirrorarc --root ~/my-data-product lint`.
-- **Remember:** prefer consolidating into existing notes over creating new ones. See
-  `docs/methodology.md` §4.
+- **Remember:** relationships are data and synthesis is a view. Durable Markdown requires an
+  allowed category and explicit persistence reason.
 - **Agent-readiness pilot?** Use `docs/AGENT_READINESS_BENCHMARK.md` and
   `mirrorarc --root ~/my-data-product benchmark --init-tasks` to create a private task scaffold
   after sync, then `mirrorarc --root ~/my-data-product benchmark --worksheet` to run the
@@ -185,3 +234,16 @@ in `_meta/mirror-config.yml`; `sync_all.sh` will honor that setting.
 - **Microsoft 365 handoff?** Use `docs/MICROSOFT_365_HANDOFF.md` and
   `mirrorarc --root ~/my-data-product m365` to check whether the generated mirror/catalog layer
   is ready for a governed SharePoint, OneDrive, Copilot Studio, or connector review.
+
+## Task to evidence to export
+
+After sync, run `mirrorarc context build --lens orientation --mode metadata --query "inspection interval" --json`.
+Inspect selected spans, source hashes, ranking reasons and exclusions. Save the same query with
+`--mode dynamic`, resolve its definition ID, then use `mirrorarc context freeze --definition <id>`.
+The final JSON has an exact UTF-8 byte ceiling and a labeled token estimate; a reference-only
+selection does not contain execution evidence. Query ranking is opt-in and can miss useful sources.
+
+Generate `mirrorarc catalog --html` and open the portable file. The selection dialog distinguishes
+metadata downloads from saved task commands and frozen context status. `--include-content` embeds
+bodies explicitly and inherits source sensitivity. After changes, sync, resolve, inspect warnings
+and rebuild the Catalog. Keep old frozen evidence for reproducibility; do not silently replace it.

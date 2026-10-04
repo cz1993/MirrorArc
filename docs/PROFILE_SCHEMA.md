@@ -1,377 +1,223 @@
 # MirrorArc Profile Schema
 
-MirrorArc profiles are versioned contracts that describe a workspace's domain vocabulary, allowed
-metadata, starter folders, views, skills, and benchmark hooks. Core runtime code should read this
-contract instead of hard-coding business-specific folders, note types, statuses, or required
-properties.
+Profiles are versioned behavior contracts. They define source/domain scope, artifact vocabulary,
+allowed Markdown categories, relationship types, L2 lenses, review/persistence rules, context
+budgets, folders, templates, and benchmark hooks. Runtime code reads this contract instead of
+hard-coding an industry taxonomy or encouraging one note per concept.
 
-The current schema is `schema_version: 1`. Packaged v1 profile contracts include `data-product`,
-`business-operations`, `research-learning`, `software-project`, and `blank`, each at
-`profile_version: 0.1.0`. All five official profiles can be initialized through the package-owned
-`mirrorarc init --profile <id>` flow.
+The current structural schema remains `schema_version: 1`; the knowledge-projection contract is
+`profile_version: 0.2.0`. New top-level behavior fields are optional to keep technical-alpha 0.1
+profiles readable during migration, but every packaged 0.2 profile declares them explicitly.
 
-## Contract File
+## Contract file and commands
 
-Each vault stores its active profile at:
-
-```text
-_meta/profile.yml
-```
-
-The default `data-product` profile is copied from the canonical template:
-
-```text
-template/_meta/profile.yml
-```
-
-The other packaged profile contracts live under:
-
-```text
-src/mirrorarc/builtin_profiles/
-```
-
-For compatibility and alternate profiles, `mirrorarc init` derives starter
-folders, `_meta/domain-map.yml`, `CLAUDE.md`, `INDEX.md`, `RETENTION.md`, and
-`_meta/agent-rules.md` from the selected profile contract instead of copying data-product
-vocabulary. Only profile-declared note templates and views are included.
-
-The Stage 2 profile fixture tests generate temporary synthetic Office-source paths under each
-initialized profile, then verify mirror lifecycle/status/lint behavior without committing a real
-or private corpus to the repository.
-
-Use these commands to inspect and validate the contract:
+Each vault stores its active profile at `_meta/profile.yml`. The default `data-product` profile is
+canonical under `template/_meta/profile.yml`; other packaged profiles live under
+`src/mirrorarc/builtin_profiles/`.
 
 ```bash
 mirrorarc profile list
 mirrorarc profile show data-product
-mirrorarc profile show business-operations
-mirrorarc profile show research-learning
-mirrorarc init --profile research-learning <vault>
-mirrorarc init --profile software-project <vault>
-mirrorarc init --profile blank <vault>
+mirrorarc init --profile data-product <vault>
 mirrorarc --root <vault> profile validate
-mirrorarc --root <vault> profile diff 0.1.0
+mirrorarc --root <vault> profile diff 0.2.0
 mirrorarc --root <vault> profile migrate --plan
 mirrorarc --root <vault> profile migrate --write
-mirrorarc --root <vault> profile views --check
-mirrorarc --root <vault> profile views --write
 ```
 
-## Required Fields
+## Core fields
 
-`schema_version`
-: Integer schema identifier. Must currently be `1`.
+The existing required fields remain:
 
-`id`
-: Lowercase kebab-case profile identifier, for example `business-operations`.
+- `schema_version`, `id`, `name`, `profile_version`, and optional `description`;
+- `domains`: canonical folder and purpose by domain ID;
+- `note_types`: compatibility/frontmatter vocabulary, including `machine_owned`,
+  `legacy_derivative`, and `markdown_category` roles;
+- `statuses`: lifecycle/review vocabulary with optional `attention` and `inactive` roles;
+- `required_properties` and `optional_properties`;
+- `folder_plan`, `templates`, `views`, `skills`, and `benchmark_tasks`;
+- `policy_defaults`: mirror/repository and universal safety defaults.
 
-`name`
-: Human-readable profile name.
+`policy_defaults.native_source_mode` is `direct` by default, so natively readable Markdown and
+plain text are registered without a redundant copy. Profiles may instead declare
+`isolated_projection` or `immutable_projection` when isolation or snapshot policy requires one.
 
-`profile_version`
-: Version string for the profile contract. The current built-in profile uses `0.1.0`.
+Domain folders remain unique, non-overlapping, safe vault-relative POSIX paths. Template, view,
+skill, and benchmark paths cannot escape the vault or overlap generated mirror output.
 
-`description`
-: Optional human-readable summary.
+## Markdown categories
 
-`domains`
-: Mapping of domain IDs to domain definitions. Domain IDs must be lowercase kebab-case
-  identifiers. Domain definitions may only contain `folder` and optional `purpose`. Each domain
-  must define `folder`. Domain folders must be safe vault-relative POSIX paths, and they must be
-  unique and non-overlapping so profile-driven routing can map each vault path to one canonical
-  domain without ambiguity. When present, `purpose` must be a non-empty string.
+`markdown_categories` declares the durable artifact policy. Packaged profiles use:
 
-`note_types`
-: Mapping of allowed note type IDs to definitions. Note type IDs must be lowercase kebab-case
-  identifiers. Note type definitions may only contain optional `purpose` and `machine_owned`.
-  A note type definition may include `machine_owned: true` when notes of that type are regenerated
-  artifacts rather than curated human notes; catalog, Microsoft 365 handoff, and sandbox inventory
-  report them separately from curated Markdown, and overlap calibration and migration frontmatter
-  cleanup exclude those note types. When present, `purpose` must be a non-empty string.
-
-`statuses`
-: Mapping of allowed workflow status IDs to definitions. Status IDs must be lowercase kebab-case
-  identifiers. Status definitions may only contain optional `purpose`, `attention`, and `inactive`.
-  A status definition may include `attention: true` when notes in that state should appear in
-  generated review-attention views, and `inactive: true` when notes in that state should be
-  excluded from active overlap calibration. When present, `purpose` must be a non-empty string.
-
-`required_properties`
-: List of frontmatter keys required on curated notes and managed notes where applicable. Entries
-  must be lowercase frontmatter keys using letters, numbers, and underscores. They must not contain
-  duplicates and must not also appear in `optional_properties`.
-
-`optional_properties`
-: List of frontmatter keys accepted by the profile but not required. GitHub repo mirror sync,
-  lint, and annotation migration treat optional properties other than universal fields such as
-  `owner`, `tags`, and `related` as profile-specific repo context fields when they appear in
-  `tools/repos.yml`. Entries must follow the same lowercase frontmatter-key and duplicate rules as
-  `required_properties`, and must not also appear in `required_properties`.
-
-`folder_plan`
-: Non-empty list of starter folder records. Each current record uses `path` and `domain`; the
-  record may only contain those two fields. The `domain` must reference `domains`, and the `path`
-  must stay inside that domain's declared folder.
-
-`templates`
-: List of template file paths expected in the vault. Entries must be safe vault-relative artifact
-  paths and must not contain duplicates.
-
-`views`
-: List of view files expected in the vault, such as `Documents.base`. Entries must be safe
-  vault-relative artifact paths and must not contain duplicates.
-
-`skills`
-: List of profile-specific agent skill paths. Empty for the current profile. Entries must be safe
-  vault-relative artifact paths and must not contain duplicates.
-
-`benchmark_tasks`
-: List of packaged benchmark task-pack paths. Entries must be safe vault-relative `.yml` or
-  `.yaml` paths. Empty for the current profile.
-
-`policy_defaults`
-: Mapping reserved for profile-level defaults such as retention, governance, and generated-output
-  locations. The current schema accepts only `mirror_mode`, `mirror_root`, `mirror_status`,
-  `repo_stub_status`, `repo_notes_dir`, `context_aliases`, `original_sources_authoritative`, and
-  `real_data_in_repo`. The current profile uses `repo_notes_dir` to set the default GitHub
-  repository mirror folder when `tools/repos.yml` does not declare `settings.notes_dir`,
-  `mirror_mode` and `mirror_root` for Office mirror placement when `_meta/mirror-config.yml` does
-  not override them, `mirror_status` for refreshed machine-owned source/repo mirrors, and
-  `repo_stub_status` for repository mirrors that have not been successfully fetched yet. The
-  current profile also uses `context_aliases` to declare compatibility aliases between optional
-  frontmatter context fields; for example, `client: account` means `client` is treated as an alias
-  of canonical `account` in repo-mirror frontmatter generation, lint checks, and annotation
-  migration. The current profile
-  also declares
-  `original_sources_authoritative: true` and `real_data_in_repo: false`, which preserve the
-  MirrorArc policy that source systems remain authoritative and real/private data stays outside
-  the repository. `repo_notes_dir`, when present, must be a safe vault-relative folder inside a
-  declared profile domain and must not overlap the profile's Office mirror root. `context_aliases`,
-  when present, must be a mapping whose keys and targets are distinct optional frontmatter
-  properties declared by the profile.
-
-## Validation Rules
-
-`mirrorarc profile validate` currently enforces:
-
-- no unknown top-level fields;
-- all required top-level fields are present;
-- `schema_version` matches the installed schema version;
-- `id` is lowercase kebab-case;
-- scalar identity fields are non-empty strings;
-- mapping fields are YAML mappings;
-- list fields are YAML lists;
-- required and optional frontmatter property entries are lowercase frontmatter keys, do not
-  contain duplicates, and do not overlap each other;
-- template, view, and skill entries are safe vault-relative artifact paths, do not contain
-  duplicates, and do not overlap `policy_defaults.mirror_root`;
-- benchmark task entries are safe vault-relative `.yml` or `.yaml` paths;
-- benchmark task entries do not overlap `policy_defaults.mirror_root`;
-- domain, note-type, and status identifiers are lowercase kebab-case;
-- domain, note-type, and status definitions only use schema-declared fields;
-- optional domain, note-type, and status `purpose` values are non-empty strings;
-- every domain definition includes a non-empty vault-relative `folder`;
-- domain folders are unique and non-overlapping;
-- `folder_plan` contains mapping entries with vault-relative POSIX `path` values and non-empty
-  `domain` values;
-- `folder_plan` entries only use schema-declared fields;
-- every `folder_plan` domain references a declared profile domain;
-- every `folder_plan` path stays inside its declared domain folder;
-- duplicate `folder_plan` paths are rejected.
-- optional `note_types.<type>.machine_owned` values are booleans.
-- optional `statuses.<status>.attention` and `statuses.<status>.inactive` values are booleans.
-- `policy_defaults` only uses schema-declared fields.
-- optional `policy_defaults.mirror_mode` is either `dedicated` or `sibling`.
-- optional `policy_defaults.mirror_root` is a safe vault-relative generated-output folder.
-- optional `policy_defaults.repo_notes_dir` is a safe vault-relative folder inside a declared
-  profile domain and does not overlap `policy_defaults.mirror_root`.
-- optional `policy_defaults.context_aliases` is a mapping of distinct optional frontmatter
-  property aliases to optional frontmatter property targets.
-- optional `policy_defaults.mirror_status` and `policy_defaults.repo_stub_status` values reference
-  declared statuses.
-- optional `policy_defaults.original_sources_authoritative` and
-  `policy_defaults.real_data_in_repo` values are booleans.
-- optional `policy_defaults.original_sources_authoritative`, when present, must be `true`.
-- optional `policy_defaults.real_data_in_repo`, when present, must be `false`.
-
-`mirrorarc lint`, `mirrorarc catalog`, `mirrorarc migration`, and `mirrorarc overlap` read
-`_meta/profile.yml` for domain folders. Catalog, Microsoft 365 handoff, and sandbox inventory also
-read profile-defined machine-owned note types so generated Markdown artifacts are reported
-separately from curated Markdown/domain note counts. Overlap calibration also reads `related` plus
-the active profile's context frontmatter fields when counting inbound wikilinks for candidate
-ranking, and it excludes notes in profile-defined inactive statuses and machine-owned note types.
-Lint, catalog domain routing, and migration domain routing load the same profile contract validator
-before applying profile-derived settings, so invalid profile contracts are blocking profile errors
-before those tools use profile data.
-Shared runtime profile helpers used by sync and report modules also load the package profile
-validator before exposing profile-derived domains, status roles, generated-mirror defaults, Office
-mirror defaults, repo context fields, or repo mirror folders. In tolerant runtime contexts, a
-missing or invalid profile yields legacy defaults instead of partially trusting malformed profile
-data; explicit validation surfaces such as `profile validate`, `doctor`, and `lint` still report or
-block invalid profile contracts.
-The review ledger accepts profile-defined machine-owned Markdown note types as generated artifacts
-eligible for metadata-only review decisions; it records hashes and frontmatter metadata, not
-artifact bodies.
-`mirrorarc benchmark` and the aggregate `mirrorarc pilot` evidence report load
-profile-declared `benchmark_tasks` through the same profile contract validator, while an explicit
-`--tasks` argument still takes precedence and the legacy `_meta/agent-readiness-tasks.yml` path
-remains a compatibility fallback. Benchmark task-pack validation, result citation validation, and
-`benchmark --init-tasks` scaffolding also resolve generated source-mirror evidence against the
-active Office mirror root. The aggregate pilot
-workspace inventory also excludes the active Office mirror root from operator-content and source
-candidate counts, and recovery excludes the active Office mirror root when checking whether a
-missing source manifest still has source evidence in the vault. GitHub repo mirror sync and
-lint read `policy_defaults.repo_notes_dir` for the default repository-mirror folder, derive
-repo-mirror frontmatter domains from the profile's domain/folder mapping, and normalize repo
-context aliases from `policy_defaults.context_aliases` through the shared runtime profile helper.
-Annotation migration uses the same context aliases when
-deciding whether repo-mirror frontmatter is generated metadata or human annotation. Office mirror
-sync derives canonical source domains and canonical mirror paths from the active profile's domain
-folders, while
-`_meta/domain-map.yml` remains a legacy alias layer for old source-folder names. Office mirror sync,
-lint, catalog, Microsoft 365 handoff, sandbox preflight, doctor, migration guidance, and
-review-ledger classification read `policy_defaults.mirror_mode` and `policy_defaults.mirror_root`
-as generated-output defaults while honoring `_meta/mirror-config.yml` as an operator override.
-Office mirror planning also keeps unsafe mirror-output diagnostics rooted in that active
-profile/configured mirror root, so error records do not drift back to the legacy `_mirrors/`
-layout.
-Generic doctor, sandbox, pilot, benchmark, and conversion report copy stays profile-neutral:
-workspace boundaries, protected identifiers, private evidence, and source-backed conclusions are
-the core terms. Business/client/account wording belongs to the `business-operations` profile data,
-its compatibility aliases, or product-positioning examples rather than the shared runtime.
-`mirrorarc doctor` validates `_meta/profile.yml` first; when that profile contract is present and
-valid, missing `_meta/domain-map.yml` and `_meta/mirror-config.yml` are reported as legacy
-alias/override posture instead of required-file failures. `mirrorarc sandbox` uses the same
-profile-first required-file posture: a valid profile makes those legacy alias/config files
-optional, while profile-less legacy vaults keep the older required-file check. `mirrorarc lint`
-uses the same profile-first domain posture: missing `_meta/domain-map.yml` is a non-blocking
-warning when the active profile provides canonical domain folders, while malformed or
-contradictory domain-map content remains blocking and profile-less legacy vaults keep the older
-required-file check.
-Review-ledger classification also reads profile-defined `machine_owned` note type roles when
-deciding whether a Markdown artifact is generated and reviewable.
-Source/repo mirror sync and annotation migration read `policy_defaults.mirror_status` and
-`policy_defaults.repo_stub_status` when generating mirrors and deciding which mirror statuses are
-machine metadata rather than human annotations. Repo mirror context frontmatter also comes from the
-active profile's optional properties, so the `business-operations` profile keeps
-`account`/`client` compatibility only because it declares `context_aliases`, while other valid
-profiles can declare fields such as `research_project` or `component` without inheriting that
-business-specific alias unless they opt in. Lint and annotation migration also read
-`context_aliases` when checking context frontmatter against repo configuration. Office source
-mirrors and GitHub repo mirrors use the active profile's context fields when ordering preserved
-frontmatter before managed source/repo metadata. Microsoft 365 handoff, sandbox preflight,
-recovery, and review-ledger
-reporting also resolve repo mirror folders from the active profile, while honoring an explicit
-`tools/repos.yml` `settings.notes_dir` override. The `mirrorarc migration` command uses
-validated `_meta/profile.yml` domains for canonical domain folders and `_meta/domain-map.yml` for
-legacy aliases.
-Migration worksheets, runbooks, and frontmatter-normalization worksheets print the active profile
-identity plus canonical domain folders, and they direct unknown folder/domain classification back to
-`_meta/profile.yml` before operators record any legacy alias guidance. `_meta/domain-map.yml`
-remains a legacy alias and operator guidance layer; it must not contradict the profile's canonical
-domain folders.
-
-## Profile-Generated Views
-
-`mirrorarc profile views --check` is read-only. It loads the current vault profile and fails when
-a supported generated view is missing or stale, or when the profile requests a view path this
-installed MirrorArc version cannot safely generate.
-
-`mirrorarc doctor` uses the same generated-view plan for preflight reporting. It reports
-profile-declared view files as current, missing, or stale; older vaults without `_meta/profile.yml`
-fall back to the legacy `Documents.base` presence check.
-
-`mirrorarc profile views --write` regenerates supported profile-owned view files. In the current
-release, the supported generated view is `Documents.base`. Its tables are derived from the active
-profile's required properties, optional properties, note types, and statuses:
-
-- core document tables use profile-defined frontmatter keys;
-- source mirror and repo mirror tables are emitted only when the profile declares those note types;
-- review-attention filters are emitted only from statuses marked `attention: true`.
-
-Generated view writes are explicit and may replace stale generated view files. They do not move,
-delete, or rewrite source documents, generated mirrors, annotation sidecars, or curated markdown
-notes.
-
-## Migration Semantics
-
-`mirrorarc profile migrate --plan` is read-only. It reports:
-
-- missing profile contract files;
-- missing shared directories, the target profile's Office mirror root, and `folder_plan`
-  directories;
-- missing packaged template/view files;
-- profile version or vocabulary drift;
-- existing template/view files that differ from the packaged target;
-- blockers such as target profile ID mismatch.
-
-`mirrorarc profile migrate --write` is intentionally conservative. It may:
-
-- create missing shared directories, the target profile's Office mirror root, and `folder_plan`
-  directories;
-- copy missing packaged template/view files;
-- copy `_meta/profile.yml` into older vaults that do not yet have a profile contract.
-
-It will not:
-
-- overwrite existing files;
-- move, delete, or rewrite source documents;
-- edit generated mirrors;
-- migrate mirror annotations;
-- normalize frontmatter domains;
-- resolve template drift automatically.
-
-Use `mirrorarc profile views --write` after reviewing view drift when you want to regenerate the
-profile-owned `Documents.base` file from the active profile contract.
-
-Use `mirrorarc migration --normalize-frontmatter-domains --worksheet` for frontmatter cleanup
-review, and `mirrorarc migrate annotations --write` for mirror annotation sidecars. Profile
-migration and annotation migration are separate safety boundaries.
-
-## Default `data-product` Shape
-
-The current packaged profile defines these canonical domains:
-
-```text
-inbox -> 00_inbox
-context -> 10_context
-sources -> 20_sources
-contracts -> 30_data-contracts
-pipelines -> 40_pipelines
-analysis -> 50_analysis
-models -> 60_models
-outputs -> 70_outputs
-governance -> 80_governance
-operations -> 90_operations
+```yaml
+markdown_categories:
+  index: {persistence: manual}
+  authoritative_markdown_source: {persistence: authoritative}
+  l1_projection: {persistence: rebuildable}
+  l2_generated_view: {persistence: ephemeral}
+  l2_reviewed_view: {persistence: governed}
+  operational_control: {persistence: required}
 ```
 
-Its current generated-output defaults are:
+`legacy_curated_derivative` and `unknown` are migration classifications, not target categories.
+`INDEX.md` is the manual guide exception. Native Markdown/plain text may be registered directly as
+`authoritative_markdown_source`; opaque sources normally receive one `l1_projection` identity.
 
-```text
-repo_notes_dir -> 20_sources/repos
-mirror_mode -> dedicated
-mirror_root -> _mirrors
-mirror_status -> active
-repo_stub_status -> draft
+Existing note types may remain with `legacy_derivative: true` so an old vault can be inventoried
+without treating those types as a fresh-authoring recommendation.
+
+## Relationship vocabulary
+
+`relationship_types` declares deterministic and semantic types plus their review requirement:
+
+```yaml
+relationship_types:
+  MIRRORS: {deterministic: true, review_required: false}
+  DERIVED_FROM: {deterministic: true, review_required: false}
+  IN_DOMAIN: {deterministic: true, review_required: false}
+  HAS_LIFECYCLE: {deterministic: true, review_required: false}
+  IN_PROFILE: {deterministic: true, review_required: false}
+  DEPENDS_ON: {deterministic: true, review_required: false}
+  REVIEW_DEPENDS_ON: {deterministic: true, review_required: false}
+  IN_CONTEXT: {deterministic: true, review_required: false}
+  MENTIONS: {deterministic: false, review_required: true}
+  SAME_ENTITY: {deterministic: false, review_required: true}
+  SUPPORTS: {deterministic: false, review_required: true}
+  CONTRADICTS: {deterministic: false, review_required: true}
+  SUPERSEDES: {deterministic: false, review_required: true}
+  GOVERNS: {deterministic: false, review_required: true}
+  INVALIDATES: {deterministic: true, review_required: false}
 ```
 
-Allowed note types are:
+Runtime normalization stores canonical uppercase types. An accepted semantic relation requires
+evidence and an admitted review/policy state; model output starts proposed.
 
-```text
-hub, note, source-ref, source-mirror, dataset, data-contract, pipeline, model, evaluation,
-decision, risk, control, runbook, report, repo-mirror
+`mirrorarc relationships refresh` deterministically rebuilds the current structural graph in the
+existing local state database. `status` and `export` expose hashes, bounded anchors, method/version,
+confidence, state, and review history without copying source bodies. `propose` and `review` keep
+semantic admission explicit.
+
+## Knowledge lenses
+
+`knowledge_lenses` maps a lens ID to:
+
+- `purpose` and `audience`;
+- `source_query` and permitted `relationship_types`;
+- ordered `output_sections`;
+- `max_tokens`;
+- `persistence` (`ephemeral`, `cache`, `pinned`, or `reviewed`);
+- `citation_required`.
+
+A lens is many sources to one purpose-specific view. Profiles must not generate one view per source
+by default. Persistence never implies authority, and automatic promotion is forbidden.
+
+`mirrorarc view render <lens>` first uses the deterministic renderer and writes only a local cache
+artifact. The output identity includes the lens definition and dependency hashes, so unchanged
+rendering is idempotent while changed evidence creates a distinct candidate. `view pin` and
+`view review` are explicit persistence transitions; reviewed output is preserved when stale.
+`view promote` requires a named reviewer, a reason, a new in-vault target, and writes promotion
+provenance. A profile with `automatic_promotion: true` is invalid.
+
+## Review and context policy
+
+`review_policy` declares:
+
+```yaml
+review_policy:
+  semantic_proposals_require_review: true
+  preserve_reviewed_views: true
+  automatic_promotion: false
 ```
 
-Allowed statuses are:
+`context_defaults` declares export ceilings and allowed modes:
 
-```text
-draft, active, in-review, accepted, monitored, suppressed, superseded, archived
+```yaml
+context_defaults:
+  max_tokens: 4000
+  max_files: 20
+  max_excerpt_chars: 6000
+  allowed_modes: [metadata, dynamic, frozen]
 ```
 
-The default profile marks `source-mirror` and `repo-mirror` as machine-owned note types,
-marks `draft` and `in-review` as attention states, and marks `superseded` and `archived` as
-inactive states for overlap/lint calibration.
+`max_tokens` is a compatibility estimate, not a strict tokenizer ceiling. Frozen exports use
+`max_tokens * 4` as a hard UTF-8 serialized JSON byte ceiling, including instructions, metadata,
+citations, omissions and whitespace (`utf8-json-bytes-v1`). Accounting reports exact bytes and
+`ceil(bytes/4)` estimated tokens. Overhead-only overflow fails rather than writing invalid JSON.
+Per-excerpt characters are Unicode codepoints; code truncation retains complete lines only.
+Current profile allowed modes are checked before provider, cache, or body access, including saved
+definitions after policy changes.
 
-These values belong to `data-product`, not the long-term core. `business-operations`,
-`research-learning`, `software-project`, and `blank` scaffolds use their own package-owned domains,
-note types, statuses, policy defaults, views, and benchmark hooks.
+Metadata mode copies no bodies. Dynamic definitions resolve current eligible evidence. Frozen
+packs record bounded content or resolvable references plus hashes, citations, omissions, warnings,
+and sensitivity. The context ceilings are validated as positive integers, and `allowed_modes`
+accepts only `metadata`, `dynamic`, and `frozen`.
+
+```bash
+mirrorarc --root <vault> context build --lens orientation --mode metadata
+mirrorarc --root <vault> context build --lens orientation --mode dynamic
+mirrorarc --root <vault> context resolve <definition-id>
+mirrorarc --root <vault> context freeze --definition <definition-id>
+mirrorarc --root <vault> context status <context-id>
+```
+
+Metadata output is a selection manifest, not a content pack. A dynamic definition stores purpose,
+selection rules, budgets, freshness policy, permitted artifact types, and sensitivity policy; each
+resolve recomputes membership from current governed state. A frozen pack is a byte-stable JSON
+execution envelope with bounded excerpts, source/projection hashes, current relationship evidence,
+view versions where applicable, citations, omissions, warnings, and effective sensitivity. Its
+status may report newer versions, but refresh never mutates the frozen file.
+Effective budget and export-method changes participate in the frozen identity. Publication is
+exclusive: an existing identity with different bytes is an integrity error, never an overwrite.
+Surviving frozen files retain their creation time when derived database records are rebuilt.
+
+The `software-project` profile can also use optional code-evidence contexts. Repository selection
+still comes from `tools/repos.yml`; no provider field or second repository connector is added to the
+profile schema. `code analyze --context dynamic|frozen` reuses the same `context_defaults` budgets,
+citations, omission reporting, sensitivity boundary, and untrusted-content rules.
+
+## Policy defaults
+
+Current mirror settings remain:
+
+- `mirror_mode`, `mirror_root`, `mirror_status`;
+- `repo_notes_dir`, `repo_stub_status`;
+- `context_aliases` for profile-specific compatibility;
+- `original_sources_authoritative: true`;
+- `real_data_in_repo: false`.
+
+These universal booleans cannot be weakened. A profile must not declare an automatic-promotion,
+public-body export, vector-index, or parallel lifecycle authority default.
+
+## Runtime and migration semantics
+
+Explicit validation rejects unknown fields, unsafe paths, invalid vocabulary, overlapping folders,
+duplicate entries, and policy contradictions. Tolerant runtime readers may apply legacy defaults to
+a missing 0.2 behavior field, but `profile diff` and migration report that drift.
+
+`profile migrate --plan` is read-only. Write mode may add missing package-owned files/directories
+but never overwrite existing source content, generated projections, reviewed views, or annotation
+sidecars. Markdown classification and disposition use `mirrorarc migration`; profile migration and
+content migration remain separate gates.
+
+## Packaged profiles
+
+The packaged profiles are `data-product`, `business-operations`, `research-learning`,
+`software-project`, and `blank`. They share authority, L1 cardinality, relationship evidence,
+many-to-few L2, context, review, and no-data rules while keeping their own domain and source
+vocabulary.
+
+## Opt-in task query
+
+`context build --lens orientation --query "your task"` saves the query inside the existing
+selection definition; `context freeze --lens orientation --query "your task"` uses it directly.
+Explicit selections remain the default. Saved queries and relationship types survive resolution
+and recovery. Query retrieval admits only hash-verified current authoritative text or L1, uses
+FTS5 `unicode61` with BM25 (heading weight 4, body weight 1), deterministic ties and source-ID
+deduplication, then optionally expands one accepted-current relationship hop. Limits: 500
+candidates, 256 KiB per indexed file, 8 MiB total indexed text, 10,000 chunks and the existing
+profile file/export ceilings. Unsupported FTS5 runtimes give an explicit error and can use lens
+selection without a query. The index is disposable; it cannot admit a proposed/rejected edge.
+Retrieval diagnostics in exported context contain exclusion counts and at most five examples.
+`exclusions_omitted` labels the remaining detail; `details_path` and `details_hash` identify the
+full local metadata report under `.mirrorarc/cache/context/retrieval/`. This report is not required
+to read the included evidence offline and may be regenerated after cache loss.

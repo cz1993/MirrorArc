@@ -2,7 +2,8 @@
 
 MirrorArc mirrors make source collections easier to inspect, search, link, and hand to agents.
 They do not replace the original source files. This guide defines the operator review loop for
-conversion quality before mirrors are used for source-backed conclusions or durable curated notes.
+conversion quality before mirrors are used for source-backed conclusions, evidenced relations, or
+governed L2 views.
 
 Run it from a copied, permission-cleared vault:
 
@@ -69,7 +70,7 @@ the original workbook or deck for calculations and layout-dependent interpretati
 
 ## Sign-Off Criteria
 
-A mirror can support curated notes only when:
+A mirror can support accepted relationships or governed views only when:
 
 - source path and mirror path are present and relative;
 - lifecycle state is clean or intentionally reviewed;
@@ -78,7 +79,7 @@ A mirror can support curated notes only when:
 - conversion-quality results have been recorded for all relevant source manifest records when the
   pilot or engagement requires scoring;
 - any high-priority recovery item is resolved or documented;
-- the curated note cites source-backed paths rather than treating generated markdown as final
+- the relationship/view cites source-backed identities and hashes rather than treating generated markdown as final
   authority.
 
 ## What To Record

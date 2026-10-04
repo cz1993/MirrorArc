@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "reviewed": true,
+  "reviewer": "CodeX implementation review",
+  "reviewed_at": "2026-07-21",
+  "backup_root": "/Users/cz/.codex/safety-backups/MirrorArc/knowledge-projection-20260721",
+  "decision": "Remove legacy curated derivatives after consolidating durable navigation into INDEX.md and retaining source, contract, governance, and output authorities.",
+  "items": [
+    {
+      "path": "10_context/Evidence layers and trust.md",
+      "expected_sha256": "be73bbbb5f2c6ded77c0ab7dbab741bd11bf68539bd2c3cf5c0a72aa6cb37331",
+      "action": "remove_after_backup",
+      "replacement": ["INDEX.md", "_meta/agent-rules.md", "80_governance/Evidence controls.md"]
+    },
+    {
+      "path": "10_context/Ontario Electricity Evidence Workspace overview.md",
+      "expected_sha256": "805f14a0b9beed67922b370662f2095ccd1a3cea485ba5b388c37f24ef3164da",
+      "action": "remove_after_backup",
+      "replacement": ["INDEX.md", "10_context/Demo walkthrough.md"]
+    },
+    {
+      "path": "10_context/Ontario electricity glossary.md",
+      "expected_sha256": "d40d1a63de896622f6c269eb0258dcdc9f6f7d87db6ecdfea688ac52578b7295",
+      "action": "remove_after_backup",
+      "replacement": ["INDEX.md", "30_data-contracts/Annual demand contract.md", "30_data-contracts/Generation output contract.md", "30_data-contracts/Intertie flow contract.md"]
+    },
+    {
+      "path": "10_context/Questions this workspace answers.md",
+      "expected_sha256": "5034612b7c6874a715a22bde542e48b087de691ecfff3bf1d82dc3038bbef443",
+      "action": "remove_after_backup",
+      "replacement": ["INDEX.md", "50_analysis/Cross-source evidence synthesis.md"]
+    },
+    {
+      "path": "20_sources/Public source register.md",
+      "expected_sha256": "7b51939d90dfb3472366d2df5f62ec2cc4fb16da16a8c282d94d1250d3a3aaa0",
+      "action": "remove_after_backup",
+      "replacement": ["../DATA_PROVENANCE.md", "80_governance/Open data license register.md", "80_governance/IESO reference-only boundary.md"]
+    },
+    {
+      "path": "70_outputs/Stakeholder brief index.md",
+      "expected_sha256": "40e190ea8cc4f2f6bfb939b1310223996590f081003bb89d2f1fe749161648ac",
+      "action": "remove_after_backup",
+      "replacement": ["INDEX.md", "70_outputs/Output relationship map.md", "orientation knowledge lens"]
+    }
+  ]
+}

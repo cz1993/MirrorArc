@@ -7,7 +7,7 @@ created: 2026-07-19
 updated: 2026-07-19
 owner: MirrorArc Example
 tags: [release, checklist]
-related: ["[[Evidence controls]]", "[[Refresh public sources runbook]]", "[[Stakeholder brief index]]"]
+related: ["[[Evidence controls]]", "[[Refresh public sources runbook]]", "[[Output relationship map]]"]
 ---
 
 # Example release checklist

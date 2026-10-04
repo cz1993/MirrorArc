@@ -3,9 +3,72 @@
 All notable changes to MirrorArc are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); Python package prereleases use PEP 440.
 
+## Unreleased — Trustworthy Context
+
+- Add the optional PageIndex answer-first presentation contract: direct answer, cited reason and
+  important caveats stay visible in Catalog, with keyboard-accessible frozen-page links and
+  optional details/original output. Preserve immutable candidates and historical packs; show the
+  escaped complete original with a warning when an old or malformed layout cannot be parsed.
+  Keep default exports metadata-only. New instructions distinguish evidenced source changes from
+  errors in earlier answers. Synthetic Astra prompt checks remain separate from real SDK inference.
+
+- Add optional isolated PageIndex PDF indexing, source/page/hash-bound context, current-source
+  checks, bounded Catalog page previews, and explicit model-assisted answer candidates. Actual
+  model-free SDK and scripted loopback tool-contract checks pass; real-model quality and release
+  acceptance remain unproven. See `docs/PAGEINDEX_RELEASE_PLAN.md`.
+- Record the October 4 eight-case Astra subscription trial and owner approval of the shorter
+  authored review layout. Both plain and governed inputs met core grounding checks; no answer
+  superiority was established. Direct SDK inference, production-layout changes and release
+  acceptance remain separate gates. This is validation documentation, not a runtime change.
+- Require a distinctly versioned local PageIndex `0.2.10+mirrorarc.1` patch using maintained
+  `pypdf` 6.19.0 instead of vulnerable PyPDF2. Refuse legacy runtimes, bind parser versions into
+  evidence, and require reindexing after a parser upgrade without rewriting frozen history.
+- Load the optional runtime's required libraries before reporting Ready; reject malformed,
+  duplicate or oversized model configuration without echoing its contents. Bound PDF/cache reads
+  and bind refreshed evidence to source paths as well as hashes.
+- Enforce approved HTTP operation/model, request and response byte limits, request counts,
+  output-token ceilings, disabled redirects and `store: false` at the PageIndex HTTP boundary.
+  Python-level guards also refuse provider child processes; they are not an OS sandbox.
+- Show unreviewed answer candidates alongside hash-checked frozen page excerpts in local
+  content-enabled Catalogs. Mark historical candidates stale, suppress damaged evidence, and
+  wrap long answer text. Metadata-only output omits questions, answers and excerpts.
+- Document tested whole-vault restore and PDF-index recovery. Preserve historical answer files
+  during index maintenance and retain the database backup for semantic relationship decisions;
+  source-only reconstruction and a ledger export are not equivalent to restoring those decisions.
+- Bind effective budgets into frozen identities and refuse conflicting writes, including after
+  derived pack-record loss; preserve earlier frozen bytes.
+- Bound retrieval exclusion diagnostics to counts and five examples, with a hash-addressed local
+  detailed report, so large candidate sets leave room for useful evidence.
+- Enforce current context-mode policy at document, saved-definition and code entry points.
+- Export exact code span unions, verified source snapshots, visible omissions and final serialized
+  UTF-8 byte ceilings with honest token estimates; distinguish reference-only evidence.
+- Include working-tree changes in base comparisons; preserve Catalog analysis selections.
+- Bound provider output while streaming, time out and clean up subprocess groups.
+- Add opt-in deterministic FTS5/BM25 task retrieval inside the existing derived database and a
+  fixed 12-task synthetic benchmark with unscored model outcomes.
+- Invalidate saved frozen contexts after full sync and report live frozen code staleness in Catalog.
+- Wrap long export commands and preserve keyboard focus in the portable selection dialog.
+- Clarify the portable Catalog task/evidence/export journey. Retain CodeGraph 1.5.0 and MarkItDown
+  defaults; upstream experiment limitations and final local proof are recorded in the handoff.
+
 ## [Unreleased]
 
 ### Changed
+- Completed the local Workstreams 0-10 knowledge-projection proof against a 280-source disposable
+  Ontario corpus spanning eight format classes. The portal now labels content-inclusive output,
+  exposes deterministic/proposed/accepted/rejected/invalidated relationship governance, preserves
+  bounded evidence anchors, and remains usable at desktop and mobile sizes without a second graph
+  authority.
+- Converged the product, methodology, information architecture, profile, sync, recovery, security,
+  template, agent, and CI contracts on the approved knowledge-projection model. Packaged profiles
+  are now `0.2.0` contracts with explicit Markdown categories, relationship vocabulary,
+  many-to-few lens definitions, review safeguards, and context budgets while retaining schema-v1
+  read compatibility for existing technical-alpha profiles.
+- Reframed MirrorArc's canonical whitepaper and README around a governed knowledge-projection
+  architecture: authoritative L0 sources, one-to-one L1 specular projections, an evidence-backed
+  relationship ledger, many-to-few L2 knowledge views, dependency-aware refresh, and dynamic or
+  frozen context assembly. The docs now identify the existing curated-note model and Ontario
+  Markdown layer as migration evidence rather than the target product.
 - Replaced the two legacy example vaults with the 50+ file Ontario electricity evidence workspace:
   10 historical OGL Ontario CSVs plus source notes, 40+ curated knowledge notes, two independently
   authored Word/Excel artifacts, and a synthetic validation-code fixture. IESO and OEB pages remain
@@ -51,6 +114,57 @@ All notable changes to MirrorArc are documented here. Format loosely follows
   conversion/export or literal WAL shipping.
 
 ### Added
+- Added the trustworthy-context execution plan, separate Codex development kickoff, and
+  post-development review checklist. Documented local-only validation and a single consolidated
+  GitHub PR/merge after planning-session acceptance; no implementation or shipment is implied.
+- Added optional Repository Intelligence through the pinned CodeGraph v1.5.0 local CLI: three
+  plain-language commands, revision/tree-bound evidence, deterministic historical analysis
+  identities, current/stale/failed state, bounded dynamic/frozen code context, and a passive
+  responsive Catalog Code view. Provider indexes remain disposable ignored state, telemetry and
+  update checks are suppressed, affected tests stay visibly non-authoritative, and failed refreshes
+  retain the previous valid result.
+- Added a bounded Repository Intelligence execution plan and goal-mode kickoff prompt. The planned
+  slice uses a pinned optional local CodeGraph CLI integration, three plain-language MirrorArc
+  commands, revision-bound code evidence, existing context governance, and a friendly portable
+  Catalog workflow while explicitly excluding vector search, bulk graph import, extra
+  watchers/databases, provider daemons, ADS, and review overhead.
+- Added loss-of-state recovery for governed filesystem artifacts. Full deterministic relationship
+  refresh reattaches hash-verified reviewed/pinned L2 files, saved dynamic definitions, and frozen
+  context packs after `.mirrorarc/state.sqlite` is removed; dependency edges and freshness state
+  are reconstructed without changing persisted bytes. Semantic decisions remain part of the local
+  ledger and therefore still require a database backup for restoration; ledger exports retain
+  audit evidence but are not an automatic restore path.
+- Added governed context assembly with three intentionally separate modes: body-free metadata
+  selection manifests, saved dynamic definitions that resolve current evidence, and immutable
+  offline frozen packs. Profile ceilings enforce token/file/excerpt budgets; frozen packs include
+  citations, hashes, relationship evidence, omissions, version/sensitivity warnings, and an
+  explicit untrusted-document boundary. Deterministic `IN_CONTEXT` and dependency records drive
+  source-change freshness without rewriting frozen bytes.
+- Added profile-owned many-to-few L2 knowledge views with deterministic cited rendering, explicit
+  token budgets and omissions, stable dependency identities, cache-by-default persistence,
+  idempotent unchanged regeneration, generated/reviewed/stale/superseded lifecycle, and optional
+  model-version recording behind an interface. Pin/review persists a governed copy; only a named,
+  explicit promotion can create a new authoritative Markdown source with derivation provenance.
+- Connected successful journal materialization to cycle-safe, bounded dependency invalidation.
+  A changed/deleted source updates only its L0/L1 deterministic subgraph, invalidates hash-bound
+  semantic edges, preserves move-only identity, marks reviewed views stale, queues generated-view
+  refresh, marks frozen context stale, and records the journal sequence and old/new hashes.
+  Reconciliation repairs missed hash transitions without scanning unrelated source bodies.
+- Added the versioned relationship/provenance ledger inside the existing local
+  `.mirrorarc/state.sqlite` boundary. Deterministic refresh materializes artifact identities,
+  `MIRRORS`, `DERIVED_FROM`, domain, profile, lifecycle, and dependency records with bounded
+  evidence anchors and a reproducible fingerprint; optional semantic relations remain proposals
+  until named acceptance or rejection and retain review/invalidation audit history.
+- Added stable L1 projection identities to Office and repository manifests/frontmatter, a shared
+  read-only `mirrorarc inventory` report for authoritative/native/opaque/L1/L2 counts, and blocking
+  anti-proliferation checks for duplicate identities, duplicate paths, orphan projections, and
+  unexplained user-facing Markdown. Profiles now declare whether native readable sources are used
+  directly or require isolated/immutable projections.
+- Added deterministic per-file Markdown migration inventory with allowed/legacy/unknown categories,
+  hashes, classification evidence, and dispositions. `migration --apply-markdown-review` supports
+  only reviewed, hash-pinned category changes, requires a backup directory outside the vault, and
+  preserves unrelated files; the Ontario and all packaged-profile inventories have zero
+  unexplained Markdown before legacy cleanup begins.
 - Added a progressively rendered discovery layer for the public Pages demo: crawler-visible
   `INDEX.md` content, per-document semantic HTML and raw Markdown, canonical/social metadata,
   structured data, `robots.txt`, `sitemap.xml`, `llms.txt`, and an agent-readable catalog. The
@@ -61,6 +175,13 @@ All notable changes to MirrorArc are documented here. Format loosely follows
   the example from a fresh temporary copy, embeds the tutorial and document views, and requires
   the repository-wide provenance/no-data gate before installation plus vault lint and a second
   generated-artifact scan before deployment.
+- Added an execution-grade product implementation plan with ordered contracts, migration, L1,
+  relationship, invalidation, L2, context, portal, template, safety, and validation workstreams.
+  Its finish line requires an expanded rights-cleared mixed-format Ontario electricity corpus,
+  end-to-end MirrorArc simulation, and local portal/browser validation.
+- Added a paste-ready new-session knowledge-projection kickoff prompt that pursues the plan through
+  the Ontario corpus proof while preserving no-data, licensing, local-first validation, and
+  external-action gates.
 - Added `scripts/create_plain_markitdown_dump.py`, a private external-pilot helper that creates
   the required `plain_markitdown_dump` benchmark baseline outside the public source checkout.
 - Added reproducible reviewed-result generation for the messy synthetic benchmark corpus and

@@ -1,0 +1,1 @@
+{"symbol":"demand_change","callers":[{"name":"test_demand_change","kind":"method","filePath":"tests/test_summary.py","startLine":9},{"name":"test_summary.py","kind":"file","filePath":"tests/test_summary.py","startLine":1}]}

@@ -143,7 +143,7 @@ def test_release_workflow_verifies_built_wheel_before_release() -> None:
     assert "test -f \"$tmp_vault/tools/review_ledger.py\"" in text
     assert "catalog --check" in text
     assert "catalog --html --check" in text
-    assert "profile diff 0.1.0" in text
+    assert "profile diff 0.2.0" in text
     assert "profile migrate --plan" in text
     assert "profile migrate --write --json" in text
     assert "profile views --check" in text
@@ -204,7 +204,7 @@ def test_ci_workflow_smokes_sandbox_command() -> None:
     assert "test -f \"$tmp_vault/tools/review_ledger.py\"" in text
     assert "catalog --check" in text
     assert "catalog --html --check" in text
-    assert "profile diff 0.1.0" in text
+    assert "profile diff 0.2.0" in text
     assert "profile migrate --plan" in text
     assert "profile migrate --write --json" in text
     assert "profile views --check" in text

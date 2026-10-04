@@ -6,6 +6,8 @@ domain: operations
 created: {{date}}
 updated: {{date}}
 owner: you
+markdown_category: authoritative_markdown_source
+authority: authored
 tags: [runbook]
 related: []
 ---

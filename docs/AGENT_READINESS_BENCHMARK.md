@@ -17,9 +17,9 @@ Run the same task set against three modes:
 1. **Raw source folder** - originals only, such as Office files, PDFs, spreadsheets, decks, repos,
    and loose notes.
 2. **Plain markitdown dump** - one-off Markdown produced from the same convertible source files,
-   with no manifest identity, lifecycle state, curated hubs, or refresh semantics.
-3. **MirrorArc markdown** - generated mirrors, manifests, source-linked hubs, entity pages, and
-   linted conventions.
+   with no manifest identity, lifecycle state, governed relationships, or refresh semantics.
+3. **MirrorArc markdown** - generated L1 mirrors, manifests, accepted evidence relationships, task selections,
+   and governed context envelopes.
 
 Do not mix evidence between modes during scoring.
 
@@ -44,9 +44,9 @@ Use fixed tasks that reflect real operator and agent work:
 | --- | --- | --- |
 | Answer | "What steps are required before GST/HST registration?" | Correct answer with source-backed citations and caveats |
 | Reconcile | "Which documents disagree about eligibility or dates?" | Finds conflicts and points to specific files/sections |
-| Update | "A source changed; what notes or hubs must be refreshed?" | Identifies stale mirrors/notes without rewriting originals |
+| Update | "A source changed; which projections or contexts need refresh?" | Identifies stale mirrors/notes without rewriting originals |
 | Audit | "Show evidence for this recommendation." | Produces traceable source path, mirror path, and manifest context |
-| Consolidate | "Where should this new fact live?" | Extends an existing note when appropriate instead of spawning duplicates |
+| Consolidate | "Where should this new fact live?" | Preserves originals and consolidates unnecessary derived views |
 
 ## Metrics
 
@@ -211,7 +211,7 @@ python3.11 scripts/generate_messy_benchmark_corpus.py \
   --files 200
 ```
 
-The generated vault includes synthetic Office-like sources, curated notes, a plain conversion dump
+The generated vault includes synthetic Office-like sources, authoritative Markdown records, a plain conversion dump
 under `_benchmark/plain_markitdown_dump/`, a benchmark task pack, and a private result scaffold.
 Run the same agent against all three modes before publishing aggregate scores.
 
@@ -235,3 +235,34 @@ synthetic score evidence only; it must not be described as external design-partn
 Synthetic dogfood runs can validate the protocol and generated corpus mechanics, but they are not
 proof that MirrorArc improves agent performance on a real private corpus. Publish only aggregate,
 non-sensitive results after independent review.
+
+## Compact Trustworthy Context pack
+
+`tests/fixtures/trustworthy_context/pack.json` fixes 12 synthetic tasks across mixed text,
+conflicting/revised records, and the existing synthetic code fixture. IDs, expected source hashes,
+spans, answers, scoring rules, common prompt, file/export budget, and three held-out tasks were
+fixed before retrieval tuning. This text pack does not benchmark opaque conversion. W5 separately
+checks synthetic PDFs. A code source is wrapped as readable Markdown for registration; this
+input difference is recorded in the manifest.
+
+```bash
+mirrorarc benchmark --compact-pack tests/fixtures/trustworthy_context/pack.json --json
+mirrorarc benchmark --compact-pack tests/fixtures/trustworthy_context/pack.json --task-retrieval --json
+```
+
+These commands run deterministic selection and export measurements, never model inference.
+Per-task results include expected/selected/included evidence, coverage, empty selection for
+insufficient evidence, latency, exact bytes and estimated tokens. Correctness, semantic citation
+accuracy, stale-evidence use, model abstention, prompt safety, and corrections remain `null` until
+actual model runs and human calibration exist. A successful deterministic run is not an empirical
+model pass or evidence of retrieval superiority. Raw and plain source-order baselines use the same
+file cap and fixed source revisions; no model has been run on any mode in this batch.
+
+For empirical evaluation after endpoint/data/spend approval, use the manifest's common prompt and
+three repeats per task/mode with the same approved model/version and tool-free permissions. Retain
+actual responses, input hashes, latency and tokenizer/version counts outside the repository;
+human-calibrate the existing 0–2 rubric and record corrections and safety outcomes. Use the
+existing `benchmark --tasks <private-task-pack> --results <private-result-pack> --require-results
+--require-citations --require-prompt-safety --json` validator for the calibrated result pack.
+Do not turn the historical `--write-reviewed-results` generator's invented fixture scores into
+measured results. The compact run intentionally does not call that generator.

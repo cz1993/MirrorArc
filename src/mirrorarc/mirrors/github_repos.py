@@ -55,7 +55,7 @@ REPO_MANIFEST_REL = Path("_meta/repo-manifest.json")
 AUDIT_REL = Path("_meta/sync-audit.jsonl")
 ANNOTATION_ROOT = Path("_meta/mirror-annotations")
 MANIFEST_SCHEMA_VERSION = 1
-CONFIG_VERSION = "repo-mirrors:v1"
+CONFIG_VERSION = "repo-mirrors:v3"
 LEGACY_REPO_NOTES_DIR = "80_sources/repos"
 ANNOTATION_MIGRATION_REQUIRED_WARNING = (
     "Unmigrated repo mirror annotations found above the generated sentinel; "
@@ -63,11 +63,11 @@ ANNOTATION_MIGRATION_REQUIRED_WARNING = (
 )
 DEFAULT_ANNOTATION_FRONTMATTER_KEYS = {"title", "domain", "owner", "created", "updated"}
 LIFECYCLE_CONTRACT_REL = Path("_meta/lifecycle-states.yml")
-MANAGED = {"type", "repo_id", "repo_manifest", "repo", "repo_url", "default_branch", "last_commit",
+MANAGED = {"type", "markdown_category", "authority", "repo_id", "projection_id", "repo_manifest", "repo", "repo_url", "default_branch", "last_commit",
            "last_commit_date", "open_issues", "synced", "updated"}
 BASE_KEY_ORDER = ["title", "type", "status", "domain", "owner", "created", "updated", "tags", "related"]
 MANAGED_KEY_ORDER = [
-    "repo_id", "repo_manifest", "repo", "repo_url", "default_branch", "last_commit",
+    "markdown_category", "authority", "repo_id", "projection_id", "repo_manifest", "repo", "repo_url", "default_branch", "last_commit",
     "last_commit_date", "open_issues", "synced",
 ]
 GIT_ENV = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
@@ -77,7 +77,7 @@ FORBIDDEN_OUTPUT_PARTS = {
 }
 LIFECYCLE_GUIDANCE = {
     "planned": "review the plan, then run sync to create the repo mirror.",
-    "repo_changed": "run sync to refresh README/docs/metadata, then review curated notes.",
+    "repo_changed": "run sync to refresh README/docs/metadata, then review dependent relationships and views.",
     "stale": "run sync before relying on the mirror; the repo or configuration is newer.",
     "unreachable": "check repo spelling, network access, and GitHub auth; existing mirror content is retained.",
     "repo_unconfigured": "confirm whether the repo mirror is retired, restore its repos.yml entry, or archive/remove the mirror deliberately.",
@@ -430,6 +430,16 @@ def api_get(path, token):
 
 def recent_commits(repodir: Path, n: int):
     try:
+        root = subprocess.run(
+            ["git", "-C", str(repodir), "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        # A plain fixture directory inside the vault is not a repository of its own. Never leak
+        # the enclosing MirrorArc checkout's history into that fixture's projection.
+        if root.returncode != 0 or Path(root.stdout.strip()).resolve() != repodir.resolve():
+            return []
         r = subprocess.run(["git", "-C", str(repodir), "log", f"-n{n}", "--format=%h%x09%cI%x09%s"],
                            capture_output=True, text=True, timeout=30)
         return [ln.split("\t", 2) for ln in r.stdout.splitlines() if ln.strip()]
@@ -577,6 +587,7 @@ def default_preserved_line(line: str) -> bool:
         or stripped == "> Curate notes below; everything under the line refreshes on sync."
         or stripped == "> This mirror is machine-owned; do not edit it directly."
         or stripped == "> This mirror is machine-owned; keep durable human notes in curated notes or annotation sidecars."
+        or stripped == "> This L1 projection is machine-owned; use annotation sidecars for commentary and governed L2 views for synthesis."
     )
 
 
@@ -688,6 +699,11 @@ def repo_frontmatter_identity_issue(existing_fm: dict, allowed_repos: set[str]) 
         return "Repo frontmatter is missing the managed repo identity."
     if allowed_repos and repo_value not in allowed_repos:
         return "Repo frontmatter repo differs from the configured/resolved repo identity."
+    repo_id = str(existing_fm.get("repo_id", "") or "").strip()
+    if repo_id and str(existing_fm.get("projection_id", "") or "").strip() != projection_id_for(repo_id):
+        return "Repo frontmatter projection_id differs from its stable repo projection identity."
+    if existing_fm.get("markdown_category") != "l1_projection" or existing_fm.get("authority") != "derived":
+        return "Repo frontmatter is missing managed L1 category or authority metadata."
     return None
 
 
@@ -708,6 +724,11 @@ def review_blocks_force(record: dict) -> bool:
 def repo_id_for(repo: str, note: str) -> str:
     digest = hashlib.sha256(f"{repo}\0{note}".encode("utf-8")).hexdigest()[:20]
     return f"repo_{digest}"
+
+
+def projection_id_for(repo_id: str) -> str:
+    """Return the stable L1 projection identity owned by one repository identity."""
+    return f"l1_{hashlib.sha256(repo_id.encode('utf-8')).hexdigest()[:20]}"
 
 
 def empty_repo_manifest() -> dict:
@@ -845,7 +866,7 @@ def fresh_preserved(slug, entry):
     url = entry.get("repo_url") or (f"local:{entry['local_path']}" if entry.get("local_path") else f"https://github.com/{slug}")
     return (f"> [!info] GitHub repo mirror — auto-generated\n"
             f"> Source: {slug} ({url}). Edit the source repo, never this note.\n"
-            f"> This mirror is machine-owned; keep durable human notes in curated notes or annotation sidecars.\n\n")
+            f"> This L1 projection is machine-owned; use annotation sidecars for commentary and governed L2 views for synthesis.\n\n")
 
 
 def domain_from_notes_dir(notes_dir: str) -> str:
@@ -882,7 +903,10 @@ def base_fm(existing, entry, slug, domain="sources"):
             fm[target] = canonical_value
             fm[alias] = canonical_value
     fm["type"] = "repo-mirror"
+    fm["markdown_category"] = "l1_projection"
+    fm["authority"] = "derived"
     fm["repo_id"] = repo_id
+    fm["projection_id"] = projection_id_for(repo_id)
     fm["repo_manifest"] = REPO_MANIFEST_REL.as_posix()
     fm["repo"] = slug
     fm["repo_url"] = entry.get("repo_url") or (f"local:{entry['local_path']}" if entry.get("local_path") else f"https://github.com/{slug}")
@@ -1127,6 +1151,7 @@ def plan_one(entry, settings, token, manifest):
 
     record = {
         "repo_id": repo_id,
+        "projection_id": str(existing_record.get("projection_id") or projection_id_for(repo_id)),
         "configured_repo": repo,
         "resolved_repo": resolved_repo or repo,
         "note_path": note_rel,
@@ -1200,7 +1225,8 @@ def update_manifest_after_sync(manifest: dict, plan: dict, status: str) -> None:
         fm, _body = split_fm(text)
         if isinstance(fm, dict):
             record["last_commit"] = fm.get("last_commit", record.get("last_commit", ""))
-            record["last_successful_sync"] = fm.get("synced") or record.get("last_successful_sync")
+            if status.startswith(("created", "updated")):
+                record["last_successful_sync"] = now_iso()
         observed_generated_hash = generated_region_hash(text)
     if status.startswith(("created", "updated", "unchanged")):
         record["generated_region_sha256"] = observed_generated_hash
@@ -1378,7 +1404,7 @@ def sync_one(entry, settings, token, force, dry, trusted_existing_baseline=False
         fm["last_commit"] = sha
         fm["last_commit_date"] = (commits[0][1] if commits else "")
         fm["open_issues"] = ""
-        fm["synced"] = now_iso()
+        fm["synced"] = fm["last_commit_date"]
         auto = build_auto(slug, meta, {}, None, docs, commits)
         status = "updated" if note_path.exists() else "created"
         error = write_note_error(note_path, fm, preserved, auto, dry)
@@ -1438,7 +1464,9 @@ def sync_one(entry, settings, token, force, dry, trusted_existing_baseline=False
     fm["last_commit"] = sha
     fm["last_commit_date"] = (commits[0][1] if commits else "")
     fm["open_issues"] = (meta or {}).get("open_issues_count", "")
-    fm["synced"] = now_iso()
+    # Preserve operational refresh time in the derived manifest. The projection records the
+    # stable upstream snapshot time so identical source snapshots rebuild to identical bytes.
+    fm["synced"] = str((meta or {}).get("pushed_at") or fm["last_commit_date"] or "")
     auto = build_auto(slug, meta, langs, release, docs, commits)
     status = "updated" if note_path.exists() else "created"
     error = write_note_error(note_path, fm, preserved, auto, dry)

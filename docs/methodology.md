@@ -1,103 +1,83 @@
 # Methodology
 
-MirrorArc is mostly *discipline*, encoded so an agent follows it. This is the why behind the
-schema in `template/CLAUDE.md`.
+MirrorArc is a source-preserving operating discipline encoded in profiles, manifests, ledgers,
+views, context definitions, lint rules, and recovery procedures.
 
-## 1. Four layers
+## 1. Authority and projection layers
 
-- **Raw sources** — the real artifacts (contracts, decks, statements, receipts, repos, the
-  originating Office files). Immutable: the agent reads them, never rewrites them. Source of truth.
-- **Generated mirrors** — markdown conversions of Office/PDF files under `_mirrors/`, plus repo
-  mirrors under the active profile's `repo_notes_dir` (`20_sources/repos/` in the default
-  `data-product` profile). The agent regenerates these from source; you curate only above the
-  sentinel.
-- **Wiki** — markdown notes that summarize, connect, and add metadata: Maps of Content (MOCs),
-  entity pages, knowledge notes, decisions, and guides. The agent writes this; you curate.
-- **Schema** — `CLAUDE.md`: the conventions and the ingest/query/lint workflows. It's what makes
-  the agent a disciplined maintainer instead of a generic chatbot. You and the agent co-evolve it.
+- **L0 authoritative records** are original files, repositories, exports, and deliberately authored
+  records. Agents read them but do not mutate them through derived output.
+- **L1 specular projections** make opaque sources inspectable as Markdown. One active opaque source
+  identity normally has one active projection identity. Generated bodies are machine-owned.
+- **Relationships** are ledger records, not notes. They carry type, evidence, hashes, method,
+  confidence where applicable, review state, and invalidation state.
+- **L2 knowledge views** answer a purpose for an audience by synthesizing many sources. They are
+  ephemeral by default and persist only through an explicit pin, review, audit, or reproducibility
+  policy.
+- **Context** is assembled for a task as metadata-only selection, a dynamic definition, or a frozen
+  evidence pack. It is never source authority.
 
-## 2. Markdown is the connective tissue; binaries are leaves
+`INDEX.md` is the manual guide exception: it explains scope, boundaries, and navigation without
+becoming a hand-maintained factual digest.
 
-You don't convert or replace your real files. Every binary that matters gets a markdown
-**companion/mirror** so it becomes linkable, taggable, searchable, and visible in the graph — while
-the original stays the editable source of truth.
+## 2. Source admission and L1 discipline
 
-- **Office/PDF files** → `source-mirror` notes under `_mirrors/` via markitdown, refreshed on
-  content change.
-- **GitHub repos** → `repo-mirror` notes (README + docs + metadata), refreshed when HEAD changes.
-- **PDFs** → embed natively in Obsidian; a light `source-ref` companion when useful, or an optional
-  `_mirrors/` text mirror with `sync_office_md.py --include-pdf` for one-off runs or
-  `office_mirrors.include_pdf: true` in `_meta/mirror-config.yml` for unattended syncs.
-- Each mirror has a machine-owned prelude and an **auto region** below a sentinel line
-  (regenerated). Edit the original, never the generated mirror body. Keep durable human notes in
-  curated notes or migrate legacy mirror annotations into `_meta/mirror-annotations/` sidecars.
+1. Verify source boundary, rights, sensitivity, and retention policy.
+2. Register stable source identity before deriving output.
+3. Project opaque formats through the package-owned mirror engine.
+4. Register native Markdown/plain text directly unless policy requires isolation or an immutable
+   projection.
+5. Preserve conversion warnings; `clean` means the declared converter completed against the
+   recorded hash, not that extraction is semantically lossless.
+6. Never edit generated bodies. Put deliberate human authority in a declared source record; keep
+   legacy mirror annotations in sidecars until migrated.
 
-This is MirrorArc's core technical idea and its main differentiator — see `positioning.md`.
-The human-visible knowledge base is important, but the generated markdown layer is also an
-agent-facing substrate: agents can read headings, frontmatter, links, diffs, manifests, and
-sentinel boundaries directly with filesystem and Git tools. That makes the mirrors more useful
-than opaque binaries for many agent tasks, provided the agent still cites source-backed notes and
-respects provenance.
+## 3. Linking-first without document proliferation
 
-## 3. Linking-first (the retrieval engine)
+Retrieval starts from stable identities, profile metadata, deterministic relationships, and
+evidenced semantic relationships. A relationship must resolve to a rule or bounded evidence; an
+unexplained edge is only a proposal. A synthesis is a view, not a durable record, unless a person
+explicitly promotes it and accepts authority.
 
-Folders say *where* a file lives; **links say how things relate**. Links and frontmatter are the
-initial retrieval layer; semantic indexes may help later, but they must not replace provenance.
+Before persisting Markdown, classify why it must exist:
 
-- **Wikilink generously.** An unresolved `[[link]]` is a to-do, not an error — it marks a page
-  worth creating.
-- **Maps of Content (MOCs).** Every cluster gets a hub note that links its members with one-line
-  context. Hubs link up to `INDEX.md` and across to related hubs.
-- **Entity pages.** Recurring nouns (each account, vendor, program, person, product) get a page;
-  everything about them links to it, so the graph clusters naturally.
-- **The index maintains itself.** `Documents.base` reads note frontmatter (Obsidian Bases) and
-  generates always-current tables, so a hand-maintained index can't drift.
-- **Future: typed links.** Plain `[[links]]` can't say *why* two notes relate. A roadmap item is
-  typed relations (`supports` / `contradicts` / `supersedes` / `depends-on`) so the graph carries
-  meaning.
+- `index`;
+- `authoritative_markdown_source`;
+- `l1_projection`;
+- `l2_generated_view` or `l2_reviewed_view`;
+- `operational_control`.
 
-The test: ≤3 clicks from `INDEX.md` to curated knowledge, and no orphan curated notes. Generated
-source/repo mirrors may be leaf artifacts when manifests and source paths preserve provenance.
+Anything else is legacy or unexplained and must be inventoried before write-mode migration.
 
-## 4. Anti-proliferation — the discipline that makes it usable
+## 4. Refresh and invalidation
 
-> **When everything is documented, nothing is.** A knowledge base dies from *too many* notes faster
-> than from too few.
+Events trigger candidate work; reconciliation establishes completeness. After stable-source checks
+and L1 materialization, invalidate only ledger edges, reviews, views, and frozen-context freshness
+that depend on the changed identity/hash. Preserve reviewed views as stale, generate replacement
+candidates separately, keep dynamic definitions intact, and use full sync plus rebuild as the
+recovery proof.
 
-So MirrorArc optimizes for *fewer, better-connected, current* notes:
+## 5. Human review and promotion
 
-1. **Consolidate before you create.** Before writing a new note, the agent searches for an existing
-   one to extend. One canonical note per concept.
-2. **Incremental update > new file.** New information usually edits an existing note (and bumps
-   `updated:`), it doesn't spawn a sibling.
-3. **Archive, don't accrete.** Superseded material moves to `_archive/` per `RETENTION.md`; the live
-   set stays small.
-4. **Human-gated promotion.** Agent-drafted notes start as `draft`; a human promotes them to
-   `active`. (LLMs hallucinate; the vault must not silently fill with unverified notes.)
-5. **The linter enforces the basics.** `lint_vault.py` blocks missing required frontmatter, invalid
-   type/status values, missing Office mirrors, configured repo entries without a generated mirror,
-   and stale generated mirrors whose source/repo evidence or manifest lifecycle state prove the
-   mirror is unsafe to rely on. It reports unresolved links, orphans, and likely note overlap as
-   warnings. `_meta/lint-config.yml` exposes overlap thresholds for pilot calibration; defaults
-   are conservative until real corpora prove better values.
+- Deterministic relationships may be accepted automatically by profile policy.
+- Semantic model output begins proposed and requires evidence plus policy or review admission.
+- Rejection and invalidation remain auditable.
+- Pinning persists a derived view definition/output; review governs a version.
+- Promotion creates a new authoritative record only after explicit human intent and preserves
+  derivation history.
 
-Most agent-wiki projects happily spawn notes. Disciplined restraint is a deliberate edge.
+## 6. Agent operating loop
 
-## 5. The agent's operating loop
+1. **Orient:** read `INDEX.md`, profile policy, current status, and relevant governed views.
+2. **Admit/project:** plan source admission and L1 actions before writes.
+3. **Connect:** refresh deterministic relations; propose semantics only within configured
+   vocabulary and evidence budgets.
+4. **Interpret:** render the smallest useful L2 view, citing dependencies.
+5. **Assemble:** choose selection, dynamic, or frozen context with explicit budgets/sensitivity.
+6. **Verify:** lint, review invalidation/staleness, reconcile, and record machine-readable evidence.
 
-- **Ingest** — file the original; mirror it if binary/repo; create or *extend* a knowledge note;
-  wikilink the mirror or source-ref from its MOC and entity pages; log one line.
-- **Query** — read `INDEX.md` / the relevant MOC first, follow links, answer with citations to note
-  paths; file reusable answers back as notes so work compounds.
-- **Lint** — periodically check frontmatter, links, orphans, overlap candidates, mirror gaps, and
-  stale generated mirrors; fix mechanically where safe, flag judgment calls. Run
-  `mirrorarc overlap` before tuning overlap sensitivity in copied pilot vaults through
-  `_meta/lint-config.yml`.
-- **Log** — append one greppable line per change to `log.md`.
+## 7. Governance
 
-## 6. Governance (because this is business data)
-
-- **PII** stays in designated private areas, never in shared/marketing trees.
-- **Secrets never live in the vault** — OS keychain / environment only.
-- **Retention** windows and the archival process live in `RETENTION.md`.
-- Auth for repo/Office sync is read-only and kept out of the vault.
+Secrets never enter the vault. Private, personal, client, proprietary, or rights-unclear material
+does not enter this repository or public output. Content-inclusive portals, semantic associations,
+view bodies, and frozen packs inherit the strictest source sensitivity and retention policy.

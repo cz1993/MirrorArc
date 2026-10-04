@@ -4,22 +4,54 @@
 
 MirrorArc must be recoverable because it works near authoritative business records. Recovery
 procedures preserve the core promise: source files stay untouched, generated mirrors can be
-regenerated, and human-curated notes can be restored from versioned backups.
+regenerated, derived relationship/view/context state can be rebuilt, and authoritative or reviewed
+Markdown can be restored from versioned backups.
 
 ## What To Back Up
 
 Back up the whole vault before first sync and before bulk changes:
 
 - original source folders;
-- curated markdown notes;
+- authoritative Markdown records and governed reviewed-view artifacts;
 - `_meta/source-manifest.json`;
 - `_meta/repo-manifest.json`;
 - `_meta/sync-audit.jsonl`;
 - `log.md`;
 - `tools/repos.yml`;
+- `.mirrorarc/state.sqlite` and any SQLite journal sidecars;
+- `_meta/knowledge-views/`, `_meta/review-ledger.jsonl`, and persisted context definitions;
+- frozen evidence under `.mirrorarc/cache/context/` and historical answer candidates under
+  `.mirrorarc/cache/pageindex/<source-id>/answers/` when retaining an audit trail;
 - `.obsidian/` settings only if the operator intentionally versions them.
 
 Do not back up secrets into the vault. Keep tokens in the OS keychain or environment.
+Hidden directories are part of the backup. A folder named `cache` is not a promise that every
+file inside it can be recreated: a model answer and its exact frozen evidence are historical
+records, even though neither becomes source authority.
+
+Stop watchers, scheduled syncs and other writers before taking a whole-vault filesystem copy.
+Close their database connections and checkpoint SQLite before copying; do not copy only the main
+database from a running vault and omit its journal. If writers cannot be stopped, use a
+SQLite-consistent backup procedure and coordinate it with the source/artifact snapshot. This guide's
+local drill covers a quiescent vault, not a live multi-writer or cloud-sync snapshot.
+
+## Restore a whole vault
+
+1. Preserve the damaged vault separately. Do not restore over an active workspace or writer.
+2. Copy the complete backup, including hidden state and audit evidence, into a new local folder.
+3. Compare the restored file inventory and SHA-256 hashes with the backup before running tools.
+4. Use the same validated MirrorArc and optional-provider versions. Reconfigure credentials
+   outside the vault; do not copy secrets into the backup.
+5. Run `mirrorarc --root /absolute/path/to/restored-vault recovery --json`, then inspect
+   `relationships export`, `view status --json`, `context status --json` and `document status --json`.
+   Compare saved review decisions and source/frozen hashes with the backup, not only counts.
+6. Resolve reported conflicts before sync. Run lint and regenerate the Catalog before resuming
+   normal work. A previously saved Catalog is a snapshot, not a live recovery check.
+
+The October 3 local installed-wheel drill restored 84 synthetic-vault files at a new path with
+identical hashes. It preserved a reviewed view, six frozen packs, one scripted historical answer
+candidate and an accepted synthetic relationship-review decision. Those fixtures are not human
+acceptance of a release. Repeat the drill for the operator's actual storage and backup system.
 
 ## Copied-Vault Sandbox Preflight
 
@@ -40,11 +72,13 @@ or explicitly accept in the private pilot worksheet.
 
 ## Regenerate Generated Mirrors
 
-Generated mirrors can be deleted and rebuilt from sources:
+After verifying the whole-vault backup, identify generated mirror paths in the source and repo
+manifests. Move only those generated artifacts to a separately named recovery folder outside the
+vault; preserve annotations and reviewed Markdown first. Do not use a blanket deletion of source
+folders or assume a hard-coded repository-note directory is correct for the current profile.
+Then rebuild from the original sources:
 
 ```bash
-rm -rf _mirrors
-rm -f 80_sources/repos/*.md
 python3.11 tools/mirrorarc.py plan
 python3.11 tools/mirrorarc.py sync
 python3.11 tools/mirrorarc.py status
@@ -54,10 +88,68 @@ python3.11 tools/mirrorarc.py lint
 Review the plan before sync if the source tree changed, especially after folder renames or cloud
 sync conflicts.
 
-Full sync remains the authoritative recovery mode after Stage 1B. The local journal and state
-database are derived operational state; if they are lost or suspect, stop any watcher, run
-reconciliation or full sync, and rebuild journal state from sources and manifests rather than
-treating the journal as authority.
+Full sync remains the authoritative recovery mode after Stage 1B. If journal state is lost or
+suspect, stop any watcher, preserve the database, and rebuild operational state from sources and
+manifests through reconciliation or full sync. The journal is not source authority, but the shared
+database also contains review decisions that must not be discarded as disposable cache.
+
+The same `.mirrorarc/state.sqlite` boundary owns relationship, dependency, L2, review, and context
+metadata through versioned migrations. Rebuild deterministic state from sources, manifests,
+profile rules, and governed definitions; preserve accepted semantic evidence, reviewed outputs, and
+frozen packs separately long enough to reattach or audit them. Compare identity, hash, and count
+reports before accepting recovery.
+
+Current recovery automatically reattaches hash-verified reviewed/pinned L2 Markdown, persisted
+dynamic context definitions, and frozen context packs during a full deterministic relationship
+refresh. It reconstructs their artifact and dependency records without rewriting persisted bytes.
+Semantic proposal/review decisions are not derivable from source files. Retain the SQLite database
+in normal backups if those decisions must survive total database loss. A relationship-ledger export
+is useful audit evidence, but there is no automatic ledger-import restore command. Do not treat an
+export alone as a tested substitute for the database backup. The local drill confirmed both sides
+of this boundary: deterministic rebuild omitted the synthetic semantic decision, and restoring
+the saved database recovered it exactly.
+
+Repository analysis is disposable derived state under
+`.mirrorarc/cache/code-intelligence/`. If its index, analysis pointers, or snapshots are suspect,
+remove that directory only, then rebuild from the governed repository identity:
+
+```bash
+mirrorarc --root <vault> code doctor
+mirrorarc --root <vault> code analyze --repo <repo-id>
+mirrorarc --root <vault> code status --repo <repo-id>
+```
+
+Deleting this cache does not remove the repository, its L1 mirror, or manifests. Frozen code
+context files under `.mirrorarc/cache/context/` are also derived; preserve one separately only when
+its exact offline evidence envelope is needed for audit. A failed refresh retains the prior valid
+analysis and reports `failed` until a successful rebuild.
+
+## Rebuild PDF indexes without losing answer history
+
+PageIndex stores current index pointers, hash-addressed index JSON, and historical answer candidates
+under `.mirrorarc/cache/pageindex/<source-id>/`. Before maintenance, back up that source's whole
+directory together with its frozen packs under `.mirrorarc/cache/context/`. Answers are not
+recreated by model-free indexing; asking the same question again is a new inference, not a restore.
+
+For index-only loss, preserve the `answers/` subdirectory. Move only the selected source's index
+JSON files and `current.json` to a recovery folder outside the vault, then run:
+
+```bash
+mirrorarc --root /absolute/path/to/restored-vault document doctor
+mirrorarc --root /absolute/path/to/restored-vault document status --source SOURCE_ID --json
+mirrorarc --root /absolute/path/to/restored-vault document index --source SOURCE_ID --json
+mirrorarc --root /absolute/path/to/restored-vault catalog --html --include-content
+```
+
+Use the source ID from the restored manifest. Do not add `--model-assisted` or `--allow-model`
+merely to perform a restore. A source/parser change can legitimately produce a new index identity;
+historical answers must remain historical. The local drill rebuilt unchanged source evidence with
+the same index and frozen-pack identities, preserved all answer/frozen bytes, and made no model call.
+
+Applied journal events now record hash-aware invalidation through that dependency graph. A failed
+or skipped event does not advance invalidation state. `mirrorarc reconcile` also compares current
+manifest hashes with ledger artifact hashes and repairs a missed transition; repair uses the same
+bounded, cycle-safe affected-subgraph traversal as live replay.
 
 ## Recover From Interrupted Sync
 
@@ -98,8 +190,8 @@ generated region is pristine. Existing Office and repo mirrors without a manifes
 are treated as review-required, and `--force` will not accept them as clean. If the sentinel boundary
 is valid, run `mirrorarc migrate annotations --write` to preserve any legacy above-sentinel
 annotations before regenerating from the original source. If the sentinel is missing or altered,
-restore the mirror from backup or remove the untrusted mirror after preserving any known-curated
-notes elsewhere, then regenerate from the source.
+restore the mirror from backup or remove the untrusted mirror after preserving any deliberate human
+authority in a declared source record, then regenerate from the source.
 
 ## Recovery Report
 
@@ -212,10 +304,11 @@ Repo mirror note writes follow the same rule: a write failure records an `error`
 keeps the previous repo note, and can recover to `clean` after the filesystem issue is fixed and
 sync is rerun.
 
-## Recover Curated Notes
+## Recover Authoritative Markdown and Reviewed Views
 
-Curated notes are human-maintained records. Restore them from Git or filesystem backup, not from
-generated mirrors. If an agent made a bad curated edit:
+Authoritative Markdown is human-maintained source evidence. Reviewed L2 output is a governed
+derived version. Restore both from Git or filesystem backup, not from a generated candidate. If an
+agent made a bad edit:
 
 ```bash
 git diff
@@ -242,7 +335,7 @@ human-reviewed change and keep the audit trail.
 Before public release, recovery must be tested on a copied vault:
 
 - run `tools/mirrorarc.py sandbox --source-root <original-source-root>` and resolve errors;
-- delete `_mirrors/` and regenerate;
+- move generated `_mirrors/` aside into a recovery folder and regenerate;
 - interrupt sync and rerun;
 - force a converter failure and verify the previous mirror is preserved, then fix the converter and
   verify sync returns the record to `clean`;
@@ -263,7 +356,10 @@ Before public release, recovery must be tested on a copied vault:
 - change the Office mirror root with the old mirror present and verify `conflict`, then remove the
   old mirror and verify the new mirror can be generated;
 - run `tools/mirrorarc.py recovery` and verify the checklist matches the manifest states;
-- restore a curated note from Git;
+- restore an authoritative Markdown record and a reviewed-view version from Git;
+- preserve `.mirrorarc/state.sqlite` outside the copied vault, rebuild deterministic relationships/views, and compare current
+  hashes and counts before accepting recovery; verify reviewed/pinned views, dynamic definitions,
+  and frozen packs reattach with unchanged bytes;
 - run no-data scan and lint after recovery.
 
 Stage 1B adds recovery gates for journal replay, missed-event reconciliation, stale-lock recovery,
@@ -285,5 +381,19 @@ the prior mirror, `source_missing`, `manual_modification`, lint, and generated-t
 checks on the Northwind example. Example regeneration tests also assert source bytes stay unchanged
 across plan, dry-run, sync, status, and lint operations, and that stable generated outputs remain
 unchanged across a second sync.
-Operator backup/restore drills and full copied-vault no-data scans on pilot vaults are still
-required before production use.
+The installed-wheel synthetic drill also passed copied-vault sandbox checks with zero errors,
+generated-mirror loss/rebuild, lint, and a no-data scan of the generated HTML, mirror and reviewed
+view. Sandbox warnings about a missing unused repo manifest and the parent Git workspace were
+retained; no files were staged or committed. Operator backup/restore drills and full copied-vault
+no-data scans on actual pilot vaults remain required before production use.
+
+A snapshot-identity mismatch indicates a source mutation during copying or modified disposable
+cache. The operation fails without replacing the prior valid analysis. Confirm the source is
+stable, remove only the disposable code-intelligence cache, and retry once; do not remove sources
+or frozen audit evidence. `--base REF` compares the base commit to the analyzed working tree,
+including staged, unstaged and untracked paths, with both sides of renames and deleted-path
+omissions. It is not a committed merge-base-to-HEAD comparison.
+
+Full `mirrorarc sync` reconciles manifest hash changes through the existing dependency invalidator,
+including marking frozen contexts stale while preserving their bytes. Query refresh performs the
+same reconciliation before graph replacement, so a refresh cannot erase the previous hash first.
