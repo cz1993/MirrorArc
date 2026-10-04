@@ -1,8 +1,70 @@
 schema_version: 1
 id: data-product
 name: Data Product
-profile_version: 0.1.0
-description: Evidence workspace for public sources, data contracts, pipelines, analysis, models, decisions, outputs, governance, and operations.
+profile_version: 0.2.0
+description: Governed knowledge-projection workspace for source records, L1 projections, evidenced relationships, L2 views, context, governance, and operations.
+
+markdown_categories:
+  index:
+    persistence: manual
+  authoritative_markdown_source:
+    persistence: authoritative
+  l1_projection:
+    persistence: rebuildable
+  l2_generated_view:
+    persistence: ephemeral
+  l2_reviewed_view:
+    persistence: governed
+  operational_control:
+    persistence: required
+
+relationship_types:
+  MIRRORS: {deterministic: true, review_required: false}
+  DERIVED_FROM: {deterministic: true, review_required: false}
+  IN_DOMAIN: {deterministic: true, review_required: false}
+  HAS_LIFECYCLE: {deterministic: true, review_required: false}
+  IN_PROFILE: {deterministic: true, review_required: false}
+  DEPENDS_ON: {deterministic: true, review_required: false}
+  REVIEW_DEPENDS_ON: {deterministic: true, review_required: false}
+  IN_CONTEXT: {deterministic: true, review_required: false}
+  MENTIONS: {deterministic: false, review_required: true}
+  SAME_ENTITY: {deterministic: false, review_required: true}
+  SUPPORTS: {deterministic: false, review_required: true}
+  CONTRADICTS: {deterministic: false, review_required: true}
+  SUPERSEDES: {deterministic: false, review_required: true}
+  GOVERNS: {deterministic: false, review_required: true}
+  INVALIDATES: {deterministic: true, review_required: false}
+
+knowledge_lenses:
+  orientation:
+    purpose: Orient a new reader to governed evidence and current review work.
+    audience: workspace reviewer
+    source_query: {domains: [context, sources, governance, operations]}
+    relationship_types: [MIRRORS, DERIVED_FROM, IN_DOMAIN, GOVERNS]
+    output_sections: [scope, evidence, relationships, review-work]
+    max_tokens: 1800
+    persistence: ephemeral
+    citation_required: true
+  change-digest:
+    purpose: Explain changed evidence and affected governed outputs.
+    audience: workspace operator
+    source_query: {freshness: changed}
+    relationship_types: [MIRRORS, DEPENDS_ON, INVALIDATES]
+    output_sections: [changes, impact, stale-views, next-actions]
+    max_tokens: 1200
+    persistence: ephemeral
+    citation_required: true
+
+review_policy:
+  semantic_proposals_require_review: true
+  preserve_reviewed_views: true
+  automatic_promotion: false
+
+context_defaults:
+  max_tokens: 4000
+  max_files: 20
+  max_excerpt_chars: 6000
+  allowed_modes: [metadata, dynamic, frozen]
 
 domains:
   inbox:
@@ -38,37 +100,64 @@ domains:
 
 note_types:
   hub:
-    purpose: Map of content that connects a data-product knowledge cluster.
+    purpose: Legacy curated derivative retained only for migration classification.
+    legacy_derivative: true
+    markdown_category: legacy_curated_derivative
   note:
-    purpose: General curated evidence note.
+    purpose: Legacy curated derivative retained only for migration classification.
+    legacy_derivative: true
+    markdown_category: legacy_curated_derivative
+  authoritative-record:
+    purpose: Deliberately authored Markdown source whose author accepts authority.
+    markdown_category: authoritative_markdown_source
+  operational-control:
+    purpose: Runtime, governance, profile, or operator control.
+    markdown_category: operational_control
+  knowledge-view:
+    purpose: Governed L2 knowledge-view output.
+    machine_owned: true
+    markdown_category: l2_generated_view
   source-ref:
     purpose: Metadata and usage boundary for a referenced source.
+    markdown_category: authoritative_markdown_source
   source-mirror:
     purpose: Machine-generated markdown mirror of a binary/source file.
     machine_owned: true
+    markdown_category: l1_projection
   dataset:
     purpose: Dataset inventory, grain, coverage, ownership, and quality summary.
+    markdown_category: authoritative_markdown_source
   data-contract:
     purpose: Schema, semantic, freshness, quality, or interface contract.
+    markdown_category: authoritative_markdown_source
   pipeline:
     purpose: Pipeline purpose, lineage, schedule, controls, and recovery guidance.
+    markdown_category: authoritative_markdown_source
   model:
     purpose: Model purpose, inputs, assumptions, outputs, and limitations.
+    markdown_category: authoritative_markdown_source
   evaluation:
     purpose: Reproducible quality or model evaluation record.
+    markdown_category: authoritative_markdown_source
   decision:
     purpose: Decision, options, evidence, rationale, and consequences.
+    markdown_category: authoritative_markdown_source
   risk:
     purpose: Risk, trigger, likelihood, impact, controls, and owner.
+    markdown_category: authoritative_markdown_source
   control:
     purpose: Governance or operational control with evidence and cadence.
+    markdown_category: authoritative_markdown_source
   runbook:
     purpose: Operational procedure, verification, recovery, or support guide.
+    markdown_category: authoritative_markdown_source
   report:
     purpose: Stakeholder-ready analytical or operational report.
+    markdown_category: authoritative_markdown_source
   repo-mirror:
     purpose: Machine-generated mirror of a configured repository.
     machine_owned: true
+    markdown_category: l1_projection
 
 statuses:
   draft:
@@ -94,7 +183,7 @@ statuses:
     inactive: true
 
 required_properties: [title, type, status, domain, created, updated]
-optional_properties: [owner, tags, related, source, source_url, source_format, license, dataset, pipeline, model, decision]
+optional_properties: [owner, tags, related, markdown_category, authority, source, source_url, source_format, license, dataset, pipeline, model, decision]
 
 folder_plan:
   - path: 00_inbox
@@ -138,6 +227,7 @@ benchmark_tasks: []
 policy_defaults:
   mirror_mode: dedicated
   mirror_root: _mirrors
+  native_source_mode: direct
   mirror_status: active
   repo_stub_status: draft
   repo_notes_dir: 20_sources/repos

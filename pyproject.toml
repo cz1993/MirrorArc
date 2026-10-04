@@ -59,6 +59,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 mirrorarc = [
   "builtin_profiles/*.yml",
+  "document_intelligence/runtime/*",
   "template/**/*",
   "template/.gitignore",
   "template/**/.gitkeep",

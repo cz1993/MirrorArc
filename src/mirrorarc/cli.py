@@ -23,6 +23,7 @@ from mirrorarc import catalog as catalog_module
 from mirrorarc import conversion as conversion_module
 from mirrorarc import doctor as doctor_module
 from mirrorarc import lint as lint_module
+from mirrorarc import knowledge_inventory as knowledge_inventory_module
 from mirrorarc import m365 as m365_module
 from mirrorarc import migration as migration_module
 from mirrorarc import overlap as overlap_module
@@ -30,6 +31,14 @@ from mirrorarc import pilot as pilot_module
 from mirrorarc import recovery as recovery_module
 from mirrorarc import review_ledger as review_ledger_module
 from mirrorarc import sandbox as sandbox_module
+from mirrorarc.code_intelligence.adapter import CodeGraphError
+from mirrorarc.code_intelligence.context import build_dynamic_code_context, freeze_code_context
+from mirrorarc.code_intelligence.service import (
+    CodeIntelligenceError,
+    analyze_repository,
+    doctor_report as code_doctor_report,
+    status_report as code_status_report,
+)
 from mirrorarc.annotation_migration import (
     annotation_migration_plan,
     public_plan,
@@ -44,6 +53,21 @@ from mirrorarc.changes import replay as replay_module
 from mirrorarc.changes import watch as watch_module
 from mirrorarc.mirrors import github_repos as repo_sync_module
 from mirrorarc.mirrors import office as office_sync_module
+from mirrorarc.relationships.deterministic import refresh as refresh_relationships
+from mirrorarc.relationships.proposals import propose as propose_relationship
+from mirrorarc.relationships.store import RelationshipStore
+from mirrorarc.relationships.model import RelationshipValidationError
+from mirrorarc.knowledge_views.definitions import LensDefinitionError, load_lenses
+from mirrorarc.knowledge_views.lifecycle import pin_view, promote_view, review_view
+from mirrorarc.knowledge_views.render import render_lens
+from mirrorarc.knowledge_views.store import KnowledgeViewError, KnowledgeViewStore
+from mirrorarc.context_assembly.builder import (
+    ContextAssemblyError,
+    build_context,
+    freeze_context,
+    resolve_dynamic_context,
+)
+from mirrorarc.context_assembly.store import ContextStore, ContextStoreError
 from mirrorarc.profile_migration import profile_migration_plan, write_profile_migration
 from mirrorarc.profile_scaffold import DEFAULT_TEMPLATE_PROFILE_ID, scaffold_profile_vault
 from mirrorarc.profiles import ProfileContract, ProfileValidationError, load_profile
@@ -453,6 +477,8 @@ def migration_args(args: argparse.Namespace) -> list[str]:
         + (["--worksheet"] if args.worksheet else [])
         + (["--runbook"] if args.runbook else [])
         + (["--normalize-frontmatter-domains"] if args.normalize_frontmatter_domains else [])
+        + (["--apply-markdown-review", str(args.apply_markdown_review)] if args.apply_markdown_review else [])
+        + (["--backup-dir", str(args.backup_dir)] if args.backup_dir else [])
         + (["--write"] if args.write else [])
     )
 
@@ -460,6 +486,384 @@ def migration_args(args: argparse.Namespace) -> list[str]:
 def command_migration(args: argparse.Namespace) -> int:
     root = args.root.expanduser().resolve()
     return migration_module.main(migration_args(args), root=root)
+
+
+def command_inventory(args: argparse.Namespace) -> int:
+    root = args.root.expanduser().resolve()
+    report = knowledge_inventory_module.build_inventory(root)
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True))
+    else:
+        print(knowledge_inventory_module.render_text(report), end="")
+    return 1 if report["errors"] or report["summary"]["unexplained_markdown"] else 0
+
+
+def command_relationships_refresh(args: argparse.Namespace) -> int:
+    root = args.root.expanduser().resolve()
+    result = refresh_relationships(root)
+    if args.json:
+        print(json.dumps(result, indent=2, sort_keys=True))
+    else:
+        print(
+            "relationships refresh: "
+            f"artifacts={result['artifacts']} relationships={result['relationships']} "
+            f"fingerprint={result['fingerprint']}"
+        )
+        if result["inventory_errors"]:
+            print(f"relationships refresh: inventory warnings={len(result['inventory_errors'])}")
+    return 0
+
+
+def command_relationships_status(args: argparse.Namespace) -> int:
+    status = RelationshipStore(args.root.expanduser().resolve()).status()
+    if args.json:
+        print(json.dumps(status, indent=2, sort_keys=True))
+    else:
+        print(
+            "relationships status: "
+            f"artifacts={status['artifacts']['total']} relationships={status['relationships']['total']} "
+            f"current={status['relationships']['current']} evidence={status['evidence_anchors']} "
+            f"reviews={status['reviews']} invalidations={status['invalidations']}"
+        )
+    return 0
+
+
+def command_relationships_export(args: argparse.Namespace) -> int:
+    root = args.root.expanduser().resolve()
+    payload = RelationshipStore(root).export(current_only=args.current)
+    text_value = json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    if args.out:
+        output = args.out.expanduser().resolve()
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(text_value, encoding="utf-8")
+        print(f"relationships export: wrote {output}")
+    else:
+        print(text_value, end="")
+    return 0
+
+
+def command_relationships_propose(args: argparse.Namespace) -> int:
+    try:
+        result = propose_relationship(
+            args.root.expanduser().resolve(),
+            source_artifact_id=args.source,
+            target_artifact_id=args.target,
+            relationship_type=args.type,
+            evidence_artifact_id=args.evidence_artifact,
+            selector_type=args.selector_type,
+            selector_value=args.selector,
+            excerpt=args.excerpt or "",
+            confidence=args.confidence,
+            method=args.method,
+            method_version=args.method_version,
+            model_version=args.model_version or "",
+            prompt_version=args.prompt_version or "",
+        )
+    except RelationshipValidationError as exc:
+        print(f"relationships propose: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps(result, indent=2, sort_keys=True) if args.json else f"relationships propose: {result['relationship_id']} state=proposed")
+    return 0
+
+
+def command_relationships_review(args: argparse.Namespace) -> int:
+    try:
+        result = RelationshipStore(args.root.expanduser().resolve()).review_relationship(
+            args.relationship_id,
+            reviewer=args.reviewer,
+            verdict=args.verdict,
+            note=args.note or "",
+        )
+    except RelationshipValidationError as exc:
+        print(f"relationships review: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps(result, indent=2, sort_keys=True) if args.json else f"relationships review: {result['relationship_id']} state={result['state']}")
+    return 0
+
+
+def command_view_list(args: argparse.Namespace) -> int:
+    root = args.root.expanduser().resolve()
+    try:
+        lenses = load_lenses(root)
+        views = KnowledgeViewStore(root).list()
+    except (LensDefinitionError, KnowledgeViewError) as exc:
+        print(f"view list: {exc}", file=sys.stderr)
+        return 1
+    payload = {"lenses": lenses, "views": views}
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(f"view list: lenses={len(lenses)} rendered={len(views)}")
+        for lens_id, lens in lenses.items():
+            count = sum(1 for view in views if view["lens_id"] == lens_id)
+            print(f"  - {lens_id}: {lens['purpose']} (rendered={count})")
+    return 0
+
+
+def command_view_render(args: argparse.Namespace) -> int:
+    try:
+        result = render_lens(args.root.expanduser().resolve(), args.lens_id)
+    except (LensDefinitionError, KnowledgeViewError, RelationshipValidationError) as exc:
+        print(f"view render: {exc}", file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(result, indent=2, sort_keys=True))
+    else:
+        print(
+            f"view render: {result['view_id']} state={result['state']} version={result['version']} "
+            f"citations={len(result['citations'])} unchanged={str(result['unchanged']).lower()}"
+        )
+        print(f"view output: {result['output_path']}")
+    return 0
+
+
+def command_view_pin(args: argparse.Namespace) -> int:
+    try:
+        result = pin_view(args.root.expanduser().resolve(), args.view_id)
+    except KnowledgeViewError as exc:
+        print(f"view pin: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps(result, indent=2, sort_keys=True) if args.json else f"view pin: {result['view_id']} -> {result['output_path']}")
+    return 0
+
+
+def command_view_review(args: argparse.Namespace) -> int:
+    try:
+        result = review_view(args.root.expanduser().resolve(), args.view_id, reviewer=args.reviewer)
+    except KnowledgeViewError as exc:
+        print(f"view review: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps(result, indent=2, sort_keys=True) if args.json else f"view review: {result['view_id']} state=reviewed")
+    return 0
+
+
+def command_view_promote(args: argparse.Namespace) -> int:
+    try:
+        result = promote_view(
+            args.root.expanduser().resolve(), args.view_id,
+            target=args.target, reviewer=args.reviewer, reason=args.reason,
+        )
+    except KnowledgeViewError as exc:
+        print(f"view promote: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps(result, indent=2, sort_keys=True) if args.json else f"view promote: {result['view_id']} -> {result['target']}")
+    return 0
+
+
+def command_view_status(args: argparse.Namespace) -> int:
+    status = KnowledgeViewStore(args.root.expanduser().resolve()).status()
+    print(json.dumps(status, indent=2, sort_keys=True) if args.json else f"view status: total={status['total']} persistent={status['persistent']} dependencies={status['dependencies']} states={status['by_state']}")
+    return 0
+
+
+def command_context_build(args: argparse.Namespace) -> int:
+    try:
+        result = build_context(
+            args.root.expanduser().resolve(), args.lens_id, mode=args.mode,
+            name=args.name or "", purpose=args.purpose or "", query=args.query or "",
+            max_tokens=args.max_tokens, max_files=args.max_files,
+            max_excerpt_chars=args.max_excerpt_chars,
+            permitted_types=args.permitted_type or None,
+        )
+    except (ContextAssemblyError, ContextStoreError, LensDefinitionError, ProfileValidationError) as exc:
+        print(f"context build: {exc}", file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(result, indent=2, sort_keys=True))
+    elif args.mode == "metadata":
+        print(f"context build: metadata items={result['selection_count']} -> {result['output_path']}")
+    else:
+        print(
+            f"context build: dynamic definition={result['definition']['definition_id']} "
+            f"current-items={result['resolved']['selection_count']}"
+        )
+    return 0
+
+
+def command_context_resolve(args: argparse.Namespace) -> int:
+    try:
+        result = resolve_dynamic_context(args.root.expanduser().resolve(), args.definition_id)
+    except (ContextAssemblyError, ContextStoreError) as exc:
+        print(f"context resolve: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps(result, indent=2, sort_keys=True) if args.json else f"context resolve: items={result['selection_count']}")
+    return 0
+
+
+def command_context_freeze(args: argparse.Namespace) -> int:
+    try:
+        result = freeze_context(
+            args.root.expanduser().resolve(), definition_id=args.definition_id or "",
+            lens_id=args.lens_id or "", task=args.task,
+            name=args.name or "", purpose=args.purpose or "", query=args.query or "",
+            max_tokens=args.max_tokens, max_files=args.max_files,
+            max_excerpt_chars=args.max_excerpt_chars,
+            permitted_types=args.permitted_type or None,
+        )
+    except (ContextAssemblyError, ContextStoreError, LensDefinitionError, ProfileValidationError) as exc:
+        print(f"context freeze: {exc}", file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(result, indent=2, sort_keys=True))
+    else:
+        print(
+            f"context freeze: {result['context_id']} included={result['included_count']} "
+            f"sensitivity={result['sensitivity']} unchanged={str(result['unchanged']).lower()}"
+        )
+        print(f"context output: {result['output_path']}")
+    return 0
+
+
+def command_context_status(args: argparse.Namespace) -> int:
+    status = ContextStore(args.root.expanduser().resolve()).status(args.context_id)
+    if args.json:
+        print(json.dumps(status, indent=2, sort_keys=True))
+    else:
+        stale = sum(1 for pack in status["packs"] if pack["freshness_state"] == "stale")
+        print(f"context status: definitions={len(status['definitions'])} packs={len(status['packs'])} stale={stale}")
+        for pack in status["packs"]:
+            print(
+                f"  - {pack['context_id']}: {pack['mode']} {pack['freshness_state']} "
+                f"newer={len(pack['newer_versions'])}"
+            )
+    return 0
+
+
+def command_code_doctor(args: argparse.Namespace) -> int:
+    report = code_doctor_report(
+        args.root.expanduser().resolve(),
+        args.repo,
+        verbose=args.verbose,
+    )
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True))
+    else:
+        print(report["verdict"])
+        print(report["message"])
+        print(f"Next: {report['next_action']}")
+        if report["status"] == "setup-needed":
+            print(f"Then retry: {report['retry_command']}")
+    return 0 if report["status"] == "ready" else 1
+
+
+def command_code_analyze(args: argparse.Namespace) -> int:
+    from mirrorarc.context_assembly.builder import require_mode
+    root = args.root.expanduser().resolve()
+    try:
+        if args.context:
+            require_mode(root, args.context)
+        result = analyze_repository(
+            root,
+            args.repo,
+            symbol=args.symbol or "",
+            base=args.base or "",
+            changed_paths=args.changed_path or [],
+        )
+        context_result = None
+        if args.context == "dynamic":
+            context_result = build_dynamic_code_context(root, result)
+        elif args.context == "frozen":
+            context_result = freeze_code_context(root, result)
+    except (CodeIntelligenceError, CodeGraphError, ContextAssemblyError, ContextStoreError) as exc:
+        print(f"code analyze: {exc}", file=sys.stderr)
+        return 1
+    payload = {**result, "context": context_result} if context_result else result
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(
+            f"Repository evidence ready: {result['configured_repo']} · "
+            f"{result['analysis_kind']} · {result['freshness_state']}"
+        )
+        print(f"Revision: {result['resolved_revision']}")
+        print(
+            f"Evidence: {len(result['files'])} file(s), "
+            f"{len(result['affected_tests'])} candidate affected test(s)"
+        )
+        if result["warnings"]:
+            for warning in result["warnings"]:
+                print(f"Warning: {warning}")
+        if result["omissions"]:
+            print(f"Omissions: {len(result['omissions'])} (use --json for details)")
+        if context_result:
+            if args.context == "dynamic":
+                print(f"Dynamic context: {context_result['definition']['definition_id']}")
+            else:
+                print(f"Frozen context: {context_result['context_id']} -> {context_result['output_path']}")
+        print(f"Next: {result['next_action']['command']}")
+    return 0
+
+
+def command_code_status(args: argparse.Namespace) -> int:
+    try:
+        report = code_status_report(args.root.expanduser().resolve(), args.repo)
+    except CodeIntelligenceError as exc:
+        print(f"code status: {exc}", file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True))
+    else:
+        if not report["items"]:
+            print("No governed repositories are configured.")
+        for item in report["items"]:
+            print(f"{item['configured_repo']}: {item['freshness_state']}")
+            if item["reason"]:
+                print(f"  {item['reason']}")
+            print(f"  Next: {item['next_action']}")
+    return 1 if report["summary"]["attention"] else 0
+
+
+def command_document(args: argparse.Namespace) -> int:
+    from mirrorarc.document_intelligence.adapter import DocumentIntelligenceError, doctor
+    from mirrorarc.document_intelligence.service import ask_document, index_document, status_report
+
+    root = args.root.expanduser().resolve()
+    try:
+        if args.document_command == 'doctor':
+            result = doctor()
+        elif args.document_command == 'index':
+            if args.context:
+                from mirrorarc.context_assembly.builder import require_mode
+                require_mode(root, args.context)
+            result = index_document(root, args.source, model_assisted=args.model_assisted,
+                                    allow_model=args.allow_model, index_mode=args.mode, force=args.force)
+            if args.context:
+                from mirrorarc.document_intelligence.context import build_document_context
+                result['context'] = build_document_context(root, args.source, args.page or [], mode=args.context)
+        elif args.document_command == 'ask':
+            result = ask_document(root, args.source, args.question, allow_model=args.allow_model)
+        else:
+            result = status_report(root, args.source)
+    except (DocumentIntelligenceError, ContextAssemblyError, OSError) as exc:
+        if args.json:
+            print(json.dumps({'ok': False, 'error': str(exc)}, sort_keys=True))
+        else:
+            print(f'document {args.document_command}: {exc}', file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(result, sort_keys=True, ensure_ascii=False, indent=2))
+    elif args.document_command == 'doctor':
+        print(f"{result['status']}\n{result['next_action']}")
+    elif args.document_command == 'index':
+        print(f"Document structure ready: {result['page_count']} pages · {result['method']}")
+        print(f"Source: {result['source_path']}\nSHA-256: {result['source_hash']}")
+        if args.context == 'dynamic':
+            print(f"Saved page selection: {result['context']['definition']['definition_id']}")
+        elif args.context == 'frozen':
+            print(f"Frozen evidence: {root / result['context']['output_path']}")
+        print('Next: review the structure before approving model-assisted questions.')
+    elif args.document_command == 'ask':
+        print('Unreviewed answer candidate\n')
+        print(result['answer'])
+        print('\nCitation addresses checked; claim support still needs human review.')
+        print(f"Candidate saved: {root / result['output_path']}")
+        print('Next: generate a local Catalog with catalog --html --include-content, then open Document metadata → Answer review.')
+    else:
+        for item in result['items']:
+            print(f"{item['source_id']}: {item['freshness_state']} — {item.get('reason', item['source_path'])}")
+        if not result['items']:
+            print('No registered PDFs. Run mirrorarc sync on a copied vault first.')
+    return 1 if result.get('ready') is False else 0
 
 
 def overlap_args(args: argparse.Namespace) -> list[str]:
@@ -477,7 +881,9 @@ def command_overlap(args: argparse.Namespace) -> int:
 
 def benchmark_args(args: argparse.Namespace) -> list[str]:
     return (
-        (["--tasks", str(args.tasks)] if args.tasks else [])
+        (["--compact-pack", str(args.compact_pack)] if args.compact_pack else [])
+        + (["--task-retrieval"] if args.task_retrieval else [])
+        + (["--tasks", str(args.tasks)] if args.tasks else [])
         + (["--results", str(args.results)] if args.results else [])
         + (["--init-tasks"] if args.init_tasks else [])
         + (["--init-results"] if args.init_results else [])
@@ -633,10 +1039,14 @@ def command_sync(args: argparse.Namespace) -> int:
             "repos": repo_payload,
             "exit_codes": {"office": office_status, "repos": repo_status},
         }
+        from mirrorarc.relationships.invalidation import reconcile_derived_state
+        payload["derived_invalidation"] = reconcile_derived_state(root)
         print(json.dumps(payload, indent=2, sort_keys=True))
         return office_status or repo_status
     office = office_sync_module.main([], default_root=root)
     repos = repo_sync_module.main([], default_root=root, default_config=repo_config(root))
+    from mirrorarc.relationships.invalidation import reconcile_derived_state
+    reconcile_derived_state(root)
     return office or repos
 
 
@@ -1010,6 +1420,159 @@ def build_parser() -> argparse.ArgumentParser:
     annotations.add_argument("--json", action="store_true", help="Print machine-readable migration output.")
     annotations.set_defaults(func=command_migrate_annotations)
     sub.add_parser("plan", help="Inventory sources and proposed mirror actions without writing.").set_defaults(func=command_plan)
+    inventory = sub.add_parser("inventory", help="Report source/L1/L2 counts and anti-proliferation invariants.")
+    inventory.add_argument("--json", action="store_true", help="Print machine-readable knowledge inventory.")
+    inventory.set_defaults(func=command_inventory)
+    relationships = sub.add_parser("relationships", help="Build, inspect, propose, and review ledger relationships.")
+    relationships_sub = relationships.add_subparsers(dest="relationships_command", required=True)
+    relationships_refresh = relationships_sub.add_parser("refresh", help="Rebuild deterministic relationships from current governed state.")
+    relationships_refresh.add_argument("--json", action="store_true")
+    relationships_refresh.set_defaults(func=command_relationships_refresh)
+    relationships_status = relationships_sub.add_parser("status", help="Report relationship/evidence/review counts.")
+    relationships_status.add_argument("--json", action="store_true")
+    relationships_status.set_defaults(func=command_relationships_status)
+    relationships_export = relationships_sub.add_parser("export", help="Export structured ledger metadata without source bodies.")
+    relationships_export.add_argument("--current", action="store_true", help="Exclude rejected and invalidated relationships.")
+    relationships_export.add_argument("--out", type=Path, help="Optional JSON output path.")
+    relationships_export.set_defaults(func=command_relationships_export)
+    relationships_propose = relationships_sub.add_parser("propose", help="Add an evidence-backed semantic proposal.")
+    relationships_propose.add_argument("--source", required=True)
+    relationships_propose.add_argument("--target", required=True)
+    relationships_propose.add_argument("--type", required=True)
+    relationships_propose.add_argument("--evidence-artifact", required=True)
+    relationships_propose.add_argument("--selector-type", default="line")
+    relationships_propose.add_argument("--selector", required=True)
+    relationships_propose.add_argument("--excerpt")
+    relationships_propose.add_argument("--confidence", type=float)
+    relationships_propose.add_argument("--method", default="rule-proposal")
+    relationships_propose.add_argument("--method-version", default="1")
+    relationships_propose.add_argument("--model-version")
+    relationships_propose.add_argument("--prompt-version")
+    relationships_propose.add_argument("--json", action="store_true")
+    relationships_propose.set_defaults(func=command_relationships_propose)
+    relationships_review = relationships_sub.add_parser("review", help="Accept or reject a semantic proposal with named review.")
+    relationships_review.add_argument("relationship_id")
+    relationships_review.add_argument("--reviewer", required=True)
+    relationships_review.add_argument("--verdict", choices=["accepted", "rejected"], required=True)
+    relationships_review.add_argument("--note")
+    relationships_review.add_argument("--json", action="store_true")
+    relationships_review.set_defaults(func=command_relationships_review)
+    view = sub.add_parser("view", help="List, render, persist, review, and promote L2 knowledge views.")
+    view_sub = view.add_subparsers(dest="view_command", required=True)
+    view_list = view_sub.add_parser("list", help="List profile lenses and rendered view state.")
+    view_list.add_argument("--json", action="store_true")
+    view_list.set_defaults(func=command_view_list)
+    view_render = view_sub.add_parser("render", help="Render one deterministic many-to-few lens.")
+    view_render.add_argument("lens_id")
+    view_render.add_argument("--json", action="store_true")
+    view_render.set_defaults(func=command_view_render)
+    view_pin = view_sub.add_parser("pin", help="Persist a generated view without accepting it as reviewed.")
+    view_pin.add_argument("view_id")
+    view_pin.add_argument("--json", action="store_true")
+    view_pin.set_defaults(func=command_view_pin)
+    view_review = view_sub.add_parser("review", help="Persist and mark a generated/stale view reviewed.")
+    view_review.add_argument("view_id")
+    view_review.add_argument("--reviewer", required=True)
+    view_review.add_argument("--json", action="store_true")
+    view_review.set_defaults(func=command_view_review)
+    view_promote = view_sub.add_parser("promote", help="Explicitly promote a reviewed view into a new authoritative record.")
+    view_promote.add_argument("view_id")
+    view_promote.add_argument("--target", type=Path, required=True)
+    view_promote.add_argument("--reviewer", required=True)
+    view_promote.add_argument("--reason", required=True)
+    view_promote.add_argument("--json", action="store_true")
+    view_promote.set_defaults(func=command_view_promote)
+    view_status = view_sub.add_parser("status", help="Report L2 state and dependency counts.")
+    view_status.add_argument("--json", action="store_true")
+    view_status.set_defaults(func=command_view_status)
+    context = sub.add_parser("context", help="Build metadata selections, dynamic definitions, and frozen offline packs.")
+    context_sub = context.add_subparsers(dest="context_command", required=True)
+    context_build = context_sub.add_parser("build", help="Build a metadata-only selection or save a dynamic definition.")
+    context_build.add_argument("--lens", dest="lens_id", required=True)
+    context_build.add_argument("--mode", choices=["metadata", "dynamic"], default="dynamic")
+    context_build.add_argument("--name")
+    context_build.add_argument("--purpose")
+    context_build.add_argument("--query", help="Opt-in task query over current authoritative text and L1.")
+    context_build.add_argument("--max-tokens", type=int)
+    context_build.add_argument("--max-files", type=int)
+    context_build.add_argument("--max-excerpt-chars", type=int)
+    context_build.add_argument("--permitted-type", action="append", choices=sorted(["source", "native-source", "repository", "knowledge-view"]))
+    context_build.add_argument("--json", action="store_true")
+    context_build.set_defaults(func=command_context_build)
+    context_resolve = context_sub.add_parser("resolve", help="Resolve a saved dynamic definition against current governed state.")
+    context_resolve.add_argument("definition_id")
+    context_resolve.add_argument("--json", action="store_true")
+    context_resolve.set_defaults(func=command_context_resolve)
+    context_freeze = context_sub.add_parser("freeze", help="Create an immutable, content-inclusive offline context pack.")
+    context_freeze_source = context_freeze.add_mutually_exclusive_group(required=True)
+    context_freeze_source.add_argument("--definition", dest="definition_id")
+    context_freeze_source.add_argument("--lens", dest="lens_id")
+    context_freeze.add_argument("--task", default="Use the cited evidence to complete the declared purpose offline.")
+    context_freeze.add_argument("--name")
+    context_freeze.add_argument("--purpose")
+    context_freeze.add_argument("--query", help="Opt-in task query; saved definitions preserve their original query.")
+    context_freeze.add_argument("--max-tokens", type=int)
+    context_freeze.add_argument("--max-files", type=int)
+    context_freeze.add_argument("--max-excerpt-chars", type=int)
+    context_freeze.add_argument("--permitted-type", action="append", choices=sorted(["source", "native-source", "repository", "knowledge-view"]))
+    context_freeze.add_argument("--json", action="store_true")
+    context_freeze.set_defaults(func=command_context_freeze)
+    context_status = context_sub.add_parser("status", help="Report context definitions, packs, and newer source versions.")
+    context_status.add_argument("context_id", nargs="?")
+    context_status.add_argument("--json", action="store_true")
+    context_status.set_defaults(func=command_context_status)
+    code = sub.add_parser("code", help="Inspect optional, revision-bound repository evidence.")
+    code_sub = code.add_subparsers(dest="code_command", required=True)
+    code_doctor = code_sub.add_parser("doctor", help="Check whether local repository analysis is ready.")
+    code_doctor.add_argument("--repo", help="Optional repository ID when more than one repository is configured.")
+    code_doctor.add_argument("--json", action="store_true", help="Print stable machine-readable readiness output.")
+    code_doctor.add_argument("--verbose", action="store_true", help="Include provider path and managed environment diagnostics.")
+    code_doctor.set_defaults(func=command_code_doctor)
+    code_analyze = code_sub.add_parser("analyze", help="Analyze one governed repository snapshot.")
+    code_analyze.add_argument("--repo", required=True, help="Repository ID from tools/repos.yml or the repository manifest.")
+    code_analyze.add_argument("--symbol", help="Inspect one symbol and its bounded call and impact evidence.")
+    code_analyze.add_argument("--base", help="Inspect changed paths since a local Git base ref.")
+    code_analyze.add_argument(
+        "--changed-path",
+        action="append",
+        help="Inspect one changed repository path; repeat for additional paths.",
+    )
+    code_analyze.add_argument(
+        "--context",
+        choices=["dynamic", "frozen"],
+        help="Also create governed dynamic or frozen context from the bounded code evidence.",
+    )
+    code_analyze.add_argument("--json", action="store_true", help="Print stable machine-readable analysis output.")
+    code_analyze.set_defaults(func=command_code_analyze)
+    code_status = code_sub.add_parser("status", help="Report current, stale, failed, or missing repository analysis.")
+    code_status.add_argument("--repo", help="Optional repository ID; defaults to all configured repositories.")
+    code_status.add_argument("--json", action="store_true", help="Print stable machine-readable status output.")
+    code_status.set_defaults(func=command_code_status)
+    document = sub.add_parser('document', help='Inspect optional PageIndex PDF structure and cited answer candidates.')
+    document_sub = document.add_subparsers(dest='document_command', required=True)
+    document_doctor = document_sub.add_parser('doctor', help='Check the isolated optional PageIndex runtime.')
+    document_doctor.add_argument('--json', action='store_true')
+    document_doctor.set_defaults(func=command_document)
+    document_index = document_sub.add_parser('index', help='Index one registered PDF; model-free by default.')
+    document_index.add_argument('--source', required=True, help='Source ID from mirrorarc status --json.')
+    document_index.add_argument('--model-assisted', action='store_true', help='Use the explicitly configured model for structure and summaries.')
+    document_index.add_argument('--allow-model', action='store_true', help='Approve content transfer to the configured model for this operation.')
+    document_index.add_argument('--mode', choices=['flash', 'standard'], default='flash')
+    document_index.add_argument('--force', action='store_true', help='Rebuild even if source and settings match; model-assisted rebuilding can incur charges.')
+    document_index.add_argument('--context', choices=['dynamic', 'frozen'], help='Also export selected physical PDF pages under current context policy.')
+    document_index.add_argument('--page', action='append', type=int, help='Physical PDF page for context; repeat for more pages.')
+    document_index.add_argument('--json', action='store_true')
+    document_index.set_defaults(func=command_document)
+    document_ask = document_sub.add_parser('ask', help='Generate an unreviewed answer with checked page addresses using an approved model.')
+    document_ask.add_argument('--source', required=True)
+    document_ask.add_argument('--question', required=True)
+    document_ask.add_argument('--allow-model', action='store_true')
+    document_ask.add_argument('--json', action='store_true')
+    document_ask.set_defaults(func=command_document)
+    document_status = document_sub.add_parser('status', help='Check indexed PDFs against current source bytes.')
+    document_status.add_argument('--source')
+    document_status.add_argument('--json', action='store_true')
+    document_status.set_defaults(func=command_document)
     sync = sub.add_parser("sync", help="Run Office/repo full sync or journaled changed-file sync.")
     sync_mode = sync.add_mutually_exclusive_group()
     sync_mode.add_argument("--changed", action="store_true", help="Run journaled changed-file sync.")
@@ -1105,6 +1668,8 @@ def build_parser() -> argparse.ArgumentParser:
         "benchmark",
         help="Validate the agent-readiness benchmark task pack; experimental scaffold helpers remain unstable.",
     )
+    benchmark.add_argument("--compact-pack", type=Path, help="Run the versioned compact deterministic benchmark.")
+    benchmark.add_argument("--task-retrieval", action="store_true", help="Measure opt-in task retrieval on the compact pack.")
     benchmark.add_argument("--tasks", type=Path, help="Task pack path relative to the vault root.")
     benchmark.add_argument("--results", type=Path, help="Optional benchmark results path relative to the vault root.")
     benchmark.add_argument(
@@ -1183,7 +1748,17 @@ def build_parser() -> argparse.ArgumentParser:
     migration.add_argument(
         "--write",
         action="store_true",
-        help="With --normalize-frontmatter-domains, rewrite known frontmatter domain aliases. Does not move files.",
+        help="Apply an explicitly selected migration mode. Never deletes or moves Markdown.",
+    )
+    migration.add_argument(
+        "--apply-markdown-review",
+        type=Path,
+        help="Apply a reviewed, hash-pinned Markdown classification manifest.",
+    )
+    migration.add_argument(
+        "--backup-dir",
+        type=Path,
+        help="Backup directory outside the vault, required with --apply-markdown-review.",
     )
     migration.set_defaults(func=command_migration)
     pilot = sub.add_parser("pilot", help=experimental_help("Print a read-only design-partner pilot evidence report."))

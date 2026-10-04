@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -43,6 +45,27 @@ RESERVED_TOP_LEVEL = {
     "tools",
 }
 PROFILE_DOMAIN_PREVIEW_LIMIT = 12
+MARKDOWN_CATEGORIES = {
+    "index",
+    "authoritative_markdown_source",
+    "l1_projection",
+    "l2_generated_view",
+    "l2_reviewed_view",
+    "operational_control",
+    "legacy_curated_derivative",
+    "unknown",
+}
+TARGET_MARKDOWN_CATEGORIES = MARKDOWN_CATEGORIES - {"legacy_curated_derivative", "unknown"}
+OPERATIONAL_MARKDOWN_NAMES = {
+    "AGENTS.md",
+    "CLAUDE.md",
+    "RETENTION.md",
+    "CATALOG.md",
+    "log.md",
+}
+OPERATIONAL_MARKDOWN_ROOTS = {"_meta", "_templates", "tools"}
+SOURCE_MANIFEST_REL = Path("_meta/source-manifest.json")
+REPO_MANIFEST_REL = Path("_meta/repo-manifest.json")
 
 
 def active_profile_summary(root: Path) -> dict[str, object]:
@@ -233,6 +256,305 @@ def split_frontmatter(text: str) -> tuple[dict | None, str]:
     return {}, text
 
 
+def sha256_text(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def load_json_records(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    if isinstance(raw, list):
+        records = raw
+    elif isinstance(raw, dict):
+        records = raw.get("records", raw.get("sources", raw.get("repos", [])))
+    else:
+        return []
+    return [record for record in records if isinstance(record, dict)] if isinstance(records, list) else []
+
+
+def manifest_owned_markdown(root: Path) -> set[str]:
+    owned: set[str] = set()
+    for rel, keys in (
+        (SOURCE_MANIFEST_REL, ("mirror_path", "projection_path")),
+        (REPO_MANIFEST_REL, ("note_path", "mirror_path")),
+    ):
+        for record in load_json_records(root / rel):
+            for key in keys:
+                value = record.get(key)
+                if isinstance(value, str) and value.strip().endswith(".md"):
+                    candidate = Path(value.strip())
+                    if not candidate.is_absolute() and ".." not in candidate.parts:
+                        owned.add(candidate.as_posix())
+    return owned
+
+
+def profile_note_type_roles(root: Path) -> dict[str, dict]:
+    path = root / PROFILE_REL
+    if not path.exists():
+        return {}
+    try:
+        profile = load_profile(path)
+    except ProfileValidationError:
+        return {}
+    return {
+        str(note_type): dict(definition)
+        for note_type, definition in profile.note_types.items()
+        if isinstance(definition, dict)
+    }
+
+
+def recommended_disposition(category: str) -> str:
+    return {
+        "index": "keep_manual_guide",
+        "authoritative_markdown_source": "register_as_source",
+        "l1_projection": "regenerate_from_source",
+        "l2_generated_view": "regenerate_or_leave_ephemeral",
+        "l2_reviewed_view": "preserve_review_and_dependencies",
+        "operational_control": "keep_operational_control",
+        "legacy_curated_derivative": "review_for_lens_promotion_archive_or_removal",
+        "unknown": "classify_before_write",
+    }[category]
+
+
+def classify_markdown(
+    root: Path,
+    path: Path,
+    *,
+    manifest_owned: set[str],
+    note_type_roles: dict[str, dict],
+    mirror_root: Path,
+) -> dict:
+    rel = path.relative_to(root)
+    rel_text = rel.as_posix()
+    text = path.read_text(encoding="utf-8", errors="replace")
+    frontmatter, body = split_frontmatter(text)
+    frontmatter = frontmatter if isinstance(frontmatter, dict) else None
+    declared = str((frontmatter or {}).get("markdown_category", "") or "")
+    note_type = str((frontmatter or {}).get("type", "") or "")
+    view_state = str((frontmatter or {}).get("view_state", (frontmatter or {}).get("status", "")) or "")
+    classification_rule = ""
+
+    if rel_text == "INDEX.md":
+        category = "index"
+        classification_rule = "index_path"
+    elif rel_text in manifest_owned:
+        category = "l1_projection"
+        classification_rule = "manifest_owned"
+    elif declared in TARGET_MARKDOWN_CATEGORIES:
+        category = declared
+        classification_rule = "declared_frontmatter"
+    elif rel.parts and (rel.parts[0] in OPERATIONAL_MARKDOWN_ROOTS or path.name in OPERATIONAL_MARKDOWN_NAMES):
+        category = "operational_control"
+        classification_rule = "operational_path"
+    elif rel.parts and rel.parts[0] == "_fixtures":
+        category = "authoritative_markdown_source"
+        classification_rule = "declared_source_fixture"
+    elif rel.parts and mirror_root.parts and rel.parts[: len(mirror_root.parts)] == mirror_root.parts:
+        category = "l1_projection" if GENERATED_SENTINEL in body else "unknown"
+        classification_rule = "mirror_root_sentinel" if category == "l1_projection" else "unmanaged_mirror_root"
+    elif note_type in note_type_roles and note_type_roles[note_type].get("legacy_derivative") is True:
+        category = "legacy_curated_derivative"
+        classification_rule = "profile_legacy_note_type"
+    elif note_type in note_type_roles:
+        role = note_type_roles[note_type]
+        role_category = str(role.get("markdown_category", "") or "")
+        if role_category in TARGET_MARKDOWN_CATEGORIES:
+            category = role_category
+            classification_rule = "profile_note_type"
+        elif role.get("machine_owned") is True:
+            category = "l1_projection"
+            classification_rule = "profile_machine_owned_note_type"
+        elif note_type == "knowledge-view":
+            category = "l2_reviewed_view" if view_state in {"reviewed", "stale", "superseded"} else "l2_generated_view"
+            classification_rule = "knowledge_view_state"
+        else:
+            category = "authoritative_markdown_source"
+            classification_rule = "declared_profile_note_type"
+    elif frontmatter is None:
+        category = "unknown"
+        classification_rule = "invalid_frontmatter"
+    else:
+        category = "unknown"
+        classification_rule = "no_allowed_category_evidence"
+
+    return {
+        "path": rel_text,
+        "sha256": sha256_text(text),
+        "category": category,
+        "classification_rule": classification_rule,
+        "declared_category": declared,
+        "note_type": note_type,
+        "view_state": view_state,
+        "recommended_disposition": recommended_disposition(category),
+    }
+
+
+def markdown_inventory(root: Path) -> list[dict]:
+    root = root.expanduser().resolve()
+    manifest_owned = manifest_owned_markdown(root)
+    note_type_roles = profile_note_type_roles(root)
+    mirror_root = configured_office_mirror_root(root)
+    items: list[dict] = []
+    for path in sorted(root.rglob("*.md"), key=lambda candidate: candidate.relative_to(root).as_posix()):
+        if not path.is_file() or path.is_symlink():
+            continue
+        rel = path.relative_to(root)
+        if any(part in {".git", ".mirrorarc", ".vaultwright", "node_modules"} for part in rel.parts):
+            continue
+        items.append(
+            classify_markdown(
+                root,
+                path,
+                manifest_owned=manifest_owned,
+                note_type_roles=note_type_roles,
+                mirror_root=mirror_root,
+            )
+        )
+    return items
+
+
+def markdown_summary(items: list[dict]) -> dict[str, int]:
+    counts = {category: 0 for category in sorted(MARKDOWN_CATEGORIES)}
+    for item in items:
+        category = str(item.get("category", "unknown"))
+        counts[category if category in counts else "unknown"] += 1
+    return {"total": len(items), **counts, "unexplained": counts["unknown"]}
+
+
+def _is_within(path: Path, directory: Path) -> bool:
+    try:
+        path.relative_to(directory)
+    except ValueError:
+        return False
+    return True
+
+
+def load_markdown_review(path: Path) -> dict:
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        raise ValueError(f"cannot read review manifest: {exc}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"review manifest is not valid JSON: {exc}") from exc
+    if not isinstance(raw, dict) or raw.get("schema_version") != 1:
+        raise ValueError("review manifest must be a schema_version 1 object")
+    if raw.get("reviewed") is not True or not isinstance(raw.get("reviewer"), str) or not raw["reviewer"].strip():
+        raise ValueError("review manifest requires reviewed=true and a non-empty reviewer")
+    if not isinstance(raw.get("items"), list):
+        raise ValueError("review manifest items must be a list")
+    return raw
+
+
+def apply_markdown_review(
+    root: Path,
+    review_path: Path,
+    backup_dir: Path,
+    *,
+    write: bool,
+) -> dict:
+    root = root.expanduser().resolve()
+    review = load_markdown_review(review_path.expanduser().resolve())
+    backup_dir = backup_dir.expanduser().resolve()
+    if backup_dir == root or _is_within(backup_dir, root):
+        raise ValueError("backup directory must be outside the vault")
+
+    results: list[dict] = []
+    seen: set[str] = set()
+    for index, raw_item in enumerate(review["items"]):
+        if not isinstance(raw_item, dict):
+            raise ValueError(f"review manifest item {index} must be an object")
+        rel_text = str(raw_item.get("path", "") or "")
+        rel = Path(rel_text)
+        if not rel_text or rel.is_absolute() or ".." in rel.parts or rel.suffix.lower() != ".md":
+            raise ValueError(f"review manifest item {index} has an unsafe Markdown path")
+        if rel.as_posix() in seen:
+            raise ValueError(f"review manifest path is duplicated: {rel.as_posix()}")
+        seen.add(rel.as_posix())
+        action = str(raw_item.get("action", "") or "")
+        category = str(raw_item.get("category", "") or "")
+        if action != "set_category" or category not in TARGET_MARKDOWN_CATEGORIES:
+            raise ValueError(f"review manifest item {index} must use set_category with an allowed target category")
+        path = root / rel
+        if not path.is_file() or path.is_symlink():
+            results.append({"path": rel.as_posix(), "status": "error", "reason": "missing or symlink"})
+            continue
+        text = path.read_text(encoding="utf-8")
+        frontmatter, body = split_frontmatter(text)
+        if not isinstance(frontmatter, dict) or not frontmatter:
+            results.append({"path": rel.as_posix(), "status": "error", "reason": "valid frontmatter required"})
+            continue
+        if str(frontmatter.get("markdown_category", "") or "") == category:
+            results.append({"path": rel.as_posix(), "status": "unchanged", "category": category})
+            continue
+        expected = str(raw_item.get("expected_sha256", "") or "")
+        if len(expected) != 64 or expected != sha256_text(text):
+            results.append({"path": rel.as_posix(), "status": "error", "reason": "hash changed since review"})
+            continue
+        if category == "authoritative_markdown_source" and str(frontmatter.get("type", "")) == "knowledge-view":
+            provenance = raw_item.get("promotion_provenance")
+            if not isinstance(provenance, dict) or not provenance.get("source_view_id"):
+                results.append({"path": rel.as_posix(), "status": "error", "reason": "promotion provenance required"})
+                continue
+
+        if not write:
+            results.append({"path": rel.as_posix(), "status": "planned", "category": category})
+            continue
+        backup_path = backup_dir / rel
+        backup_path.parent.mkdir(parents=True, exist_ok=True)
+        if backup_path.exists() and backup_path.read_bytes() != path.read_bytes():
+            results.append({"path": rel.as_posix(), "status": "error", "reason": "backup target already differs"})
+            continue
+        if not backup_path.exists():
+            shutil.copy2(path, backup_path)
+        updated = dict(frontmatter)
+        updated["markdown_category"] = category
+        if category == "authoritative_markdown_source" and raw_item.get("promotion_provenance"):
+            updated["promotion_provenance"] = raw_item["promotion_provenance"]
+        write_text_atomic(path, dump_frontmatter(updated) + body)
+        results.append({"path": rel.as_posix(), "status": "updated", "category": category})
+
+    errors = sum(1 for item in results if item["status"] == "error")
+    return {
+        "reviewer": review["reviewer"].strip(),
+        "review_manifest": str(review_path.expanduser().resolve()),
+        "backup_dir": str(backup_dir),
+        "write": write,
+        "summary": {
+            "total": len(results),
+            "planned": sum(1 for item in results if item["status"] == "planned"),
+            "updated": sum(1 for item in results if item["status"] == "updated"),
+            "unchanged": sum(1 for item in results if item["status"] == "unchanged"),
+            "errors": errors,
+        },
+        "items": results,
+    }
+
+
+def print_markdown_inventory_worksheet(items: list[dict]) -> None:
+    summary = markdown_summary(items)
+    print("## Markdown Inventory")
+    print()
+    print(f"- Total Markdown files: {summary['total']}")
+    print(f"- Unexplained Markdown files: {summary['unexplained']}")
+    for category in sorted(MARKDOWN_CATEGORIES):
+        print(f"- `{category}`: {summary[category]}")
+    print()
+    print("## Markdown Disposition Review")
+    print()
+    for item in items:
+        print(
+            f"- [ ] `{md_escape(item['path'])}` — `{md_escape(item['category'])}` "
+            f"via `{md_escape(item['classification_rule'])}`"
+        )
+        print(f"  - SHA-256: `{item['sha256']}`")
+        print(f"  - Recommended disposition: `{item['recommended_disposition']}`")
+    print()
+
+
 def dump_frontmatter(frontmatter: dict) -> str:
     dumped = yaml.safe_dump(frontmatter, sort_keys=False, allow_unicode=True)
     return f"---\n{dumped}---"
@@ -368,7 +690,14 @@ def md_escape(value: object) -> str:
     return str(value).replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
 
 
-def print_worksheet(root: Path, items: list[dict], frontmatter_items: list[dict], warnings: list[str], errors: list[str]) -> None:
+def print_worksheet(
+    root: Path,
+    items: list[dict],
+    frontmatter_items: list[dict],
+    markdown_items: list[dict],
+    warnings: list[str],
+    errors: list[str],
+) -> None:
     summary = summary_counts(items)
     frontmatter_summary = frontmatter_summary_counts(frontmatter_items)
     print("# MirrorArc Migration Review Worksheet")
@@ -435,6 +764,7 @@ def print_worksheet(root: Path, items: list[dict], frontmatter_items: list[dict]
             print(f"  - Recommended folder: `{md_escape(item['recommended_folder'])}`")
         print(f"  - Action: {md_escape(item['action'])}")
     print()
+    print_markdown_inventory_worksheet(markdown_items)
 
 
 def print_runbook(root: Path, items: list[dict], frontmatter_items: list[dict], warnings: list[str], errors: list[str]) -> None:
@@ -493,7 +823,7 @@ def print_runbook(root: Path, items: list[dict], frontmatter_items: list[dict], 
     print("## Folder Move Rules")
     print()
     print("- Prefer manual review or `git mv` over broad shell moves.")
-    print(f"- Move source files and curated notes; do not move generated mirrors out of `{mirror_root}/`.")
+    print(f"- Move authoritative source records only after review; do not move generated L1 projections out of `{mirror_root}/`.")
     print("- Preserve mixed-content folders as subfolders until ownership is clear.")
     print("- Do not merge unrelated profile domains only because paths match; use the active profile domain list above.")
     print("- Keep old folders until the post-move verification checklist passes.")
@@ -543,7 +873,14 @@ def print_runbook(root: Path, items: list[dict], frontmatter_items: list[dict], 
     print()
 
 
-def print_human(root: Path, items: list[dict], frontmatter_items: list[dict], warnings: list[str], errors: list[str]) -> None:
+def print_human(
+    root: Path,
+    items: list[dict],
+    frontmatter_items: list[dict],
+    markdown_items: list[dict],
+    warnings: list[str],
+    errors: list[str],
+) -> None:
     print(f"mirrorarc migration: {root}")
     print("migration: dry-run only; no files were moved")
     for warning in warnings:
@@ -577,18 +914,24 @@ def print_human(root: Path, items: list[dict], frontmatter_items: list[dict], wa
     frontmatter_summary = frontmatter_summary_counts(frontmatter_items)
     if not frontmatter_items:
         print("migration: no legacy frontmatter domains found")
-        return
+    else:
+        print(
+            "migration: "
+            f"{frontmatter_summary['total']} note frontmatter domains need review "
+            f"(alias={frontmatter_summary['alias']}, unknown={frontmatter_summary['unknown']})"
+        )
+        for item in frontmatter_items:
+            target = item["recommended_domain"] or "manual classification"
+            print(f"  [{item['kind']}] {item['path']}: {item['current_domain']} -> {target}")
+            if item["recommended_folder"]:
+                print(f"    folder: {item['recommended_folder']}")
+            print(f"    action: {item['action']}")
+    md_summary = markdown_summary(markdown_items)
     print(
-        "migration: "
-        f"{frontmatter_summary['total']} note frontmatter domains need review "
-        f"(alias={frontmatter_summary['alias']}, unknown={frontmatter_summary['unknown']})"
+        "migration: Markdown inventory "
+        f"total={md_summary['total']}, legacy={md_summary['legacy_curated_derivative']}, "
+        f"unknown={md_summary['unknown']}"
     )
-    for item in frontmatter_items:
-        target = item["recommended_domain"] or "manual classification"
-        print(f"  [{item['kind']}] {item['path']}: {item['current_domain']} -> {target}")
-        if item["recommended_folder"]:
-            print(f"    folder: {item['recommended_folder']}")
-        print(f"    action: {item['action']}")
 
 
 def normalize_frontmatter_domain_aliases(
@@ -803,6 +1146,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="With --normalize-frontmatter-domains, rewrite known frontmatter domain aliases. Does not move files.",
     )
+    parser.add_argument(
+        "--apply-markdown-review",
+        type=Path,
+        help="Apply a reviewed, hash-pinned Markdown classification manifest.",
+    )
+    parser.add_argument(
+        "--backup-dir",
+        type=Path,
+        help="Backup directory outside the vault, required with --apply-markdown-review.",
+    )
     return parser
 
 
@@ -810,13 +1163,38 @@ def main(argv: list[str] | None = None, root: Path | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     active_root = (root or DEFAULT_ROOT).expanduser().resolve()
-    if args.write and not args.normalize_frontmatter_domains:
-        parser.error("--write requires --normalize-frontmatter-domains")
+    if args.write and not (args.normalize_frontmatter_domains or args.apply_markdown_review):
+        parser.error("--write requires --normalize-frontmatter-domains or --apply-markdown-review")
+    if args.normalize_frontmatter_domains and args.apply_markdown_review:
+        parser.error("--normalize-frontmatter-domains and --apply-markdown-review are mutually exclusive")
+    if args.apply_markdown_review and not args.backup_dir:
+        parser.error("--apply-markdown-review requires --backup-dir")
+    if args.backup_dir and not args.apply_markdown_review:
+        parser.error("--backup-dir requires --apply-markdown-review")
     if args.normalize_frontmatter_domains and (args.json or args.runbook):
         parser.error("--normalize-frontmatter-domains cannot be combined with --json or --runbook")
     if args.normalize_frontmatter_domains and args.write and args.worksheet:
         parser.error("--write cannot be combined with --worksheet")
     items, frontmatter_items, warnings, errors = build_report(active_root)
+    markdown_items = markdown_inventory(active_root)
+    if args.apply_markdown_review:
+        try:
+            result = apply_markdown_review(
+                active_root,
+                args.apply_markdown_review,
+                args.backup_dir,
+                write=args.write,
+            )
+        except ValueError as exc:
+            print(f"migration markdown review: {exc}", file=sys.stderr)
+            return 1
+        if args.json:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        else:
+            mode = "applied" if args.write else "planned"
+            print(f"migration markdown review: {mode}; reviewer={result['reviewer']}")
+            print(json.dumps(result["summary"], sort_keys=True))
+        return 1 if result["summary"]["errors"] else 0
     if args.normalize_frontmatter_domains:
         if args.worksheet:
             return print_normalize_frontmatter_domains_worksheet(
@@ -837,17 +1215,19 @@ def main(argv: list[str] | None = None, root: Path | None = None) -> int:
             "root": str(active_root),
             "summary": summary_counts(items),
             "frontmatter_summary": frontmatter_summary_counts(frontmatter_items),
+            "markdown_summary": markdown_summary(markdown_items),
             "items": items,
             "frontmatter_items": frontmatter_items,
+            "markdown_items": markdown_items,
             "warnings": warnings,
             "errors": errors,
         }, indent=2, sort_keys=True))
     elif args.worksheet:
-        print_worksheet(active_root, items, frontmatter_items, warnings, errors)
+        print_worksheet(active_root, items, frontmatter_items, markdown_items, warnings, errors)
     elif args.runbook:
         print_runbook(active_root, items, frontmatter_items, warnings, errors)
     else:
-        print_human(active_root, items, frontmatter_items, warnings, errors)
+        print_human(active_root, items, frontmatter_items, markdown_items, warnings, errors)
     return 1 if errors else 0
 
 

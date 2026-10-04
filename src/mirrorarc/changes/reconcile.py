@@ -7,6 +7,7 @@ from typing import Any, Callable
 
 from mirrorarc.changes import fingerprint, journal
 from mirrorarc.mirrors import office as office_sync
+from mirrorarc.relationships.invalidation import reconcile_derived_state
 
 HashFunc = Callable[[Path], str]
 
@@ -261,6 +262,7 @@ def reconcile_workspace(
         )
 
     reconciled_at = journal.record_reconciliation(root, now=now)
+    invalidation_repair = reconcile_derived_state(root)
     event_counts = {
         "created": _record_event_count(events, "created"),
         "modified": _record_event_count(events, "modified"),
@@ -280,4 +282,5 @@ def reconcile_workspace(
         "full_hashes": full_hashes,
         "bytes_hashed": bytes_hashed,
         "events": events,
+        "invalidation_repair": invalidation_repair,
     }

@@ -1,49 +1,36 @@
 ---
 title: Conventions cheat sheet
-type: note
+type: operational-control
 status: active
 domain: inbox
 created: '2026-01-01'
-updated: '2026-01-01'
-owner: you
-tags:
-- meta
-- conventions
-related:
-- '[[CLAUDE]]'
-- '[[INDEX]]'
+updated: '2026-07-21'
+markdown_category: operational_control
 ---
 
 # Conventions Cheat Sheet
 
-`_meta/agent-rules.md` and `_meta/profile.yml` are authoritative. This is the quick reference.
+`_meta/agent-rules.md` and `_meta/profile.yml` are authoritative.
 
-## Frontmatter
+## Durable Markdown categories
 
-Required: `title`, `type`, `status`, `domain`, `created`, `updated`
+`index` · `authoritative_markdown_source` · `l1_projection` · `l2_generated_view` ·
+`l2_reviewed_view` · `operational_control`
 
-Optional: `owner`, `tags`, `related`, `source`, `source_url`, `source_format`, `license`, `dataset`, `pipeline`, `model`, `decision`
+## Identity and authority
 
-## Domains
+- Originals remain authoritative.
+- One active opaque source identity normally has one active L1 projection.
+- Native Markdown/text may be registered directly.
+- Relationships are evidenced ledger records, not notes.
+- L2 is many sources to few views and ephemeral by default.
+- Reviewed views become stale; they are not silently overwritten.
 
-`inbox` - `context` - `sources` - `contracts` - `pipelines` - `analysis` - `models` - `outputs` - `governance` - `operations`
+## Working discipline
 
-## Note Types
-
-`hub` - `note` - `source-ref` - `source-mirror` - `dataset` - `data-contract` - `pipeline` - `model` - `evaluation` - `decision` - `risk` - `control` - `runbook` - `report` - `repo-mirror`
-
-## Statuses
-
-`draft` - `active` - `in-review` - `accepted` - `monitored` - `suppressed` - `superseded` - `archived`
-
-## Generated Mirrors
-
-- Office mirrors and optional PDF text mirrors live under `_mirrors/`.
-- Repository mirrors live under `20_sources/repos/` by default.
-- Edit originals, not generated mirror bodies.
-
-## Working Disciplines
-
-- Link generously.
-- Consolidate before creating.
-- Keep source-backed conclusions citeable.
+- Plan and classify before writing.
+- Cite stable source/projection identities and hashes.
+- Keep model proposals separate from accepted relations.
+- Choose metadata-only, dynamic, or frozen context deliberately.
+- Promote a view to authority only through explicit human intent.
+- Run lint and reconciliation after material changes.

@@ -7,7 +7,7 @@ created: 2026-07-19
 updated: 2026-07-19
 owner: MirrorArc
 tags: [open-data, ontario, ogl]
-related: ["[[Ontario Energy Report 2023 supporting data]]", "[[Public source register]]"]
+related: ["[[Ontario Energy Report 2023 supporting data]]", "[[Open data license register]]"]
 source_url: https://data.ontario.ca/dataset/ontario-energy-report-supporting-data
 license: OGL-Ontario
 ---

@@ -6,6 +6,8 @@ domain: sources
 created: {{date}}
 updated: {{date}}
 owner: you
+markdown_category: authoritative_markdown_source
+authority: metadata-reference
 source_url:
 source_format:
 license:

@@ -57,5 +57,5 @@ domains:
 rules:
 - Use the active profile contract as the canonical domain authority.
 - Keep top-level domain folders stable and add subfolders only when useful.
-- Use wikilinks and frontmatter for cross-domain relationships.
+- Use profile metadata and evidence-backed relationship ledger records for cross-domain meaning.
 - _meta/domain-map.yml is a legacy alias layer and must not contradict _meta/profile.yml.

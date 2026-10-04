@@ -1,0 +1,326 @@
+diff --git a/pageindex/flash/parser_pdfium_charlevel/__init__.py b/pageindex/flash/parser_pdfium_charlevel/__init__.py
+index d354e37614bf23ab5914345aee386506e5de2342..b2cb49927ed4b875a54aae15cd7eff338740578a 100644
+--- a/pageindex/flash/parser_pdfium_charlevel/__init__.py
++++ b/pageindex/flash/parser_pdfium_charlevel/__init__.py
+@@ -29,11 +29,11 @@ import pypdfium2 as pdfium
+ import pypdfium2.raw as pdfium_c
+ 
+ # Raw PDF object access (ToUnicode CMaps, content streams, font dicts, /WMode)
+-# that PDFium does not expose, read via PyPDF2 -- already a project dependency and
++# that PDFium does not expose, read via pypdf -- already a project dependency and
+ # permissively licensed. A thin adapter exposes the small raw-object API the
+ # helpers below need, so their calibrated logic stays unchanged.
+-import PyPDF2 as _pypdf2  # declared dependency (also imported by pageindex.utils/client)
+-from PyPDF2.generic import (
++import pypdf as _pypdf2  # declared dependency (also imported by pageindex.utils/client)
++from pypdf.generic import (
+     IndirectObject as PdfIndirectRef, NameObject as PdfName, NumberObject as PdfNumber,
+     FloatObject as PdfFloat, BooleanObject as PdfBoolean,
+     DictionaryObject as PdfDictionary, ArrayObject as PdfArray,
+diff --git a/pageindex/flash/parser_pdfium_charlevel/char_extract.py b/pageindex/flash/parser_pdfium_charlevel/char_extract.py
+index ffdbc72669052122198f2d6aab41f576ff86b922..669f363cdc53fb23d85b47c7403cf0b33091886c 100644
+--- a/pageindex/flash/parser_pdfium_charlevel/char_extract.py
++++ b/pageindex/flash/parser_pdfium_charlevel/char_extract.py
+@@ -340,7 +340,7 @@ def _finalize_chars(raw_chars: list[dict]) -> list[dict]:
+ 
+ 
+ def _inherited_box(pdf_doc, page_idx: int, name: str):
+-    """span merger ``inherited page-box lookup`` definition: MediaBox/CropBox resolved through the page-tree ``/Parent`` chain (page-tree inheritance lookup). PDFium's FPDFPage_Get*Box does NOT inherit (pdfium bug 1786), so inherited boxes must come from the PyPDF2 channel. Returns a raw 4-tuple or None (absent / not a 4-number array, matching span merger length gate)."""
++    """span merger ``inherited page-box lookup`` definition: MediaBox/CropBox resolved through the page-tree ``/Parent`` chain (page-tree inheritance lookup). PDFium's FPDFPage_Get*Box does NOT inherit (pdfium bug 1786), so inherited boxes must come from the pypdf channel. Returns a raw 4-tuple or None (absent / not a 4-number array, matching span merger length gate)."""
+     try:
+         xref_cursor = pdf_doc.page_xref(page_idx)
+         for _ in range(32):
+diff --git a/pageindex/flash/parser_pdfium_charlevel/code_walk.py b/pageindex/flash/parser_pdfium_charlevel/code_walk.py
+index cd7315f75ceea58cc7ea20820e996bfef18ad50b..cb9cd83d20dab5ef61a74f312e9140be86cef160 100644
+--- a/pageindex/flash/parser_pdfium_charlevel/code_walk.py
++++ b/pageindex/flash/parser_pdfium_charlevel/code_walk.py
+@@ -4,7 +4,7 @@ from __future__ import annotations
+ 
+ import re
+ import unicodedata
+-from PyPDF2.generic import (
++from pypdf.generic import (
+     IndirectObject as PdfIndirectRef, NameObject as PdfName, NumberObject as PdfNumber,
+     FloatObject as PdfFloat, BooleanObject as PdfBoolean,
+     DictionaryObject as PdfDictionary, ArrayObject as PdfArray,
+diff --git a/pageindex/flash/parser_pdfium_charlevel/content_stream.py b/pageindex/flash/parser_pdfium_charlevel/content_stream.py
+index 5cd4e41955a6d7c46315f15f07e963bb6318f3b0..0dcddf8a5a6f37752adf2fff1d189fe69aa45a47 100644
+--- a/pageindex/flash/parser_pdfium_charlevel/content_stream.py
++++ b/pageindex/flash/parser_pdfium_charlevel/content_stream.py
+@@ -394,7 +394,7 @@ def _assign_show_tz(objects: list[dict], show_tzs: list[float]) -> None:
+ 
+ 
+ def _page_vertical_resource_names(pdf_doc, page_idx: int) -> set[bytes]:
+-    """Font resource names (``F4`` of ``/F4 14 Tf``) on this page whose encoding is a vertical CMap: a predefined ``*-V`` name (Identity-V, UniJIS-UCS2-V, ...) or an embedded CMap stream with ``/WMode 1``. This derives the vertical-font flag used by the item merger, read from the same PyPDF2 document already opened for content streams. Returns an empty set on any failure, which leaves vertical handling disabled for that page."""
++    """Font resource names (``F4`` of ``/F4 14 Tf``) on this page whose encoding is a vertical CMap: a predefined ``*-V`` name (Identity-V, UniJIS-UCS2-V, ...) or an embedded CMap stream with ``/WMode 1``. This derives the vertical-font flag used by the item merger, read from the same pypdf document already opened for content streams. Returns an empty set on any failure, which leaves vertical handling disabled for that page."""
+     names: set[bytes] = set()
+     try:
+         for rec in pdf_doc[page_idx].get_fonts(full=True):
+diff --git a/pageindex/flash/parser_pdfium_charlevel/glyph_tables.py b/pageindex/flash/parser_pdfium_charlevel/glyph_tables.py
+index efacd64f20b55bad020a2692929b63d3c1693173..9f32abe7ae18176d157476d388dfd309bef23fa1 100644
+--- a/pageindex/flash/parser_pdfium_charlevel/glyph_tables.py
++++ b/pageindex/flash/parser_pdfium_charlevel/glyph_tables.py
+@@ -16,7 +16,7 @@ from .cmap_parse import _parse_int
+ # font's encoding (dictionary /Encoding BaseEncoding+Differences, or an embedded
+ # Type1 program's builtin encoding) to a glyph name, maps that name through the
+ # bundled glyph table, and otherwise falls back to the raw charcode. The map is
+-# rebuilt from the PDF's own font dictionaries via the PyPDF2 xref channel
++# rebuilt from the PDF's own font dictionaries via the pypdf xref channel
+ # (font metadata only, no text decode), then applied where PDFium's output
+ # disagrees.
+ #
+diff --git a/pageindex/flash/parser_pdfium_charlevel/pdf_objects.py b/pageindex/flash/parser_pdfium_charlevel/pdf_objects.py
+index 7b58d2a00d637b51e146a1d1b915b0bc60e46b55..64562f75756eb17cc78ad5ce575f61f3ba9b7981 100644
+--- a/pageindex/flash/parser_pdfium_charlevel/pdf_objects.py
++++ b/pageindex/flash/parser_pdfium_charlevel/pdf_objects.py
+@@ -1,8 +1,8 @@
+-"""Raw PDF object access (PyPDF2-backed) and PDF lexical primitives."""
++"""Raw PDF object access (pypdf-backed) and PDF lexical primitives."""
+ 
+ from __future__ import annotations
+ 
+-from PyPDF2.generic import (
++from pypdf.generic import (
+     IndirectObject as PdfIndirectRef, NameObject as PdfName, NumberObject as PdfNumber,
+     FloatObject as PdfFloat, BooleanObject as PdfBoolean,
+     DictionaryObject as PdfDictionary, ArrayObject as PdfArray,
+@@ -103,7 +103,7 @@ class _PdfPage:
+ 
+ 
+ class _PdfDoc:
+-    """PyPDF2-backed adapter for raw object and stream access PDFium cannot expose."""
++    """pypdf-backed adapter for raw object and stream access PDFium cannot expose."""
+ 
+     __slots__ = ("_reader", "_virtual")
+ 
+diff --git a/pageindex/flash/parser_pdfium_charlevel/pipeline.py b/pageindex/flash/parser_pdfium_charlevel/pipeline.py
+index 460ac703ff2647e00a6af5de67b75b016e11155b..f15ee10d993583cd4f0ceb3b53778b8654e31ce1 100644
+--- a/pageindex/flash/parser_pdfium_charlevel/pipeline.py
++++ b/pageindex/flash/parser_pdfium_charlevel/pipeline.py
+@@ -9,10 +9,10 @@ from typing import Union
+ import pypdfium2 as pdfium
+ 
+ # Raw PDF object access (ToUnicode CMaps, content streams, font dicts, /WMode)
+-# that PDFium does not expose, read via PyPDF2 -- already a project dependency and
++# that PDFium does not expose, read via pypdf -- already a project dependency and
+ # permissively licensed. A thin adapter exposes the small raw-object API the
+ # helpers below need, so their calibrated logic stays unchanged.
+-import PyPDF2 as _pypdf2  # declared dependency (also imported by pageindex.utils/client)
++import pypdf as _pypdf2  # declared dependency (also imported by pageindex.utils/client)
+ 
+ from ..model import Span, Rect
+ 
+@@ -215,7 +215,7 @@ def parse_charlevel_meta(doc_handle: Union[str, Path, BytesIO]) -> tuple[list[li
+     else:
+         pdf = doc_handle
+ 
+-    # Open the same document in PyPDF2 (already a project dependency) to read the
++    # Open the same document in pypdf (already a project dependency) to read the
+     # page content streams: span merger item-flush operators (q/Q save/restore, marked
+     # content, XObject) live there and PDFium's flattened object model cannot expose
+     # them. Optional/guarded -- any failure leaves flush_id unset so the merger
+diff --git a/pageindex/flash/parser_pdfium_parallel.py b/pageindex/flash/parser_pdfium_parallel.py
+index 36994ceb07611831e81723f2865d9edd2b19bd37..a23dd6b277f68407f902533dd0be4d4da68d8b23 100644
+--- a/pageindex/flash/parser_pdfium_parallel.py
++++ b/pageindex/flash/parser_pdfium_parallel.py
+@@ -33,7 +33,7 @@ from pathlib import Path
+ from typing import Union
+ 
+ import pypdfium2 as pdfium
+-import PyPDF2 as _pypdf2  # declared dependency (also imported by pageindex.utils/client)
++import pypdf as _pypdf2  # declared dependency (also imported by pageindex.utils/client)
+ 
+ from .model import Span
+ from .parser_pdfium_charlevel import (
+@@ -99,7 +99,7 @@ def _anonymous_main():
+ def _init_worker(kind: str, payload) -> None:
+     global _worker_pdf, _worker_pdf_doc, _worker_font_maps
+     # Open the document exactly as parse_charlevel_meta does, including
+-    # the guarded PyPDF2 open and its separate bytes copy.
++    # the guarded pypdf open and its separate bytes copy.
+     if kind == "path":
+         _worker_pdf = pdfium.PdfDocument(payload)
+     else:
+diff --git a/pageindex/local_api.py b/pageindex/local_api.py
+index 4802634b85411d2bb852c293e904d2c32f7391c9..a7ede5f104b81b67c8179ba4546b8a3b2c7dbe23 100644
+--- a/pageindex/local_api.py
++++ b/pageindex/local_api.py
+@@ -21,7 +21,7 @@ _SURROGATES = re.compile("[\ud800-\udfff]")
+ 
+ 
+ def _scrub_surrogates(text: str) -> str:
+-    """Lone surrogates (surrogateescape'd names, PyPDF2's surrogatepass
++    """Lone surrogates (surrogateescape'd names, pypdf's surrogatepass
+     decodes) cannot encode to UTF-8; replace with U+FFFD."""
+     return _SURROGATES.sub("\ufffd", text)
+ 
+@@ -190,7 +190,7 @@ class LocalAPI:
+ 
+     @staticmethod
+     def _check_page_bounds(structure: list, page_count: int) -> None:
+-        """The tree (pdfium) and stored pages (PyPDF2) come from different
++        """The tree (pdfium) and stored pages (pypdf) come from different
+         parsers; a span outside 1..page_count IndexErrors every later read."""
+         stack = list(structure)
+         while stack:
+@@ -207,10 +207,10 @@ class LocalAPI:
+ 
+     @staticmethod
+     def _extract_page_texts(file_path: str) -> list[str]:
+-        import PyPDF2
++        import pypdf
+         with open(file_path, "rb") as f:
+-            reader = PyPDF2.PdfReader(f)
+-            # PyPDF2 decodes broken ToUnicode maps with surrogatepass; lone
++            reader = pypdf.PdfReader(f)
++            # pypdf decodes broken ToUnicode maps with surrogatepass; lone
+             # surrogates would crash every utf-8 JSON save downstream.
+             return [_scrub_surrogates(page.extract_text() or "")
+                     for page in reader.pages]
+diff --git a/pageindex/utils.py b/pageindex/utils.py
+index 4981a63c5bde7cdaa227677bd753ba8f9671d169..869506f12f08221869130a3ef54db3a5c717bb55 100644
+--- a/pageindex/utils.py
++++ b/pageindex/utils.py
+@@ -6,7 +6,7 @@ import textwrap
+ from datetime import datetime
+ import time
+ import json
+-import PyPDF2
++import pypdf
+ import copy
+ import asyncio
+ import heapq
+@@ -369,7 +369,7 @@ def get_last_node(structure):
+ 
+ 
+ def extract_text_from_pdf(pdf_path):
+-    pdf_reader = PyPDF2.PdfReader(pdf_path)
++    pdf_reader = pypdf.PdfReader(pdf_path)
+     ###return text not list 
+     text=""
+     for page_num in range(len(pdf_reader.pages)):
+@@ -378,13 +378,13 @@ def extract_text_from_pdf(pdf_path):
+     return text
+ 
+ def get_pdf_title(pdf_path):
+-    pdf_reader = PyPDF2.PdfReader(pdf_path)
++    pdf_reader = pypdf.PdfReader(pdf_path)
+     meta = pdf_reader.metadata
+     title = meta.title if meta and meta.title else 'Untitled'
+     return title
+ 
+ def get_text_of_pages(pdf_path, start_page, end_page, tag=True):
+-    pdf_reader = PyPDF2.PdfReader(pdf_path)
++    pdf_reader = pypdf.PdfReader(pdf_path)
+     text = ""
+     for page_num in range(start_page-1, end_page):
+         page = pdf_reader.pages[page_num]
+@@ -423,7 +423,7 @@ def get_pdf_name(pdf_path):
+     if isinstance(pdf_path, str):
+         pdf_name = os.path.basename(pdf_path)
+     elif isinstance(pdf_path, BytesIO):
+-        pdf_reader = PyPDF2.PdfReader(pdf_path)
++        pdf_reader = pypdf.PdfReader(pdf_path)
+         meta = pdf_reader.metadata
+         pdf_name = meta.title if meta and meta.title else 'Untitled'
+         pdf_name = sanitize_filename(pdf_name)
+@@ -534,9 +534,9 @@ def add_preface_if_needed(data):
+ 
+ 
+ 
+-def get_page_tokens(pdf_path, model=None, pdf_parser="PyPDF2"):
+-    if pdf_parser == "PyPDF2":
+-        pdf_reader = PyPDF2.PdfReader(pdf_path)
++def get_page_tokens(pdf_path, model=None, pdf_parser="pypdf"):
++    if pdf_parser in ("pypdf", "PyPDF2"):
++        pdf_reader = pypdf.PdfReader(pdf_path)
+         page_list = []
+         for page_num in range(len(pdf_reader.pages)):
+             page = pdf_reader.pages[page_num]
+@@ -579,7 +579,7 @@ def get_text_of_pdf_pages_with_labels(pdf_pages, start_page, end_page):
+     return text
+ 
+ def get_number_of_pages(pdf_path):
+-    pdf_reader = PyPDF2.PdfReader(pdf_path)
++    pdf_reader = pypdf.PdfReader(pdf_path)
+     num = len(pdf_reader.pages)
+     return num
+ 
+@@ -1437,4 +1437,3 @@ def print_tree(tree, exclude_fields=None, indent=0):
+ def print_wrapped(text, width=100):
+     for line in text.splitlines():
+         print(textwrap.fill(line, width=width))
+-
+diff --git a/pyproject.toml b/pyproject.toml
+index ef21a2ea733e288a34fdecc0d7df143facbf0d80..253a3f87c4b94647bfd24e8bc6e816ab8f257f99 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,6 +1,6 @@
+ [tool.poetry]
+ name = "pageindex"
+-version = "0.2.10"
++version = "0.2.10+mirrorarc.1"
+ description = "Python SDK for PageIndex — reasoning-based, vectorless document retrieval, cloud and local"
+ readme = "README.md"
+ license = "MIT"
+@@ -34,7 +34,7 @@ openai = ">=1.70.0"
+ openai-agents = ">=0.18.1"
+ mcp = ">=1.19.0,<3"
+ litellm = ">=1.97.0"
+-PyPDF2 = ">=3.0.0"
++pypdf = "==6.19.0"
+ pypdfium2 = ">=5"
+ sortedcontainers = ">=2.4.0"
+ regex = ">=2024.0.0"
+diff --git a/tests/conftest.py b/tests/conftest.py
+index 04af637452b2e7ce90204b88bd55272ba10278cd..e0c5ab2f826d911f66a99a53c211f7c688cb4c50 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -10,7 +10,7 @@ def _llm_key(monkeypatch):
+ 
+ def build_pdf(page_texts):
+     """Build a minimal, uncompressed PDF (one Helvetica line per page) whose
+-    text PyPDF2 can extract. Returns the PDF file bytes."""
++    text pypdf can extract. Returns the PDF file bytes."""
+     n = len(page_texts)
+     objects = []
+     kids = " ".join(f"{3 + i} 0 R" for i in range(n))
+diff --git a/tests/test_client.py b/tests/test_client.py
+index 814415ca6f3419ef6ed36fa90101f499d59050ff..c41caff592af9b5deb2cb114744a2d77223d60eb 100644
+--- a/tests/test_client.py
++++ b/tests/test_client.py
+@@ -824,9 +824,9 @@ def test_submit_rejects_structure_beyond_stored_pages(local_client, sample_pdf,
+ 
+ def test_submit_survives_pypdf2_lone_surrogates(local_client, sample_pdf,
+                                                 monkeypatch):
+-    """PyPDF2 decodes broken ToUnicode with surrogatepass; the store gets U+FFFD, not a utf-8-fatal str."""
+-    import PyPDF2
+-    monkeypatch.setattr(PyPDF2.PageObject, "extract_text",
++    """pypdf decodes broken ToUnicode with surrogatepass; the store gets U+FFFD, not a utf-8-fatal str."""
++    import pypdf
++    monkeypatch.setattr(pypdf.PageObject, "extract_text",
+                         lambda self: "\ud83dello broken")
+     monkeypatch.setattr(
+         pageindex.flash, "page_index_flash",
+@@ -905,7 +905,7 @@ def test_corrupt_pdf_raises_api_error(local_client, tmp_path):
+ 
+ 
+ def test_encrypted_pdf_raises_api_error(local_client, sample_pdf, tmp_path):
+-    from PyPDF2 import PdfReader, PdfWriter
++    from pypdf import PdfReader, PdfWriter
+ 
+     writer = PdfWriter()
+     for page in PdfReader(sample_pdf).pages:
+diff --git a/tests/test_package_surface.py b/tests/test_package_surface.py
+index 743a5da4a918922696777bf32728be48fb1b972b..635423f49cf55427da282bd133b93eb8d7a81222 100644
+--- a/tests/test_package_surface.py
++++ b/tests/test_package_surface.py
+@@ -87,7 +87,7 @@ def test_import_pageindex_is_lazy():
+         "import sys; import pageindex; "
+         "heavy = [m for m in ('pageindex.page_index_classic', 'pageindex.flash', "
+         "'pageindex.utils', 'pageindex.tree_optimize', "
+-        "'pageindex.local_chat', 'numpy', 'PyPDF2', "
++        "'pageindex.local_chat', 'numpy', 'pypdf', "
+         "'agents', 'litellm', 'openai', 'anthropic') if m in sys.modules]; "
+         "print(','.join(heavy) or 'clean'); "
+         "print(type(pageindex.page_index_main).__name__)"

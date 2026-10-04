@@ -1,22 +1,24 @@
 ---
 title: {{title}}
-type: note
+type: authoritative-record
 status: draft
 domain:
 created: {{date}}
 updated: {{date}}
 owner: you
+markdown_category: authoritative_markdown_source
+authority: authored
 tags: []
 related: []
 ---
 
 # {{title}}
 
-## Summary
+## Purpose and authority
 
 ## Evidence
 
-## Interpretation
+## Decision or interpretation
 
 ## Open questions
 

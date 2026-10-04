@@ -4,7 +4,7 @@ type: source-ref
 status: active
 domain: sources
 created: 2026-07-19
-updated: 2026-07-19
+updated: 2026-07-21
 owner: MirrorArc Example
 source_url: https://www.ieso.ca/en/Corporate-IESO/Media/Year-End-Data
 source_format: html
@@ -18,3 +18,5 @@ related: ["[[IESO reference-only boundary]]", "[[Cross-source evidence synthesis
 Metadata-only pointer for independent annual context checks. The note deliberately contains no
 copied figures. Analysts should compare official current-year material with the OGL source series
 and record any interpretation in a new, cited evaluation.
+The 2025 Year in Review landing page was rechecked on 2026-07-21; this record remains a link and
+rights boundary, not a copied annual report.

@@ -25,7 +25,10 @@ ANNOTATION_ROOT = Path("_meta/mirror-annotations")
 REPO_CONFIG = Path("tools/repos.yml")
 SOURCE_MANAGED_KEYS = {
     "type",
+    "markdown_category",
+    "authority",
     "source_id",
+    "projection_id",
     "source",
     "source_manifest",
     "source_format",
@@ -38,7 +41,10 @@ SOURCE_MANAGED_KEYS = {
 }
 REPO_MANAGED_KEYS = {
     "type",
+    "markdown_category",
+    "authority",
     "repo_id",
+    "projection_id",
     "repo_manifest",
     "repo",
     "repo_url",
@@ -162,6 +168,7 @@ def default_preserved_line(line: str) -> bool:
         or stripped == "> Curate notes below; everything under the line refreshes on sync."
         or stripped == "> This mirror is machine-owned; do not edit it directly."
         or stripped == "> This mirror is machine-owned; keep durable human notes in curated notes or annotation sidecars."
+        or stripped == "> This L1 projection is machine-owned; use annotation sidecars for commentary and governed L2 views for synthesis."
     )
 
 

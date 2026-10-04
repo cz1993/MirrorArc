@@ -1,5 +1,6 @@
 # Scratch
 .mirrorarc/
+.codegraph/
 _benchmark/
 _tmp/
 data/

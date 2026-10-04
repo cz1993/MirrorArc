@@ -312,6 +312,8 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 .filter-popover.open { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .filter-choice { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; }
 .filter-choice input { accent-color: var(--teal); }
+.relationship-filter-label { grid-column: 1 / -1; justify-content: space-between; }
+.relationship-filter-label select { min-width: 130px; max-width: 180px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); }
 .pinned-index { margin: 0 8px 9px; padding: 0 0 9px; border-bottom: 1px solid var(--line); }
 .pinned-index-label {
   display: flex;
@@ -656,10 +658,40 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 .doc-actions { display: flex; flex-wrap: wrap; gap: 9px; margin: 20px 0 26px; }
 .doc-actions button { min-height: 36px; }
 .doc-path { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; overflow-wrap: anywhere; }
+.answer-review { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 12px; }
+.answer-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+pre.doc-path { white-space: pre-wrap; max-width: 100%; }
 .metadata-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 16px 0; }
 .metadata-card { padding: 12px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel-soft); }
 .metadata-card span { display: block; color: var(--faint); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
 .metadata-card strong { display: block; margin-top: 3px; color: var(--ink); font-size: 13px; overflow-wrap: anywhere; }
+.code-dashboard { display: grid; gap: 18px; }
+.code-hero { padding: 20px; border: 1px solid var(--line); border-radius: 7px; background: linear-gradient(135deg, var(--blue-soft), #fff 62%); }
+.code-hero h2 { margin: 4px 0 8px; font-size: 22px; }
+.code-hero p { margin-bottom: 0; }
+.code-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.code-kpi { min-width: 0; padding: 13px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-soft); }
+.code-kpi span { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+.code-kpi strong { display: block; margin-top: 5px; color: var(--navy); font-size: 17px; overflow-wrap: anywhere; }
+.code-section { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 7px; background: #fff; }
+.code-section > h2 { margin: 0 0 12px; }
+.code-table-wrap { max-width: 100%; overflow-x: auto; }
+.code-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.code-table th, .code-table td { padding: 9px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.code-table th { color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; }
+.code-table td { overflow-wrap: anywhere; }
+.code-path-list { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; counter-reset: code-path; }
+.code-path-list li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 9px; align-items: start; margin: 0; }
+.code-path-list li::before { counter-increment: code-path; content: counter(code-path); display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--teal-soft); color: var(--teal-dark); font-size: 10px; font-weight: 750; }
+.code-path-list strong, .code-path-list span { overflow-wrap: anywhere; }
+.code-warning-list { display: grid; gap: 8px; }
+.code-warning { padding: 10px 12px; border-left: 3px solid var(--orange); background: var(--orange-soft); color: #77512b; overflow-wrap: anywhere; }
+.code-command { display: flex; align-items: center; gap: 8px; min-width: 0; margin-top: 12px; padding: 10px; border: 1px solid var(--line); border-radius: 5px; background: #16283a; color: #eef4f7; }
+.code-command code { min-width: 0; flex: 1; overflow-wrap: anywhere; white-space: normal; }
+pre.code-command { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+#governed-contexts { overflow-wrap: anywhere; }
+.code-command button { flex: 0 0 auto; }
+.code-excerpt { max-height: 220px; overflow: auto; margin: 8px 0 0; padding: 11px; border-radius: 5px; background: #16283a; color: #eef4f7; white-space: pre-wrap; overflow-wrap: anywhere; font: 11px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .markdown-body { min-width: 0; color: #34465a; font-size: 14px; line-height: 1.72; overflow-wrap: anywhere; }
 .markdown-body > :first-child { margin-top: 0; }
 .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
@@ -740,6 +772,14 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 .relationship-row:hover { color: var(--ink); }
 .relationship-row .rel-title { line-height: 1.3; overflow-wrap: anywhere; }
 .relationship-row .rel-kind { color: var(--faint); font-size: 9px; }
+.relationship-row .rel-state { color: var(--teal); font-size: 9px; font-weight: 700; text-transform: capitalize; }
+.relationship-governance { display: grid; gap: 7px; }
+.relationship-decision { padding: 8px 0; border-top: 1px solid var(--line); }
+.relationship-decision:first-child { border-top: 0; }
+.relationship-decision-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--ink); font-size: 10px; }
+.relationship-decision-head strong { overflow-wrap: anywhere; }
+.relationship-decision-state { color: var(--teal); font-size: 9px; font-weight: 750; text-transform: capitalize; }
+.relationship-decision-meta { margin-top: 3px; color: var(--muted); font-size: 9px; line-height: 1.45; overflow-wrap: anywhere; }
 .inspector-actions { display: grid; gap: 8px; padding: 14px; }
 .inspector-actions button { width: 100%; }
 .safety-note { padding: 10px 12px; border: 1px solid #f0d4ad; border-radius: 5px; background: #fff9ef; color: #805c2f; font-size: 10px; }
@@ -875,6 +915,9 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   .document-sheet { padding: 30px 24px 42px; }
   .document-sheet h1 { font-size: 26px; }
   .metadata-grid { grid-template-columns: 1fr; }
+  .code-kpis { grid-template-columns: 1fr; }
+  .code-section { padding: 14px; }
+  .code-command { align-items: stretch; flex-direction: column; }
   .status-bar { gap: 8px; padding-inline: 10px; }
   .status-bar .authority { display: none; }
 }
@@ -909,6 +952,8 @@ EXPLORER_JS = r"""
   window.addEventListener("unhandledrejection", (event) => window.__mirrorarcRuntimeErrors.push(String(event.reason || "unhandled rejection")));
 
   const data = JSON.parse(document.getElementById("mirrorarc-catalog-data").textContent);
+  const projectionData = data.knowledge_projection && typeof data.knowledge_projection === "object" ? data.knowledge_projection : {};
+  const codeData = data.code_intelligence && typeof data.code_intelligence === "object" ? data.code_intelligence : {repositories: []};
   const iconPaths = {
     fileMd: "M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40v72a8,8,0,0,0,16,0V40h88V88a8,8,0,0,0,8,8h48V224a8,8,0,0,0,16,0V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM144,144H128a8,8,0,0,0-8,8v56a8,8,0,0,0,8,8h16a36,36,0,0,0,0-72Zm0,56h-8V160h8a20,20,0,0,1,0,40Zm-40-48v56a8,8,0,0,1-16,0V177.38L74.55,196.59a8,8,0,0,1-13.1,0L48,177.38V208a8,8,0,0,1-16,0V152a8,8,0,0,1,14.55-4.59L68,178.05l21.45-30.64A8,8,0,0,1,104,152Z",
     fileDoc: "M52,144H36a8,8,0,0,0-8,8v56a8,8,0,0,0,8,8H52a36,36,0,0,0,0-72Zm0,56H44V160h8a20,20,0,0,1,0,40Zm169.53-4.91a8,8,0,0,1,.25,11.31A30.06,30.06,0,0,1,200,216c-17.65,0-32-16.15-32-36s14.35-36,32-36a30.06,30.06,0,0,1,21.78,9.6,8,8,0,0,1-11.56,11.06A14.24,14.24,0,0,0,200,160c-8.82,0-16,9-16,20s7.18,20,16,20a14.24,14.24,0,0,0,10.22-4.66A8,8,0,0,1,221.53,195.09ZM128,144c-17.65,0-32,16.15-32,36s14.35,36,32,36,32-16.15,32-36S145.65,144,128,144Zm0,56c-8.82,0-16-9-16-20s7.18-20,16-20,16,9,16,20S136.82,200,128,200ZM48,120a8,8,0,0,0,8-8V40h88V88a8,8,0,0,0,8,8h48v16a8,8,0,0,0,16,0V88a8,8,0,0,0-2.34-5.66l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40v72A8,8,0,0,0,48,120ZM160,51.31,188.69,80H160Z",
@@ -1078,13 +1123,16 @@ EXPLORER_JS = r"""
     source: "Original source",
     unmanaged: "Unmanaged source",
     mirror: "Generated mirror",
-    curated: "Curated note",
+    curated: "Authoritative Markdown",
     machine: "Machine-owned note",
     repo: "Repository",
     "repo-note": "Repository mirror",
+    code: "Code evidence",
     domain: "Profile domain",
     review: "Lifecycle review",
     pack: "Context pack"
+    ,view: "Knowledge view"
+    ,profile: "Profile contract"
   };
   const kindIcon = {
     source: "fileDoc",
@@ -1094,9 +1142,12 @@ EXPLORER_JS = r"""
     machine: "fileMd",
     repo: "graph",
     "repo-note": "fileMd",
+    code: "graph",
     domain: "folder",
     review: "pin",
     pack: "stack"
+    ,view: "book"
+    ,profile: "folder"
   };
 
   const nodes = [];
@@ -1121,11 +1172,28 @@ EXPLORER_JS = r"""
     if (complete.path && !pathToNode.has(complete.path)) pathToNode.set(complete.path, complete.id);
     return complete;
   };
-  const addEdge = (source, target, relation) => {
+  const addEdge = (source, target, relation, details = {}) => {
     if (!source || !target || source === target) return;
     const key = `${source}|${target}|${relation}`;
-    if (baseEdges.some((edge) => edge.key === key)) return;
-    baseEdges.push({key, source, target, relation});
+    const existing = baseEdges.find((edge) => edge.key === key || (edge.relation === relation && edge.source === target && edge.target === source));
+    if (existing) {
+      if (Array.isArray(details.evidence) && details.evidence.length) existing.evidence = details.evidence;
+      existing.relationshipState = details.state || existing.relationshipState;
+      existing.relationshipId = details.relationship_id || existing.relationshipId;
+      existing.relationshipMethod = details.method || existing.relationshipMethod;
+      existing.relationshipReviews = details.reviews || existing.relationshipReviews;
+      existing.invalidationReason = details.invalidation_reason || existing.invalidationReason;
+      return;
+    }
+    baseEdges.push({
+      key, source, target, relation,
+      evidence: details.evidence || [],
+      relationshipState: details.state || "accepted",
+      relationshipId: details.relationship_id || "",
+      relationshipMethod: details.method || "deterministic",
+      relationshipReviews: details.reviews || [],
+      invalidationReason: details.invalidation_reason || ""
+    });
   };
 
   const domains = Array.isArray(data.domains) ? data.domains : [];
@@ -1173,6 +1241,8 @@ EXPLORER_JS = r"""
       lifecycleSchema: item.lifecycle_contract_schema_version,
       authoritativePath: item.source,
       provenance: [item.source]
+      ,layer: "L0"
+      ,authority: "authoritative"
     });
     if (item.mirror) {
       addNode({
@@ -1194,6 +1264,8 @@ EXPLORER_JS = r"""
         lifecycleSchema: item.lifecycle_contract_schema_version,
         authoritativePath: item.source,
         provenance: [item.source, item.mirror]
+        ,layer: "L1"
+        ,authority: "derived"
       });
       addEdge(sourceId, mirrorId, "MIRRORS");
       addEdge(mirrorId, `domain:${item.domain || "unclassified"}`, "IN_DOMAIN");
@@ -1221,13 +1293,15 @@ EXPLORER_JS = r"""
       id,
       kind: "curated",
       title: item.title || labelForPath(item.path),
-      subtitle: item.note_type || "Curated note",
+      subtitle: item.note_type || "Governed Markdown record",
       path: item.path,
       domain: item.domain || "unclassified",
       state: item.status || "curated",
       noteType: item.note_type,
       authoritativePath: item.path,
       provenance: [item.path]
+      ,layer: "L0"
+      ,authority: "authoritative"
     });
     addEdge(id, `domain:${item.domain || "unclassified"}`, "IN_DOMAIN");
   });
@@ -1245,16 +1319,20 @@ EXPLORER_JS = r"""
       state: item.status || "generated",
       authoritativePath: item.path,
       provenance: [item.path]
+      ,layer: "control"
+      ,authority: "operational"
     });
     addEdge(id, `domain:${item.domain || "unclassified"}`, "IN_DOMAIN");
   });
 
+  const codeByRepo = new Map((codeData.repositories || []).map((item) => [item.repo_id, item]));
   (data.repo_items || []).forEach((item, index) => {
     const stable = item.repo_id || `${item.repo || "repo"}-${index}`;
     const repoId = `repo:${stable}`;
     const noteId = `repo-note:${stable}`;
     const attention = Boolean(item.warnings || item.errors || !["clean", "active", "reviewed"].includes(String(item.state || "").toLowerCase()));
     const domain = item.domain || "sources";
+    const codeRecord = codeByRepo.get(item.repo_id) || null;
     addNode({
       id: repoId,
       kind: "repo",
@@ -1272,6 +1350,9 @@ EXPLORER_JS = r"""
       lifecycleSchema: item.lifecycle_contract_schema_version,
       authoritativePath: item.repo,
       provenance: [item.repo]
+      ,codeRecord
+      ,layer: "L0"
+      ,authority: "authoritative"
     });
     if (item.note) {
       addNode({
@@ -1292,6 +1373,9 @@ EXPLORER_JS = r"""
         lifecycleSchema: item.lifecycle_contract_schema_version,
         authoritativePath: item.repo,
         provenance: [item.repo, item.note]
+        ,codeRecord
+        ,layer: "L1"
+        ,authority: "derived"
       });
       addEdge(repoId, noteId, "MIRRORS");
       addEdge(noteId, `domain:${domain}`, "IN_DOMAIN");
@@ -1312,8 +1396,85 @@ EXPLORER_JS = r"""
       attention: true,
       authoritativePath: path,
       provenance: [path]
+      ,layer: "L0"
+      ,authority: "authoritative"
     });
     addEdge(id, "domain:unclassified", "NEEDS_ROUTING");
+  });
+
+  const artifactToNode = new Map();
+  const kindForArtifact = (kind, layer) => {
+    if (kind === "projection") return "mirror";
+    if (kind === "native-source") return "curated";
+    if (kind === "repository") return "repo";
+    if (kind === "code-evidence") return "code";
+    if (kind === "knowledge-view") return "view";
+    if (kind === "context") return "pack";
+    if (kind === "profile") return "profile";
+    if (kind === "domain") return "domain";
+    if (kind === "lifecycle") return "review";
+    if (kind === "source") return "source";
+    return layer === "L2" ? "view" : "machine";
+  };
+  (projectionData.artifacts || []).forEach((artifact) => {
+    if (artifact.artifact_kind === "code-evidence") {
+      const current = codeByRepo.get(artifact.metadata?.repo_id) || null;
+      if (!current?.analysis || current.analysis.analysis_id !== artifact.artifact_id) return;
+    }
+    const path = String(artifact.path || "");
+    let nodeId = path ? pathToNode.get(path) : "";
+    if (!nodeId && artifact.artifact_kind === "repository" && nodeById.has(`repo:${artifact.artifact_id}`)) nodeId = `repo:${artifact.artifact_id}`;
+    if (!nodeId && artifact.artifact_kind === "domain") nodeId = nodeById.has(`domain:${artifact.title}`) ? `domain:${artifact.title}` : "";
+    if (!nodeId) {
+      const kind = kindForArtifact(artifact.artifact_kind, artifact.layer);
+      nodeId = `artifact:${artifact.artifact_id}`;
+      addNode({
+        id: nodeId,
+        kind,
+        title: artifact.title || labelForPath(path) || artifact.artifact_id,
+        subtitle: `${artifact.layer || "evidence"} · ${artifact.artifact_kind || "artifact"}`,
+        path,
+        domain: artifact.domain || (kind === "profile" ? "profile" : "unclassified"),
+        state: artifact.lifecycle_state || "current",
+        attention: ["stale", "failed", "source_missing", "invalidated"].includes(String(artifact.lifecycle_state || "").toLowerCase()),
+        sourceId: artifact.artifact_id,
+        sourceSha256: artifact.content_hash,
+        authoritativePath: path,
+        provenance: path ? [path] : [],
+        layer: artifact.layer || "evidence",
+        authority: artifact.authority || "derived",
+        artifactKind: artifact.artifact_kind,
+        artifactMetadata: artifact.metadata || {}
+      });
+    } else {
+      const node = nodeById.get(nodeId);
+      node.sourceId = artifact.artifact_id;
+      node.sourceSha256 = artifact.content_hash || node.sourceSha256;
+      node.layer = artifact.layer || node.layer;
+      node.authority = artifact.authority || node.authority;
+      node.artifactKind = artifact.artifact_kind;
+      node.artifactMetadata = artifact.metadata || {};
+      node.state = artifact.lifecycle_state || node.state;
+      if (artifact.artifact_kind === "code-evidence") node.codeRecord = codeByRepo.get(artifact.metadata?.repo_id) || null;
+    }
+    if (artifact.artifact_kind === "code-evidence") {
+      const node = nodeById.get(nodeId);
+      const codeRecord = codeByRepo.get(artifact.metadata?.repo_id) || null;
+      node.codeRecord = codeRecord;
+      node.state = codeRecord?.freshness_state || node.state;
+      node.attention = ["stale", "failed", "no-analysis"].includes(String(node.state || "").toLowerCase());
+      node.warnings = Number(codeRecord?.analysis?.warnings?.length || 0);
+      node.errors = node.state === "failed" ? 1 : 0;
+    }
+    artifactToNode.set(artifact.artifact_id, nodeId);
+  });
+  (projectionData.relationships || []).forEach((relationship) => {
+    addEdge(
+      artifactToNode.get(relationship.source_artifact_id),
+      artifactToNode.get(relationship.target_artifact_id),
+      relationship.relationship_type,
+      relationship
+    );
   });
 
   const packNode = addNode({
@@ -1339,7 +1500,8 @@ EXPLORER_JS = r"""
     graphWidth: 760,
     graphHeight: 720,
     catalogWidth: 280,
-    collapsed: new Set()
+    collapsed: new Set(["L1"]),
+    relationshipFilter: ""
   };
 
   const $ = (selector) => document.querySelector(selector);
@@ -1356,6 +1518,7 @@ EXPLORER_JS = r"""
   const inspectorScroll = $("#inspector-scroll");
   const metadataView = $("#metadata-view");
   const documentView = $("#document-view");
+  const codeView = $("#code-view");
   const mapView = $("#map-view");
 
   const currentEdges = () => {
@@ -1399,7 +1562,7 @@ EXPLORER_JS = r"""
     return {nodes: visibleNodes, edges: visibleEdges};
   };
 
-  const rankFor = (node) => ({source: 0, unmanaged: 0, repo: 0, mirror: 1, "repo-note": 1, curated: 2, machine: 2, domain: 3, review: 4, pack: 5}[node.kind] ?? 2);
+  const rankFor = (node) => ({source: 0, unmanaged: 0, repo: 0, mirror: 1, "repo-note": 1, code: 2, curated: 2, machine: 2, view: 3, domain: 4, profile: 4, review: 5, pack: 6}[node.kind] ?? 2);
   const NODE_WIDTH = 214;
   const NODE_HEIGHT = 88;
   const NODE_GAP = 46;
@@ -1516,8 +1679,8 @@ EXPLORER_JS = r"""
     });
     graphStage.appendChild(svg);
 
-    const groupLabels = {0: "Sources", 1: "Mirrors", 2: "Curated knowledge", 3: "Profile", 4: "Review", 5: "Context"};
-    const groupClasses = {0: "domain-source", 1: "domain-mirror", 2: "domain-curated", 3: "domain-governance", 4: "domain-curated", 5: "domain-governance"};
+    const groupLabels = {0: "L0 sources", 1: "L1 projections", 2: "Governed records", 3: "L2 views", 4: "Profile", 5: "Review", 6: "Context"};
+    const groupClasses = {0: "domain-source", 1: "domain-mirror", 2: "domain-curated", 3: "domain-curated", 4: "domain-governance", 5: "domain-curated", 6: "domain-governance"};
     columns.forEach((column, rank) => {
       const coords = column.map((node) => positions.get(node.id));
       const minY = Math.min(...coords.map((pos) => pos.y)) - 46;
@@ -1562,13 +1725,19 @@ EXPLORER_JS = r"""
   };
 
   const indexNodeId = pathToNode.get("INDEX.md");
-  const sidebarNodes = () => nodes.filter((node) => !["domain", "review", "pack"].includes(node.kind) && node.id !== indexNodeId);
+  const sidebarNodes = () => nodes.filter((node) => !["domain", "review", "pack", "profile"].includes(node.kind) && node.id !== indexNodeId);
   const matchesFilters = (node) => {
+    if (state.relationshipFilter && !currentEdges().some((edge) => edge.relation === state.relationshipFilter && (edge.source === node.id || edge.target === node.id))) return false;
     if (!state.filters.size) return true;
     if (state.filters.has("attention") && node.attention) return true;
     if (state.filters.has("healthy") && !node.attention) return true;
     if (state.filters.has("sources") && ["source", "unmanaged", "repo"].includes(node.kind)) return true;
-    if (state.filters.has("notes") && ["mirror", "curated", "machine", "repo-note"].includes(node.kind)) return true;
+    if (state.filters.has("notes") && ["mirror", "curated", "machine", "repo-note", "code", "view"].includes(node.kind)) return true;
+    if (state.filters.has("l0") && node.layer === "L0") return true;
+    if (state.filters.has("l1") && node.layer === "L1") return true;
+    if (state.filters.has("l2") && node.layer === "L2") return true;
+    if (state.filters.has("stale") && normalizeState(node.state).includes("stale")) return true;
+    if (state.filters.has("reviewed") && normalizeState(node.state).includes("reviewed")) return true;
     return false;
   };
   const renderPinnedIndex = () => {
@@ -1597,7 +1766,7 @@ EXPLORER_JS = r"""
     });
     const groups = new Map();
     items.forEach((node) => {
-      const key = node.domain || "unclassified";
+      const key = `${node.domain || "unclassified"}|${node.layer || "unlayered"}`;
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(node);
     });
@@ -1609,16 +1778,18 @@ EXPLORER_JS = r"""
       collectionScroll.appendChild(empty);
       return;
     }
-    Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b)).forEach(([domain, groupItems]) => {
+    Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b)).forEach(([groupKey, groupItems]) => {
+      const [domain, layer] = groupKey.split("|");
       const section = document.createElement("section");
-      section.className = `collection${state.collapsed.has(domain) ? " collapsed" : ""}`;
+      section.className = `collection${state.collapsed.has(layer) || state.collapsed.has(groupKey) ? " collapsed" : ""}`;
       const header = document.createElement("button");
       header.type = "button";
       header.className = "collection-header";
-      header.setAttribute("aria-expanded", String(!state.collapsed.has(domain)));
-      header.innerHTML = `${icon("caret", "small caret")}${icon("folder", "small")}<span>${escapeHtml(domain)}</span><span class="collection-count">${groupItems.length}</span>`;
+      header.setAttribute("aria-expanded", String(!(state.collapsed.has(layer) || state.collapsed.has(groupKey))));
+      header.innerHTML = `${icon("caret", "small caret")}${icon("folder", "small")}<span>${escapeHtml(domain)} · ${escapeHtml(layer)}</span><span class="collection-count">${groupItems.length}</span>`;
       header.addEventListener("click", () => {
-        state.collapsed.has(domain) ? state.collapsed.delete(domain) : state.collapsed.add(domain);
+        if (state.collapsed.has(layer)) state.collapsed.delete(layer);
+        else state.collapsed.has(groupKey) ? state.collapsed.delete(groupKey) : state.collapsed.add(groupKey);
         renderSidebar();
       });
       section.appendChild(header);
@@ -1652,6 +1823,17 @@ EXPLORER_JS = r"""
     const related = relatedFor(node.id).slice(0, 8);
     const healthy = isHealthy(node);
     const inContext = state.context.has(node.id);
+    const governance = related.map(({edge, node: other}) => {
+      const reviews = Array.isArray(edge.relationshipReviews) ? edge.relationshipReviews : [];
+      const latest = reviews.length ? reviews[reviews.length - 1] : null;
+      const decision = latest
+        ? `Reviewed by ${latest.reviewer || "unknown"}: ${latest.verdict || edge.relationshipState}${latest.note ? ` — ${latest.note}` : ""}`
+        : edge.relationshipMethod !== "deterministic"
+          ? "Awaiting an explicit human review decision."
+          : "Deterministic relationship; no semantic review required.";
+      const invalidation = edge.invalidationReason ? ` Invalidation: ${edge.invalidationReason}` : "";
+      return `<div class="relationship-decision"><div class="relationship-decision-head"><strong>${escapeHtml(`${edge.relation} → ${other.title}`)}</strong><span class="relationship-decision-state">${escapeHtml(edge.relationshipState || "accepted")}</span></div><div class="relationship-decision-meta">${escapeHtml(`${edge.relationshipMethod || "deterministic"}. ${decision}${invalidation}`)}</div></div>`;
+    }).join("");
     inspectorScroll.innerHTML = `
       <section class="inspector-identity">
         ${icon(kindIcon[node.kind] || "fileMd", "large identity-icon")}
@@ -1669,7 +1851,7 @@ EXPLORER_JS = r"""
         <div class="inspector-section-title">Authoritative source</div>
         <div class="inspector-section-body">
           <div class="inspector-row"><span>Record</span><strong>${escapeHtml(node.authoritativePath || "Profile metadata")}</strong></div>
-          <div class="inspector-row"><span>Authority</span><strong>${escapeHtml(["mirror", "repo-note", "machine"].includes(node.kind) ? "Derived projection" : node.kind === "curated" ? "Human governed" : "Original / profile")}</strong></div>
+          <div class="inspector-row"><span>Authority</span><strong>${escapeHtml(["mirror", "repo-note", "machine", "code"].includes(node.kind) ? "Derived projection" : node.kind === "curated" ? "Human governed" : "Original / profile")}</strong></div>
         </div>
       </section>
       <section class="inspector-section">
@@ -1677,6 +1859,8 @@ EXPLORER_JS = r"""
         <div class="inspector-section-body">
           <div class="inspector-row"><span>Stable ID</span><strong>${escapeHtml(node.sourceId || "not recorded")}</strong></div>
           <div class="inspector-row"><span>Domain</span><strong>${escapeHtml(node.domain || "unclassified")}</strong></div>
+          <div class="inspector-row"><span>Layer / type</span><strong>${escapeHtml(`${node.layer || "unlayered"} / ${node.artifactKind || node.kind}`)}</strong></div>
+          <div class="inspector-row"><span>Authority</span><strong>${escapeHtml(node.authority || "not recorded")}</strong></div>
           <div class="inspector-row"><span>Format</span><strong>${escapeHtml(node.format || node.noteType || "metadata")}</strong></div>
           <div class="inspector-row"><span>Source hash</span><strong>${escapeHtml(node.sourceSha256 ? `sha256: ${node.sourceSha256.slice(0, 12)}…` : "not recorded")}</strong></div>
           <div class="inspector-row"><span>Last materialized</span><strong>${escapeHtml(node.lastMaterialized || "not recorded")}</strong></div>
@@ -1685,7 +1869,15 @@ EXPLORER_JS = r"""
       </section>
       <section class="inspector-section">
         <div class="inspector-section-title">Related evidence (${related.length})</div>
-        <div class="inspector-section-body"><div class="relationship-list">${related.length ? related.map(({edge, node: other}) => `<button type="button" class="relationship-row" data-related-id="${escapeHtml(other.id)}">${icon(kindIcon[other.kind] || "fileMd", "small")}<span class="rel-title">${escapeHtml(other.title)}</span><span class="rel-kind">${escapeHtml(edge.relation)}</span></button>`).join("") : `<div class="inspector-row"><span>No direct relationships in this portable catalog.</span></div>`}</div></div>
+        <div class="inspector-section-body"><div class="relationship-list">${related.length ? related.map(({edge, node: other}) => `<button type="button" class="relationship-row" data-related-id="${escapeHtml(other.id)}">${icon(kindIcon[other.kind] || "fileMd", "small")}<span class="rel-title">${escapeHtml(other.title)}</span><span><span class="rel-kind">${escapeHtml(edge.relation)}</span><br><span class="rel-state">${escapeHtml(edge.relationshipState || "accepted")}</span></span></button>`).join("") : `<div class="inspector-row"><span>No direct relationships in this portable catalog.</span></div>`}</div></div>
+      </section>
+      <section class="inspector-section">
+        <div class="inspector-section-title">Relationship governance</div>
+        <div class="inspector-section-body"><div class="relationship-governance">${governance || `<div class="inspector-row"><span>No governed relationship decisions are recorded.</span></div>`}</div></div>
+      </section>
+      <section class="inspector-section">
+        <div class="inspector-section-title">Evidence anchors</div>
+        <div class="inspector-section-body">${related.flatMap(({edge}) => edge.evidence || []).slice(0, 8).map((anchor) => `<div class="inspector-row"><span>${escapeHtml(anchor.selector_type || "anchor")} · ${escapeHtml(anchor.selector_value || "")}</span><strong>${escapeHtml(anchor.excerpt ? `${anchor.excerpt.slice(0, 120)}${anchor.excerpt.length > 120 ? "…" : ""}` : "hash-bound")}</strong></div>`).join("") || `<div class="inspector-row"><span>No bounded evidence anchors are recorded.</span></div>`}</div>
       </section>
       <section class="inspector-section">
         <div class="inspector-section-title">Context pack impact</div>
@@ -1704,11 +1896,29 @@ EXPLORER_JS = r"""
     if (contextToggle) contextToggle.addEventListener("click", () => toggleContext(node.id));
   };
 
+  const pdfEvidence = (node) => {
+    const item = (data.document_intelligence?.items || []).find((value) => value.source_id === node.sourceId || value.source_path === node.path || value.source_path === node.authoritativePath);
+    if (!item) return "";
+    const tree = (item.nodes || []).map((value) => `<li>${escapeHtml(value.title)} <strong>pages ${escapeHtml(String(value.start_page))}–${escapeHtml(String(value.end_page))}</strong></li>`).join("");
+    const pages = (item.pages || []).map((page) => `<details><summary>Physical page ${escapeHtml(String(page.page))}${page.truncated ? " · excerpt truncated" : ""}</summary><pre class="doc-path">${escapeHtml(page.excerpt)}</pre><p class="doc-path">Extracted text SHA-256: ${escapeHtml(page.text_hash)}</p></details>`).join("");
+    const answers = (item.answers || []).map((answer) => {
+      const target = (page) => `${answer.answer_id}-page-${page}`;
+      const parts = (values) => values.map((part) => part.page !== undefined ? `<a href="#${escapeHtml(target(part.page))}" data-frozen-page="${escapeHtml(target(part.page))}">[physical page ${escapeHtml(String(part.page))}]</a>` : escapeHtml(part.text)).join("");
+      const evidence = (answer.evidence || []).map((value) => `<details id="${escapeHtml(target(value.page))}"><summary>Cited physical page ${escapeHtml(String(value.page))} · frozen evidence</summary><pre class="doc-path">${escapeHtml(value.excerpt)}</pre><p class="doc-path">Source at capture: ${escapeHtml(value.source_path)} · text SHA-256 ${escapeHtml(value.text_hash)}</p></details>`).join("");
+      const presentation = answer.presentation;
+      const body = presentation?.state === "structured" ? `<h3>Answer</h3><p class="answer-text">${parts(presentation.sections.answer)}</p><h3>Reason</h3><p class="answer-text">${parts(presentation.sections.reason)}</p><h3>Important</h3><p class="answer-text">${parts(presentation.sections.important)}</p><details><summary>Additional detail</summary><p class="answer-text">${parts(presentation.sections.details)}</p></details><details><summary>Complete original generated answer</summary><pre class="doc-path">${escapeHtml(answer.original_answer)}</pre></details>` : `<p>${escapeHtml(presentation?.warning || "Structured presentation unavailable. Review the complete original and its caveats.")}</p><pre class="doc-path">${escapeHtml(answer.original_answer || answer.answer)}</pre>`;
+      const freshness = answer.freshness_state === "stale" ? "Historical answer: the source or indexed evidence has changed or is unavailable. This does not establish that the earlier answer was wrong." : answer.freshness_state === "current" ? "Current source and index match. Claim support is unreviewed; citations do not prove correctness." : "Answer unavailable; no conclusion can be inspected.";
+      return `<article class="answer-review" aria-label="Unreviewed answer candidate"><h3>Unreviewed answer candidate · ${escapeHtml(answer.freshness_state)}</h3><p>${freshness}</p>${answer.body_content_included ? `<p><strong>Question:</strong> ${escapeHtml(answer.question)}</p>${body}${evidence}` : `<p>${escapeHtml(answer.reason || answer.omission || "Question, answer and excerpts are omitted from metadata-only output.")}</p>`}${answer.context_path ? `<details><summary>Provenance</summary><p><a href="${escapeHtml(hrefForPath(answer.context_path))}">Open frozen evidence pack (JSON)</a></p><p class="doc-path">Source SHA-256: ${escapeHtml(answer.source_hash)} · Model: ${escapeHtml(answer.model)}</p></details>` : ""}</article>`;
+    }).join("");
+    const emptyPages = item.freshness_state !== "current" ? "Page excerpts are unavailable until the source is synced and reindexed." : "Source text is not embedded here. Generate a local Catalog with --include-content to inspect page excerpts.";
+    return `<section aria-label="PDF page evidence"><h2>PDF page evidence · PageIndex</h2><p><strong>${escapeHtml(item.freshness_state)}</strong> · ${escapeHtml(item.method || item.reason || "Index not ready")}</p><p>These are derived navigation and physical PDF page references. They do not certify that a claim is correct.</p>${answers ? `<h3>Answer review</h3><p>Model-generated candidates are not approved conclusions. This Catalog is a saved snapshot; regenerate it to check freshness.</p>${answers}` : "<p>No answer candidate is available. Indexing alone does not generate an answer.</p>"}${item.answer_history_bounded ? "<p>Only a bounded selection of five candidates is shown; more history may exist.</p>" : ""}${item.answer_history_unavailable ? "<p>Answer history could not be safely read.</p>" : ""}<details><summary>Document navigation and page previews</summary>${item.source_hash ? `<p class="doc-path">Source SHA-256: ${escapeHtml(item.source_hash)}</p>` : ""}${tree ? `<ol>${tree}</ol>` : ""}${pages || `<p>${emptyPages}</p>`}${item.omitted_pages ? `<p>${escapeHtml(String(item.omitted_pages))} pages omitted from this bounded preview.</p>` : ""}</details><details><summary>Local next action</summary><p>This passive page does not run commands or call a model.</p><pre class="doc-path">${escapeHtml(item.next_command || "")}</pre></details></section>`;
+  };
+
   const renderMetadata = () => {
     const node = nodeById.get(state.selectedId) || packNode;
     const related = relatedFor(node.id);
     const healthy = isHealthy(node);
-    const authority = ["mirror", "repo-note", "machine"].includes(node.kind)
+    const authority = ["mirror", "repo-note", "machine", "code"].includes(node.kind)
       ? "This record is a derived projection. Its original source remains authoritative and must be used for source-of-truth decisions."
       : node.kind === "curated"
         ? "This note is human-governed knowledge. It should remain traceable to source-backed evidence and review state."
@@ -1717,6 +1927,7 @@ EXPLORER_JS = r"""
       <p class="doc-eyebrow">Document metadata · ${escapeHtml(kindLabel[node.kind] || "Evidence")}</p>
       <h1>${escapeHtml(node.title)}</h1>
       <div class="doc-meta"><span class="status-pill${healthy ? "" : " attention"}">${icon(healthy ? "check" : "warning", "small")}${escapeHtml(normalizeState(node.state))}</span><span class="status-pill">${escapeHtml(node.domain || "unclassified")}</span><span class="status-pill">${escapeHtml(node.format || node.noteType || "metadata")}</span></div>
+      ${pdfEvidence(node)}
       <div class="doc-callout">This view explains provenance, authority, lifecycle, and graph relationships. Use Document view for the rendered Markdown body when this local explorer was generated with content enabled.</div>
       <div class="doc-actions"><button type="button" class="secondary-button" data-open-view="content">${icon("book", "small")}Document view</button><button type="button" class="secondary-button" data-open-view="map">${icon("graph", "small")}Relationship map</button></div>
       <h2>Why this record exists</h2>
@@ -1734,6 +1945,18 @@ EXPLORER_JS = r"""
       <h2>Prompt-safety boundary</h2>
       <ul>${(data.prompt_safety || []).slice(0, 4).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
     </article>`;
+    metadataView.querySelectorAll("[data-frozen-page]").forEach((link) => link.addEventListener("click", (event) => {
+      event.preventDefault();
+      const evidence = document.getElementById(link.dataset.frozenPage);
+      if (evidence) {
+        // Disclosure only: all evidence and freshness came from the backend snapshot.
+        for (let parent = evidence; parent && parent !== metadataView; parent = parent.parentElement) {
+          if (parent.tagName === "DETAILS") parent.open = true;
+        }
+        evidence.querySelector("summary").focus();
+        evidence.scrollIntoView({block: "nearest"});
+      }
+    }));
     metadataView.querySelectorAll("[data-open-view]").forEach((button) => button.addEventListener("click", () => setView(button.dataset.openView)));
   };
 
@@ -1768,7 +1991,7 @@ EXPLORER_JS = r"""
       body = `<div class="content-unavailable">${icon("book", "large")}<h2>Open the generated Markdown mirror</h2><p>This original record is not Markdown, so its readable content lives in the connected mirror.</p><button type="button" class="primary-button teal" data-open-related="${escapeHtml(relatedWithContent.id)}">Read ${escapeHtml(relatedWithContent.title)}</button></div>`;
     } else {
       const explanation = data.document_content_included
-        ? "This graph entity does not have a readable Markdown body. Select a curated note or generated mirror instead."
+        ? "This graph entity does not have a readable Markdown body. Select an authoritative record, L1 projection, or L2 view instead."
         : "This is the safe metadata-only catalog. Regenerate locally with mirrorarc catalog --html --include-content to enable rendered Markdown bodies.";
       body = `<div class="content-unavailable">${icon("book", "large")}<h2>Document body not included</h2><p>${escapeHtml(explanation)}</p></div>`;
     }
@@ -1792,6 +2015,87 @@ EXPLORER_JS = r"""
     });
   };
 
+  const codeRecordForNode = (node) => {
+    if (!node) return null;
+    if (node.codeRecord) return node.codeRecord;
+    const repoId = node.artifactMetadata?.repo_id || (node.kind === "repo" || node.kind === "repo-note" ? node.sourceId : "");
+    return repoId ? (codeByRepo.get(repoId) || null) : null;
+  };
+
+  const codeEligible = (node) => Boolean(codeRecordForNode(node));
+  const rangesLabel = (ranges) => (Array.isArray(ranges) ? ranges : []).map((item) => `L${item.start}–${item.end}`).join(", ") || "Lines not recorded";
+  const copyText = async (value) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      showToast("Command copied.");
+    } catch (_error) {
+      const field = document.createElement("textarea");
+      field.value = value;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.appendChild(field);
+      field.select();
+      document.execCommand("copy");
+      field.remove();
+      showToast("Command copied.");
+    }
+  };
+
+  const renderCode = () => {
+    const node = nodeById.get(state.selectedId) || packNode;
+    const record = codeRecordForNode(node);
+    if (!record) {
+      codeView.innerHTML = `<article class="document-sheet"><div class="content-unavailable">${icon("graph", "large")}<h2>Code evidence is available for repositories</h2><p>Select a governed repository or repository mirror to inspect revision-bound analysis.</p></div></article>`;
+      return;
+    }
+    const analysis = record.analysis;
+    const stateLabel = String(record.freshness_state || "no-analysis");
+    const command = String(record.next_action || `mirrorarc --root . code analyze --repo ${record.repo_id}`);
+    if (!analysis) {
+      const heading = stateLabel === "failed" ? "Analysis needs attention" : "No analysis yet";
+      codeView.innerHTML = `<article class="document-sheet code-dashboard">
+        <section class="code-hero"><p class="doc-eyebrow">Code · ${escapeHtml(record.configured_repo || node.title)}</p><h2>${escapeHtml(heading)}</h2><p>${escapeHtml(record.reason || "Run one local analysis command to add revision-bound code evidence.")}</p><div class="code-command"><code>${escapeHtml(command)}</code><button type="button" class="secondary-button" data-copy-code-command>Copy</button></div></section>
+        <section class="code-section"><h2>What you will get</h2><p>A repository overview, exact source lines and hashes, an ordered call path, candidate impact, affected-test candidates, and visible limitations. Analysis runs before Catalog generation; this browser never starts a process or fetches data.</p></section>
+      </article>`;
+      codeView.querySelector("[data-copy-code-command]")?.addEventListener("click", () => copyText(command));
+      return;
+    }
+    const overview = analysis.overview || {};
+    const symbols = Array.isArray(analysis.symbols) ? analysis.symbols : [];
+    const selectedSymbol = symbols[0] || null;
+    const evidence = Array.isArray(analysis.files) ? analysis.files : [];
+    const callPath = Array.isArray(analysis.call_path) ? analysis.call_path : [];
+    const direct = Array.isArray(analysis.impact?.direct) ? analysis.impact.direct : [];
+    const transitive = Array.isArray(analysis.impact?.transitive) ? analysis.impact.transitive : [];
+    const tests = Array.isArray(analysis.affected_tests) ? analysis.affected_tests : [];
+    const warnings = Array.isArray(analysis.warnings) ? analysis.warnings : [];
+    const omissions = Array.isArray(analysis.omissions) ? analysis.omissions : [];
+    const languages = Object.entries(overview.languages || {}).map(([name, count]) => `${name} ${count}`).join(" · ") || "Not reported";
+    const evidenceRows = evidence.length ? evidence.map((item) => `<tr><td class="doc-path">${escapeHtml(item.path)}</td><td>${escapeHtml(rangesLabel(item.line_ranges))}</td><td class="doc-path">sha256:${escapeHtml(String(item.hash || "").slice(0, 12))}…</td><td>${item.truncated ? "Truncated" : "Complete selected span"} · ${item.excerpt_included ? "Included in this HTML" : "Reference only; body excluded"}${item.excerpt_included && item.excerpt ? `<pre class="code-excerpt">${escapeHtml(item.excerpt)}</pre>` : ""}</td></tr>`).join("") : `<tr><td colspan="4">No exact source span was selected for this overview.</td></tr>`;
+    const impactRows = [...direct.map((item) => ({...item, group: "Direct"})), ...transitive.map((item) => ({...item, group: "Transitive"}))];
+    const contextCommand = String(record.context_command || `mirrorarc --root . code analyze --repo ${record.repo_id} --context frozen`);
+    const current = ["current", "local-uncommitted"].includes(stateLabel);
+    codeView.innerHTML = `<article class="document-sheet code-dashboard">
+      <section class="code-hero"><p class="doc-eyebrow">Code · ${escapeHtml(record.configured_repo || node.title)}</p><div class="doc-meta"><span class="status-pill${current ? "" : " attention"}">${escapeHtml(normalizeState(stateLabel))}</span><span class="status-pill">${escapeHtml(analysis.analysis_kind || "overview")}</span></div><h2>${escapeHtml(selectedSymbol ? `${selectedSymbol.qualified_name || selectedSymbol.name}` : "Repository overview")}</h2><p>${escapeHtml(record.reason || (selectedSymbol ? `Resolved ${selectedSymbol.kind || "symbol"} to exact source evidence.` : "Current repository structure and entry points."))}</p></section>
+      <section class="code-kpis"><div class="code-kpi"><span>Revision</span><strong class="doc-path">${escapeHtml(analysis.resolved_revision || "Not recorded")}</strong></div><div class="code-kpi"><span>Files</span><strong>${escapeHtml(String(overview.file_count || 0))}</strong></div><div class="code-kpi"><span>Languages</span><strong>${escapeHtml(languages)}</strong></div></section>
+      <section class="code-section"><h2>Repository overview</h2><p>Key entry points are a bounded backend ranking for orientation, not an authority claim.</p><div class="code-table-wrap"><table class="code-table"><thead><tr><th>Path</th><th>Language</th><th>Symbols</th></tr></thead><tbody>${(overview.key_entry_points || []).map((item) => `<tr><td class="doc-path">${escapeHtml(item.path)}</td><td>${escapeHtml(item.language || "unknown")}</td><td>${escapeHtml(String(item.symbol_count || 0))}</td></tr>`).join("") || `<tr><td colspan="3">No entry points were reported.</td></tr>`}</tbody></table></div></section>
+      <section class="code-section"><h2>Exact file and line evidence</h2><p>Selected by the recorded symbol/change request. Other repository files are not included. Mode: ${codeData.content_included ? "local content review" : "metadata only"}; sensitivity: local-sensitive. The frozen export applies its own final byte and file ceilings.</p><div class="code-table-wrap"><table class="code-table"><thead><tr><th>File</th><th>Lines</th><th>File hash</th><th>Coverage</th></tr></thead><tbody>${evidenceRows}</tbody></table></div></section>
+      <section class="code-section"><h2>Ordered call path</h2>${callPath.length ? `<ol class="code-path-list">${callPath.map((item) => `<li><div><strong>${escapeHtml(item.name || "Unnamed symbol")}</strong><br><span class="doc-path">${escapeHtml(item.path || "Unknown path")}:${escapeHtml(String(item.start_line || "?"))}</span></div></li>`).join("")}</ol>` : `<p>No bounded call path was requested or resolved.</p>`}</section>
+      <section class="code-section"><h2>Change impact</h2><div class="code-table-wrap"><table class="code-table"><thead><tr><th>Scope</th><th>Symbol</th><th>Evidence</th></tr></thead><tbody>${impactRows.map((item) => `<tr><td>${escapeHtml(item.group)}</td><td>${escapeHtml(item.name || item.kind || "Affected item")}</td><td class="doc-path">${escapeHtml(item.path || "Unknown")}:${escapeHtml(String(item.start_line || "?"))}</td></tr>`).join("") || `<tr><td colspan="3">No direct or transitive impact was reported.</td></tr>`}</tbody></table></div><h2>Candidate affected tests</h2>${tests.length ? `<ul>${tests.map((item) => `<li><strong class="doc-path">${escapeHtml(item.path)}</strong> · ${escapeHtml(item.confidence)} confidence · ${escapeHtml(item.basis)}</li>`).join("")}</ul>` : `<p>No candidate affected tests were resolved. This never narrows the repository's normal test gate.</p>`}</section>
+      <section class="code-section"><h2>Warnings and omissions</h2><div class="code-warning-list">${warnings.map((item) => `<div class="code-warning">${escapeHtml(item)}</div>`).join("") || `<p>No analysis warning was recorded.</p>`}</div>${omissions.length ? `<details><summary>${omissions.length} omission${omissions.length === 1 ? "" : "s"}</summary><ul>${omissions.map((item) => `<li>${escapeHtml(typeof item === "string" ? item : JSON.stringify(item))}</li>`).join("")}</ul></details>` : ""}</section>
+      <section class="code-section"><h2>Add code evidence to context</h2><p>The button adds this bounded analysis to the Catalog's metadata-only selection. Use the command to create a governed frozen pack; passive HTML cannot create one.</p><div class="doc-actions"><button type="button" class="primary-button teal" data-add-code-context>Add code evidence to context</button></div><div class="code-command"><code>${escapeHtml(contextCommand)}</code><button type="button" class="secondary-button" data-copy-context-command>Copy</button></div></section>
+    </article>`;
+    codeView.querySelector("[data-copy-context-command]")?.addEventListener("click", () => copyText(contextCommand));
+    codeView.querySelector("[data-add-code-context]")?.addEventListener("click", () => {
+      const analysisNode = nodes.find((item) => item.sourceId === analysis.analysis_id);
+      state.context.add(analysisNode?.id || node.id);
+      showToast("Code evidence added to the metadata-only selection.");
+      renderInspector();
+      renderStatus();
+    });
+  };
+
   const renderStatus = () => {
     const graph = visibleGraph();
     const selected = nodeById.get(state.selectedId);
@@ -1802,11 +2106,21 @@ EXPLORER_JS = r"""
   };
 
   const render = () => {
+    const selected = nodeById.get(state.selectedId) || packNode;
+    const canShowCode = codeEligible(selected);
+    $("#code-view-tab").hidden = !canShowCode;
+    if (!canShowCode && state.view === "code") state.view = "content";
     renderSidebar();
     renderInspector();
     if (state.view === "map") renderGraph();
     if (state.view === "metadata") renderMetadata();
     if (state.view === "content") renderContent();
+    if (state.view === "code") renderCode();
+    $$('[data-view]').forEach((button) => button.setAttribute("aria-selected", String(button.dataset.view === state.view)));
+    mapView.hidden = state.view !== "map";
+    metadataView.hidden = state.view !== "metadata";
+    documentView.hidden = state.view !== "content";
+    codeView.hidden = state.view !== "code";
     renderStatus();
   };
 
@@ -1830,16 +2144,20 @@ EXPLORER_JS = r"""
   };
 
   const setView = (view) => {
+    const selected = nodeById.get(state.selectedId) || packNode;
+    if (view === "code" && !codeEligible(selected)) return;
     state.view = view;
     $$("[data-view]").forEach((button) => button.setAttribute("aria-selected", String(button.dataset.view === view)));
     mapView.hidden = view !== "map";
     metadataView.hidden = view !== "metadata";
     documentView.hidden = view !== "content";
+    codeView.hidden = view !== "code";
     $("#fit-button").hidden = view !== "map";
     if (view === "map") {
       renderGraph();
       requestAnimationFrame(fitGraph);
     } else if (view === "metadata") renderMetadata();
+    else if (view === "code") renderCode();
     else renderContent();
   };
 
@@ -1945,10 +2263,17 @@ EXPLORER_JS = r"""
     authoritative_source: node.authoritativePath || null,
     domain: node.domain || null,
     lifecycle_state: node.state || null,
+    layer: node.layer || null,
+    authority: node.authority || null,
     source_sha256: node.sourceSha256 || null,
     warnings: node.warnings || 0,
     errors: node.errors || 0,
-    relationships: relatedFor(node.id).map(({edge, node: other}) => ({relation: edge.relation, target: other.path || other.title}))
+    relationships: relatedFor(node.id).map(({edge, node: other}) => ({
+      relation: edge.relation,
+      state: edge.relationshipState || "accepted",
+      target: other.path || other.title,
+      evidence_anchors: (edge.evidence || []).map((anchor) => ({selector_type: anchor.selector_type, selector_value: anchor.selector_value, source_hash: anchor.source_hash}))
+    }))
   }));
   const contextMarkdown = () => {
     const items = contextPayload();
@@ -1965,6 +2290,7 @@ EXPLORER_JS = r"""
         `- Authoritative source: ${item.authoritative_source || "not recorded"}`,
         `- Domain: ${item.domain || "unclassified"}`,
         `- Lifecycle: ${item.lifecycle_state || "unknown"}`,
+        `- Layer / authority: ${item.layer || "unlayered"} / ${item.authority || "not recorded"}`,
         `- Warnings / errors: ${item.warnings} / ${item.errors}`,
         ...(item.relationships.length ? ["- Relationships:", ...item.relationships.map((rel) => `  - ${rel.relation}: ${rel.target}`)] : []),
         ""
@@ -1986,6 +2312,9 @@ EXPLORER_JS = r"""
     const items = contextPayload();
     const list = $("#pack-list");
     list.innerHTML = items.length ? items.map((item) => `<div class="pack-item">${icon("fileMd", "small")}<strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.kind)}</span></div>`).join("") : `<div class="sidebar-empty">Select evidence, then add it to the context pack.</div>`;
+    const governed = (projectionData.context_definitions || []).map((definition) => `<div class="safety-note"><strong>${escapeHtml(definition.name)}</strong><p>Task: ${escapeHtml(definition.selection?.query || definition.purpose)} · Dynamic definition; resolve to inspect current selection, ranking, spans and exclusions.</p><pre class="code-command">${escapeHtml(definition.resolve_command || "")}</pre><p>Create an allowed frozen export after inspecting the evidence:</p><pre class="code-command">${escapeHtml(definition.freeze_command || "")}</pre></div>`).join("");
+    const packs = (projectionData.context_packs || []).map((pack) => `<div class="safety-note"><strong>Frozen evidence · ${escapeHtml(pack.freshness_state)}</strong><p>${escapeHtml(String(pack.included_count))} included / ${escapeHtml(String(pack.selection_count))} selected · ${escapeHtml(pack.sensitivity)} · ${escapeHtml(String((pack.omissions || []).length))} omissions</p><span class="doc-path">${escapeHtml(pack.output_path)}</span></div>`).join("");
+    $("#governed-contexts").innerHTML = `<h3>Governed task context</h3>${governed || "<p>No saved task yet. Choose a query in the CLI, inspect its evidence, then export an allowed frozen pack.</p>"}${packs}`;
     $("#pack-summary").textContent = `${items.length} selected record${items.length === 1 ? "" : "s"}. Paths, lifecycle metadata, provenance, and relationships only.`;
     $("#download-md").disabled = !items.length;
     $("#download-json").disabled = !items.length;
@@ -1995,7 +2324,11 @@ EXPLORER_JS = r"""
     $("#pack-modal-backdrop").classList.add("open");
     $("#pack-modal-close").focus();
   };
-  const closePackModal = () => $("#pack-modal-backdrop").classList.remove("open");
+  const closePackModal = () => {
+    const wasOpen = $("#pack-modal-backdrop").classList.contains("open");
+    $("#pack-modal-backdrop").classList.remove("open");
+    if (wasOpen) $("#build-context").focus();
+  };
 
   $$("[data-view]").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
   $$("[data-hop]").forEach((button) => button.addEventListener("click", () => {
@@ -2017,6 +2350,19 @@ EXPLORER_JS = r"""
     input.checked ? state.filters.add(input.dataset.filter) : state.filters.delete(input.dataset.filter);
     renderSidebar();
   }));
+  const relationshipFilter = $("#relationship-filter");
+  if (relationshipFilter) {
+    Array.from(new Set(baseEdges.map((edge) => edge.relation))).sort().forEach((relation) => {
+      const option = document.createElement("option");
+      option.value = relation;
+      option.textContent = relation;
+      relationshipFilter.appendChild(option);
+    });
+    relationshipFilter.addEventListener("change", () => {
+      state.relationshipFilter = relationshipFilter.value;
+      renderSidebar();
+    });
+  }
   const syncSearch = (value) => {
     state.search = value;
     $("#global-search-input").value = value;
@@ -2026,6 +2372,12 @@ EXPLORER_JS = r"""
   $("#global-search-input").addEventListener("input", (event) => syncSearch(event.target.value));
   $("#sidebar-search-input").addEventListener("input", (event) => syncSearch(event.target.value));
   document.addEventListener("keydown", (event) => {
+    if (event.key === "Tab" && $("#pack-modal-backdrop").classList.contains("open")) {
+      const controls = Array.from($("#pack-modal-backdrop").querySelectorAll("button:not(:disabled), a[href], input, [tabindex='0']"));
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
       $("#global-search-input").focus();
@@ -2091,6 +2443,9 @@ def render_catalog_explorer(
         "warnings": warnings,
         "errors": errors,
         "prompt_safety": report.get("prompt_safety", []),
+        "knowledge_projection": report.get("knowledge_projection", {}),
+        "code_intelligence": report.get("code_intelligence", {}),
+        "document_intelligence": report.get("document_intelligence", {}),
         "document_content": report.get("document_content", {}),
         "document_content_included": bool(report.get("document_content_included", False)),
         "hidden_counts": {
@@ -2107,6 +2462,11 @@ def render_catalog_explorer(
     source_count = int(payload["summary"].get("source_records", 0)) if isinstance(payload["summary"], dict) else 0
     warning_count = len(warnings) + len(errors)
     data_json = _script_json(payload)
+    content_mode_label = (
+        "Local content-inclusive · contains rendered Markdown"
+        if payload["document_content_included"]
+        else "Portable metadata-only catalog"
+    )
 
     return "".join(
         [
@@ -2126,7 +2486,9 @@ def render_catalog_explorer(
             profile_name.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"),
             '</span></div></div>',
             '<label class="global-search"><span class="sr-only">Search catalog</span><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path></svg><input id="global-search-input" type="search" placeholder="Search documents, notes, relationships…" autocomplete="off"><span class="keycap">⌘K</span></label>',
-            '<div class="header-actions"><div class="sync-state"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg><span>Portable catalog current</span></div>',
+            '<div class="header-actions"><div class="sync-state" title="Content-inclusive catalogs are for local review and may contain sensitive workspace content."><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg><span>',
+            content_mode_label,
+            '</span></div>',
             '<button type="button" class="icon-button help-button" id="help-button" aria-label="Explorer help">?</button>',
             '<button type="button" class="primary-button" id="build-context"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M230.91,172A8,8,0,0,1,228,182.91l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,36,169.09l92,53.65,92-53.65A8,8,0,0,1,230.91,172ZM220,121.09l-92,53.65L36,121.09A8,8,0,0,0,28,134.91l96,56a8,8,0,0,0,8.06,0l96-56A8,8,0,1,0,220,121.09ZM24,80a8,8,0,0,1,4-6.91l96-56a8,8,0,0,1,8.06,0l96,56a8,8,0,0,1,0,13.82l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,24,80Zm23.88,0L128,126.74,208.12,80,128,33.26Z"></path></svg>Build context pack</button></div>',
             "</header>\n",
@@ -2134,17 +2496,18 @@ def render_catalog_explorer(
             '<aside class="left-panel" id="left-panel" aria-label="Catalog browse panel">',
             '<div class="panel-tabs" role="tablist" aria-label="Catalog navigation"><button type="button" class="tab-button" data-sidebar-tab="browse" aria-selected="true">Browse</button><button type="button" class="tab-button" data-sidebar-tab="saved" aria-selected="false"><span id="saved-count">Saved</span></button><button type="button" class="filter-button" id="filter-button"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M200,136a8,8,0,0,1-8,8H64a8,8,0,0,1,0-16H192A8,8,0,0,1,200,136Zm32-56H24a8,8,0,0,0,0,16H232a8,8,0,0,0,0-16Zm-80,96H104a8,8,0,0,0,0,16h48a8,8,0,0,0,0-16Z"></path></svg>Filters</button></div>',
             '<label class="sidebar-search"><span class="sr-only">Filter this vault</span><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path></svg><input id="sidebar-search-input" type="search" placeholder="Filter this vault" autocomplete="off"></label>',
-            '<div class="filter-popover" id="filter-popover"><label class="filter-choice"><input type="checkbox" data-filter="healthy">Current</label><label class="filter-choice"><input type="checkbox" data-filter="attention">Attention</label><label class="filter-choice"><input type="checkbox" data-filter="sources">Sources</label><label class="filter-choice"><input type="checkbox" data-filter="notes">Notes</label></div>',
+            '<div class="filter-popover" id="filter-popover"><label class="filter-choice"><input type="checkbox" data-filter="healthy">Current</label><label class="filter-choice"><input type="checkbox" data-filter="attention">Attention</label><label class="filter-choice"><input type="checkbox" data-filter="sources">Sources</label><label class="filter-choice"><input type="checkbox" data-filter="notes">Notes/views</label><label class="filter-choice"><input type="checkbox" data-filter="l0">L0 sources</label><label class="filter-choice"><input type="checkbox" data-filter="l1">L1 projections</label><label class="filter-choice"><input type="checkbox" data-filter="l2">L2 views</label><label class="filter-choice"><input type="checkbox" data-filter="stale">Stale</label><label class="filter-choice"><input type="checkbox" data-filter="reviewed">Reviewed</label><label class="filter-choice relationship-filter-label">Relationship<select id="relationship-filter"><option value="">Any type</option></select></label></div>',
             '<div class="pinned-index" id="pinned-index" aria-label="Start here"></div>',
             '<div class="collection-scroll" id="collection-scroll"></div>',
             '<button type="button" class="add-collection" id="add-collection"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path></svg>Add collection</button>',
             "</aside>",
             '<div class="panel-resizer" id="left-resizer" role="separator" aria-label="Resize catalog panel" aria-orientation="vertical" aria-valuemin="220" aria-valuemax="480" aria-valuenow="280" tabindex="0" title="Drag or use arrow keys to resize the catalog"></div>',
             '<section class="center-panel" aria-label="Catalog workspace">',
-            '<div class="center-toolbar"><button type="button" class="mobile-panel-button" id="open-left">Browse</button><div class="segmented" role="tablist" aria-label="Center view"><button type="button" data-view="map" aria-label="Relationship map" aria-selected="false"><span class="tab-label-long">Relationship map</span><span class="tab-label-short">Map</span></button><button type="button" data-view="metadata" aria-label="Document metadata" aria-selected="false"><span class="tab-label-long">Document metadata</span><span class="tab-label-short">Metadata</span></button><button type="button" data-view="content" aria-label="Document view" aria-selected="true"><span class="tab-label-long">Document view</span><span class="tab-label-short">Document</span></button></div><span class="toolbar-spacer"></span><button type="button" class="fit-button" id="fit-button" hidden><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,48V96a8,8,0,0,1-16,0V67.31l-50.34,50.35a8,8,0,0,1-11.32-11.32L188.69,56H160a8,8,0,0,1,0-16h48A8,8,0,0,1,216,48ZM106.34,138.34,56,188.69V160a8,8,0,0,0-16,0v48a8,8,0,0,0,8,8H96a8,8,0,0,0,0-16H67.31l50.35-50.34a8,8,0,0,0-11.32-11.32Z"></path></svg><span>Fit to view</span></button><button type="button" class="mobile-panel-button" id="open-right">Inspect</button></div>',
-            '<div class="map-view" id="map-view" hidden><div class="map-controls"><strong>Focus</strong><div class="hop-control" aria-label="Relationship depth"><button type="button" data-hop="1" aria-pressed="false">1 hop</button><button type="button" data-hop="2" aria-pressed="true">2 hops</button><button type="button" data-hop="3" aria-pressed="false">3 hops</button></div><span class="map-hint">Select any entity to inspect its evidence</span></div><div class="graph-viewport" id="graph-viewport"><div class="graph-stage-space" id="graph-stage-space"><div class="graph-stage" id="graph-stage"></div></div><div class="zoom-controls" aria-label="Map zoom"><button type="button" id="zoom-in" aria-label="Zoom in">+</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><button type="button" id="zoom-fit" aria-label="Fit graph"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,48V96a8,8,0,0,1-16,0V67.31l-50.34,50.35a8,8,0,0,1-11.32-11.32L188.69,56H160a8,8,0,0,1,0-16h48A8,8,0,0,1,216,48ZM106.34,138.34,56,188.69V160a8,8,0,0,0-16,0v48a8,8,0,0,0,8,8H96a8,8,0,0,0,0-16H67.31l50.35-50.34a8,8,0,0,0-11.32-11.32Z"></path></svg></button></div></div><div class="legend"><span class="legend-item source"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M52,144H36a8,8,0,0,0-8,8v56a8,8,0,0,0,8,8H52a36,36,0,0,0,0-72Zm0,56H44V160h8a20,20,0,0,1,0,40Z"></path></svg>Original source</span><span class="legend-item mirror"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40v72a8,8,0,0,0,16,0V40h88V88a8,8,0,0,0,8,8h48V224a8,8,0,0,0,16,0V88A8,8,0,0,0,213.66,82.34Z"></path></svg>Generated mirror</span><span class="legend-item"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40v72a8,8,0,0,0,16,0V40h88V88a8,8,0,0,0,8,8h48V224a8,8,0,0,0,16,0V88A8,8,0,0,0,213.66,82.34Z"></path></svg>Curated note</span><span class="legend-item review"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M235.32,81.37,174.63,20.69a16,16,0,0,0-22.63,0L98.37,74.49c-10.66-3.34-35-7.37-60.4,13.14a16,16,0,0,0-1.29,23.78L85,159.71,42.34,202.34a8,8,0,0,0,11.32,11.32L96.29,171l48.29,48.29A16,16,0,0,0,155.9,224Z"></path></svg>Lifecycle review</span><span class="legend-item pack"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M230.91,172A8,8,0,0,1,228,182.91l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,36,169.09l92,53.65,92-53.65A8,8,0,0,1,230.91,172Z"></path></svg>Context pack</span></div></div>',
+            '<div class="center-toolbar"><button type="button" class="mobile-panel-button" id="open-left">Browse</button><div class="segmented" role="tablist" aria-label="Center view"><button type="button" data-view="map" aria-label="Relationship map" aria-selected="false"><span class="tab-label-long">Relationship map</span><span class="tab-label-short">Map</span></button><button type="button" data-view="metadata" aria-label="Document metadata" aria-selected="false"><span class="tab-label-long">Document metadata</span><span class="tab-label-short">Metadata</span></button><button type="button" data-view="content" aria-label="Document view" aria-selected="true"><span class="tab-label-long">Document view</span><span class="tab-label-short">Document</span></button><button type="button" data-view="code" id="code-view-tab" aria-label="Code evidence" aria-selected="false" hidden>Code</button></div><span class="toolbar-spacer"></span><button type="button" class="fit-button" id="fit-button" hidden><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,48V96a8,8,0,0,1-16,0V67.31l-50.34,50.35a8,8,0,0,1-11.32-11.32L188.69,56H160a8,8,0,0,1,0-16h48A8,8,0,0,1,216,48ZM106.34,138.34,56,188.69V160a8,8,0,0,0-16,0v48a8,8,0,0,0,8,8H96a8,8,0,0,0,0-16H67.31l50.35-50.34a8,8,0,0,0-11.32-11.32Z"></path></svg><span>Fit to view</span></button><button type="button" class="mobile-panel-button" id="open-right">Inspect</button></div>',
+            '<div class="map-view" id="map-view" hidden><div class="map-controls"><strong>Focus</strong><div class="hop-control" aria-label="Relationship depth"><button type="button" data-hop="1" aria-pressed="false">1 hop</button><button type="button" data-hop="2" aria-pressed="true">2 hops</button><button type="button" data-hop="3" aria-pressed="false">3 hops</button></div><span class="map-hint">Select any entity to inspect its evidence</span></div><div class="graph-viewport" id="graph-viewport"><div class="graph-stage-space" id="graph-stage-space"><div class="graph-stage" id="graph-stage"></div></div><div class="zoom-controls" aria-label="Map zoom"><button type="button" id="zoom-in" aria-label="Zoom in">+</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><button type="button" id="zoom-fit" aria-label="Fit graph"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,48V96a8,8,0,0,1-16,0V67.31l-50.34,50.35a8,8,0,0,1-11.32-11.32L188.69,56H160a8,8,0,0,1,0-16h48A8,8,0,0,1,216,48ZM106.34,138.34,56,188.69V160a8,8,0,0,0-16,0v48a8,8,0,0,0,8,8H96a8,8,0,0,0,0-16H67.31l50.35-50.34a8,8,0,0,0-11.32-11.32Z"></path></svg></button></div></div><div class="legend"><span class="legend-item source"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M52,144H36a8,8,0,0,0-8,8v56a8,8,0,0,0,8,8H52a36,36,0,0,0,0-72Zm0,56H44V160h8a20,20,0,0,1,0,40Z"></path></svg>Original source</span><span class="legend-item mirror"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40v72a8,8,0,0,0,16,0V40h88V88a8,8,0,0,0,8,8h48V224a8,8,0,0,0,16,0V88A8,8,0,0,0,213.66,82.34Z"></path></svg>L1 projection</span><span class="legend-item"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40v72a8,8,0,0,0,16,0V40h88V88a8,8,0,0,0,8,8h48V224a8,8,0,0,0,16,0V88A8,8,0,0,0,213.66,82.34Z"></path></svg>Governed record / L2 view</span><span class="legend-item review"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M235.32,81.37,174.63,20.69a16,16,0,0,0-22.63,0L98.37,74.49c-10.66-3.34-35-7.37-60.4,13.14a16,16,0,0,0-1.29,23.78L85,159.71,42.34,202.34a8,8,0,0,0,11.32,11.32L96.29,171l48.29,48.29A16,16,0,0,0,155.9,224Z"></path></svg>Lifecycle review</span><span class="legend-item pack"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><path d="M230.91,172A8,8,0,0,1,228,182.91l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,36,169.09l92,53.65,92-53.65A8,8,0,0,1,230.91,172Z"></path></svg>Context pack</span></div></div>',
             '<div class="document-view" id="metadata-view" hidden></div>',
             '<div class="document-view" id="document-view"></div>',
+            '<div class="document-view" id="code-view" hidden></div>',
             "</section>",
             '<aside class="right-panel" id="right-panel" aria-label="Evidence inspector"><div class="inspector-header"><h2>Evidence Inspector</h2><span class="spacer"></span><button type="button" class="plain-icon-button" aria-label="Pin inspector"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M235.32,81.37,174.63,20.69a16,16,0,0,0-22.63,0L98.37,74.49c-10.66-3.34-35-7.37-60.4,13.14a16,16,0,0,0-1.29,23.78L85,159.71,42.34,202.34a8,8,0,0,0,11.32,11.32L96.29,171l48.29,48.29A16,16,0,0,0,155.9,224Z"></path></svg></button><button type="button" class="plain-icon-button" id="inspector-close" aria-label="Close inspector"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg></button></div><div class="inspector-scroll" id="inspector-scroll"></div></aside>',
             "</main>",
@@ -2152,7 +2515,7 @@ def render_catalog_explorer(
             "</div>",
             '<div class="mobile-backdrop" id="mobile-backdrop"></div>',
             '<div class="toast" id="toast" role="status" aria-live="polite"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"></path></svg><span id="toast-message"></span></div>',
-            '<div class="modal-backdrop" id="pack-modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="pack-modal-title"><div class="modal-header"><svg class="icon large" viewBox="0 0 256 256" aria-hidden="true"><path d="M230.91,172A8,8,0,0,1,228,182.91l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,36,169.09l92,53.65,92-53.65A8,8,0,0,1,230.91,172Z"></path></svg><h2 id="pack-modal-title">Build context pack</h2><span class="spacer"></span><button type="button" class="plain-icon-button" id="pack-modal-close" aria-label="Close context pack"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg></button></div><div class="modal-body"><p id="pack-summary"></p><div class="safety-note">This portable export contains catalog paths and metadata only. It never copies source text, mirror bodies, secrets, or review-note content.</div><div class="pack-list" id="pack-list"></div></div><div class="modal-actions"><button type="button" class="secondary-button" id="pack-modal-cancel">Cancel</button><button type="button" class="secondary-button" id="download-json"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Z"></path></svg>JSON</button><button type="button" class="primary-button teal" id="download-md"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Z"></path></svg>Markdown</button></div></section></div>',
+            '<div class="modal-backdrop" id="pack-modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="pack-modal-title"><div class="modal-header"><svg class="icon large" viewBox="0 0 256 256" aria-hidden="true"><path d="M230.91,172A8,8,0,0,1,228,182.91l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,36,169.09l92,53.65,92-53.65A8,8,0,0,1,230.91,172Z"></path></svg><h2 id="pack-modal-title">Export selection manifest</h2><span class="spacer"></span><button type="button" class="plain-icon-button" id="pack-modal-close" aria-label="Close context pack"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg></button></div><div class="modal-body"><p id="pack-summary"></p><div class="safety-note">This portable export contains catalog paths and metadata only. It never copies source text, mirror bodies, secrets, or review-note content.</div><div class="pack-list" id="pack-list"></div><section id="governed-contexts"></section></div><div class="modal-actions"><button type="button" class="secondary-button" id="pack-modal-cancel">Cancel</button><button type="button" class="secondary-button" id="download-json"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Z"></path></svg>JSON</button><button type="button" class="primary-button teal" id="download-md"><svg class="icon small" viewBox="0 0 256 256" aria-hidden="true"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Z"></path></svg>Markdown</button></div></section></div>',
             '<script type="application/json" id="mirrorarc-catalog-data">',
             data_json,
             "</script>\n<script>",

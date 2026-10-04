@@ -4,7 +4,7 @@ type: dataset
 status: active
 domain: sources
 created: 2026-07-19
-updated: 2026-07-19
+updated: 2026-07-21
 owner: MirrorArc Example
 source_url: https://data.ontario.ca/dataset/ontario-energy-report-supporting-data
 source_format: csv
@@ -23,3 +23,5 @@ CSV files and English source notes remain authoritative.
 - **Grain:** varies by file; consult the paired note file and relevant contract.
 - **License:** Open Government Licence - Ontario; attribution is recorded in the provenance file.
 - **Limitations:** this is an educational evidence workspace, not an operational grid feed.
+- **Provenance review:** catalogue licence metadata was rechecked on 2026-07-21; committed bytes
+  remain the hashed 2023 snapshot recorded in `examples/DATA_PROVENANCE.md`.

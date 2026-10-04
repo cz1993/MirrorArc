@@ -8,7 +8,7 @@ updated: 2026-07-19
 owner: MirrorArc Example
 decision: clean-room-corpus
 tags: [decision, demo]
-related: ["[[Open data license register]]", "[[IESO reference-only boundary]]", "[[Ontario Electricity Evidence Workspace overview]]"]
+related: ["[[Open data license register]]", "[[IESO reference-only boundary]]", "[[INDEX]]"]
 ---
 
 # Decision - use a clean-room public corpus

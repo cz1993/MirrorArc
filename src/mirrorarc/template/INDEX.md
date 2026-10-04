@@ -1,73 +1,45 @@
 ---
-title: INDEX
-type: hub
+title: Workspace guide
+type: index
 status: active
-domain: inbox
+domain: context
 created: '2026-01-01'
-updated: '2026-01-01'
-owner: you
-tags:
-- index
-- moc
-related:
-- '[[CLAUDE]]'
-- '[[INDEX]]'
+updated: '2026-07-21'
+markdown_category: index
 ---
 
-# Data Product - Index
+# Workspace guide
 
-Welcome. This is the front door for people and AI agents working in this data-product workspace.
-You do not need to understand the folder structure before you begin.
+This file is the manual navigation exception. Keep it short: explain the workspace purpose,
+authority boundary, current lenses, and where review work lives. Do not maintain factual summaries
+here when they can be rendered from governed sources and relationships.
 
-## First five minutes
+## Start here
 
-1. **Name the outcome.** Add the product purpose, users, decisions, and success measures to a note
-   in `10_context/`.
-2. **Register evidence before interpreting it.** Add original files or source references under
-   `20_sources/`; MirrorArc keeps those records authoritative.
-3. **Generate the mirror layer.** Run `mirrorarc plan`, review the proposed actions, then run
-   `mirrorarc sync` to create derived Markdown mirrors without modifying the originals.
-4. **Open the portal.** Run `mirrorarc catalog --html --include-content`, then open `CATALOG.html`.
-   Use Document view for content, Document metadata for trust and lifecycle details, and
-   Relationship map for connected context.
-5. **Build knowledge with restraint.** Update and link existing notes before creating new ones;
-   cite the authoritative source and record important decisions or publication gates.
+1. Read `_meta/agent-rules.md` and `_meta/profile.yml`.
+2. Run `mirrorarc doctor`, `mirrorarc plan`, and `mirrorarc migration` before the first write.
+3. Choose a task with `mirrorarc context build --lens orientation --mode metadata --query "your task" --json`.
+   Inspect selected evidence, source hashes, ranking reasons and exclusions.
+4. Review relationship proposals and stale L2 views.
+5. Save the query with `--mode dynamic`, resolve its definition ID, then freeze allowed evidence.
+   Open the Catalog selection dialog for saved commands and frozen status. Browser downloads are
+   metadata-only; content inclusion is explicit, bounded and sensitivity-aware.
 
-The workspace contract lives in `_meta/profile.yml`. Human and agent operating rules live in
-[[_meta/agent-rules|agent rules]], and the one-screen reference lives in
-[[_meta/conventions|conventions]].
+## Authority
 
-## What MirrorArc protects
+- Original records and deliberately authored source Markdown are authoritative.
+- L1 projections, relationships, L2 views, and context are derived and rebuildable.
+- Generated or reviewed output does not become authority until explicitly promoted.
 
-- Original files and repositories remain the source of truth.
-- Generated mirrors are derived, refreshable, searchable, and agent-readable.
-- Curated notes connect evidence, findings, decisions, and operating guidance.
-- Provenance, lifecycle state, retention, and secrets-out rules stay visible.
-- Consolidation is preferred over uncontrolled documentation growth.
+## Navigation
 
-## Starter Domains
+- **Sources and L1:** use `mirrorarc status` and the catalog lineage view.
+- **Relationships:** use `mirrorarc relationships status`.
+- **Knowledge views:** use `mirrorarc view list`.
+- **Context:** use `mirrorarc context status`.
+- **Review/recovery:** use `mirrorarc review`, `mirrorarc migration`, and `mirrorarc recovery`.
 
-| Domain | Folder | Purpose |
-| --- | --- | --- |
-| `inbox` | `00_inbox` | Triage lane for new sources, questions, and agent drafts. |
-| `context` | `10_context` | Product purpose, stakeholder questions, scope, glossary, and system context. |
-| `sources` | `20_sources` | Original source files, source references, repository fixtures, and provenance records. |
-| `contracts` | `30_data-contracts` | Schemas, semantic definitions, quality expectations, and interface contracts. |
-| `pipelines` | `40_pipelines` | Ingestion, transformation, orchestration, lineage, and validation workflows. |
-| `analysis` | `50_analysis` | Exploratory work, evidence synthesis, findings, and reproducible analytical narratives. |
-| `models` | `60_models` | Model definitions, evaluations, gates, limitations, and monitoring context. |
-| `outputs` | `70_outputs` | Reports, briefings, dashboards, published datasets, and stakeholder-ready artifacts. |
-| `governance` | `80_governance` | Licensing, privacy, security, retention, approvals, risks, controls, and decisions. |
-| `operations` | `90_operations` | Runbooks, incidents, release records, support, freshness, and reliability evidence. |
+## Workspace-specific purpose
 
-## How this knowledge base works
-
-- Source files and repositories remain authoritative.
-- Generated mirrors make sources searchable and reviewable without replacing originals.
-- Curated notes summarize, connect, and cite source-backed evidence.
-- The profile contract defines domains, note types, statuses, templates, and generated views.
-
-## Governance
-
-[[_meta/agent-rules|agent rules]] - [[RETENTION]] (retention guidance) -
-[[_meta/conventions|conventions]] - `log.md`
+Replace this section with a concise statement of scope, intended users, trust boundaries, and the
+few configured knowledge lenses that matter.

@@ -33,6 +33,7 @@ private/
 
 # local scratch vaults
 /.mirrorarc/
+**/.codegraph/
 # Legacy local state during the MirrorArc rename transition.
 /.vaultwright/
 /.obsidian/

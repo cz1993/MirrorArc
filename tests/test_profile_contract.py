@@ -733,7 +733,7 @@ def test_profile_cli_init_defaults_to_data_product(tmp_path: Path) -> None:
     result = run_cli("init", str(vault))
 
     assert result.returncode == 0, result.stderr
-    assert "Profile: data-product 0.1.0" in result.stdout
+    assert "Profile: data-product 0.2.0" in result.stdout
     assert yaml.safe_load((vault / "_meta" / "profile.yml").read_text(encoding="utf-8"))["id"] == "data-product"
     assert (vault / "20_sources" / "repos" / ".gitkeep").is_file()
     assert not (vault / "40_delivery").exists()
@@ -744,7 +744,7 @@ def test_profile_cli_initializes_and_validates_current_profile(tmp_path: Path) -
 
     init = run_cli("init", "--profile", "data-product", str(vault))
     assert init.returncode == 0, init.stderr
-    assert "Profile: data-product 0.1.0" in init.stdout
+    assert "Profile: data-product 0.2.0" in init.stdout
     assert "Next (with an installed MirrorArc CLI):" in init.stdout
     assert f"mirrorarc --root {vault} doctor" in init.stdout
     assert f"mirrorarc --root {vault} sync --json" in init.stdout
@@ -752,7 +752,7 @@ def test_profile_cli_initializes_and_validates_current_profile(tmp_path: Path) -
 
     validation = run_cli("--root", str(vault), "profile", "validate")
     assert validation.returncode == 0, validation.stderr
-    assert "profile validate: OK data-product 0.1.0" in validation.stdout
+    assert "profile validate: OK data-product 0.2.0" in validation.stdout
 
     current = run_cli("--root", str(vault), "profile", "show", "--json")
     assert current.returncode == 0, current.stderr
@@ -799,7 +799,7 @@ def test_profile_cli_initializes_official_profile_fixtures(
 
     init = run_cli("init", "--profile", profile_id, str(vault))
     assert init.returncode == 0, init.stderr
-    assert f"Profile: {profile_id} 0.1.0" in init.stdout
+    assert f"Profile: {profile_id} 0.2.0" in init.stdout
 
     profile = load_profile(vault / "_meta" / "profile.yml")
     assert profile.id == profile_id
@@ -1023,7 +1023,7 @@ def test_profile_cli_diff_and_migrate_plan_clean_initialized_vault(tmp_path: Pat
     init = run_cli("init", "--profile", "business-operations", str(vault))
     assert init.returncode == 0, init.stderr
 
-    diff = run_cli("--root", str(vault), "profile", "diff", "0.1.0", "--json")
+    diff = run_cli("--root", str(vault), "profile", "diff", "0.2.0", "--json")
     assert diff.returncode == 0, diff.stderr
     diff_payload = json.loads(diff.stdout)
     assert diff_payload["summary"]["up_to_date"] is True
@@ -1064,11 +1064,11 @@ def test_profile_cli_migrate_plan_bootstraps_missing_profile_contract(tmp_path: 
     payload = json.loads(plan.stdout)
     assert payload["profile_id"] == "data-product"
     assert payload["current_version"] is None
-    assert payload["target_version"] == "0.1.0"
+    assert payload["target_version"] == "0.2.0"
     assert {
         "field": "_meta/profile.yml",
         "kind": "missing",
-        "target": "0.1.0",
+        "target": "0.2.0",
     } in payload["differences"]
     assert any(
         action["action"] == "copy-template-file" and action["path"] == "_meta/profile.yml"
@@ -1142,11 +1142,11 @@ def test_profile_cli_migrate_plan_reports_profile_contract_drift(tmp_path: Path)
     assert init.returncode == 0, init.stderr
     profile_path = vault / "_meta" / "profile.yml"
     profile_path.write_text(
-        profile_path.read_text(encoding="utf-8").replace("profile_version: 0.1.0", "profile_version: 0.0.1"),
+        profile_path.read_text(encoding="utf-8").replace("profile_version: 0.2.0", "profile_version: 0.0.1"),
         encoding="utf-8",
     )
 
-    diff = run_cli("--root", str(vault), "profile", "diff", "0.1.0", "--json")
+    diff = run_cli("--root", str(vault), "profile", "diff", "0.2.0", "--json")
 
     assert diff.returncode == 0, diff.stderr
     payload = json.loads(diff.stdout)
@@ -1155,7 +1155,7 @@ def test_profile_cli_migrate_plan_reports_profile_contract_drift(tmp_path: Path)
         "field": "profile_version",
         "kind": "changed",
         "current": "0.0.1",
-        "target": "0.1.0",
+        "target": "0.2.0",
     } in payload["differences"]
 
 

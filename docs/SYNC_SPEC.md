@@ -11,6 +11,12 @@ candidate sources are fingerprinted, hashed only when needed, materialized throu
 package-owned mirror logic, and reconciled against authoritative sources because watcher events are
 not authoritative.
 
+Sync is also the dependency boundary for the knowledge-projection architecture. A successful
+source/L1 change must update stable artifact identity, refresh deterministic relationships, and
+record bounded invalidation for semantic relations, reviews, L2 views, and frozen-context
+freshness. Dynamic context definitions remain intact and resolve current evidence when next used.
+The portal consumes this shared state; it does not infer a parallel lifecycle.
+
 The current runtime has the local journal/state foundation plus deterministic feed filtering,
 event coalescing, and cheap
 metadata fingerprint primitives, plus lease-protected event claims and interrupted-worker recovery.
@@ -41,8 +47,10 @@ it does not replace manifest-owned source identity or lifecycle state.
 Each source record should include:
 
 - stable source ID;
+- stable projection ID when a separate L1 projection is required;
 - current source path;
 - previous source paths;
+- stable L1 projection identity;
 - mirror path;
 - source file size;
 - source hash;
@@ -54,9 +62,23 @@ Each source record should include:
 - last successful sync timestamp;
 - warnings, omissions, and errors.
 
+One active opaque source identity normally has exactly one active L1 projection identity. Native
+Markdown/plain text is registered as directly readable unless profile policy requires isolation or
+an immutable projection. Moves preserve identity when unambiguous. Sibling/orphan projections and
+manual generated-body drift are blocking integrity failures.
+
+An applied journal event refreshes the affected source/projection relationship subgraph and walks
+reverse dependency edges with explicit depth/node bounds and cycle protection. Hash changes or
+deletes invalidate only semantic edges and downstream artifacts that depend on the prior hash.
+Move-only events keep semantic identity when the evidence hash still resolves. Reviewed views are
+preserved and marked stale, generated views are queued for replacement, frozen contexts become
+stale, and dynamic definitions remain intact. Each invalidation records the journal sequence,
+dependency identity, prior/current hashes, reason, and timestamp. Reconciliation compares manifest
+hashes with ledger state to repair a missed invalidation.
+
 Current implementation status:
 
-- implemented for Office mirrors: stable source IDs, current/previous source paths, mirror path,
+- implemented for Office mirrors: stable source and L1 projection IDs, current/previous source paths, mirror path,
   source hash/size, converter/config version, lifecycle state, warnings/errors, source-missing
   marking, non-mutating plan/status reports, sensitive-name warnings, duplicate-byte warnings, and
   format-specific conversion-quality warnings, plus contract-backed lifecycle next-action guidance in plan/status
@@ -207,7 +229,7 @@ must be added to the contract and covered by tests before release.
   `conflict` with the duplicate source IDs rather than choosing one manifest record silently.
 - When a source move changes the generated mirror path, sync should not create the new mirror while
   the previous generated mirror still exists. The operator must preserve, move, archive, or remove
-  the old mirror first so curated notes are not stranded and duplicate generated mirrors are not
+  the old mirror first so governed dependencies are not stranded and duplicate generated mirrors are not
   created.
 - Source deletion should not delete mirrors automatically. It should mark the manifest record as
   `source_missing` and surface a review action.
@@ -226,7 +248,7 @@ Sync must flag conflict when:
 - a source's bytes match multiple missing manifest records and the correct move history is
   ambiguous;
 - multiple non-synthetic manifest records claim the same current source path;
-- source and curated note changes require human reconciliation;
+- source and reviewed derived-output changes require human reconciliation;
 - a previous sync failed after partial output.
 
 ## Transactional Writes
@@ -277,6 +299,7 @@ Every generated change should be explainable from:
 - machine-readable `_meta/sync-audit.jsonl` event;
 - output path.
 - optional `_meta/review-ledger.jsonl` decision tied to the generated artifact hash.
+- relationship, dependency, view, and context invalidation tied to journal sequence and source hash.
 
 Audit events must include the generated artifact path, lifecycle state, lifecycle contract
 path/schema version when available, status, and structured `warnings` / `errors` copied from the
@@ -284,6 +307,15 @@ manifest record after the sync attempt. They must not include raw source content
 document text, repo document bodies, secrets, or tokens.
 
 Rollback guidance lives in `docs/RECOVERY.md` and must be tested before a public release.
+
+## Derived-State Rebuild
+
+`.mirrorarc/state.sqlite` stores the journal plus versioned relationship, dependency, review, L2,
+and context metadata. It stores no authoritative source bodies. A full derived-state rebuild must
+be deterministic when semantic proposals are disabled: recreate state from current sources,
+manifests, profile rules, governed view definitions, and accepted semantic records; then compare
+current hashes and counts. Reviewed output files and frozen packs are preserved as governed
+artifacts and reattached by identity/hash rather than silently replaced.
 
 ## Original Source Integrity
 

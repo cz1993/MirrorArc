@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Any, Callable
 
 from mirrorarc.changes import journal, materialize
+from mirrorarc.mirrors import office as office_sync
+from mirrorarc.relationships import invalidation
 
 MaterializeFunc = Callable[..., dict[str, Any]]
 
@@ -37,6 +39,44 @@ def _record_identity(result: dict[str, Any]) -> tuple[str, str]:
     return str(record.get("source_id", "") or ""), str(record.get("source_sha256", "") or "")
 
 
+def _previous_source_hash(root: Path, event: dict[str, Any]) -> str:
+    event_hash = str(event.get("source_sha256", "") or "")
+    try:
+        manifest = office_sync.load_source_manifest(root)
+    except (OSError, ValueError):
+        return event_hash
+    source_id = str(event.get("source_id", "") or "")
+    paths = {
+        str(event.get("current_path", "") or ""),
+        str(event.get("previous_path", "") or ""),
+    }
+    for record in manifest.get("records", []):
+        if not isinstance(record, dict):
+            continue
+        if source_id and record.get("source_id") == source_id:
+            return str(record.get("source_sha256", "") or event_hash)
+        if str(record.get("current_source_path", "") or "") in paths:
+            return str(record.get("source_sha256", "") or event_hash)
+    return event_hash
+
+
+def _apply_invalidation(
+    root: Path,
+    event: dict[str, Any],
+    result: dict[str, Any],
+    finish_status: str,
+    previous_hash: str,
+) -> tuple[dict[str, Any] | None, str, str]:
+    if finish_status != "applied":
+        return None, finish_status, ""
+    try:
+        report = invalidation.apply_source_event(root, event, result, previous_hash=previous_hash)
+    except Exception as exc:
+        summary = f"dependency invalidation failed: {exc.__class__.__name__}: {str(exc)[:140]}"
+        return None, "failed", summary
+    return report, finish_status, ""
+
+
 def _unsupported_event_result(event: dict[str, Any], detail: str) -> dict[str, Any]:
     return {
         "kind": "journal-event",
@@ -65,6 +105,7 @@ def _process_deleted_event(
     now: str | None,
 ) -> dict[str, Any]:
     sequence = int(event["sequence"])
+    previous_hash = _previous_source_hash(root, event)
     previous_path = event.get("previous_path")
     if not previous_path:
         detail = "deleted event has no previous path for source-missing lifecycle update"
@@ -113,6 +154,11 @@ def _process_deleted_event(
         }
 
     finish_status, error_summary = _finish_status(str(result.get("status", "")))
+    invalidation_result, finish_status, invalidation_error = _apply_invalidation(
+        root, event, result, finish_status, previous_hash
+    )
+    if invalidation_error:
+        error_summary = invalidation_error
     source_id, source_sha256 = _record_identity(result)
     journal.finish_claimed_event(
         root,
@@ -131,6 +177,7 @@ def _process_deleted_event(
         "finish_status": finish_status,
         "error_summary": error_summary,
         "materialization": result,
+        "invalidation": invalidation_result,
     }
 
 
@@ -145,6 +192,7 @@ def process_claimed_event(
     materialize_kwargs: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     sequence = int(event["sequence"])
+    previous_hash = _previous_source_hash(root, event)
     current_path = event.get("current_path")
     if event.get("event_kind") == "deleted":
         return _process_deleted_event(
@@ -196,6 +244,11 @@ def process_claimed_event(
         }
 
     finish_status, error_summary = _finish_status(str(result.get("status", "")))
+    invalidation_result, finish_status, invalidation_error = _apply_invalidation(
+        root, event, result, finish_status, previous_hash
+    )
+    if invalidation_error:
+        error_summary = invalidation_error
     source_id, source_sha256 = _record_identity(result)
     journal.finish_claimed_event(
         root,
@@ -214,6 +267,7 @@ def process_claimed_event(
         "finish_status": finish_status,
         "error_summary": error_summary,
         "materialization": result,
+        "invalidation": invalidation_result,
     }
 
 

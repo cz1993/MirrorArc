@@ -87,7 +87,7 @@ def test_mirrorarc_cli_doctor_passes_on_template() -> None:
     assert "info: repo-manifest.json: not generated yet" in result.stdout
     assert "info: sync-audit.jsonl: not generated yet" in result.stdout
     assert "info: lifecycle contract: office=13 states, repo=11 states" in result.stdout
-    assert "info: profile contract: data-product 0.1.0" in result.stdout
+    assert "info: profile contract: data-product 0.2.0" in result.stdout
     assert "info: legacy domain map: present" in result.stdout
     assert "info: Office mirror config: present" in result.stdout
     assert "info: recovery: no action items" in result.stdout
@@ -253,7 +253,7 @@ def test_mirrorarc_cli_doctor_reports_obsidian_and_backup_posture(tmp_path: Path
     assert "warning: Obsidian community plugins: 2 enabled; review plugin trust boundary before pilots." in result.stdout
     assert "warning: Obsidian installed plugin directories: 1 found; review local plugin code before pilots." in result.stdout
     assert "info: backup guard: .gitignore covers high-risk local data patterns" in result.stdout
-    assert "warning: Vault root is not inside a git work tree; back up curated notes before production sync." in result.stdout
+    assert "warning: Vault root is not inside a git work tree; back up authoritative and reviewed records before production sync." in result.stdout
 
 
 def test_mirrorarc_cli_doctor_warns_on_cloud_synced_storage(tmp_path: Path) -> None:
@@ -346,7 +346,7 @@ def test_mirrorarc_cli_doctor_uses_profile_defaults_without_legacy_alias_files(t
     )
 
     assert result.returncode == 0, result.stderr or result.stdout
-    assert "info: profile contract: data-product 0.1.0" in result.stdout
+    assert "info: profile contract: data-product 0.2.0" in result.stdout
     assert "warning: legacy domain map: missing; legacy aliases unavailable." in result.stdout
     assert "info: Office mirror config: absent; using profile policy defaults" in result.stdout
     assert "Missing required vault file: _meta/domain-map.yml" not in result.stderr
@@ -2723,7 +2723,7 @@ def test_mirrorarc_conversion_report_prioritizes_spot_checks(tmp_path: Path) -> 
     assert "xlsx (1): Check formulas, hidden sheets" in guide_result.stdout
     assert "Allowed issue codes: bad_source_link" in guide_result.stdout
     assert "table_loss" in guide_result.stdout
-    assert "Use source-backed citations for durable curated notes" in guide_result.stdout
+    assert "Use source-backed citations for durable claims" in guide_result.stdout
     assert "PDF mirror" not in guide_result.stdout
     assert "Sheet mirror" not in guide_result.stdout
 
@@ -4493,7 +4493,7 @@ def test_mirrorarc_recovery_reports_manifest_actions(tmp_path: Path) -> None:
     assert "state explanation: MirrorArc retains the mirror and manifest record for review instead of deleting evidence." in result.stdout
     assert "exit condition: The source is restored, a move is resolved, or the manifest/mirror is deliberately retired." in result.stdout
     assert "[office:manual_modification" in result.stdout
-    assert "Migrate legacy annotations or preserve human edits in curated notes" in result.stdout
+    assert "Migrate legacy annotations to source-ID sidecars before forcing regeneration" in result.stdout
     assert "[office:source_moved" in result.stdout
     assert "migrate/archive any old mirror annotations" in result.stdout
     assert "previous target: _mirrors/40_delivery/registration.md (exists reason=source_moved)" in result.stdout

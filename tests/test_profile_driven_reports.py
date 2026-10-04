@@ -1212,7 +1212,9 @@ def test_package_cli_migration_skips_profile_machine_owned_frontmatter_domains(t
     payload = json.loads(result.stdout)
     assert payload["frontmatter_summary"] == {"alias": 1, "total": 1, "unknown": 0}
     assert [item["path"] for item in payload["frontmatter_items"]] == ["25_research/human-note.md"]
-    assert "machine-mirror.md" not in result.stdout
+    markdown_by_path = {item["path"]: item for item in payload["markdown_items"]}
+    assert markdown_by_path["25_research/machine-mirror.md"]["category"] == "l1_projection"
+    assert markdown_by_path["25_research/machine-mirror.md"]["classification_rule"] == "profile_machine_owned_note_type"
 
 
 def test_package_cli_benchmark_reads_profile_task_pack(tmp_path: Path) -> None:

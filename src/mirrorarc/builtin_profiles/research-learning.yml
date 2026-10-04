@@ -1,8 +1,44 @@
 schema_version: 1
 id: research-learning
 name: Research and Learning
-profile_version: 0.1.0
-description: Maintained v1 profile contract for literature, concepts, questions, projects, and syntheses.
+profile_version: 0.2.0
+description: Governed knowledge-projection profile for research and learning evidence.
+
+markdown_categories:
+  index: {persistence: manual}
+  authoritative_markdown_source: {persistence: authoritative}
+  l1_projection: {persistence: rebuildable}
+  l2_generated_view: {persistence: ephemeral}
+  l2_reviewed_view: {persistence: governed}
+  operational_control: {persistence: required}
+relationship_types:
+  MIRRORS: {deterministic: true, review_required: false}
+  DERIVED_FROM: {deterministic: true, review_required: false}
+  IN_DOMAIN: {deterministic: true, review_required: false}
+  HAS_LIFECYCLE: {deterministic: true, review_required: false}
+  IN_PROFILE: {deterministic: true, review_required: false}
+  DEPENDS_ON: {deterministic: true, review_required: false}
+  REVIEW_DEPENDS_ON: {deterministic: true, review_required: false}
+  IN_CONTEXT: {deterministic: true, review_required: false}
+  MENTIONS: {deterministic: false, review_required: true}
+  SAME_ENTITY: {deterministic: false, review_required: true}
+  SUPPORTS: {deterministic: false, review_required: true}
+  CONTRADICTS: {deterministic: false, review_required: true}
+  SUPERSEDES: {deterministic: false, review_required: true}
+  GOVERNS: {deterministic: false, review_required: true}
+  INVALIDATES: {deterministic: true, review_required: false}
+knowledge_lenses:
+  evidence-synthesis:
+    purpose: Compare source-backed positions for a research question.
+    audience: researcher
+    source_query: {}
+    relationship_types: [SUPPORTS, CONTRADICTS, SUPERSEDES]
+    output_sections: [question, evidence-for, evidence-against, gaps]
+    max_tokens: 2200
+    persistence: ephemeral
+    citation_required: true
+review_policy: {semantic_proposals_require_review: true, preserve_reviewed_views: true, automatic_promotion: false}
+context_defaults: {max_tokens: 5000, max_files: 25, max_excerpt_chars: 7000, allowed_modes: [metadata, dynamic, frozen]}
 
 domains:
   inbox:
@@ -35,9 +71,23 @@ domains:
 
 note_types:
   moc:
-    purpose: Hub note that links a research or learning cluster.
+    purpose: Legacy curated derivative retained only for migration classification.
+    legacy_derivative: true
+    markdown_category: legacy_curated_derivative
   note:
-    purpose: General curated research note.
+    purpose: Legacy curated derivative retained only for migration classification.
+    legacy_derivative: true
+    markdown_category: legacy_curated_derivative
+  authoritative-record:
+    purpose: Deliberately authored Markdown source.
+    markdown_category: authoritative_markdown_source
+  knowledge-view:
+    purpose: Governed L2 knowledge-view output.
+    machine_owned: true
+    markdown_category: l2_generated_view
+  operational-control:
+    purpose: Runtime, governance, profile, or operator control.
+    markdown_category: operational_control
   source:
     purpose: Human-readable source summary or bibliographic companion.
   literature-note:
@@ -57,11 +107,14 @@ note_types:
   source-mirror:
     purpose: Machine-generated mirror of a binary/source file.
     machine_owned: true
+    markdown_category: l1_projection
   source-ref:
     purpose: Human-readable companion for a non-mirrored source.
+    markdown_category: authoritative_markdown_source
   repo-mirror:
     purpose: Machine-generated mirror of a configured repository.
     machine_owned: true
+    markdown_category: l1_projection
 
 statuses:
   draft:
@@ -93,6 +146,8 @@ optional_properties:
   - owner
   - tags
   - related
+  - markdown_category
+  - authority
   - research_project
   - literature_collection
   - course
@@ -131,6 +186,7 @@ benchmark_tasks: []
 policy_defaults:
   mirror_mode: dedicated
   mirror_root: _mirrors
+  native_source_mode: direct
   mirror_status: active
   repo_stub_status: draft
   repo_notes_dir: 10_sources/repos

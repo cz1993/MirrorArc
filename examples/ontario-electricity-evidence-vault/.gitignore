@@ -1,5 +1,6 @@
 # Scratch
 .mirrorarc/
+.codegraph/
 _benchmark/
 _tmp/
 data/
@@ -18,6 +19,15 @@ _meta/*agent-readiness*result*.yaml
 # OS
 .DS_Store
 *.log
+
+# Local rebuildable projection state for this committed public source example.
+/_mirrors/*
+!/_mirrors/.gitkeep
+/20_sources/repos/*.md
+!/20_sources/repos/.gitkeep
+/_meta/source-manifest.json
+/_meta/repo-manifest.json
+/_meta/sync-audit.jsonl
 
 # Secrets must never be committed (they should never be in the vault at all)
 .env

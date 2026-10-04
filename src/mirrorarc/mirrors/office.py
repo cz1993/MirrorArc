@@ -85,8 +85,8 @@ MANIFEST_REL = Path("_meta/source-manifest.json")
 AUDIT_REL = Path("_meta/sync-audit.jsonl")
 ANNOTATION_ROOT = Path("_meta/mirror-annotations")
 MANIFEST_SCHEMA_VERSION = 1
-CONFIG_VERSION = "office-mirrors:v1"
-XLSX_CONFIG_VERSION = "office-mirrors:v2"
+CONFIG_VERSION = "office-mirrors:v2"
+XLSX_CONFIG_VERSION = "office-mirrors:v3"
 ANNOTATION_MIGRATION_REQUIRED_WARNING = (
     "Unmigrated mirror annotations found above the generated sentinel; "
     "run `mirrorarc migrate annotations --write` before syncing."
@@ -100,7 +100,7 @@ FORBIDDEN_MIRROR_PARTS = {
 LIFECYCLE_CONTRACT_REL = Path("_meta/lifecycle-states.yml")
 LIFECYCLE_GUIDANCE = {
     "planned": "review the plan, then run sync to create the generated mirror.",
-    "source_changed": "run sync to refresh the generated region, then review linked curated notes.",
+    "source_changed": "run sync to refresh the generated region, then review dependent relationships and views.",
     "source_moved": "confirm the source move is intentional, preserve/archive any old mirror, then run sync to update the mirror path.",
     "stale": "run sync before relying on the mirror; the source or configuration is newer.",
     "converter_changed": "review conversion quality, then run sync if the new converter output is acceptable.",
@@ -128,7 +128,7 @@ REVIEW_BLOCKING_SKIPPED_STATES = {"conflict", "manual_modification", "source_mov
 
 # Frontmatter keys the script owns and overwrites on every sync.
 MANAGED_KEYS = {
-    "type", "source_id", "source", "source_manifest", "source_format", "source_modified",
+    "type", "markdown_category", "authority", "source_id", "projection_id", "source", "source_manifest", "source_format", "source_modified",
     "synced", "source_sha256", "converter", "converter_version", "updated",
 }
 
@@ -144,7 +144,7 @@ BASE_KEY_ORDER = [
     "tags", "related",
 ]
 MANAGED_KEY_ORDER = [
-    "source_id", "source", "source_manifest", "source_format", "source_modified",
+    "markdown_category", "authority", "source_id", "projection_id", "source", "source_manifest", "source_format", "source_modified",
     "synced", "source_sha256", "converter", "converter_version",
 ]
 
@@ -512,6 +512,7 @@ def managed_frontmatter(
     source_id: str | None = None,
     converter_name: str | None = None,
     converter_version: str | None = None,
+    projection_id: str | None = None,
 ) -> dict:
     fm = dict(existing or {})
     domain = domain_from_path(src, root, routing)
@@ -525,13 +526,18 @@ def managed_frontmatter(
     fm.setdefault("created", dt.date.today().isoformat())
     # managed (always overwritten):
     fm["type"] = "source-mirror"
+    fm["markdown_category"] = "l1_projection"
+    fm["authority"] = "derived"
     if source_id:
         fm["source_id"] = source_id
+        fm["projection_id"] = projection_id or projection_id_for(source_id)
         fm["source_manifest"] = MANIFEST_REL.as_posix()
     fm["source"] = source_rel
     fm["source_format"] = src.suffix.lstrip(".").lower()
     fm["source_modified"] = file_mtime_iso(src)
-    fm["synced"] = now_iso()
+    # L1 bytes describe the source snapshot, not the wall-clock materialization run. Keep the
+    # operational run time in the derived manifest so rebuilding the same snapshot is byte-stable.
+    fm["synced"] = fm["source_modified"]
     fm["source_sha256"] = sha
     if converter_name:
         fm["converter"] = converter_name
@@ -546,7 +552,7 @@ def fresh_preserved_region(src: Path, root: Path) -> str:
     return (
         f"> [!info] Source-mirrored document — auto-generated\n"
         f"> Original: [[{source_rel}|{src.name}]] · edit the **original**, never this mirror.\n"
-        f"> This mirror is machine-owned; keep durable human notes in curated notes or annotation sidecars.\n\n"
+        f"> This L1 projection is machine-owned; use annotation sidecars for commentary and governed L2 views for synthesis.\n\n"
     )
 
 
@@ -664,6 +670,7 @@ def source_frontmatter_metadata_issue(
     *,
     source_rel: str,
     source_id: str,
+    projection_id: str,
     source_modified: str | None,
     source_sha256: str,
     source_format: str,
@@ -671,7 +678,10 @@ def source_frontmatter_metadata_issue(
     if not isinstance(existing_fm, dict) or not existing_fm:
         return None
     expected = {
+        "markdown_category": "l1_projection",
+        "authority": "derived",
         "source_id": source_id,
+        "projection_id": projection_id,
         "source": source_rel,
         "source_manifest": MANIFEST_REL.as_posix(),
         "source_format": source_format,
@@ -799,6 +809,7 @@ def default_preserved_line(line: str) -> bool:
         or stripped == "> Curate notes below; everything under the line refreshes on each sync."
         or stripped == "> This mirror is machine-owned; do not edit it directly."
         or stripped == "> This mirror is machine-owned; keep durable human notes in curated notes or annotation sidecars."
+        or stripped == "> This L1 projection is machine-owned; use annotation sidecars for commentary and governed L2 views for synthesis."
     )
 
 
@@ -915,6 +926,12 @@ def write_source_manifest(root: Path, manifest: dict) -> bool:
 def source_id_for(source_rel: str, source_sha256: str) -> str:
     digest = hashlib.sha256(f"{source_rel}\0{source_sha256}".encode("utf-8")).hexdigest()[:20]
     return f"src_{digest}"
+
+
+def projection_id_for(source_id: str) -> str:
+    """Return the stable L1 projection identity owned by one source identity."""
+    digest = hashlib.sha256(source_id.encode("utf-8")).hexdigest()[:20]
+    return f"l1_{digest}"
 
 
 def missing_manifest_records_for_hash(manifest: dict, root: Path, source_sha256: str, source_size: int) -> list[dict]:
@@ -1190,6 +1207,7 @@ def plan_one(
         if existing_record and existing_record.get("source_id")
         else source_id_for(source_rel, source_sha256 or "unreadable")
     )
+    projection_id = str((existing_record or {}).get("projection_id") or projection_id_for(source_id))
     previous_paths = existing_record.get("previous_source_paths") if existing_record else []
     if not isinstance(previous_paths, list):
         previous_paths = []
@@ -1356,6 +1374,7 @@ def plan_one(
             existing_fm,
             source_rel=source_rel,
             source_id=source_id,
+            projection_id=projection_id,
             source_modified=source_mtime,
             source_sha256=source_sha256,
             source_format=source_format,
@@ -1375,6 +1394,7 @@ def plan_one(
 
     record = {
         "source_id": source_id,
+        "projection_id": projection_id,
         "current_source_path": source_rel,
         "previous_source_paths": previous_paths,
         "ambiguous_move_candidates": ambiguous_move_candidates if len(ambiguous_move_candidates) > 1 else [],
@@ -1613,6 +1633,7 @@ def sync_one(
         source_id,
         converter_name,
         converter_version,
+        projection_id=record["projection_id"],
     )
     generated = auto_region(extracted)
     content = dump_frontmatter(fm, root=root) + "\n" + preserved + generated
@@ -1635,7 +1656,7 @@ def sync_one(
         record["normalized_content_sha256"] = sha256_text(extracted.strip())
         record["generated_region_sha256"] = sha256_text(generated)
         record["lifecycle_state"] = "clean"
-        record["last_successful_sync"] = fm["synced"]
+        record["last_successful_sync"] = now_iso()
         record["warnings"] = unique_list(
             warning
             for warning in record.get("warnings", [])

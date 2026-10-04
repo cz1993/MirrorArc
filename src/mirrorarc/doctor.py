@@ -107,7 +107,7 @@ def git_preflight(root: Path) -> tuple[list[str], list[str]]:
         return info, warnings
     inside = run_capture([git, "rev-parse", "--is-inside-work-tree"], root)
     if not inside or inside.returncode != 0 or inside.stdout.strip() != "true":
-        warnings.append("Vault root is not inside a git work tree; back up curated notes before production sync.")
+        warnings.append("Vault root is not inside a git work tree; back up authoritative and reviewed records before production sync.")
         return info, warnings
     top_level = run_capture([git, "rev-parse", "--show-toplevel"], root)
     if top_level and top_level.returncode == 0:

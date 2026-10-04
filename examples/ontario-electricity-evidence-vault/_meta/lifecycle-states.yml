@@ -29,7 +29,7 @@ office:
     explanation: The retained mirror may describe an older source version.
     permitted_next_actions:
       - Run sync to refresh the generated region.
-      - Review linked curated notes after regeneration.
+      - Review dependent relationships, views, reviews, and context freshness after regeneration.
       - Use the original source as authority until refreshed.
     exit_condition: Sync regenerates the mirror from the new source bytes, or the record enters conflict/error.
   source_moved:
@@ -48,7 +48,7 @@ office:
     permitted_next_actions:
       - Run status to inspect the stale reason.
       - Run sync when the refresh is acceptable.
-      - Review conversion quality and linked curated notes after refresh.
+      - Review conversion quality and dependent relationships, views, reviews, and context after refresh.
     exit_condition: Sync updates the mirror and manifest, or a blocking conflict/error is recorded.
   converter_changed:
     manifest_state: true
@@ -83,7 +83,7 @@ office:
     explanation: Human or external edits may exist inside machine-owned content.
     permitted_next_actions:
       - Inspect content below the generated sentinel.
-      - Preserve human edits in curated notes or run mirrorarc migrate annotations --write before force regeneration.
+      - Preserve human authority in declared source records or run mirrorarc migrate annotations --write before regeneration.
       - Rerun sync only after the review is complete.
     exit_condition: Human edits are preserved outside the generated mirror and sync regenerates the machine-owned region, or the mirror is intentionally retired.
   conflict:
@@ -148,7 +148,7 @@ repo:
     explanation: The retained repo mirror may describe an older repo state.
     permitted_next_actions:
       - Run sync to refresh README, docs, and metadata.
-      - Review linked curated notes after refresh.
+      - Review dependent relationships, views, reviews, and context after refresh.
       - Use the source repo as authority until refreshed.
     exit_condition: Sync refreshes the mirror, or a conflict/error/manual modification blocks the update.
   stale:
@@ -158,7 +158,7 @@ repo:
     permitted_next_actions:
       - Run status to inspect the stale reason.
       - Run sync when the refresh is acceptable.
-      - Review linked curated notes after refresh.
+      - Review dependent relationships, views, reviews, and context after refresh.
     exit_condition: Sync updates the mirror and manifest, or a blocking state is recorded.
   unreachable:
     manifest_state: true
@@ -184,7 +184,7 @@ repo:
     explanation: Human or external edits may exist inside machine-owned repo mirror content.
     permitted_next_actions:
       - Inspect content below the generated sentinel.
-      - Preserve human edits in curated notes or run mirrorarc migrate annotations --write before force regeneration.
+      - Preserve human authority in declared source records or run mirrorarc migrate annotations --write before regeneration.
       - Rerun sync only after the review is complete.
     exit_condition: Human edits are preserved outside the generated mirror and sync regenerates the machine-owned region, or the mirror is retired.
   conflict:

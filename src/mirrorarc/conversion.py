@@ -214,7 +214,7 @@ def action_for(priority: str, record: dict) -> str:
     if state in {"converter_changed", "source_changed", "stale"}:
         return "Refresh or review the mirror before relying on generated content."
     if priority == "high":
-        return "Review source, mirror, manifest warnings, and linked curated notes before use."
+        return "Review source, projection, manifest warnings, and dependent relationships/views before use."
     if priority == "medium":
         return "Spot-check headings, tables/slides/pages, omissions, and source links before relying on the mirror."
     return "Sample as part of routine format coverage; verify source link and generated region boundary."
@@ -332,7 +332,7 @@ def build_guide(report: dict) -> dict:
         "items": [
             "Verify each accepted mirror has a valid source path, mirror path, and lifecycle state.",
             "Record unsupported files, conversion defects, and manual corrections in the pilot worksheet.",
-            "Use source-backed citations for durable curated notes; do not treat generated markdown as final authority.",
+            "Use source-backed citations for durable claims; do not treat generated Markdown or L2 views as final authority.",
         ],
     })
     return {"sections": sections}

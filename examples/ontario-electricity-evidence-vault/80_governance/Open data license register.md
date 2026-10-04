@@ -7,7 +7,7 @@ created: 2026-07-19
 updated: 2026-07-19
 owner: MirrorArc Example
 tags: [license, provenance]
-related: ["[[Public source register]]", "[[Ontario Energy Report 2023 supporting data]]", "[[IESO reference-only boundary]]"]
+related: ["[[INDEX]]", "[[Ontario Energy Report 2023 supporting data]]", "[[IESO reference-only boundary]]"]
 ---
 
 # Open data license register

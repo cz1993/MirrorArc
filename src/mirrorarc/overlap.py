@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Generate a metadata-only overlap calibration report for curated notes."""
+"""Generate a metadata-only overlap calibration report for governed Markdown records."""
 from __future__ import annotations
 
 import argparse
@@ -427,7 +427,7 @@ def print_worksheet(report: dict[str, Any], errors: list[str]) -> None:
     print("")
     print("## Current Settings")
     print("")
-    print(f"- Curated notes reviewed: {summary['curated_notes']}")
+    print(f"- Governed Markdown records reviewed: {summary['curated_notes']}")
     print(f"- Comparable note pairs: {summary['comparable_pairs']}")
     print(f"- Current candidate pairs: {summary['current_candidates']}")
     print(f"- Near misses: {summary['near_misses']}")

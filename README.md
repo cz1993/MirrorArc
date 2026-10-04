@@ -4,35 +4,46 @@
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-008f83)](LICENSE)
 [![Status: technical alpha](https://img.shields.io/badge/Status-technical%20alpha-f1902f)](#status)
 
-**A governed documentation layer for both people and AI agents.**
+**Preserve sources. Minimize derived documents. Generate knowledge views when they are needed.**
 
 **[Open the live Ontario Grid demo portal →](https://cz1993.github.io/MirrorArc/)**
 
 MirrorArc is an open-source, local-first Python toolkit that turns changing Office files, PDFs,
-GitHub repositories, datasets, and Markdown notes into a source-backed knowledge workspace. It
-keeps original records authoritative, creates deterministic Markdown mirrors, connects evidence in
-an explorable knowledge graph, and gives agents durable context without adding a vector database.
+GitHub repositories, datasets, and Markdown into a governed knowledge-projection system. It keeps
+original records authoritative, creates deterministic Markdown projections for opaque sources,
+maintains source-backed relationships, and renders human or agent context without adding a vector
+database or an AI-generated wiki.
 
 ![MirrorArc beginner landing page showing the Ontario Electricity evidence tutorial](docs/assets/mirrorarc-index-tutorial.jpg)
 
 ## Why MirrorArc exists
 
-Teams do not need another chat window over a folder. They need a documentation layer that improves
-as work progresses and remains inspectable after the chat ends.
+Generative AI made documentation fast and cheap to create. It did not make a growing collection of
+summaries, entity pages, hubs, and agent notes cheap to verify or maintain. MirrorArc treats every
+durable derivative as a liability that must justify its existence; the information and knowledge
+carried by the sources remain the asset.
+
+The product principle is:
+
+> **Preserve authoritative records. Treat every durable derivative as a maintenance liability.
+> Generate views instead of accumulating documents.**
 
 | Common failure | MirrorArc's response |
 | --- | --- |
-| Contracts, decks, spreadsheets, repos, and notes stay isolated. | **Linking-first knowledge:** source, mirror, finding, decision, and runbook become navigable relationships. |
-| AI documentation creates more files than anyone can govern. | **Anti-proliferation:** consolidate and update before creating; lint for structural drift and likely overlap. |
-| Generated text quietly replaces the record it came from. | **Source-preserving mirrors:** originals remain authoritative; derived Markdown is content-hashed, refreshable, and reproducible. |
-| Agent context disappears between sessions. | **Durable agent context:** Markdown, frontmatter, provenance, lifecycle state, and metadata-only context packs persist outside a model. |
-| Sensitive or stale material enters an opaque index. | **Visible governance:** secrets-out, retention, licensing, PII boundaries, publication gates, and lifecycle warnings remain explicit. |
+| Office files, PDFs, spreadsheets, repos, and Markdown stay isolated. | **L1 specular projections:** opaque sources receive stable, source-addressed Markdown read models while originals remain authoritative. |
+| AI documentation creates more files than anyone can govern. | **Anti-proliferation by architecture:** relationships are data and synthesis is a view, not another note by default. |
+| Cross-document meaning is hidden or asserted without evidence. | **Relationship and provenance ledger:** typed connections carry evidence anchors, hashes, generation method, confidence, and review state. |
+| Human readers need interpretation rather than raw extraction. | **L2 knowledge views:** many sources produce a few purpose- and audience-specific reading surfaces that are ephemeral unless pinned or reviewed. |
+| Source changes leave summaries and agent context stale. | **Dependency-aware refresh:** changed sources invalidate only affected projections, relationships, views, reviews, and context. |
+| Sensitive or stale material enters an opaque index. | **Visible governance:** authority, licensing, PII boundaries, lifecycle, freshness, and publication gates remain explicit. |
 
 ## See the connected evidence
 
-The self-contained Catalog Explorer provides three complementary views: a relationship map, a
-provenance and lifecycle inspector, and a rendered document view. The catalog panel is resizable,
-long filenames wrap instead of disappearing, and `INDEX.md` is pinned as the beginner guide.
+The self-contained Catalog Explorer provides a relationship map, a provenance and lifecycle
+inspector, and a rendered document view. When a governed repository is selected, an optional Code
+view adds revision-bound source evidence, call paths, impact, and affected-test candidates. The
+catalog panel is resizable, long filenames wrap instead of disappearing, and `INDEX.md` is pinned
+as the beginner guide.
 
 ![MirrorArc relationship map connecting an original Word document and its generated Markdown mirror](docs/assets/mirrorarc-relationship-map.jpg)
 
@@ -40,16 +51,17 @@ long filenames wrap instead of disappearing, and `INDEX.md` is pinned as the beg
 
 ## Flagship demo: Ontario electricity evidence workspace
 
-[`examples/ontario-electricity-evidence-vault/`](examples/ontario-electricity-evidence-vault/) is a 50+ file,
-clean-room data-product example built from OGL Ontario data, metadata-only public references,
-independently authored Word/Excel artifacts, and a synthetic repository fixture. It demonstrates:
+[`examples/ontario-electricity-evidence-vault/`](examples/ontario-electricity-evidence-vault/) is the
+flagship clean-room data-product example, built from OGL Ontario data, metadata-only public
+references, independently authored Word/Excel artifacts, and a synthetic repository fixture. The
+current snapshot demonstrates the implemented L1, lifecycle, catalog, and portal foundation. Its
+large hand-authored Markdown layer predates the knowledge-projection architecture and is now a
+migration fixture rather than the target output.
 
-- original Word, spreadsheet, and repository records connected to Markdown
-  mirrors;
-- contracts, pipelines, historical analysis, outputs, governance, and operations in one
-  navigable workspace;
-- explicit historical-data quality checks and a clear reuse boundary with exact provenance in
-  [`examples/DATA_PROVENANCE.md`](examples/DATA_PROVENANCE.md).
+The local implementation supports source-addressed L1, evidence relationships, reviewed L2 views,
+dynamic/frozen context, and dependency invalidation. The checked-in example remains deliberately
+small. Historical stress tests are recorded separately; current batch proof is documented in the
+Trustworthy Context handoff when available.
 
 The committed snapshot is an independently assembled educational corpus, not live grid data,
 forecasting, alerts, or an affiliated Ontario energy product.
@@ -80,6 +92,9 @@ python3.11 -m venv .venv
 python -m pip install -e .
 
 mirrorarc --root examples/ontario-electricity-evidence-vault sync
+mirrorarc --root examples/ontario-electricity-evidence-vault code doctor
+# If Ready, optionally analyze the synthetic repository fixture:
+mirrorarc --root examples/ontario-electricity-evidence-vault code analyze --repo repo_252e1077b0082592ba3d --symbol demand_change
 mirrorarc --root examples/ontario-electricity-evidence-vault catalog --html --include-content
 python -m http.server 8000 --directory examples/ontario-electricity-evidence-vault
 ```
@@ -89,15 +104,61 @@ five-minute tour. The `--include-content` output embeds bounded Markdown bodies 
 local for private or proprietary vaults. The hosted MirrorArc demo is a narrow exception: it is
 built only from the public example corpus and scanned again before every deployment.
 
+## Choose a task and export its evidence
+
+From a synced vault, choose a task, inspect what was selected and omitted, then freeze evidence:
+
+```bash
+mirrorarc --root <vault> context build --lens orientation --mode metadata --query "inspection interval" --json
+mirrorarc --root <vault> context build --lens orientation --query "inspection interval" --name inspection-review
+# Use the definition ID printed above:
+mirrorarc --root <vault> context resolve <definition-id> --json
+mirrorarc --root <vault> context freeze --definition <definition-id> --task "Explain the inspection interval with citations."
+mirrorarc --root <vault> catalog --html
+```
+
+Query retrieval is opt-in: lexical ranking can miss relevant evidence. Inspect source hashes,
+exact spans, selected/excluded reasons, warnings and omissions before use. Metadata contains
+references only. Frozen packs include bounded evidence and report exact serialized bytes plus an
+estimated token count, not a model-independent token guarantee. A tiny budget can fail because
+instructions and citations alone do not fit. `offline_complete` is false if selected evidence is
+missing or truncated; it is never a guarantee that the sources answer your question.
+
+The portable Catalog's selection download stays metadata-only. Its governed-context panel shows
+saved tasks, copyable commands and frozen status. HTML does not execute those commands. Use
+`--include-content` only when intentionally embedding local evidence; protect the resulting file
+according to its sensitivity. Source changes require refresh, context resolution, and Catalog
+regeneration. Frozen bytes remain unchanged and status reports staleness.
+
+## Review PDF page evidence
+
+The optional PageIndex integration adds physical-page evidence and unreviewed answer candidates to
+the same governed workflow. Install its separate pinned runtime using the
+[PageIndex setup and review guide](docs/PAGEINDEX.md), then start with model-free indexing:
+
+```bash
+mirrorarc --root /absolute/path/to/copied-vault document doctor
+# Use a registered PDF source ID from mirrorarc status --json:
+mirrorarc --root /absolute/path/to/copied-vault document index --source SOURCE_ID --context frozen --page 2
+mirrorarc --root /absolute/path/to/copied-vault catalog --html --include-content
+```
+
+In the Catalog, select the PDF, then **Document metadata → PDF page evidence**. Optional questions
+require an approved model/endpoint and explicit per-command consent; indexing alone does not create
+an answer. Answer review shows frozen cited excerpts, current/stale state and uncertainty. A valid
+page address does not establish that a claim is supported. The [local results](docs/PAGEINDEX_RESULTS.md)
+separate tested behavior from real-model quality, owner acceptance and release readiness.
+
 ## How it works
 
-1. **Plan** what will be mirrored without changing source records.
-2. **Sync** supported Office files, PDFs, and repositories into machine-owned Markdown mirrors.
-3. **Connect** mirrors to curated notes, contracts, findings, decisions, and runbooks.
-4. **Inspect** content, provenance, lifecycle state, and relationships in Markdown, Obsidian, or the
-   portable Catalog Explorer.
-5. **Refresh** incrementally from observed source changes, with full sync retained for recovery and
-   verification.
+1. **Register** authoritative sources without changing them.
+2. **Project** each opaque source into one stable, machine-owned L1 Markdown read model.
+3. **Connect** evidence through typed relationships with provenance and review state rather than
+   creating more notes.
+4. **Interpret** many sources through a small number of purpose-specific L2 knowledge views.
+5. **Assemble** dynamic or frozen context for a human review or agent task.
+6. **Refresh** only affected projections and dependants when sources change, with reconciliation
+   and full sync retained for recovery and verification.
 
 The default `data-product` profile covers sources, contracts, pipelines, analysis, models, outputs,
 governance, and operations. Additional packaged profiles support business operations,
@@ -156,6 +217,9 @@ mirrorarc --root ~/my-data-product sandbox --source-root /path/to/original-docum
 mirrorarc --root ~/my-data-product catalog         # generate CATALOG.md inventory gateway
 mirrorarc --root ~/my-data-product catalog --html  # generate the interactive CATALOG.html explorer
 mirrorarc --root ~/my-data-product catalog --html --include-content # local content-review portal
+mirrorarc --root ~/my-data-product code doctor     # optional local repository-analysis readiness
+mirrorarc --root ~/my-data-product code analyze --repo <repo-id> # bounded revision evidence
+mirrorarc --root ~/my-data-product code status --json # current/stale/failed analysis state
 mirrorarc --root ~/my-data-product m365            # Microsoft 365/Copilot handoff readiness
 mirrorarc --root ~/my-data-product review --json   # summarize metadata-only human review decisions
 mirrorarc --root ~/my-data-product overlap         # calibrate overlap thresholds without note bodies
@@ -180,8 +244,10 @@ decisions to `_meta/review-ledger.jsonl` with artifact hashes, so later changes 
 stale reviews instead of silently preserving old approvals.
 
 The generated `CATALOG.html` is a self-contained Catalog Explorer. It opens on `INDEX.md`, offers
-separate relationship-map, document-metadata, and rendered-document views, preserves explicit
-original-to-mirror lineage, and keeps local context-pack exports metadata-only. The safe default
+separate relationship-map, document-metadata, rendered-document, and contextual Code views,
+preserves explicit original-to-mirror lineage, and keeps local context-pack exports metadata-only.
+Repository analysis runs before generation; the passive HTML never starts a process or fetches
+data. The safe default
 does not embed document bodies. Use `catalog --html --include-content` only for a local review copy;
 that opt-in mode embeds bounded Markdown and generated-mirror bodies, so the resulting HTML must be
 protected like the vault itself. The public GitHub Pages demo is built from the explicitly public,
@@ -201,7 +267,7 @@ mirrorarc init --profile research-learning ~/my-research-vault
 mirrorarc init --profile software-project ~/my-software-vault
 mirrorarc init --profile blank ~/my-blank-vault
 mirrorarc --root ~/my-data-product profile validate
-mirrorarc --root ~/my-data-product profile diff 0.1.0
+mirrorarc --root ~/my-data-product profile diff 0.2.0
 mirrorarc --root ~/my-data-product profile migrate --plan
 mirrorarc --root ~/my-data-product profile migrate --write
 mirrorarc --root ~/my-data-product profile views --check
@@ -220,24 +286,46 @@ Step-by-step: [`docs/quickstart.md`](docs/quickstart.md).
 
 ## Documentation
 
+- [PageIndex document review](docs/PAGEINDEX.md) — optional PDF structure, physical-page context,
+  explicit model approval and unreviewed cited answers; currently under local validation.
+- [PageIndex release plan](docs/PAGEINDEX_RELEASE_PLAN.md) — current integration and acceptance gates.
+- [Whitepaper](docs/MIRRORARC_WHITEPAPER.md) — canonical product thesis, authority model, and
+  knowledge-projection architecture.
+- [Product implementation plan](docs/PRODUCT_IMPLEMENTATION_PLAN.md) — sequenced development,
+  migration, test, Ontario corpus, and portal finish line.
+- [New-session execution prompt](docs/prompts/KNOWLEDGE_PROJECTION_KICKOFF.md) — paste-ready prompt
+  for pursuing the implementation plan in a clean session.
+- [Repository Intelligence execution plan](docs/CODE_INTELLIGENCE_EXECUTION_PLAN.md) — implemented
+  CodeGraph-backed code evidence, CLI, context, Catalog, and local proof record.
+- [Repository Intelligence kickoff prompt](docs/prompts/CODE_INTELLIGENCE_EXECUTION_KICKOFF.md) —
+  goal-mode prompt for implementing that plan without ADS or a review dependency.
+
+The whitepaper defines architectural principles; the current
+[Trustworthy Context plan](docs/TRUSTWORTHY_CONTEXT_EXECUTION_PLAN.md) governs this local batch.
+Earlier implementation plans record historical evidence, not current acceptance.
+
 - [Product contract](docs/PRODUCT.md) — audience, workflow, outcomes, and non-goals.
 - [Quickstart](docs/quickstart.md) — demo-first setup and daily workflow.
 - [Sync specification](docs/SYNC_SPEC.md) — authority, mirroring, manifests, and refresh behavior.
 - [Security model](docs/SECURITY_MODEL.md) — trust boundaries, prompt safety, and local-review rules.
 - [Profile schema](docs/PROFILE_SCHEMA.md) — configurable domains, note types, folders, and policies.
-- [Methodology](docs/methodology.md) and [whitepaper](docs/MIRRORARC_WHITEPAPER.md) — detailed design
-  rationale and professional review brief.
+- [Methodology](docs/methodology.md) — L0/L1, relationships, L2, context, review, and promotion
+  discipline.
 - [Positioning](docs/positioning.md) — where MirrorArc fits relative to LLM wikis, RAG, PKM, and
   document-management tools.
 
 ## Status
 
-**v0 - technical alpha.** The template vault, schema, thin tool CLI, source-installable console
-entry point, sync/lint tools, the Ontario Electricity flagship example, safety guards, Office/repo
-manifests, audit logs, journaled changed-file materialization, and all five official profile init
-fixtures work today.
-Full sync remains the baseline and recovery path; journaled incremental operation is the
-steady-state changed-file path.
+**v0 - technical alpha.** Source-preserving L1 mirrors, manifests, lifecycle state, audit logs,
+journaled changed-file materialization, reconciliation, full recovery sync, profiles, lint/safety
+guards, the portable catalog, stable projection identities, and the versioned evidence-backed
+relationship ledger work today.
+
+Dependency invalidation, L2 knowledge views, dynamic/frozen context assembly, and optional
+revision-bound Repository Intelligence are implemented locally. The current Ontario example is
+retained as migration and regression evidence; do not interpret its curated Markdown count as the
+target MirrorArc model. This remains a technical alpha, and local proof is not hosted or production
+proof.
 
 ## License
 

@@ -43,7 +43,7 @@ jobs:
           mirrorarc --help
           tmp_vault="$(mktemp -d)/vault"
           MIRRORARC_REPO="$PWD" mirrorarc init "$tmp_vault"
-          mirrorarc --root "$tmp_vault" profile diff 0.1.0
+          mirrorarc --root "$tmp_vault" profile diff 0.2.0
           mirrorarc --root "$tmp_vault" profile migrate --plan
           mirrorarc --root "$tmp_vault" profile migrate --write --json
           mirrorarc --root "$tmp_vault" profile views --check
@@ -83,7 +83,7 @@ jobs:
           test -f "$tmp_vault/tools/recovery_report.py"
           test -f "$tmp_vault/tools/review_ledger.py"
           test -f "$tmp_vault/tools/sandbox_report.py"
-          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" profile diff 0.1.0
+          "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" profile diff 0.2.0
           "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" profile migrate --plan
           "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" profile migrate --write --json
           "$tmp_build/venv/bin/mirrorarc" --root "$tmp_vault" profile views --check

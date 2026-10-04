@@ -6,6 +6,8 @@ domain: pipelines
 created: {{date}}
 updated: {{date}}
 owner: you
+markdown_category: authoritative_markdown_source
+authority: authored
 pipeline:
 tags: [pipeline]
 related: []
